@@ -226,7 +226,7 @@
     <Compile Include="Build\ControllerFactory.cs" />
     <Compile Include="Build\Data\DataBuilder.cs" />
     <Compile Include="Build\Mail\TemplateInstance.cs" />
-    <Compile Include="Build\ModuleProvider.cs" />
+    <Compile Include="Module\ModuleProvider.cs" />
     <Compile Include="Build\PageHost.cs" />
     <Compile Include="Build\View\ViewPage.cs" />
     <Compile Include="DataChange\ChangeTracker.cs" />

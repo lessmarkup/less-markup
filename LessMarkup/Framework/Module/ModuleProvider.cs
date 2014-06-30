@@ -17,7 +17,7 @@ using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
 
-namespace LessMarkup.Framework.Build
+namespace LessMarkup.Framework.Module
 {
     public class ModuleProvider : IModuleProvider
     {
@@ -61,13 +61,8 @@ namespace LessMarkup.Framework.Build
 
             var currentPath = _specialFolder.BinaryFiles;
 
-            foreach (var file in new DirectoryInfo(currentPath).GetFiles("*.dll"))
+            foreach (var file in new DirectoryInfo(currentPath).GetFiles("*.dll").Where(f => f.FullName.EndsWith(".Module.dll")))
             {
-                if (!file.FullName.EndsWith(".Module.dll"))
-                {
-                    continue;
-                }
-
                 var assembly = Assembly.LoadFile(file.FullName);
 
                 var codeBase = assembly.CodeBase.ToLower();
