@@ -154,6 +154,7 @@
     <Compile Include="Model\Structure\PageErrorModel.cs" />
     <Compile Include="Model\Structure\PageJsonEntryPointModel.cs" />
     <Compile Include="Model\Structure\MenuItemModel.cs" />
+    <Compile Include="Model\Structure\ResourceModel.cs" />
     <Compile Include="Model\Structure\ToolbarButtonModel.cs" />
     <Compile Include="Controller\PageController.cs" />
     <Compile Include="Model\Global\UserModel.cs" />

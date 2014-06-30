@@ -26,6 +26,11 @@ namespace LessMarkup.UserInterface.Model.Structure
             _dataCache = dataCache;
         }
 
+        public static bool AppliesToRequest(HttpRequestBase request)
+        {
+            return request.HttpMethod == "POST" && request.ContentType.StartsWith("application/json;");
+        }
+
         public ActionResult HandleRequest(System.Web.Mvc.Controller controller)
         {
             HttpContext.Current.Request.InputStream.Seek(0, SeekOrigin.Begin);

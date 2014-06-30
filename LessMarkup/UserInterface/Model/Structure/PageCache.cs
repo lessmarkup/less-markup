@@ -54,26 +54,30 @@ namespace LessMarkup.UserInterface.Model.Structure
                 }
             }
 
+            node.Root = _rootPage;
+
             if (node.Parent == null)
             {
                 // root
-                node.Path = "page";
-                node.FullPath = "/page";
+                node.Path = "";
+                node.FullPath = "";
             }
             else
             {
                 node.Path = node.Path.Trim().ToLower();
-                node.Root = _rootPage;
 
                 if (string.IsNullOrEmpty(node.Path))
                 {
                     return;
                 }
 
-                node.FullPath = node.Parent.FullPath + "/" + node.Path;
+                node.FullPath = string.IsNullOrEmpty(node.Parent.FullPath) ? node.Path : node.Parent.FullPath + "/" + node.Path;
             }
 
-            foreach (var child in node.Children)
+            _cachedPages.Add(node);
+            _idToPage[node.PageId] = _rootPage;
+
+            foreach (var child in node.Children.Where(c => c.Enabled))
             {
                 child.Parent = node;
                 InitializeTree(child);
@@ -128,34 +132,16 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public void GetPage(string path, out CachedPageInformation page, out string rest)
         {
-            if (path != null)
+            var pathParts = (path ?? "").ToLower().Split(new[] {'/'}).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+            if (pathParts.Count == 0)
             {
-                path = path.Trim();
-
-                if (path.EndsWith("/"))
-                {
-                    path = path.Remove(path.Length - 1).Trim();
-                }
-            }
-
-            if (_rootPage == null || string.IsNullOrWhiteSpace(path))
-            {
-                page = null;
-                rest = "";
-                return;
-            }
-
-            var pathParts = path.ToLower().Split(new[] {'/'}).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-
-            if (pathParts.Count == 0 || pathParts[0] != _rootPage.Path)
-            {
-                page = null;
+                page = _rootPage;
                 rest = "";
                 return;
             }
 
             page = _rootPage;
-            pathParts.RemoveAt(0);
 
             while (pathParts.Count > 0)
             {
@@ -215,7 +201,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (cachedPages.Count == 0)
             {
-                _rootPage = new CachedPageInformation
+                cachedPages.Add(new CachedPageInformation
                 {
                     AccessList = new List<CachedPageAccess> {new CachedPageAccess {AccessType = PageAccessType.Read}},
                     HandlerModuleType = ModuleType.Core,
@@ -224,16 +210,12 @@ namespace LessMarkup.UserInterface.Model.Structure
                     PageId = 1,
                     HandlerId = "home",
                     Children = new List<CachedPageInformation>(),
-                };
+                });
+            }
 
-                _cachedPages.Add(_rootPage);
-                _idToPage[_rootPage.PageId] = _rootPage;
-            }
-            else
-            {
-                _rootPage = cachedPages[0];
-                InitializeNode(_rootPage, cachedPages, 1, cachedPages.Count-1);
-            }
+            _rootPage = cachedPages[0];
+
+            InitializeNode(_rootPage, cachedPages, 1, cachedPages.Count-1);
 
             InitializeTree(_rootPage);
 
@@ -243,14 +225,17 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var configurationPage = new CachedPageInformation
             {
-                AccessList = new List<CachedPageAccess> {new CachedPageAccess {AccessType = PageAccessType.NoAccess}},
-                FullPath = _rootPage.FullPath + "/configuration",
+                AccessList = new List<CachedPageAccess>
+                {
+                    new CachedPageAccess {AccessType = PageAccessType.NoAccess},
+                },
+                FullPath = "configuration",
+                Path = "configuration",
                 HandlerModuleType = ModuleType.Core,
                 ParentPageId = _rootPage.PageId,
                 Parent = _rootPage,
                 Title = LanguageHelper.GetText(ModuleType.Core, CoreTextIds.Configuration),
                 HandlerType = typeof (ConfigurationRootPageHandler),
-                Path = "configuration",
                 PageId = pageId,
                 HandlerId = "configuration",
                 Root = _rootPage

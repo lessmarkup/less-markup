@@ -46,7 +46,7 @@ namespace LessMarkup.Framework.Security
             _domainModelProvider = domainModelProvider;
         }
 
-        #region Static Properties For User Context
+        #region Properties For User Context
 
         public static CookieUserModel ContextUser
         {
@@ -86,18 +86,25 @@ namespace LessMarkup.Framework.Security
             }
         }
 
+        private CookieUserModel GetCurrentUser()
+        {
+            var ret = ContextUser;
+            if (ret != null)
+            {
+                return ret;
+            }
+            MapCurrentUser();
+            return ContextUser;
+        }
+
         #endregion
 
         public bool IsFakeUser
         {
             get
             {
-                var contextUser = ContextUser;
-                if (contextUser == null)
-                {
-                    return false;
-                }
-                return contextUser.IsFakeUser;
+                var user = GetCurrentUser();
+                return user != null && user.IsFakeUser;
             }
         }
 
@@ -129,12 +136,8 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var contextUser = ContextUser;
-                if (contextUser == null)
-                {
-                    return null;
-                }
-                return contextUser.Email;
+                var user = GetCurrentUser();
+                return user == null ? null : user.Email;
             }
         }
 
@@ -142,14 +145,8 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var contextUser = ContextUser;
-
-                if (contextUser == null)
-                {
-                    return null;
-                }
-
-                return contextUser.UserId;
+                var user = GetCurrentUser();
+                return user == null ? (long?) null : user.UserId;
             }
         }
 
@@ -157,14 +154,8 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var contextUser = ContextUser;
-
-                if (contextUser == null)
-                {
-                    return null;
-                }
-
-                return contextUser.Groups;
+                var user = GetCurrentUser();
+                return user == null ? null : user.Groups;
             }
         }
 
@@ -172,7 +163,7 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var user = ContextUser;
+                var user = GetCurrentUser();
                 return user != null && user.IsAdministrator;
             }
         }
@@ -181,7 +172,7 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var user = ContextUser;
+                var user = GetCurrentUser();
                 return user != null && user.IsGlobalAdministrator;
             }
         }
@@ -190,7 +181,7 @@ namespace LessMarkup.Framework.Security
         {
             get
             {
-                var user = ContextUser;
+                var user = GetCurrentUser();
                 return user != null && user.IsValidated;
             }
         }
@@ -330,7 +321,7 @@ namespace LessMarkup.Framework.Security
                 HttpContext.Current.Response.Cookies.Add(cookie);
             }
 
-            var contextUser = new CookieUserModel
+            return new CookieUserModel
             {
                 Email = currentUser.Email,
                 Groups = currentUser.Groups,
@@ -339,8 +330,6 @@ namespace LessMarkup.Framework.Security
                 IsValidated = currentUser.IsValidated,
                 UserId = userId,
             };
-
-            return contextUser;
         }
 
         private bool LoginUser(string email, long userId, bool savePassword)
@@ -609,7 +598,7 @@ namespace LessMarkup.Framework.Security
 
         public void DeleteSelf(string password)
         {
-            var currentUser = ContextUser;
+            var currentUser = GetCurrentUser();
 
             if (currentUser == null)
             {

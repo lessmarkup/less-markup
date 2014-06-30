@@ -268,6 +268,11 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     }
 
     function onPageLoaded(data, url) {
+
+        if (url.substring(0, 1) != '/') {
+            url = "/" + url;
+        }
+
         $scope.path = url;
         $scope.resetAlerts();
 

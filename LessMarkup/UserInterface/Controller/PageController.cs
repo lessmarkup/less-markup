@@ -16,20 +16,25 @@ namespace LessMarkup.UserInterface.Controller
         {
             try
             {
-                if (Request.HttpMethod == "POST" && Request.ContentType.StartsWith("application/json;"))
+                if (PageJsonEntryPointModel.AppliesToRequest(Request))
                 {
-                    var model = DataFramework.DependencyResolver.Resolve<PageJsonEntryPointModel>();
-                    return model.HandleRequest(this);
+                    var jsonModel = DataFramework.DependencyResolver.Resolve<PageJsonEntryPointModel>();
+                    return jsonModel.HandleRequest(this);
                 }
-                else
+
+                var pageModel = DataFramework.DependencyResolver.Resolve<PageEntryPointModel>();
+                if (pageModel.Initialize(path, this))
                 {
-                    var model = DataFramework.DependencyResolver.Resolve<PageEntryPointModel>();
-                    if (!model.Initialize("/page/" + path, this))
-                    {
-                        return new HttpNotFoundResult();
-                    }
-                    return model.CreateResult(this);
+                    return pageModel.CreateResult(this);
                 }
+
+                var resourceModel = DataFramework.DependencyResolver.Resolve<ResourceModel>();
+                if (resourceModel.Initialize(path))
+                {
+                    return resourceModel.CreateResult(this);
+                }
+
+                return new HttpNotFoundResult();
             }
             catch (Exception e)
             {

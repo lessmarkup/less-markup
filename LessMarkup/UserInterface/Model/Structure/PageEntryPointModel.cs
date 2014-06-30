@@ -35,7 +35,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             CachedPageInformation cachedPage;
             string rest;
             pageCache.GetPage(path, out cachedPage, out rest);
-            if (cachedPage == null)
+            if (cachedPage == null || !string.IsNullOrEmpty(rest))
             {
                 return false;
             }
@@ -58,13 +58,13 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 RootPath = cachedPage.Root.FullPath,
                 RootTitle = cachedPage.Root.Title,
-                Path = path,
+                Path = path ?? "",
                 HasLogin = true,
                 HasSearch = false,
                 ShowConfiguration = _currentUser.IsAdministrator,
                 // TBD: calculate, now is true just to test functionality
-                ConfigurationPath = "/page/configuration",
-                ProfilePath = "/page/profile",
+                ConfigurationPath = "/configuration",
+                ProfilePath = "/profile",
                 UserLoggedIn = _currentUser.UserId.HasValue,
                 UserName = _currentUser.Email ?? "",
                 NavigationBar = new List<NavigationBarModel>(),
