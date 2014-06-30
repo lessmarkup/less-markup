@@ -4,7 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataFramework.DataObjects;
+using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {

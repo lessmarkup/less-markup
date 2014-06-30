@@ -11,6 +11,7 @@ using LessMarkup.DataFramework;
 using LessMarkup.Framework.Configuration;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.Language;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;

@@ -10,7 +10,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {

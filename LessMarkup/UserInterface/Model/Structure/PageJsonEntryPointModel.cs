@@ -14,7 +14,7 @@ using LessMarkup.Interfaces.Security;
 using LessMarkup.UserInterface.Exceptions;
 using LessMarkup.UserInterface.Model.RecordModel;
 using Newtonsoft.Json;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {

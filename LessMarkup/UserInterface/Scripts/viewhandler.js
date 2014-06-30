@@ -45,7 +45,6 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     $scope.rootPath = initialData.RootPath;
     $scope.rootTitle = initialData.RootTitle;
     $scope.navigationBar = initialData.NavigationBar;
-    $scope.copyright = initialData.Copyright;
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
 

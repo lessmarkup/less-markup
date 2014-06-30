@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 using LessMarkup.DataFramework;
 using LessMarkup.Framework.Module;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.UserInterface.ChangeTracking;
 using Newtonsoft.Json;

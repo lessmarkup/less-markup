@@ -9,7 +9,7 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Routing;
 using LessMarkup.Interfaces.Module;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.Framework.Routing
 {

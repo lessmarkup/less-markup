@@ -29,7 +29,7 @@ using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 using LessMarkup.MainModule.Properties;
 using LessMarkup.UserInterface;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 using IControllerFactory = LessMarkup.Interfaces.System.IControllerFactory;
 
 namespace LessMarkup.MainModule
@@ -40,6 +40,26 @@ namespace LessMarkup.MainModule
         private static bool _initialized;
         private static readonly object _initializeLock = new object();
         private static bool _resolverInitialized;
+
+        class ResolverCallback : IResolverCallback
+        {
+            private readonly IContainer _container;
+
+            public ResolverCallback(IContainer container)
+            {
+                _container = container;
+            }
+
+            public T Resolve<T>()
+            {
+                return _container.Resolve<T>();
+            }
+
+            public object Resolve(Type type)
+            {
+                return _container.Resolve(type);
+            }
+        }
 
         public static void InitializeDependencyResolver()
         {
@@ -78,7 +98,7 @@ namespace LessMarkup.MainModule
 
             var container = builder.Build();
             System.Web.Mvc.DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-            DependencyResolver.SetResolver(container);
+            DependencyResolver.SetResolver(new ResolverCallback(container));
         }
 
         private void ShowFatalException()

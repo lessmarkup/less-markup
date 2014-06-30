@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataFramework.DataObjects;
 using LessMarkup.DataObjects.User;
+using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Structure
 {

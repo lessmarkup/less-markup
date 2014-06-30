@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataFramework.DataAccess

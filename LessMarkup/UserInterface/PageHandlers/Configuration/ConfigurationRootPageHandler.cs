@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using LessMarkup.DataFramework;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Security;

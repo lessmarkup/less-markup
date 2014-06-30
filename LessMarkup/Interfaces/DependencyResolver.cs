@@ -3,18 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using Autofac;
+using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.DataFramework
+namespace LessMarkup.Interfaces
 {
     public static class DependencyResolver
     {
-        public static void SetResolver(ILifetimeScope resolver)
+        public static void SetResolver(IResolverCallback resolver)
         {
             LifetimeScope = resolver;
         }
 
-        private static ILifetimeScope LifetimeScope { get; set; }
+        private static IResolverCallback LifetimeScope { get; set; }
 
         public static T Resolve<T>()
         {

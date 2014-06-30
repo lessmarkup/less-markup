@@ -3,14 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
-    public abstract class SiteDataObject : DataObject, ISiteDataObject
+    public class SiteModule : NonSiteDataObject
     {
+        public long SiteModuleId { get; set; }
         [ForeignKey("Site")]
-        public long? SiteId { get; set; }
+        public long SiteId { get; set; }
         public Site Site { get; set; }
+        [ForeignKey("Module")]
+        public long ModuleId { get; set; }
+        public Module Module { get; set; }
     }
 }

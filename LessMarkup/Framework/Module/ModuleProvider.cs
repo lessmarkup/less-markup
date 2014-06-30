@@ -15,7 +15,7 @@ using LessMarkup.Framework.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.Framework.Module
 {
@@ -102,7 +102,7 @@ namespace LessMarkup.Framework.Module
             using (var domainModel = domainModelProvider.Create())
             {
                 var existingModules = new List<ModuleConfiguration>();
-                foreach (var module in domainModel.GetCollection<DataFramework.DataObjects.Module>().Where(m => !m.Removed))
+                foreach (var module in domainModel.GetCollection<Interfaces.Data.Module>().Where(m => !m.Removed))
                 {
                     var reference = _moduleConfigurations.FirstOrDefault(m => m.Path == module.Path);
                     if (reference == null)
@@ -119,7 +119,7 @@ namespace LessMarkup.Framework.Module
 
                 foreach (var source in _moduleConfigurations.Where(m => !existingModules.Contains(m)))
                 {
-                    var module = new DataFramework.DataObjects.Module
+                    var module = new Interfaces.Data.Module
                     {
                         Enabled = true,
                         Name = source.Name,
@@ -129,7 +129,7 @@ namespace LessMarkup.Framework.Module
                         Type = source.ModuleType
                     };
 
-                    domainModel.GetCollection<DataFramework.DataObjects.Module>().Add(module);
+                    domainModel.GetCollection<Interfaces.Data.Module>().Add(module);
                     domainModel.SaveChanges();
                 }
 

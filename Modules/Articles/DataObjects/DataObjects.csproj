@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LessMarkup.DataFramework">
-      <HintPath>..\..\..\Binaries\LessMarkup.DataFramework.dll</HintPath>
-    </Reference>
     <Reference Include="LessMarkup.Interfaces">
       <HintPath>..\..\..\Binaries\LessMarkup.Interfaces.dll</HintPath>
     </Reference>

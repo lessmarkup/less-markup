@@ -4,7 +4,7 @@
 
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
     public class Module : NonSiteDataObject
     {

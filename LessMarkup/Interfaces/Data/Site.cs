@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
     public class Site : NonSiteDataObject
     {

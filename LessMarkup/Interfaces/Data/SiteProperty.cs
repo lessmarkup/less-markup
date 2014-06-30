@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
     public class SiteProperty : NonSiteDataObject
     {

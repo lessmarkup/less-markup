@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataFramework.DataObjects;
 using LessMarkup.DataObjects.Common;
+using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.User
 {

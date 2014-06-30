@@ -11,7 +11,7 @@ using System.Web.Security;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Data;
 using WebMatrix.WebData;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.Framework.Security.Membership
 {

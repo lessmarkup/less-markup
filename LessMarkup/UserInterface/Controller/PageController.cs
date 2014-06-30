@@ -6,6 +6,7 @@ using System;
 using System.Web.Mvc;
 using LessMarkup.Framework.Logging;
 using LessMarkup.UserInterface.Model.Structure;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.UserInterface.Controller
 {
@@ -18,17 +19,17 @@ namespace LessMarkup.UserInterface.Controller
             {
                 if (PageJsonEntryPointModel.AppliesToRequest(Request))
                 {
-                    var jsonModel = DataFramework.DependencyResolver.Resolve<PageJsonEntryPointModel>();
+                    var jsonModel = DependencyResolver.Resolve<PageJsonEntryPointModel>();
                     return jsonModel.HandleRequest(this);
                 }
 
-                var pageModel = DataFramework.DependencyResolver.Resolve<PageEntryPointModel>();
+                var pageModel = DependencyResolver.Resolve<PageEntryPointModel>();
                 if (pageModel.Initialize(path, this))
                 {
                     return pageModel.CreateResult(this);
                 }
 
-                var resourceModel = DataFramework.DependencyResolver.Resolve<ResourceModel>();
+                var resourceModel = DependencyResolver.Resolve<ResourceModel>();
                 if (resourceModel.Initialize(path))
                 {
                     return resourceModel.CreateResult(this);
@@ -39,7 +40,7 @@ namespace LessMarkup.UserInterface.Controller
             catch (Exception e)
             {
                 this.LogException(e);
-                var model = DataFramework.DependencyResolver.Resolve<PageErrorModel>();
+                var model = DependencyResolver.Resolve<PageErrorModel>();
                 model.Initialize(e);
                 return model.CreateResult(this);
             }

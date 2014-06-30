@@ -3,9 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class EntityAttribute : Attribute

@@ -36,9 +36,6 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="LessMarkup.DataFramework">
-      <HintPath>..\..\..\Binaries\LessMarkup.DataFramework.dll</HintPath>
-    </Reference>
     <Reference Include="LessMarkup.Interfaces">
       <HintPath>..\..\..\Binaries\LessMarkup.Interfaces.dll</HintPath>
     </Reference>

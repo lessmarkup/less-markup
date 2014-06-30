@@ -44,7 +44,7 @@ namespace LessMarkup.Framework.Site
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                foreach (var site in domainModel.GetCollection<DataFramework.DataObjects.Site>().Select(s => new
+                foreach (var site in domainModel.GetCollection<Interfaces.Data.Site>().Select(s => new
                 {
                     s.SiteId,
                     s.Host,

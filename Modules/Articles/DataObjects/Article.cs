@@ -4,7 +4,6 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using LessMarkup.DataFramework.DataObjects;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Text;
 

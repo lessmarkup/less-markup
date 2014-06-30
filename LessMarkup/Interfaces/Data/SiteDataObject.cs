@@ -4,16 +4,12 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LessMarkup.DataFramework.DataObjects
+namespace LessMarkup.Interfaces.Data
 {
-    public class SiteModule : NonSiteDataObject
+    public abstract class SiteDataObject : DataObject, ISiteDataObject
     {
-        public long SiteModuleId { get; set; }
         [ForeignKey("Site")]
-        public long SiteId { get; set; }
+        public long? SiteId { get; set; }
         public Site Site { get; set; }
-        [ForeignKey("Module")]
-        public long ModuleId { get; set; }
-        public Module Module { get; set; }
     }
 }

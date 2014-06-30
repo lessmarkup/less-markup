@@ -10,7 +10,7 @@ using System.Web.Routing;
 using LessMarkup.Framework.Logging;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.Framework.Build
 {

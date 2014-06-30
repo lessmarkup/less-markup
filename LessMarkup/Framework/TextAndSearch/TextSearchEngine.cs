@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.DataFramework.DataObjects;
 using LessMarkup.Framework.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;

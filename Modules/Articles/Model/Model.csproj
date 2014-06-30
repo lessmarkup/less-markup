@@ -53,9 +53,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AntiXSS.4.3.0\lib\net40\HtmlSanitizationLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="LessMarkup.DataFramework">
-      <HintPath>..\..\..\Binaries\LessMarkup.DataFramework.dll</HintPath>
-    </Reference>
     <Reference Include="LessMarkup.Interfaces">
       <HintPath>..\..\..\Binaries\LessMarkup.Interfaces.dll</HintPath>
     </Reference>

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Reflection;
 using System.Transactions;
-using LessMarkup.DataFramework.DataObjects;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
 

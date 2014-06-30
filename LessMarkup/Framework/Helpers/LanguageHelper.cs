@@ -4,6 +4,7 @@
 
 using LessMarkup.DataFramework;
 using LessMarkup.Framework.Language;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
 

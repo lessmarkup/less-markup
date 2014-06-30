@@ -6,7 +6,7 @@ using System.IO;
 using System.Web.Mvc;
 using System.Web.UI;
 using LessMarkup.Interfaces.System;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.Framework.Security.Captcha
 {

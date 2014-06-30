@@ -9,7 +9,7 @@ using LessMarkup.Framework.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using Newtonsoft.Json;
-using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
+using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -69,7 +69,6 @@ namespace LessMarkup.UserInterface.Model.Structure
                 UserName = _currentUser.Email ?? "",
                 NavigationBar = new List<NavigationBarModel>(),
                 TopMenu = new List<MenuItemModel>(),
-                Copyright = "Copyright(c) MvcDesign",
                 ViewData = viewData,
                 PageLoadError = pageLoadError
             });
