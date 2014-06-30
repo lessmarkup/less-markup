@@ -8,7 +8,6 @@ using System.IO;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Exceptions;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.DataFramework.DependencyResolver;
@@ -18,7 +17,6 @@ namespace LessMarkup.UserInterface.Model.Structure
     public class LoadPageViewModel
     {
         private readonly IDataCache _dataCache;
-        private readonly ICurrentUser _currentUser;
 
         public string Template { get; set; }
         public string TemplateId { get; set; }
@@ -27,16 +25,14 @@ namespace LessMarkup.UserInterface.Model.Structure
         public bool IsStatic { get; set; }
         public string[] Stylesheets { get; set; }
         public string[] Scripts { get; set; }
-        public bool UserLoggedIn { get; set; }
         public string Path { get; set; }
 
         public List<PageBreadcrumbModel> Breadcrumbs { get; set; }
         public List<ToolbarButtonModel> ToolbarButtons { get; set; } 
 
-        public LoadPageViewModel(IDataCache dataCache, ICurrentUser currentUser)
+        public LoadPageViewModel(IDataCache dataCache)
         {
             _dataCache = dataCache;
-            _currentUser = currentUser;
         }
 
         private static string GetViewContents(string viewName, object model, System.Web.Mvc.Controller controller)
@@ -82,13 +78,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 return;
             }
 
-            long objectId = page.PageId;
+            var objectId = page.PageId;
 
             Title = page.Title;
 
             Path = page.FullPath;
 
-            string settings = page.Settings;
+            var settings = page.Settings;
 
             if (!string.IsNullOrWhiteSpace(rest))
             {
@@ -136,8 +132,6 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             ViewData = handler.GetViewData(objectId, settingsObject);
             IsStatic = handler.IsStatic;
-
-            UserLoggedIn = _currentUser.UserId.HasValue;
         }
     }
 }

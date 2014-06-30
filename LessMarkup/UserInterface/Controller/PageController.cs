@@ -39,7 +39,7 @@ namespace LessMarkup.UserInterface.Controller
             catch (Exception e)
             {
                 this.LogException(e);
-                var model = new PageErrorModel();
+                var model = DataFramework.DependencyResolver.Resolve<PageErrorModel>();
                 model.Initialize(e);
                 return model.CreateResult(this);
             }

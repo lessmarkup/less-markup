@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Framework.FileSystem;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.UserInterface.Exceptions;
 using LessMarkup.UserInterface.Model.RecordModel;
 using Newtonsoft.Json;
@@ -20,10 +21,12 @@ namespace LessMarkup.UserInterface.Model.Structure
     public class PageJsonEntryPointModel
     {
         private readonly IDataCache _dataCache;
+        private readonly ICurrentUser _currentUser;
 
-        public PageJsonEntryPointModel(IDataCache dataCache)
+        public PageJsonEntryPointModel(IDataCache dataCache, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
         public static bool AppliesToRequest(HttpRequestBase request)
@@ -44,7 +47,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                     result = new
                     {
                         Success = true,
-                        Data = HandleDataRequest(data, controller)
+                        Data = HandleDataRequest(data, controller),
+                        UserLoggedIn = _currentUser.UserId.HasValue
                     };
                 }
                 catch (Exception e)
@@ -57,7 +61,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                     result = new
                     {
                         Success = false,
-                        e.Message
+                        e.Message,
+                        UserLoggedIn = _currentUser.UserId.HasValue
                     };
                 }
 

@@ -17,7 +17,8 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             return new ContentResult
             {
-                Content = "Error Occurred / Description TBD",
+                // TBD: Make smarter error description
+                Content = "Unknown Error Occurred",
             };
         }
     }

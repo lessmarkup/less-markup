@@ -140,6 +140,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
             user: userEmail
         }).success(function(data) {
             if (!data.Success) {
+                $scope.userLoggedIn = false;
                 $scope.userLoginProgress = false;
                 $scope.userLoginError = data.Message;
                 return;
@@ -157,6 +158,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
                 $scope.userLoginProgress = false;
                 if (!data.Success) {
                     $scope.userLoginError = data.Message;
+                    $scope.userLoggedIn = false;
                     return;
                 }
                 $scope.userLoggedIn = true;
@@ -197,7 +199,8 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         data["-command-"] = command;
         data["-path-"] = $scope.path;
         $scope.alerts = [];
-        $http.post("", data).success(function(data) {
+        $http.post("", data).success(function (data) {
+            validateLoggedIn(data.UserLoggedIn);
             if (!data.Success) {
                 if (failure) {
                     failure(data.Message);
@@ -225,6 +228,14 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         });
     }
 
+    function validateLoggedIn(userLoggedIn) {
+        if ($scope.userLoggedIn && !userLoggedIn) {
+            $scope.userLoggedIn = false;
+            $scope.userName = "";
+            $scope.showConfiguration = false;
+        }
+    }
+
     $scope.getTypeahead = function(field, searchText) {
         return $scope.sendCommandAsync("Typeahead", { property: field.Property, searchText: searchText }, function (data) {
             return data.Records;
@@ -242,6 +253,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         $scope.alerts = [];
         return $http.post("", data).then(function (result) {
             data = result.data;
+            validateLoggedIn(data.UserLoggedIn);
             if (!data.Success) {
                 if (failure) {
                     failure(data.Message);
@@ -301,12 +313,6 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         $scope.breadcrumbs = data.Breadcrumbs;
         $scope.title = data.Title;
         $scope.bindBody(template);
-
-        if ($scope.userLoggedIn && !data.UserLoggedIn) {
-            $scope.userLoggedIn = false;
-            $scope.userName = "";
-            $scope.showConfiguration = false;
-        }
 
         if (!$scope.$$phase) {
             $scope.$apply();
