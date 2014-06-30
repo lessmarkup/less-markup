@@ -34,6 +34,8 @@ Main Features
 * Multi-site support. The engine automatically maps users to separate site based on host name.
 * Automatic input form generation based on model defined in the code.
 * Record lists (grids) based on ngGrid with automatic column definitions based on model in the code. No markup is required to create functional grids.
+* Tree-based navigation support. Compare to flat navigation used in classic ASP.NET MVC.
+* Consistent tree navigation support. You can start from any page in the tree - the page together with scripts and style files will be loaded only once and then the engine will reload only required parts of the pages during navigation.
 
 Please read project wiki for additional information: https://github.com/mvcdesign/less-markup/wiki
 
