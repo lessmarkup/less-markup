@@ -38,3 +38,5 @@ Main Features
 Please read project wiki for additional information: https://github.com/mvcdesign/less-markup/wiki
 
 LessMarkup web site: http://www.lessmarkup.com
+
+LessMarkup is distributed based on open source Mozilla Public License, version 2.0. You can obtain a copy of the license here: http://mozilla.org/MPL/2.0/
