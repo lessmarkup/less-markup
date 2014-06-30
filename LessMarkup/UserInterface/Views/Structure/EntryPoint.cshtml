@@ -1,0 +1,55 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.Optimization
+@model LessMarkup.UserInterface.Model.Structure.PageEntryPointModel
+@{
+    Layout = null;
+}<!DOCTYPE html>
+<html lang="en" ng-app="application" ng-controller="main">
+<head>
+    @* ReSharper disable Html.PathError *@
+    <link href="~/Images/Core/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @* ReSharper restore Html.PathError *@
+    <meta name="viewport" content="width=device-width" />
+    <link href="http://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet" type="text/css">
+    @Styles.Render("~/Content/UserInterface/bootstrap.css")
+    @Styles.Render("~/Content/UserInterface/ng-grid.css")
+    @Styles.Render("~/Content/UserInterface/site.css")
+    @Styles.Render("~/Content/UserInterface/visualblocks.css")
+    @Styles.Render("~/Content/UserInterface/codemirror.css")
+    @Styles.Render("~/Content/UserInterface/nodelist.css")
+    <meta charset="utf-8" />
+    <title ng-bind="title">@Model.Title</title>
+    @Html.Partial("~/Views/Structure/InputFormTemplate.cshtml")
+</head>
+<body>
+    @Html.Partial("~/Views/Structure/Body.cshtml")
+    @Scripts.Render("~/Scripts/UserInterface/jquery-2.1.1.js")
+    @Scripts.Render("~/Scripts/UserInterface/jquery-ui-1.10.4.js")
+    @Scripts.Render("~/Scripts/UserInterface/angular.js")
+    @Scripts.Render("~/Scripts/UserInterface/bootstrap.js")
+    @Scripts.Render("~/Scripts/UserInterface/ui-bootstrap.js")
+    @Scripts.Render("~/Scripts/UserInterface/ng-grid.js")
+    @Scripts.Render("~/Scripts/UserInterface/ng-grid-flexible-height.js")
+    @Scripts.Render("~/Scripts/UserInterface/Tinymce/tinymce.js")
+    @Scripts.Render("~/Scripts/UserInterface/Tinymce/tinymce-angular.js")
+    @Scripts.Render("~/Scripts/UserInterface/jquery.signalr-2.1.0.js")
+    @Scripts.Render("~/Scripts/UserInterface/sha512.js")
+    @Scripts.Render("~/Scripts/UserInterface/hubs.js")
+    @Scripts.Render("~/Scripts/UserInterface/spin.js")
+    @Scripts.Render("~/Scripts/UserInterface/angular-spinner.js")
+    @Scripts.Render("~/Scripts/UserInterface/codemirror.js")
+    @Scripts.Render("~/Scripts/UserInterface/ui-codemirror.js")
+    <script>
+        window.tinyMceThemePath = "@Url.Content("~/Scripts/UserInterface/Tinymce/tinymce-theme.js")";
+        window.tinyMceSkinPath = "@Url.Content("~/Content/UserInterface/Tinymce")";
+        window.viewInitialData = @Html.Raw(Model.InitialData);
+    </script>
+    @Scripts.Render("~/Scripts/UserInterface/application.js")
+    @Scripts.Render("~/Scripts/UserInterface/viewhandler.js")
+    @Scripts.Render("~/Scripts/UserInterface/command-handler.js")
+    @Scripts.Render("~/Scripts/UserInterface/inputform.js")
+    @Scripts.Render("~/Scripts/UserInterface/recordlist.js")
+    @Scripts.Render("~/Scripts/UserInterface/configuration.js")
+    @Scripts.Render("~/Scripts/UserInterface/nodelist.js")
+</body>
+</html>

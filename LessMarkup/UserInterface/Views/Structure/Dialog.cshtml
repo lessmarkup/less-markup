@@ -1,0 +1,10 @@
+﻿@using System.Web.Mvc.Html
+<div ng-controller="DialogPageController">
+    @Html.Partial("~/Views/Structure/InputFormTemplateBody.cshtml")
+    <div class="dialog-buttons">
+        <button class="btn btn-primary" ng-click="submit()" ng-disabled="!hasChanges || isApplying">
+            <span>Apply</span>
+            <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>
+        </button>
+    </div>
+</div>

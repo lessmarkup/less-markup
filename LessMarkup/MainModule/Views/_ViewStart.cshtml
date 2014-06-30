@@ -1,0 +1,13 @@
+﻿@using System.Web.Mvc
+@using System.Web.Mvc.Html
+
+@{
+    if (DependencyResolver.Current.GetService<Interfaces.System.ISiteMapper>().SiteId.HasValue)
+    {
+         Layout = "~/Views/Shared/Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/GlobalLayout.cshtml";
+    }
+}

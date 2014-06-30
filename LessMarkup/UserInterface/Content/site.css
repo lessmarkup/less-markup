@@ -1,0 +1,175 @@
+﻿/* Layout */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.body1 {
+    height: auto;
+    min-height: 100%;
+}
+
+.body2 {
+    padding-bottom: 50px;
+    padding-top: 60px;
+}
+
+.footer {
+    clear: both;
+    position: relative;
+    margin-top: -50px;
+    height: 50px;
+}
+
+.container {
+    padding: 0;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+/* End of layout */
+
+.footer {
+    padding: 10px;
+    background: #fff;
+    border-top: solid 1px #ddd;
+}
+
+.navbar-inner {
+    -webkit-box-shadow: 0 3px 3px rgba(0,0,0,0.175);
+    box-shadow: 0 3px 3px rgba(0,0,0,0.175);    
+}
+
+.header-placeholder {
+    height: 60px;
+}
+
+.breadcrumb {
+    background: inherit;
+    padding-left: 0;
+    margin-bottom: 1.5em;
+}
+
+.navbar-brand {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.contents .toolbar .btn {
+    margin-bottom: 10px;
+    margin-right: 5px;
+}
+
+.has-error .mce-panel {
+    border-color: #a94442;    
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.configuration {
+    margin: 0;
+    padding: 0;
+}
+
+.configuration > li {
+    padding: 0;
+    list-style-type: none;
+    font-size: larger;
+}
+
+.configuration > li:not(:first-child) {
+    border-top: solid 1px #ddd;
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+}
+
+.configuration > li:not(:last-child) {
+    margin-bottom: 0.5em;
+}
+
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.login-form {
+    padding: 10px 20px;
+    width: 400px;
+}
+
+.login-form .bg-danger {
+    margin-bottom: 1em;
+    padding: 0.5em;
+    border-radius: 3px;
+}
+
+[us-spinner] {
+    width: 20px;
+    height: 20px;
+    padding-top: 5px;
+    display: inline-block;
+}
+
+button [us-spinner] {
+    padding-left: 3px;
+    padding-top: 1px;
+    margin-left: 0.5em;
+    margin-right: 0.2em;
+    width: 12px;
+    height: 12px;
+}
+
+[ng-cloak] {
+    display: none;
+}
+
+.dialog-buttons {
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+@font-face {
+  font-family: 'fa';
+  src: url('/Content/UserInterface/fontawesome-webfont.eot');
+  src: url('/Content/UserInterface/fontawesome-webfont.eot') format('embedded-opentype'), url('/Content/UserInterface/fontawesome-webfont.woff') format('woff'), url('/Content/UserInterface/fontawesome-webfont.ttf') format('truetype'), url('/Content/UserInterface/fontawesome-webfont.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.grid-cell-edit {
+    text-align: center;
+}
+
+.grid-cell-edit > span:before {
+    font-family: fa;
+    content: "\f141";
+}
+
+.grid-cell-edit {
+    cursor: pointer;
+}
+
+.grid-cell-command > span {
+    cursor: pointer;
+}
+
+.grid-cell-command > span:hover {
+    text-decoration: underline;
+}
+
+.form-control.CodeMirror {
+    padding: 0;
+}
+
+button:not(.btn)[disabled=disabled] {
+  color: #bbb;
+}

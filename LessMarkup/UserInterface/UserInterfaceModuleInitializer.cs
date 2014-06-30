@@ -1,0 +1,52 @@
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System;
+using System.Reflection;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Module;
+using LessMarkup.Interfaces.Module;
+using LessMarkup.UserInterface.ChangeTracking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace LessMarkup.UserInterface
+{
+    public class UserInterfaceModuleInitializer : BaseModuleInitializer
+    {
+        public RecordChangeTracker RecordChangeTracker { get; private set; }
+
+        public UserInterfaceModuleInitializer()
+        {
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new StringEnumConverter());
+                return settings;
+            };
+            RecordChangeTracker = DependencyResolver.Resolve<RecordChangeTracker>();
+        }
+
+        public override string Name
+        {
+            get { return "UserInterface"; }
+        }
+
+        public override ModuleType Type
+        {
+            get { return ModuleType.UserInterface; }
+        }
+
+        public override Type[] ModelTypes
+        {
+            get { return Assembly.GetExecutingAssembly().GetTypes(); }
+        }
+
+        public override void InitializeDatabase()
+        {
+            base.InitializeDatabase();
+            RecordChangeTracker.Initialize();
+        }
+    }
+}

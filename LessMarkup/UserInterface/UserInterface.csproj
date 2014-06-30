@@ -1,0 +1,511 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3D3EC0CB-6302-434B-9EBC-C48FA2975FA8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LessMarkup.UserInterface</RootNamespace>
+    <AssemblyName>LessMarkup.UserInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.1.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebGrease">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChangeTracking\RecordChangeTracker.cs" />
+    <Compile Include="ChangeTracking\TrackerRecordType.cs" />
+    <Compile Include="ChangeTracking\TrackerSite.cs" />
+    <Compile Include="Exceptions\UnknownActionException.cs" />
+    <Compile Include="Hubs\RecordListHub.cs" />
+    <Compile Include="Model\Configuration\NodeAccessModel.cs" />
+    <Compile Include="Model\Configuration\NodeSettingsModel.cs" />
+    <Compile Include="Model\Global\CustomizationModel.cs" />
+    <Compile Include="Model\Global\EngineConfigurationModel.cs" />
+    <Compile Include="Model\ErrorModel.cs" />
+    <Compile Include="Model\Global\GlobalAdministratorModel.cs" />
+    <Compile Include="Model\Global\ModuleModel.cs" />
+    <Compile Include="Model\Global\UserGroupModel.cs" />
+    <Compile Include="Model\RecordModel\InputFormDefinitionModel.cs" />
+    <Compile Include="Model\RecordModel\RecordModelCache.cs" />
+    <Compile Include="Model\RecordModel\RecordModelDefinition.cs" />
+    <Compile Include="Model\Global\SiteModel.cs" />
+    <Compile Include="Model\Structure\ExecuteActionModel.cs" />
+    <Compile Include="Model\Structure\LoadPageViewModel.cs" />
+    <Compile Include="Model\Structure\LoginModel.cs" />
+    <Compile Include="Model\Structure\NavigationBarModel.cs" />
+    <Compile Include="Model\Structure\PageBreadcrumbModel.cs" />
+    <Compile Include="Model\Structure\PageEntryPointModel.cs" />
+    <Compile Include="Model\Structure\PageErrorModel.cs" />
+    <Compile Include="Model\Structure\PageJsonEntryPointModel.cs" />
+    <Compile Include="Model\Structure\MenuItemModel.cs" />
+    <Compile Include="Model\Structure\ToolbarButtonModel.cs" />
+    <Compile Include="Controller\PageController.cs" />
+    <Compile Include="Model\Global\UserModel.cs" />
+    <Compile Include="Model\Structure\TypeaheadModel.cs" />
+    <Compile Include="PageHandlers\Common\AbstractPageHandler.cs" />
+    <Compile Include="Model\Structure\CachedPageAccess.cs" />
+    <Compile Include="Model\Structure\CachedPageInformation.cs" />
+    <Compile Include="PageHandlers\Common\RecordListLinkPageHandler.cs" />
+    <Compile Include="PageHandlers\Configuration\ConfigurationRootPageHandler.cs" />
+    <Compile Include="PageHandlers\Common\DialogPageHandler.cs" />
+    <Compile Include="PageHandlers\Common\ElementPageHandler.cs" />
+    <Compile Include="Model\Global\EmailConfigurationModel.cs" />
+    <Compile Include="PageHandlers\Configuration\NodeAccessPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\EmailPageHandler.cs" />
+    <Compile Include="PageHandlers\EmptyRootPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\EnginePageHandler.cs" />
+    <Compile Include="Model\Structure\PageCache.cs" />
+    <Compile Include="PageHandlers\Common\RecordListPageHandler.cs" />
+    <Compile Include="PageHandlers\Configuration\NodeListPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\GlobalAdministratorsPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\ModulesPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\SiteGroupsPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\SiteUsersPageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\SiteCustomizePageHandler.cs" />
+    <Compile Include="PageHandlers\GlobalConfiguration\SitePageHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserInterfaceModuleInitializer.cs" />
+    <Compile Include="UserInterfaceTextIds.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Tinymce\Fonts\tinymce.ttf" />
+    <EmbeddedResource Include="Content\Tinymce\Fonts\tinymce.woff" />
+    <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.eot" />
+    <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.ttf" />
+    <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.woff" />
+    <None Include="app.config" />
+    <EmbeddedResource Include="Content\fontawesome-webfont.eot" />
+    <EmbeddedResource Include="Content\fontawesome-webfont.ttf" />
+    <EmbeddedResource Include="Content\fontawesome-webfont.woff" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Views\Structure\InputFormTemplate.cshtml" />
+    <EmbeddedResource Include="Views\Structure\EntryPoint.cshtml" />
+    <EmbeddedResource Include="Views\Structure\ConfigurationRoot.cshtml" />
+    <EmbeddedResource Include="Views\Structure\EmptyRoot.cshtml" />
+    <EmbeddedResource Include="Views\Structure\Body.cshtml" />
+    <EmbeddedResource Include="Views\Structure\Dialog.cshtml" />
+    <EmbeddedResource Include="Views\Structure\InputFormTemplateBody.cshtml" />
+    <EmbeddedResource Include="Views\Structure\RecordList.cshtml" />
+    <EmbeddedResource Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataFramework\DataFramework.csproj">
+      <Project>{b47a0f26-803c-4536-a6d8-4649c2db011a}</Project>
+      <Name>DataFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataObjects\DataObjects.csproj">
+      <Project>{feb3bf37-1f52-4556-8137-b6b61d76ea03}</Project>
+      <Name>DataObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Framework\Framework.csproj">
+      <Project>{6E63AAB8-6BA5-494A-B566-7737D9D46AB4}</Project>
+      <Name>Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{AF5FD7AE-34D2-4656-A051-0868B363485B}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\bootstrap.css" />
+    <EmbeddedResource Include="Scripts\angular.js" />
+    <EmbeddedResource Include="Scripts\ui-bootstrap.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ng-grid-flexible-height.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\ng-grid.css" />
+    <EmbeddedResource Include="Scripts\ng-grid.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\site.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\bootstrap.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\command-handler.js" />
+    <EmbeddedResource Include="Scripts\inputform.js" />
+    <EmbeddedResource Include="Scripts\recordlist.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Tinymce\tinymce.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\tinymce-angular.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\visualblocks.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\toolbar.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <EmbeddedResource Include="Scripts\jquery-2.1.1.js" />
+    <EmbeddedResource Include="Scripts\jquery-2.1.1.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\jquery-ui-1.10.4.js" />
+    <EmbeddedResource Include="Scripts\jquery-ui-1.10.4.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\angular.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\bootstrap.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Tinymce\tinynce-angular.js" />
+    <EmbeddedResource Include="Scripts\ui-bootstrap.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Tinymce\tinymce-theme.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\tinymce-theme.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\tinymce.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Tinymce\content.inline.min.css" />
+    <EmbeddedResource Include="Content\Tinymce\content.min.css" />
+    <EmbeddedResource Include="Content\Tinymce\skin.ie7.min.css" />
+    <EmbeddedResource Include="Content\Tinymce\skin.min.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Tinymce\Fonts\tinymce.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Advlist\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Advlist\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Anchor\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Anchor\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autolink\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autolink\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autoresize\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autoresize\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autosave\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autosave\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Bbcode\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Bbcode\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Charmap\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Charmap\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Code\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Code\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Css\dialog.css" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\buttons.png" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\icons.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\items.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\menu_arrow.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\menu_check.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\progress.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\tabs.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\tiny_mce_popup.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\editable_selects.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\form_utils.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\mctabs.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\validate.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Contextmenu\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Contextmenu\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Directionality\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Directionality\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-cool.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-cry.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-embarassed.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-foot-in-mouth.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-frown.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-innocent.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-kiss.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-laughing.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-money-mouth.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-sealed.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-smile.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-surprised.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-tongue-out.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-undecided.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-wink.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-yell.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullpage\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullpage\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullscreen\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullscreen\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Hr\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Hr\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Image\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Image\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Importcss\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Importcss\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Insertdatetime\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Insertdatetime\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Layer\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Layer\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Legacyoutput\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Legacyoutput\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Link\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Link\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Lists\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Lists\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\moxieplayer.swf" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Nonbreaking\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Nonbreaking\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Noneditable\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Noneditable\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Pagebreak\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Pagebreak\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Clipboard.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Quirks.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Utils.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\WordFilter.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Preview\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Preview\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Print\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Print\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Save\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Save\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Searchreplace\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Searchreplace\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\Classes\DomTextMatcher.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Tabfocus\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Tabfocus\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\CellSelection.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\Quirks.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\TableGrid.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Template\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Template\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Textcolor\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Textcolor\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Css\visualblocks.css" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\address.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\article.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\aside.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\blockquote.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\div.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\dl.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\figure.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h1.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h2.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h3.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h4.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h5.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h6.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\hgroup.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\ol.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\p.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\pre.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\section.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\ul.gif" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualchars\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualchars\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Wordcount\plugin.js" />
+    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Wordcount\plugin.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\dashboard.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\hubs.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ng-grid.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\application.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\viewhandler.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\configuration.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\sha512.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\angular-spinner.js" />
+    <EmbeddedResource Include="Scripts\angular-spinner.min.js" />
+    <EmbeddedResource Include="Scripts\spin.js" />
+    <EmbeddedResource Include="Scripts\spin.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserInterface.Language.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\bootstrap-theme.css" />
+    <EmbeddedResource Include="Content\bootstrap-theme.min.css" />
+    <EmbeddedResource Include="Content\bootstrap.min.css" />
+    <EmbeddedResource Include="Content\codemirror.css" />
+    <EmbeddedResource Include="Scripts\codemirror.js" />
+    <EmbeddedResource Include="Scripts\jquery.signalR-2.1.0.js" />
+    <EmbeddedResource Include="Scripts\jquery.signalR-2.1.0.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\fontawesome-webfont.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\codemirror.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\codemirror.min.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ui-codemirror.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Structure\NodeList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\nodelist.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\nodelist.css" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

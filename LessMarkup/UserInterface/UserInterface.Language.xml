@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<Language Id="en" Name="English" ShortName="EN">
+  <Translations>
+    <Translation Id="SafeMode" Text="Safe Mode"/>
+    <Translation Id="DatabaseConfiguration" Text="Database Initialization String"/>
+    <Translation Id="EngineConfiguration" Text="Engine Configuration"/>
+    <Translation Id="DisableSafeMode" Text="Disable Automatic Safe Mode Activation On Fatal Error"/>
+    <Translation Id="FatalErrorsEmail" Text="E-mail For Fatal Errors"/>
+    <Translation Id="RecaptchaPublicKey" Text="ReCAPTCHA Public Key"/>
+    <Translation Id="RecaptchaPrivateKey" Text="ReCAPTCHA Private Key"/>
+    <Translation Id="RecordsPerPage" Text="Records To Show On Page"/>
+    <Translation Id="AuthCookieName" Text="Authentication Cookie Name"/>
+    <Translation Id="AuthCookieTimeout" Text="Authentication Cookie Timeout"/>
+    <Translation Id="AuthCookiePath" Text="Authentication Cookie Path"/>
+    <Translation Id="AutoRefresh" Text="Automatically Rebuild Engine During Startup (If Required)"/>
+    <Translation Id="NoAdminName" Text="Name Of Administrator When No Administrator Is Defined"/>
+    <Translation Id="LogLevel" Text="Logger Level"/>
+    <Translation Id="BackgroundJobInterval" Text="Time Interval For Background Job (ms)"/>
+    <Translation Id="DefaultHostName" Text="Global Host Name"/>
+    <Translation Id="AdminLoginPage" Text="IP Addresses Of Administrators Allowed To Login"/>
+    <Translation Id="AdminLoginAddress" Text="Administrators Login Address"/>
+    <Translation Id="EmailConfiguration" Text="Setup E-mail System"/>
+    <Translation Id="SmtpServer" Text="Server Address"/>
+    <Translation Id="SmtpUsername" Text="Username"/>
+    <Translation Id="SmtpPassword" Text="Password"/>
+    <Translation Id="SmtpUseSsl" Text="Use SSL"/>
+    <Translation Id="UseTestMail" Text="Use Test E-Mail System"/>
+    <Translation Id="NoReplyEmail" Text="E-mail For Non-Reply Messages"/>
+    <Translation Id="NoReplyName" Text="Username For Non-Reply Messages"/>
+    <Translation Id="UserId" Text="User ID"/>
+    <Translation Id="UserName" Text="User Name"/>
+    <Translation Id="UserEmail" Text="E-mail"/>
+    <Translation Id="Password" Text="Password"/>
+    <Translation Id="Administrators" Text="Administrators"/>
+    <Translation Id="EditAdministrator" Text="Edit Administrator"/>
+    <Translation Id="EditSite" Text="Edit Site"/>
+    <Translation Id="SiteId" Text="Site ID"/>
+    <Translation Id="Name" Text="Name"/>
+    <Translation Id="Title" Text="Title"/>
+    <Translation Id="Host" Text="Host"/>
+    <Translation Id="Enabled" Text="Enabled"/>
+    <Translation Id="Sites" Text="Sites"/>
+    <Translation Id="IsAdministrator" Text="Administrator"/>
+    <Translation Id="CustomizationType" Text="Type"/>
+    <Translation Id="Path" Text="Path"/>
+    <Translation Id="File" Text="File"/>
+    <Translation Id="Text" Text="Text"/>
+    <Translation Id="EditCustomization" Text="Edit Customization"/>
+    <Translation Id="PropertyMustBeSpecified" Text="Property {0} must be specified"/>
+    <Translation Id="Enable" Text="Enable"/>
+    <Translation Id="Disable" Text="Disable"/>
+    <Translation Id="NodeSettings" Text="Node Settings"/>
+    <Translation Id="Handler" Text="Handler"/>
+    <Translation Id="AccessType" Text="Access Type"/>
+    <Translation Id="User" Text="User"/>
+    <Translation Id="Group" Text="Group"/>
+    <Translation Id="Description" Text="Description"/>
+    <Translation Id="Users" Text="Users"/>
+    <Translation Id="Groups" Text="Groups"/>
+    <Translation Id="Modules" Text="Modules"/>
+    <Translation Id="Customize" Text="Customize"/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>
+  </Translations>
+</Language>

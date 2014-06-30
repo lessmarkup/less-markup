@@ -1,0 +1,115 @@
+﻿@{
+    Layout = null;
+}
+<div class="body1">
+    <div class="body2">
+        <header class="navbar navbar-default navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container" ng-cloak>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" ng-click="isCollapsed = !isCollapsed">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand visible-xs" href="{{rootPath}}" ng-click="navigateToView(rootPath)" ng-bind="rootTitle"></a>
+                    </div>
+
+                    <nav class="hidden-xs">
+                        <ul class="nav navbar-nav navbar-left">
+                            <a href="{{rootPath}}" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand"><span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span></a>
+
+                            <li class="dropdown" ng-if="navigationBar != null && navigationBar.length > 0">
+                                <a role="button" class="dropdown-toggle"><span ng-bind="title"></span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="item in navigationBar">
+                                        <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li ng-repeat="menu in topMenu">
+                                <a href="{{menu.Url}}" ng-click="navigateToView(menu.Url)" ng-bind="menu.Title"></a>
+                            </li>
+                        </ul>
+
+                        <form class="navbar-form navbar-left" role="search" ng-if="hasSearch">
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Search">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">Go</button>
+                                </span>
+                            </div>
+                        </form>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown" ng-show="!userLoggedIn && hasLogin">
+                                <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> User <b class="caret"></b></a>
+                                <div class="dropdown-menu">
+                                    <form role="form" class="login-form">
+                                        <div class="form-group">
+                                            <label for="loginUsername" class="col-sm-2 control-label">Email</label>
+                                            <input type="email" id="loginUsername" placeholder="Username" ng-model="loginUserEmail" class="form-control" ng-disabled="userLoginProgress">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="loginPassword" class="col-sm-2 control-label">Password</label>
+                                            <input type="password" id="loginPassword" placeholder="Password" ng-model="loginUserPassword" class="form-control" ng-disabled="userLoginProgress">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="loginUserRemember" ng-disabled="userLoginProgress"> Remember me
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-danger" ng-if="userLoginError.length > 0" ng-bind="userLoginError">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-default" ng-click="doLogin()" ng-disabled="userLoginProgress">Sign in</button>
+                                            <span us-spinner="{radius:5,width:2,length:4,lines:9}" ng-show="userLoginProgress"></span>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+
+                            <li class="dropdown" ng-show="userLoggedIn && hasLogin">
+                                <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> {{userName}} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{profilePath}}" ng-click="navigateToView(profilePath)">Profile</a></li>
+                                    <li><a href="#" ng-click="doLogout()">Logout</a></li>
+                                </ul>
+                            </li>
+                            <li ng-if="showConfiguration"><a href="{{configurationPath}}" ng-click="navigateToView(configurationPath)"><span class="glyphicon glyphicon-cog"></span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <ul class="breadcrumb container">
+            <li ng-repeat="item in breadcrumbs">
+                <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Text"></a>
+            </li>
+            <li class="active" ng-bind="title"></li>
+        </ul>
+
+        <div class="contents container" ng-cloak>
+            <div class="toolbar">
+                <button ng-repeat="button in toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.Id)" ng-click="onToolbarButtonClick(button.Id)" ng-bind="button.Text"></button>
+            </div>
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert(alert.id)"><div ng-bind="alert.message"></div></alert>
+            <div bind-compiled-html="bindBody"></div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <p ng-bind="copyright"></p>
+    </div>
+</div>

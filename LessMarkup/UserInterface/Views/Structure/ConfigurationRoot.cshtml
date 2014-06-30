@@ -1,0 +1,9 @@
+﻿@{
+    Layout = null;
+}
+
+<ul class="configuration" ng-controller="configuration">
+    <li ng-repeat="item in configurationItems">
+        <a href="{{item.Path}}" ng-click="navigateToView(item.Path)">{{item.Title}}</a>
+    </li>
+</ul>

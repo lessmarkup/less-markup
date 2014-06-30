@@ -1,0 +1,45 @@
+﻿ul.nodes {
+    display: inline-block;
+}
+
+ul.nodes, ul.nodes > li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ul.nodes > li {
+    margin-bottom: 0.5em;
+}
+
+ul.nodes > li > div {
+    border: solid 1px #ddd;
+    border-radius: 2px;
+}
+
+ul.nodes span.title {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #1e90ff;
+    min-width: 200px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+ul.nodes span.buttons {
+    text-align: right;
+}
+
+ul.nodes li > div {
+    display: table;
+    width: 100%;
+}
+
+ul.nodes li > div > span {
+    display: table-cell;
+    padding: 5px;
+}
+
+ul.nodes .node-disabled > div {
+    background: #ddd;
+}

@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FEB3BF37-1F52-4556-8137-B6B61D76EA03}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LessMarkup.DataObjects</RootNamespace>
+    <AssemblyName>LessMarkup.DataObjects</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Web\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\EntityChangeHistory.cs" />
+    <Compile Include="Common\Image.cs" />
+    <Compile Include="Common\ImageType.cs" />
+    <Compile Include="Common\Language.cs" />
+    <Compile Include="Common\Menu.cs" />
+    <Compile Include="Common\Currency.cs" />
+    <Compile Include="Common\SiteCustomizationType.cs" />
+    <Compile Include="Common\SiteCustomization.cs" />
+    <Compile Include="Common\Smile.cs" />
+    <Compile Include="Common\TestMail.cs" />
+    <Compile Include="Common\Translation.cs" />
+    <Compile Include="Common\ViewHistory.cs" />
+    <Compile Include="Gallery\Gallery.cs" />
+    <Compile Include="Gallery\GalleryImage.cs" />
+    <Compile Include="Gallery\GalleryType.cs" />
+    <Compile Include="Security\FailedLoginHistory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\SuccessfulLoginHistory.cs" />
+    <Compile Include="Statistics\AddressCountry.cs" />
+    <Compile Include="Statistics\AddressHistory.cs" />
+    <Compile Include="Statistics\AddressToCountry.cs" />
+    <Compile Include="Statistics\DaySummaryHistory.cs" />
+    <Compile Include="Structure\PageAccess.cs" />
+    <Compile Include="Structure\PageAccessType.cs" />
+    <Compile Include="Structure\Page.cs" />
+    <Compile Include="User\MultiFactorAuthorization.cs" />
+    <Compile Include="User\User.cs" />
+    <Compile Include="User\UserAddress.cs" />
+    <Compile Include="User\UserGroup.cs" />
+    <Compile Include="User\UserGroupMembership.cs" />
+    <Compile Include="User\UserBlockHistory.cs" />
+    <Compile Include="User\UserLoginIpAddress.cs" />
+    <Compile Include="User\UserProperty.cs" />
+    <Compile Include="User\UserPropertyDefinition.cs" />
+    <Compile Include="User\UserPropertyType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataFramework\DataFramework.csproj">
+      <Project>{B47A0F26-803C-4536-A6D8-4649C2DB011A}</Project>
+      <Name>DataFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{AF5FD7AE-34D2-4656-A051-0868B363485B}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

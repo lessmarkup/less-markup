@@ -1,0 +1,11 @@
+﻿@model LessMarkup.Framework.Security.Models.UserConfirmationMailTemplateModel
+
+@{
+    Model.Subject = "Confirm user registration";
+}
+
+<html>
+    <body>
+        <div>User '@Model.UserName' specified this address upon registration. Please confirm that it is your address by clicking on <a href="@Model.Link">this link</a>.</div>
+    </body>
+</html>

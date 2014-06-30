@@ -1,0 +1,46 @@
+﻿@using System.Web.Mvc.Html
+@{
+    Layout = null;
+}
+<script type="text/ng-template" id="inputform-template">
+    <div class="modal-header">
+        <h3 class="modal-title">{{definition.Title}}</h3>
+    </div>
+    <div class="modal-body" id="inputform-template-body">
+        @Html.Partial("~/Views/Structure/InputFormTemplateBody.cshtml")
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="submit()" ng-disabled="isApplying">
+            <span>OK</span>
+            <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>
+        </button>
+        <button class="btn btn-warning" ng-click="cancel()" ng-disabled="isApplying">Cancel</button>
+    </div>
+</script>
+<script type="text/ng-template" id="inputform-message-template">
+    <div class="modal-header">
+        <h3 class="modal-title">{{title}}</h3>
+    </div>
+    <div class="modal-body">
+        <p>{{message}}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="submit()">OK</button>
+    </div>
+</script>
+<script type="text/ng-template" id="inputform-question-template">
+    <div class="modal-header">
+        <h3 class="modal-title">{{title}}</h3>
+    </div>
+    <div class="modal-body">
+        <p>{{message}}</p>
+    </div>
+    <div class="modal-footer">
+        <div class="bg-danger" ng-if="submitError.length > 0" ng-bind="submitError"></div>
+        <button class="btn btn-primary" ng-click="submit()">
+            <span>Yes</span>
+            <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>
+        </button>
+        <button class="btn btn-warning" ng-click="cancel()">No</button>
+    </div>
+</script>
