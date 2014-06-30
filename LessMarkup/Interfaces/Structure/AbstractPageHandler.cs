@@ -4,9 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using LessMarkup.Interfaces.Structure;
 
-namespace LessMarkup.UserInterface.PageHandlers.Common
+namespace LessMarkup.Interfaces.Structure
 {
     public abstract class AbstractPageHandler : IPageHandler
     {

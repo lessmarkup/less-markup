@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using LessMarkup.DataFramework;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.RecordModel;
 
 namespace LessMarkup.UserInterface.PageHandlers.Common

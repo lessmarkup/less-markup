@@ -3,9 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.Module
+namespace LessMarkup.Interfaces.Module
 {
     public abstract class BaseModuleInitializer : IModuleInitializer
     {

@@ -84,6 +84,7 @@
     <Compile Include="Data\IDataObjectCollection.cs" />
     <Compile Include="Data\IDomainModel.cs" />
     <Compile Include="Data\IDomainModelProvider.cs" />
+    <Compile Include="Data\IModelCreate.cs" />
     <Compile Include="Data\INonSiteDataObject.cs" />
     <Compile Include="Data\ISiteDataObject.cs" />
     <Compile Include="Exceptions\CompileException.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\TextNotFoundException.cs" />
+    <Compile Include="Module\BaseModuleInitializer.cs" />
     <Compile Include="Module\IBackgroundJobHandler.cs" />
     <Compile Include="RecordModel\ColumnAttribute.cs" />
     <Compile Include="RecordModel\ColumnDefinition.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="RecordModel\RecordModelAttribute.cs" />
     <Compile Include="Security\EntityAccessType.cs" />
     <Compile Include="Security\ICurrentUser.cs" />
+    <Compile Include="Security\IHtmlSanitizer.cs" />
+    <Compile Include="Structure\AbstractPageHandler.cs" />
     <Compile Include="Structure\ChildHandlerSettings.cs" />
     <Compile Include="Structure\ConfigurationHandlerAttribute.cs" />
     <Compile Include="Structure\IPageHandler.cs" />

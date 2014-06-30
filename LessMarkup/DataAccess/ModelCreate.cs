@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Data.Entity;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataFramework.DataObjects;
 using LessMarkup.DataObjects.User;
+using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataAccess
 {

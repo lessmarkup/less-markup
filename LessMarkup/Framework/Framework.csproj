@@ -287,7 +287,6 @@
     <Compile Include="Language\CachedLanguage.cs" />
     <Compile Include="Language\CachedTranslation.cs" />
     <Compile Include="Language\LanguageCache.cs" />
-    <Compile Include="Module\BaseModuleInitializer.cs" />
     <Compile Include="Module\ModuleIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\Captcha\CaptchaGenerator.cs" />

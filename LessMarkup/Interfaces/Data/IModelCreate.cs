@@ -4,7 +4,7 @@
 
 using System.Data.Entity;
 
-namespace LessMarkup.DataFramework.DataAccess
+namespace LessMarkup.Interfaces.Data
 {
     public interface IModelCreate
     {

@@ -37,6 +37,7 @@ namespace LessMarkup.Framework
             builder.RegisterType<MailSender>().As<IMailSender>();
             builder.RegisterType<ChangeTracker>().As<IChangeTracker>().SingleInstance();
             builder.RegisterType<CurrentUser>().As<ICurrentUser>();
+            builder.RegisterType<HtmlSanitizer>().As<IHtmlSanitizer>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

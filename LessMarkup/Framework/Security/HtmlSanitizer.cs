@@ -5,10 +5,11 @@
 using System.Collections.Generic;
 using System.IO;
 using HtmlAgilityPack;
+using LessMarkup.Interfaces.Security;
 
 namespace LessMarkup.Framework.Security
 {
-    public class HtmlSanitizer
+    public class HtmlSanitizer : IHtmlSanitizer
     {
         public static readonly HashSet<string> BlackList = new HashSet<string>
         {
@@ -22,7 +23,7 @@ namespace LessMarkup.Framework.Security
             "meta"
         };
 
-        public static string Sanitize(string html)
+        public string Sanitize(string html)
         {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);

@@ -87,7 +87,6 @@
     <Compile Include="DataAccess\DataObjectCollectionStub.cs" />
     <Compile Include="DataAccess\DomainModelProvider.cs" />
     <Compile Include="DataAccess\DomainModelStub.cs" />
-    <Compile Include="DataAccess\IModelCreate.cs" />
     <Compile Include="DataAccess\SiteDataObjectCollection.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataFrameworkTypeInitializer.cs" />

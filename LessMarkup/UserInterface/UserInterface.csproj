@@ -159,7 +159,6 @@
     <Compile Include="Controller\PageController.cs" />
     <Compile Include="Model\Global\UserModel.cs" />
     <Compile Include="Model\Structure\TypeaheadModel.cs" />
-    <Compile Include="PageHandlers\Common\AbstractPageHandler.cs" />
     <Compile Include="Model\Structure\CachedPageAccess.cs" />
     <Compile Include="Model\Structure\CachedPageInformation.cs" />
     <Compile Include="PageHandlers\Common\RecordListLinkPageHandler.cs" />

@@ -15,6 +15,7 @@ using System.Text;
 using System.Web.Configuration;
 using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.System;
 using Microsoft.CSharp;
