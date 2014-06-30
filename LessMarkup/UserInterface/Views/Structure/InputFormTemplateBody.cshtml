@@ -1,4 +1,10 @@
-﻿<div class="form-group" ng-repeat="field in fields" ng-class="{'has-error has-feedback' : hasErrors(field.Property)}">
+﻿@{
+    /* This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. If a copy of the MPL was not distributed with this
+     * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+    Layout = null;    
+}<div class="form-group" ng-repeat="field in fields" ng-class="{'has-error has-feedback' : hasErrors(field.Property)}">
     <span ng-if="fieldVisible(field)">
         <span ng-if="field.Type == 'CheckBox'" class="checkbox">
             <label>

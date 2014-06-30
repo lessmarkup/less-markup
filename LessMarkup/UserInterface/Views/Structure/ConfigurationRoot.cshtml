@@ -1,8 +1,10 @@
 ﻿@{
+    /* This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. If a copy of the MPL was not distributed with this
+     * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+    
     Layout = null;
-}
-
-<ul class="configuration" ng-controller="configuration">
+}<ul class="configuration" ng-controller="configuration">
     <li ng-repeat="item in configurationItems">
         <a href="{{item.Path}}" ng-click="navigateToView(item.Path)">{{item.Title}}</a>
     </li>
