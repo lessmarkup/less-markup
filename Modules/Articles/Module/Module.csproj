@@ -90,7 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArticlesModuleInitializer.cs" />
-    <Compile Include="PageHandlers\CommonArticlePageHandler.cs" />
+    <Compile Include="PageHandlers\CommonArticleNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -101,7 +101,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="Views\CommonArticle\Index.cshtml" />
+    <EmbeddedResource Include="Views\Structure\CommonArticle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">

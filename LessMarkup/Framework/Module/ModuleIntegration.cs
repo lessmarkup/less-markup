@@ -23,7 +23,7 @@ namespace LessMarkup.Framework.Module
         private readonly Dictionary<ModuleType, ICategoryHandler> _categoryHandlers = new Dictionary<ModuleType, ICategoryHandler>(); 
         private readonly List<IBackgroundJobHandler>  _backgroundJobHandlers = new List<IBackgroundJobHandler>();
         private readonly Dictionary<EntityType, ISearchResultValidator> _searchResultValidators = new Dictionary<EntityType, ISearchResultValidator>();
-        private readonly Dictionary<string, Tuple<Type,ModuleType>> _pageHandlers = new Dictionary<string, Tuple<Type, ModuleType>>();
+        private readonly Dictionary<string, Tuple<Type,ModuleType>> _nodeHandlers = new Dictionary<string, Tuple<Type, ModuleType>>();
 
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly ISiteMapper _siteMapper;
@@ -218,20 +218,20 @@ namespace LessMarkup.Framework.Module
             return validator.IsValid(searchResult);
         }
 
-        public void RegisterPageHandler<T>(ModuleType moduleType, string id) where T : IPageHandler
+        public void RegisterNodeHandler<T>(ModuleType moduleType, string id) where T : INodeHandler
         {
-            _pageHandlers[id] = Tuple.Create(typeof (T), moduleType);
+            _nodeHandlers[id] = Tuple.Create(typeof (T), moduleType);
         }
 
-        public Tuple<Type, ModuleType> GetPageHandler(string id)
+        public Tuple<Type, ModuleType> GetNodeHandler(string id)
         {
             Tuple<Type, ModuleType> ret;
-            return _pageHandlers.TryGetValue(id, out ret) ? ret : null;
+            return _nodeHandlers.TryGetValue(id, out ret) ? ret : null;
         }
 
-        public IEnumerable<string> GetPageHandlers()
+        public IEnumerable<string> GetNodeHandlers()
         {
-            return _pageHandlers.Keys;
+            return _nodeHandlers.Keys;
         }
 
         public void RegisterRequestHandler<T>(ModuleType moduleType, T handler)

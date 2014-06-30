@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-function DialogPageController($http, $scope, $timeout) {
+function DialogNodeController($http, $scope, $timeout) {
 
     $scope.definition = $scope.viewData.Definition;
     $scope.object = $scope.viewData.Object;

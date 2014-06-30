@@ -48,6 +48,6 @@ namespace LessMarkup.Interfaces.Data
         CategoryTree = 40,
         SupportSite = 41,
         ViewRoute = 42,
-        Page = 43,
+        Node = 43,
     }
 }

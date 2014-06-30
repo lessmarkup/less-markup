@@ -15,7 +15,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
     }
 
     $scope.nodeAccessPage = function(node) {
-        return $scope.path + "/" + node.data.PageId.toString() + "/access";
+        return $scope.path + "/" + node.data.NodeId.toString() + "/access";
     }
 
     $scope.nodeEnabled = function (node) {
@@ -42,7 +42,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
 
     function nodeIndex(node) {
         for (var i = 0; i < $scope.nodes.length; i++) {
-            if ($scope.nodes[i].data.PageId == node.data.PageId) {
+            if ($scope.nodes[i].data.NodeId == node.data.NodeId) {
                 return i;
             }
         }
@@ -83,7 +83,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
         for (var i = 0; i < $scope.nodes.length; i++) {
             var node = $scope.nodes[i].data;
             layout.push({
-                PageId: node.PageId,
+                NodeId: node.NodeId,
                 Level: node.Level
             });
         }
@@ -298,7 +298,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
                 message += "; ";
             }
             message += $scope.nodes[i+from].data.Title;
-            ids.push($scope.nodes[i+from].data.PageId);
+            ids.push($scope.nodes[i+from].data.NodeId);
         }
 
         inputForm.question(message, "Delete Nodes", function (success, fail) {
@@ -324,7 +324,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
         }
         inputForm.editObject(node.data.Settings, node.data.SettingsModelId, function(settings, success, fail) {
             $scope.sendAction("ChangeSettings", {
-                pageId: node.data.PageId,
+                nodeId: node.data.NodeId,
                 settings: settings
             }, function(data) {
                 node.data.settings = data;

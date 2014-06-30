@@ -40,17 +40,17 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<PageAccess>(_siteId).Where(a => a.PageId == _nodeId).Select(a => a.PageAccessId);
+                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId).Select(a => a.NodeAccessId);
             }
 
             public IQueryable<NodeAccessModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                return domainModel.GetSiteCollection<PageAccess>(_siteId).Where(a => a.PageId == _nodeId && ids.Contains(a.PageAccessId)).Select(a => new NodeAccessModel
+                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId && ids.Contains(a.NodeAccessId)).Select(a => new NodeAccessModel
                 {
                     AccessType = a.AccessType,
                     User = a.User.Email,
                     Group = a.Group.Name,
-                    AccessId = a.PageAccessId
+                    AccessId = a.NodeAccessId
                 });
             }
 
@@ -60,10 +60,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var access = new PageAccess
+                    var access = new NodeAccess
                     {
                         AccessType = record.AccessType,
-                        PageId = _nodeId,
+                        NodeId = _nodeId,
                     };
 
                     var siteId = _siteId ?? _siteMapper.SiteId;
@@ -78,12 +78,12 @@ namespace LessMarkup.UserInterface.Model.Configuration
                         access.GroupId = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.Name == record.Group).UserGroupId;
                     }
 
-                    domainModel.GetSiteCollection<PageAccess>(_siteId).Add(access);
-                    _changeTracker.AddChange(_nodeId, EntityType.Page, EntityChangeType.Updated, domainModel);
+                    domainModel.GetSiteCollection<NodeAccess>(_siteId).Add(access);
+                    _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    record.AccessId = access.PageAccessId;
+                    record.AccessId = access.NodeAccessId;
                 }
 
                 if (!returnObject)
@@ -98,7 +98,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var access = domainModel.GetSiteCollection<PageAccess>(_siteId).Single(a => a.PageAccessId == record.AccessId);
+                    var access = domainModel.GetSiteCollection<NodeAccess>(_siteId).Single(a => a.NodeAccessId == record.AccessId);
                     access.AccessType = record.AccessType;
 
                     var siteId = _siteId ?? _siteMapper.SiteId;
@@ -121,7 +121,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                         access.GroupId = null;
                     }
 
-                    _changeTracker.AddChange(_nodeId, EntityType.Page, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
@@ -135,15 +135,15 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 {
                     var hasChanges = false;
 
-                    foreach (var record in domainModel.GetSiteCollection<PageAccess>(_siteId).Where(a => recordIds.Contains(a.PageAccessId)))
+                    foreach (var record in domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => recordIds.Contains(a.NodeAccessId)))
                     {
-                        domainModel.GetSiteCollection<PageAccess>(_siteId).Remove(record);
+                        domainModel.GetSiteCollection<NodeAccess>(_siteId).Remove(record);
                         hasChanges = true;
                     }
 
                     if (hasChanges)
                     {
-                        _changeTracker.AddChange(_nodeId, EntityType.Page, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                         domainModel.CompleteTransaction();
                     }
@@ -155,9 +155,9 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
         public long AccessId { get; set; }
 
-        [InputField(InputFieldType.Select, UserInterfaceTextIds.AccessType, DefaultValue = PageAccessType.Read)]
+        [InputField(InputFieldType.Select, UserInterfaceTextIds.AccessType, DefaultValue = NodeAccessType.Read)]
         [Column(UserInterfaceTextIds.AccessType)]
-        public PageAccessType AccessType { get; set; }
+        public NodeAccessType AccessType { get; set; }
 
         [InputField(InputFieldType.Typeahead, UserInterfaceTextIds.User)]
         [Column(UserInterfaceTextIds.User)]

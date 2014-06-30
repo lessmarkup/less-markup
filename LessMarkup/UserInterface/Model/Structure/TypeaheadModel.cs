@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -30,19 +29,19 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public void Initialize(string path, string property, string searchText)
         {
-            var pageCache = _dataCache.Get<PageCache>();
+            var nodeCache = _dataCache.Get<NodeCache>();
 
-            CachedPageInformation page;
+            CachedNodeInformation node;
             string rest;
-            pageCache.GetPage(path, out page, out rest);
-            if (page == null)
+            nodeCache.GetNode(path, out node, out rest);
+            if (node == null)
             {
                 throw new UnknownActionException();
             }
 
             var collectionManagers = new List<IPropertyCollectionManager>();
 
-            var handler = (IPageHandler) DependencyResolver.Resolve(page.HandlerType);
+            var handler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
 
             if (handler is IPropertyCollectionManager)
             {

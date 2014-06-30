@@ -120,11 +120,11 @@
     <Compile Include="Security\EntityAccessType.cs" />
     <Compile Include="Security\ICurrentUser.cs" />
     <Compile Include="Security\IHtmlSanitizer.cs" />
-    <Compile Include="Structure\AbstractPageHandler.cs" />
+    <Compile Include="Structure\AbstractNodeHandler.cs" />
     <Compile Include="Structure\ChildHandlerSettings.cs" />
     <Compile Include="Structure\ConfigurationHandlerAttribute.cs" />
-    <Compile Include="Structure\IPageHandler.cs" />
-    <Compile Include="Structure\IRecordPageHandler.cs" />
+    <Compile Include="Structure\INodeHandler.cs" />
+    <Compile Include="Structure\IRecordNodeHandler.cs" />
     <Compile Include="Structure\RecordActionAttribute.cs" />
     <Compile Include="Text\TranslationAttribute.cs" />
     <Compile Include="Data\EntityType.cs" />

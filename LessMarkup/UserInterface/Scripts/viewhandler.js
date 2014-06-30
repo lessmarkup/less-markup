@@ -28,7 +28,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     $scope.title = "";
     $scope.breadcrumbs = [];
     $scope.viewData = null;
-    $scope.staticPages = {};
+    $scope.staticNodes = {};
     $scope.path = "";
     $scope.loginUserEmail = "";
     $scope.loginUserPassword = "";
@@ -78,7 +78,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
             $scope.showConfiguration = false;
             $scope.userLoggedIn = false;
             $scope.userName = "";
-            $scope.staticPages = {};
+            $scope.staticNodes = {};
             $scope.navigateToView($scope.path);
         });
     }
@@ -166,7 +166,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
                 $scope.loginUserPassword = "";
                 $scope.loginUserEmail = "";
                 $scope.loginUserRemember = false;
-                $scope.staticPages = {};
+                $scope.staticNodes = {};
                 $scope.navigateToView($scope.path);
 
             }).error(function (data, status) {
@@ -278,7 +278,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         $scope.alerts = [];
     }
 
-    function onPageLoaded(data, url) {
+    function onNodeLoaded(data, url) {
 
         if (url.substring(0, 1) != '/') {
             url = "/" + url;
@@ -302,7 +302,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         }
 
         if (data.IsStatic) {
-            $scope.staticPages[url] = data;
+            $scope.staticNodes[url] = data;
         }
 
         commandHandler.reset();
@@ -320,8 +320,8 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
 
     $scope.navigateToView = function (url) {
 
-        if ($scope.staticPages.hasOwnProperty(url)) {
-            onPageLoaded($scope.staticPages[url], url);
+        if ($scope.staticNodes.hasOwnProperty(url)) {
+            onNodeLoaded($scope.staticNodes[url], url);
             return;
         }
 
@@ -342,14 +342,14 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
                 $scope.showError(data.Message);
                 return;
             }
-            onPageLoaded(data.Data, url);
+            onNodeLoaded(data.Data, url);
         }).error(function (data, status) {
             $scope.showError(status > 0 ? "Request failed, error " + status.toString() : "Request failed, unknown communication error");
         });
     };
 
-    if (initialData.PageLoadError && initialData.PageLoadError.length > 0) {
-        $scope.showError(initialData.PageLoadError);
+    if (initialData.NodeLoadError && initialData.NodeLoadError.length > 0) {
+        $scope.showError(initialData.NodeLoadError);
     }
 
     $.connection.hub.disconnected(function() {
@@ -357,7 +357,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     });
 
     $.connection.hub.start().done(function() {
-        onPageLoaded(initialData.ViewData, initialData.Path);
+        onNodeLoaded(initialData.ViewData, initialData.Path);
     }).fail(function() {
         $scope.showError("Cannot establish server callback connection");
     });

@@ -54,7 +54,7 @@ namespace LessMarkup.DataAccess
         public DbSet<AddressHistory> AddressHistories { get; set; }
         public DbSet<AddressToCountry> AddressToCountries { get; set; }
         public DbSet<DaySummaryHistory> DaySummaryHistories { get; set; }
-        public DbSet<Page> Pages { get; set; }
-        public DbSet<PageAccess> PageAccesses { get; set; }
+        public DbSet<Node> Nodes { get; set; }
+        public DbSet<NodeAccess> NodeAccesses { get; set; }
     }
 }

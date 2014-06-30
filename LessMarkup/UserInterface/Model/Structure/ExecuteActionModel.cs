@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.DataFramework;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Structure;
@@ -28,18 +27,18 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             var path = data["-path-"];
 
-            var pageCache = _dataCache.Get<PageCache>();
+            var nodeCache = _dataCache.Get<NodeCache>();
 
-            CachedPageInformation page;
+            CachedNodeInformation node;
             string rest;
-            pageCache.GetPage(path, out page, out rest);
-            if (page == null)
+            nodeCache.GetNode(path, out node, out rest);
+            if (node == null)
             {
                 throw new UnknownActionException();
             }
 
-            var handler = (IPageHandler) DependencyResolver.Resolve(page.HandlerType);
-            string settings = page.Settings;
+            var handler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
+            string settings = node.Settings;
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
@@ -57,9 +56,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var actionName = data["-action-"];
 
-            var method =
-                handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                    .SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            var method = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             if (method == null)
             {

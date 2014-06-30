@@ -4,12 +4,8 @@
 
 namespace LessMarkup.Interfaces.Structure
 {
-    public class ChildHandlerSettings
+    public interface IRecordNodeHandler : INodeHandler
     {
-        public INodeHandler Handler { get; set; }
-        public long? Id { get; set; }
-        public string Title { get; set; }
-        public string Path { get; set; }
-        public string Rest { get; set; }
+        void Initialize(long recordId);
     }
 }

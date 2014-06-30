@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
-using LessMarkup.UserInterface.PageHandlers.Configuration;
+using LessMarkup.UserInterface.NodeHandlers.Configuration;
 
 namespace LessMarkup.UserInterface.Model.Configuration
 {
@@ -30,7 +30,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
         public object Settings { get; set; }
 
         public string SettingsModelId { get; set; }
-        public long PageId { get; set; }
+        public long NodeId { get; set; }
 
         public int Level { get; set; }
 
@@ -53,12 +53,12 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 case "HandlerId":
                 {
                     return
-                        _moduleIntegration.GetPageHandlers()
-                            .Select(id => new {Id = id, Handler = _moduleIntegration.GetPageHandler(id)})
+                        _moduleIntegration.GetNodeHandlers()
+                            .Select(id => new {Id = id, Handler = _moduleIntegration.GetNodeHandler(id)})
                             .Select(h => new EnumSource
                             {
                                 Value = h.Id,
-                                Text = NodeListPageHandler.GetHandlerName(h.Handler.Item1, h.Handler.Item2)
+                                Text = NodeListNodeHandler.GetHandlerName(h.Handler.Item1, h.Handler.Item2)
                             }).ToList();
                 }
                 default:

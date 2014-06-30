@@ -36,7 +36,7 @@ namespace LessMarkup.Articles.Module
         public override void InitializeDatabase()
         {
             base.InitializeDatabase();
-            _moduleIntegration.RegisterPageHandler<CommonArticlePageHandler>(ModuleType.Articles, "articles");
+            _moduleIntegration.RegisterNodeHandler<CommonArticleNodeHandler>(ModuleType.Articles, "articles");
         }
     }
 }

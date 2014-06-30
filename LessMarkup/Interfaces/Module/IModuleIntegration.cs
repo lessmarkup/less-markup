@@ -33,8 +33,8 @@ namespace LessMarkup.Interfaces.Module
         bool DoBackgroundJobs(UrlHelper urlHelper);
         void RegisterSearchResultValidator(EntityType entityType, ISearchResultValidator validator);
         bool IsSearchResultValid(SearchResult searchResult);
-        void RegisterPageHandler<T>(ModuleType moduleType, string id) where T : IPageHandler;
-        Tuple<Type, ModuleType> GetPageHandler(string id);
-        IEnumerable<string> GetPageHandlers();
+        void RegisterNodeHandler<T>(ModuleType moduleType, string id) where T : INodeHandler;
+        Tuple<Type, ModuleType> GetNodeHandler(string id);
+        IEnumerable<string> GetNodeHandlers();
     }
 }

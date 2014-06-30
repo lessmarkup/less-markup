@@ -6,7 +6,7 @@
     Layout = null;
 }
 @using System.Web.Mvc.Html
-<div ng-controller="DialogPageController">
+<div ng-controller="DialogNodeController">
     @Html.Partial("~/Views/Structure/InputFormTemplateBody.cshtml")
     <div class="dialog-buttons">
         <button class="btn btn-primary" ng-click="submit()" ng-disabled="!hasChanges || isApplying">
