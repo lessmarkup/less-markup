@@ -22,7 +22,7 @@ Main Features
 =============
 
 * Testability near to 100% as we use less markup than usual solutions, both on the client and server sides.
-* Modularity. Usual ASP.NET MVC application loads views only from main solution. We have fixed this problem - you can pack your views inside your assemblies.
+* Modularity. Usual ASP.NET MVC application loads views only from main solution. We have fixed this problem - you can pack your views inside your assemblies. We use Inversion of control over all our code to achieve higher modularity, and it also improves testability of the code.
 * Automatic mapping of data structure to database with automatic merging of changes. You can define your own data model and it will be accurately integrated into existing engine model. Each module can have its own independent data model.
 * Scalability. The engine can work on multiple hosts as it supports distributed caching.
 * Callbacks. Changed data will be automatically pushed to the client page without any action from the client.
@@ -34,3 +34,7 @@ Main Features
 * Multi-site support. The engine automatically maps users to separate site based on host name.
 * Automatic input form generation based on model defined in the code.
 * Record lists (grids) based on ngGrid with automatic column definitions based on model in the code. No markup is required to create functional grids.
+
+Please read project wiki for additional information: https://github.com/mvcdesign/less-markup/wiki
+
+LessMarkup web site: http://www.lessmarkup.com
