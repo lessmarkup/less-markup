@@ -617,7 +617,7 @@ namespace LessMarkup.Framework.Security
 
                 if (!CheckPassword(user.UserId, user.Password, user.Salt, false, false, null, password, null, HttpContext.Current.Request.UserHostAddress))
                 {
-                    throw new Exception(LanguageHelper.GetText(ModuleType.Core, CoreTextIds.WrongUserPassword));
+                    throw new Exception(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.WrongUserPassword));
                 }
 
                 user.IsRemoved = true;

@@ -11,7 +11,7 @@ namespace LessMarkup.UserInterface.Exceptions
 {
     public class UnknownActionException : Exception
     {
-        public UnknownActionException() : base(LanguageHelper.GetText(ModuleType.Core, CoreTextIds.UnknownCommand))
+        public UnknownActionException() : base(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.UnknownCommand))
         {
         }
     }

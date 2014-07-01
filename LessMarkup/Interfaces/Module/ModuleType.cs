@@ -7,7 +7,7 @@ namespace LessMarkup.Interfaces.Module
     public enum ModuleType
     {
         None = 0,
-        Core = 1,
+        MainModule = 1,
         Articles = 2,
         Catalog = 3,
         Discuss = 4,

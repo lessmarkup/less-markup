@@ -91,6 +91,12 @@ namespace LessMarkup.Framework.Email
             SendMail("", emailFrom, parameters.UserName, userEmailTo, subject, body, templateId, smtpServer, smtpUser, smtpPassword, smtpSsl);
         }
 
+        public void SendMail<T>(string emailFrom, string emailTo, string templateId, T parameters) where T : MailTemplateModel
+        {
+            SendMail(_engineConfiguration.SmtpServer, _engineConfiguration.SmtpUsername,
+                _engineConfiguration.SmtpPassword, _engineConfiguration.SmtpSsl, emailFrom, emailTo, templateId, parameters);
+        }
+
         public void SendMail<T>(long? userIdFrom, long? userIdTo, string userEmailTo, string templateId, T parameters) where T : MailTemplateModel
         {
             try

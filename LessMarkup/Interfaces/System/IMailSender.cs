@@ -7,6 +7,7 @@ namespace LessMarkup.Interfaces.System
     public interface IMailSender
     {
         void SendMail<T>(string smtpServer, string smtpUser, string smtpPassword, bool smtpSsl, string emailFrom, string emailTo, string templateId, T parameters) where T : MailTemplateModel;
+        void SendMail<T>(string emailFrom, string emailTo, string templateId, T parameters) where T : MailTemplateModel;
         void SendMail<T>(long? userIdFrom, long? userIdTo, string userEmailTo, string templateId, T parameters) where T : MailTemplateModel;
         void SendPlainEmail(string emailTo, string subject, string message);
     }

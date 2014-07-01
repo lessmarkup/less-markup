@@ -89,6 +89,11 @@ namespace LessMarkup.Framework.FileSystem
             return reference;
         }
 
+        internal ResourceReference GetResourceReference(string path)
+        {
+            return LoadResource(ExtractPath(path).ToLower());
+        }
+
         public Stream ReadResource(string path)
         {
             var reference = LoadResource(ExtractPath(path));
@@ -190,21 +195,6 @@ namespace LessMarkup.Framework.FileSystem
             }
 
             return ret;
-        }
-
-        public Stream ReadScript(string path)
-        {
-            return ReadResource("Scripts/" + ExtractPath(path));
-        }
-
-        public Stream ReadImage(string path)
-        {
-            return ReadResource("Images/" + ExtractPath(path));
-        }
-
-        public Stream ReadCss(string path)
-        {
-            return ReadResource("Css/" + ExtractPath(path));
         }
 
         public Type LoadType(string path)

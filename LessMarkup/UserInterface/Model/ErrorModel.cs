@@ -19,7 +19,7 @@ namespace LessMarkup.UserInterface.Model
         {
             try
             {
-                Error = LanguageHelper.GetText(ModuleType.Core, CoreTextIds.UnknownErrorOccurred);
+                Error = LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.UnknownErrorOccurred);
             }
             catch (Exception)
             {

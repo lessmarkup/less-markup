@@ -64,5 +64,7 @@ namespace LessMarkup.UserInterface
         Groups,
         Modules,
         Customize,
+        FlatPageSettings,
+        LoadOnShow,
     }
 }

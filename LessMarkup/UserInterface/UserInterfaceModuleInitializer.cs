@@ -4,11 +4,10 @@
 
 using System;
 using System.Reflection;
-using LessMarkup.DataFramework;
-using LessMarkup.Framework.Module;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.UserInterface.ChangeTracking;
+using LessMarkup.UserInterface.NodeHandlers.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -18,8 +17,12 @@ namespace LessMarkup.UserInterface
     {
         public RecordChangeTracker RecordChangeTracker { get; private set; }
 
-        public UserInterfaceModuleInitializer()
+        private readonly IModuleIntegration _moduleIntegration;
+
+        public UserInterfaceModuleInitializer(IModuleIntegration moduleIntegration)
         {
+            _moduleIntegration = moduleIntegration;
+
             JsonConvert.DefaultSettings = () =>
             {
                 var settings = new JsonSerializerSettings();
@@ -48,6 +51,7 @@ namespace LessMarkup.UserInterface
         {
             base.InitializeDatabase();
             RecordChangeTracker.Initialize();
+            _moduleIntegration.RegisterNodeHandler<FlatPageNodeHandler>(ModuleType.UserInterface, "flatpage");
         }
     }
 }

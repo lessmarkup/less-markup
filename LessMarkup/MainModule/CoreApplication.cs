@@ -81,7 +81,7 @@ namespace LessMarkup.MainModule
 
             var moduleProvider = ModuleProvider.RegisterProvider(builder);
 
-            foreach (var type in new[] {typeof (CoreModuleInitializer), typeof(UserInterfaceModuleInitializer)})
+            foreach (var type in new[] {typeof (MainModuleInitializer), typeof(UserInterfaceModuleInitializer)})
             {
                 moduleProvider.RegisterModule(type.Assembly, true, type);
             }

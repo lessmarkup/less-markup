@@ -57,7 +57,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         switch (module.ModuleType)
                         {
-                            case ModuleType.Core:
+                            case ModuleType.MainModule:
                             case ModuleType.UserInterface:
                                 break;
                             default:
@@ -104,7 +104,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             get { return true; }
         }
 
-        public override object GetViewData(long objectId, Dictionary<string, string> settings)
+        public override object GetViewData(long objectId, object settings, object controller)
         {
             var path = _dataCache.Get<NodeCache>().GetNode(objectId).FullPath;
 

@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Collections.Generic;
+using LessMarkup.Framework.Helpers;
+using LessMarkup.Framework.Language;
 using LessMarkup.Interfaces;
+using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.RecordModel;
 
@@ -11,10 +13,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
     public abstract class DialogNodeHandler<T> : AbstractNodeHandler
     {
-        protected abstract T LoadObject();
-        protected abstract void SaveObject(T changedObject);
+        protected abstract T LoadObject(object settings);
+        protected abstract string SaveObject(T changedObject);
 
-        public override object GetViewData(long objectId, Dictionary<string, string> settings)
+        protected virtual string ApplyCaption { get { return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
+
+        public override object GetViewData(long objectId, object settings, object controller)
         {
             var definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
             definitionModel.Initialize(typeof (T));
@@ -22,13 +26,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new
             {
                 Definition = definitionModel,
-                Object = LoadObject()
+                Object = LoadObject(settings),
+                ApplyCaption
             };
         }
 
-        public void Save(T changedObject)
+        public string Save(T changedObject)
         {
-            SaveObject(changedObject);
+            return SaveObject(changedObject) ?? LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.SuccessfullySaved);
         }
 
         public override string ViewType

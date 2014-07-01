@@ -8,14 +8,17 @@ function DialogNodeController($http, $scope, $timeout) {
     $scope.object = $scope.viewData.Object;
     $scope.submitError = "";
     $scope.submitSuccess = "";
+    $scope.applyCaption = $scope.viewData.ApplyCaption;
+    $scope.changesApplied = false;
 
     var ret = InputFormController($scope, null, $scope.definition, $scope.object, function (changedObject, success, fail) {
         $scope.$apply();
         $scope.sendAction("Save", {
             "changedObject": changedObject
-        }, function() {
+        }, function(data) {
             $scope.hasChanges = false;
-            $scope.submitSuccess = "Successfully saved";
+            $scope.changesApplied = true;
+            $scope.submitSuccess = data;
             success();
         }, function (message) {
             fail(message);

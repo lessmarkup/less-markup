@@ -190,15 +190,15 @@
     <Translation Id="Down" Text="Down"/>
     <Translation Id="Left" Text="Left"/>
     <Translation Id="Right" Text="Right"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="EditArticle" Text="Edit Article"/>
+    <Translation Id="EditContactForm" Text="Contact Form Properties"/>
+    <Translation Id="ContactEmail" Text="Contact Email"/>
+    <Translation Id="ContactSubject" Text="Contact Email Subject"/>
+    <Translation Id="YourEmail" Text="Your E-mail Address"/>
+    <Translation Id="YourMessage" Text="Your Message"/>
+    <Translation Id="SuccessfullySaved" Text="Successfully saved"/>
+    <Translation Id="ApplyButton" Text="Apply"/>
+    <Translation Id="ContactFormSent" Text="Successfully sent contact form data"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

@@ -12,16 +12,17 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.EmailConfiguration, IsGlobal = true)]
     public class EmailNodeHandler : DialogNodeHandler<EmailConfigurationModel>
     {
-        protected override EmailConfigurationModel LoadObject()
+        protected override EmailConfigurationModel LoadObject(object settings)
         {
             var model = DependencyResolver.Resolve<EmailConfigurationModel>();
             model.Initialize();
             return model;
         }
 
-        protected override void SaveObject(EmailConfigurationModel changedObject)
+        protected override string SaveObject(EmailConfigurationModel changedObject)
         {
             changedObject.Save();
+            return null;
         }
     }
 }

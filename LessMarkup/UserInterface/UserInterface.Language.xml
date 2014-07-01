@@ -59,8 +59,8 @@
     <Translation Id="Groups" Text="Groups"/>
     <Translation Id="Modules" Text="Modules"/>
     <Translation Id="Customize" Text="Customize"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="FlatPageSettings" Text="Flat Page Settings"/>
+    <Translation Id="LoadOnShow" Text="Load Nodes On Show"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

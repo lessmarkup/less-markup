@@ -139,8 +139,8 @@ button [us-spinner] {
 
 @font-face {
   font-family: 'fa';
-  src: url('/Content/UserInterface/fontawesome-webfont.eot');
-  src: url('/Content/UserInterface/fontawesome-webfont.eot') format('embedded-opentype'), url('/Content/UserInterface/fontawesome-webfont.woff') format('woff'), url('/Content/UserInterface/fontawesome-webfont.ttf') format('truetype'), url('/Content/UserInterface/fontawesome-webfont.svg') format('svg');
+  src: url('/Content/fontawesome-webfont.eot');
+  src: url('/Content/fontawesome-webfont.eot') format('embedded-opentype'), url('/Content/fontawesome-webfont.woff') format('woff'), url('/Content/fontawesome-webfont.ttf') format('truetype'), url('/Content/fontawesome-webfont.svg') format('svg');
   font-weight: normal;
   font-style: normal;
 }

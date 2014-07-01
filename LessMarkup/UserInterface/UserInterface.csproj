@@ -133,6 +133,7 @@
     <Compile Include="ChangeTracking\TrackerSite.cs" />
     <Compile Include="Exceptions\UnknownActionException.cs" />
     <Compile Include="Hubs\RecordListHub.cs" />
+    <Compile Include="Model\Common\FlatPageSettingsModel.cs" />
     <Compile Include="Model\Configuration\NodeAccessModel.cs" />
     <Compile Include="Model\Configuration\NodeSettingsModel.cs" />
     <Compile Include="Model\Global\CustomizationModel.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Model\Structure\TypeaheadModel.cs" />
     <Compile Include="Model\Structure\CachedNodeAccess.cs" />
     <Compile Include="Model\Structure\CachedNodeInformation.cs" />
+    <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
     <Compile Include="NodeHandlers\Configuration\ConfigurationRootNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\DialogNodeHandler.cs" />
@@ -168,7 +170,7 @@
     <Compile Include="Model\Global\EmailConfigurationModel.cs" />
     <Compile Include="NodeHandlers\Configuration\NodeAccessNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\EmailNodeHandler.cs" />
-    <Compile Include="NodeHandlers\EmptyRootNodeHandler.cs" />
+    <Compile Include="NodeHandlers\DefaultRootNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\EngineNodeHandler.cs" />
     <Compile Include="Model\Structure\NodeCache.cs" />
     <Compile Include="NodeHandlers\Common\RecordListNodeHandler.cs" />
@@ -194,14 +196,16 @@
     <EmbeddedResource Include="Content\fontawesome-webfont.ttf" />
     <EmbeddedResource Include="Content\fontawesome-webfont.woff" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="Views\Structure\InputFormTemplate.cshtml" />
+    <EmbeddedResource Include="Views\Structure\FlatPage.html" />
+    <EmbeddedResource Include="Scripts\flatpage.js" />
+    <EmbeddedResource Include="Views\Structure\InputFormTemplate.html" />
     <EmbeddedResource Include="Views\Structure\EntryPoint.cshtml" />
-    <EmbeddedResource Include="Views\Structure\ConfigurationRoot.cshtml" />
-    <EmbeddedResource Include="Views\Structure\EmptyRoot.cshtml" />
-    <EmbeddedResource Include="Views\Structure\Body.cshtml" />
-    <EmbeddedResource Include="Views\Structure\Dialog.cshtml" />
-    <EmbeddedResource Include="Views\Structure\InputFormTemplateBody.cshtml" />
-    <EmbeddedResource Include="Views\Structure\RecordList.cshtml" />
+    <EmbeddedResource Include="Views\Structure\ConfigurationRoot.html" />
+    <EmbeddedResource Include="Views\Structure\DefaultRoot.html" />
+    <EmbeddedResource Include="Views\Structure\Body.html" />
+    <EmbeddedResource Include="Views\Structure\Dialog.html" />
+    <EmbeddedResource Include="Views\Structure\InputFormTemplateBody.html" />
+    <EmbeddedResource Include="Views\Structure\RecordList.html" />
     <EmbeddedResource Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -484,7 +488,7 @@
     <EmbeddedResource Include="Scripts\ui-codemirror.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\Structure\NodeList.cshtml" />
+    <EmbeddedResource Include="Views\Structure\NodeList.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\nodelist.js" />

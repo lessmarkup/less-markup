@@ -31,16 +31,6 @@ namespace LessMarkup.UserInterface.Model.Structure
             _moduleIntegration = moduleIntegration;
         }
 
-        public static string GetViewPath(string viewName)
-        {
-            if (viewName.EndsWith("NodeHandler"))
-            {
-                viewName = viewName.Substring(0, viewName.Length - "NodeHandler".Length);
-            }
-
-            return "~/Views/Structure/" + viewName + ".cshtml";
-        }
-
         private void InitializeTree(CachedNodeInformation node)
         {
             if (!string.IsNullOrWhiteSpace(node.HandlerId))
@@ -204,8 +194,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 cachedNodes.Add(new CachedNodeInformation
                 {
                     AccessList = new List<CachedNodeAccess> {new CachedNodeAccess {AccessType = NodeAccessType.Read}},
-                    HandlerModuleType = ModuleType.Core,
-                    HandlerType = typeof (EmptyRootNodeHandler),
+                    HandlerModuleType = ModuleType.MainModule,
+                    HandlerType = typeof (DefaultRootNodeHandler),
                     Title = "Home",
                     NodeId = 1,
                     HandlerId = "home",
@@ -231,10 +221,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 },
                 FullPath = "configuration",
                 Path = "configuration",
-                HandlerModuleType = ModuleType.Core,
+                HandlerModuleType = ModuleType.MainModule,
                 ParentNodeId = _rootNode.NodeId,
                 Parent = _rootNode,
-                Title = LanguageHelper.GetText(ModuleType.Core, CoreTextIds.Configuration),
+                Title = LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.Configuration),
                 HandlerType = typeof (ConfigurationRootNodeHandler),
                 NodeId = nodeId,
                 HandlerId = "configuration",

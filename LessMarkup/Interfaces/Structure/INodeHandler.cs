@@ -3,13 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
 
 namespace LessMarkup.Interfaces.Structure
 {
     public interface INodeHandler
     {
-        object GetViewData(long objectId, Dictionary<string, string> settings);
+        object GetViewData(long objectId, object settings, object controller);
         bool HasChildren { get; }
         bool IsStatic { get; }
         ChildHandlerSettings GetChildHandler(string path);

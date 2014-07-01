@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Web.Mvc;
+using LessMarkup.Framework.HtmlTemplate;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Structure;
@@ -35,7 +36,17 @@ namespace LessMarkup.UserInterface.Model.Structure
             _dataCache = dataCache;
         }
 
-        private static string GetViewContents(string viewName, object model, System.Web.Mvc.Controller controller)
+        public static string GetViewPath(string viewName)
+        {
+            if (viewName.EndsWith("NodeHandler"))
+            {
+                viewName = viewName.Substring(0, viewName.Length - "NodeHandler".Length);
+            }
+
+            return "~/Views/Structure/" + viewName;
+        }
+
+        public static string GetViewContents(string viewName, object model, System.Web.Mvc.Controller controller)
         {
             using (var stringWriter = new StringWriter(CultureInfo.CurrentCulture))
             {
@@ -45,6 +56,18 @@ namespace LessMarkup.UserInterface.Model.Structure
                 view.View.Render(viewContext, stringWriter);
                 return stringWriter.ToString();
             }
+        }
+
+        public static string GetViewTemplate(INodeHandler handler, IDataCache dataCache, System.Web.Mvc.Controller controller)
+        {
+            var viewPath = GetViewPath(handler.ViewType);
+            var templateCache = dataCache.Get<HtmlTemplateCache>();
+            var template = templateCache.GetTemplate(viewPath + ".html");
+            if (template == null)
+            {
+                template = GetViewContents(viewPath + ".cshtml", handler, controller);
+            }
+            return template;
         }
 
         public void Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller)
@@ -120,17 +143,16 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (cachedTemplates == null || !cachedTemplates.Contains(TemplateId))
             {
-                var viewPath = NodeCache.GetViewPath(handler.ViewType);
-                Template = GetViewContents(viewPath, handler, controller);
+                Template = GetViewTemplate(handler, _dataCache, controller);
             }
 
-            Dictionary<string, string> settingsObject = null;
-            if (!string.IsNullOrWhiteSpace(settings))
+            object settingsObject = null;
+            if (!string.IsNullOrWhiteSpace(settings) && handler.SettingsModel != null)
             {
-                settingsObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(settings);
+                settingsObject = JsonConvert.DeserializeObject(settings, handler.SettingsModel);
             }
 
-            ViewData = handler.GetViewData(objectId, settingsObject);
+            ViewData = handler.GetViewData(objectId, settingsObject, controller);
             IsStatic = handler.IsStatic;
         }
     }

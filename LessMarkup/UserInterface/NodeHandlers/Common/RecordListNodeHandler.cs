@@ -59,7 +59,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             if (_recordModel == null)
             {
-                throw new ArgumentException(LanguageHelper.GetText(ModuleType.Core, CoreTextIds.MissingParameter, typeof(T).FullName));
+                throw new ArgumentException(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
             }
 
             _idProperty = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(p => p.Name.EndsWith("Id"));
@@ -89,7 +89,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             if (_collection == null)
             {
-                throw new ArgumentException(LanguageHelper.GetText(ModuleType.Core, CoreTextIds.MissingParameter, typeof(T).FullName));
+                throw new ArgumentException(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
             }
         }
 
@@ -139,7 +139,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _cellLinks.Add(new CellLink { Text = text, Link = link });
         }
 
-        public override object GetViewData(long objectId, Dictionary<string, string> settings)
+        public override object GetViewData(long objectId, object settings, object controller)
         {
             var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;

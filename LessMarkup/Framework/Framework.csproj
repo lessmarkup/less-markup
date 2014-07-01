@@ -226,6 +226,12 @@
     <Compile Include="Build\ControllerFactory.cs" />
     <Compile Include="Build\Data\DataBuilder.cs" />
     <Compile Include="Build\Mail\TemplateInstance.cs" />
+    <Compile Include="Helpers\LoadHelper.cs" />
+    <Compile Include="HtmlTemplate\CacheItem.cs" />
+    <Compile Include="HtmlTemplate\Directive.cs" />
+    <Compile Include="HtmlTemplate\DirectiveType.cs" />
+    <Compile Include="HtmlTemplate\TemplateHelper.cs" />
+    <Compile Include="HtmlTemplate\HtmlTemplateCache.cs" />
     <Compile Include="Module\ModuleProvider.cs" />
     <Compile Include="Build\PageHost.cs" />
     <Compile Include="Build\View\ViewPage.cs" />
@@ -237,7 +243,7 @@
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Helpers\TextSearchHelper.cs" />
-    <Compile Include="Language\CoreTextIds.cs" />
+    <Compile Include="Language\MainModuleTextIds.cs" />
     <Compile Include="Language\XmlLanguageFile.cs" />
     <Compile Include="Language\XmlTranslation.cs" />
     <Compile Include="FileSystem\ResourceCache.cs" />

@@ -12,7 +12,7 @@ namespace LessMarkup.Interfaces.Structure
         private readonly List<string> _scripts = new List<string>(); 
         private readonly List<string> _stylesheets = new List<string>();
 
-        public abstract object GetViewData(long objectId, Dictionary<string, string> settings);
+        public abstract object GetViewData(long objectId, object settings, object controller);
         public virtual bool HasChildren { get { return false; } }
         public virtual ChildHandlerSettings GetChildHandler(string path)
         {

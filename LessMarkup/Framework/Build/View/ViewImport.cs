@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using LessMarkup.Interfaces.Module;
 
@@ -40,68 +41,40 @@ namespace LessMarkup.Framework.Build.View
 
         private void ImportContent(string resourceName, string name, ModuleConfiguration module)
         {
-            var parts = name.Split(new[] { '.' });
+            var parts = name.Split(new[] {'.'});
 
             if (parts.Length < 2)
             {
                 return;
             }
 
-            /*var extension = parts[parts.Length - 1];
-
-            bool isBinaryFile = false;
+            var extension = parts.Last();
 
             switch (extension)
             {
-                case "png":
-                case "gif":
-                case "ico":
-                case "otf":
-                case "eot":
-                case "swg":
-                case "ttf":
-                case "woff":
-                    isBinaryFile = true;
-                    break;
-                case "js":
-                case "css":
-                    break;
-                default:
+                case "xml":
+                case "properties":
                     return;
-            }*/
+            }
 
             var template = new ContentTemplate();
+            
+            var folder = parts[0];
 
-            if (name.EndsWith("favicon.ico"))
-            {
-                template.Name = "favicon.ico";
-            }
-            else
-            {
-                var folder = parts[0];
+            template.Name = folder;
 
-                if (!string.IsNullOrWhiteSpace(module.Name))
+            for (int i = 1; i < parts.Length; i++)
+            {
+                if (i < parts.Length - 1 && char.IsUpper(parts[i - 1][0]))
                 {
-                    template.Name = folder + "/" + module.Name;
+                    template.Name += "/";
                 }
                 else
                 {
-                    template.Name = folder;
+                    template.Name += ".";
                 }
 
-                for (int i = 1; i < parts.Length; i++)
-                {
-                    if (i < parts.Length - 1 && char.IsUpper(parts[i - 1][0]))
-                    {
-                        template.Name += "/";
-                    }
-                    else
-                    {
-                        template.Name += ".";
-                    }
-
-                    template.Name += parts[i];
-                }
+                template.Name += parts[i];
             }
 
             using (var stream = module.Assembly.GetManifestResourceStream(resourceName))
@@ -113,7 +86,7 @@ namespace LessMarkup.Framework.Build.View
 
                 using (var reader = new BinaryReader(stream))
                 {
-                    template.Binary = reader.ReadBytes((int)stream.Length);
+                    template.Binary = reader.ReadBytes((int) stream.Length);
                 }
             }
 
@@ -128,7 +101,7 @@ namespace LessMarkup.Framework.Build.View
             {
                 var pos = resourceName.IndexOf(".Views.", StringComparison.Ordinal);
                 
-                if (pos <= 0)
+                if (pos < 0 || resourceName.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
                 {
                     if (importContent && resourceName.StartsWith(moduleNamespace))
                     {

@@ -4,7 +4,7 @@
 
 namespace LessMarkup.Framework.Language
 {
-    public enum CoreTextIds
+    public enum MainModuleTextIds
     {
         SafeMode,
         DisableSafeMode,
@@ -194,6 +194,15 @@ namespace LessMarkup.Framework.Language
         Up,
         Down,
         Left,
-        Right
+        Right,
+        EditArticle,
+        EditContactForm,
+        ContactEmail,
+        ContactSubject,
+        YourEmail,
+        YourMessage,
+        SuccessfullySaved,
+        ApplyButton,
+        ContactFormSent,
     }
 }

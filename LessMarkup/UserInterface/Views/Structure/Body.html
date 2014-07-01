@@ -1,12 +1,6 @@
-﻿@{
-    /* This Source Code Form is subject to the terms of the Mozilla Public
-     * License, v. 2.0. If a copy of the MPL was not distributed with this
-     * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-    Layout = null;
-}<div class="body1">
+﻿<div class="body1">
     <div class="body2">
-        <header class="navbar navbar-default navbar-fixed-top">
+        <header class="navbar navbar-default navbar-fixed-top" id="header">
             <div class="navbar-inner">
                 <div class="container" ng-cloak>
                     <div class="navbar-header">
@@ -106,7 +100,7 @@
                 <button ng-repeat="button in toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.Id)" ng-click="onToolbarButtonClick(button.Id)" ng-bind="button.Text"></button>
             </div>
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert(alert.id)"><div ng-bind="alert.message"></div></alert>
-            <div bind-compiled-html="bindBody"></div>
+            <div bind-compiled-html="{ name: 'bindBody', scope: getViewScope }"></div>
         </div>
     </div>
 </div>

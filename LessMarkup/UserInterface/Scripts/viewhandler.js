@@ -6,15 +6,19 @@ getApplication().directive("bindCompiledHtml", function ($compile) {
     return {
         template: '<div></div>',
         scope: {
-            bindFunction: '@bindCompiledHtml',
+            parameter: '=bindCompiledHtml',
         },
         link: function (scope, element) {
-            scope.$parent[scope.bindFunction] = function(value) {
+            var applyFunction = function(value) {
                 element.contents().remove();
                 if (value) {
-                    element.append($compile(value)(scope.$parent));
+                    element.append($compile(value)(scope.parameter.scope()));
                 }
             };
+            scope.parameter.scope()[scope.parameter.name] = applyFunction;
+            if (scope.parameter.html && scope.parameter.html != null && scope.parameter.html.length > 0) {
+                applyFunction(scope.parameter.html);
+            }
         }
     };
 });
@@ -47,6 +51,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     $scope.navigationBar = initialData.NavigationBar;
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
+    $scope.getViewScope = function () { return $scope; }
 
     var browserUrl = $browser.url();
     // dirty hack to prevent AngularJS from reloading the page on pushState and fix $location.$$parse bug
