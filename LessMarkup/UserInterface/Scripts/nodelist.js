@@ -327,7 +327,7 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
                 nodeId: node.data.NodeId,
                 settings: settings
             }, function(data) {
-                node.data.settings = data;
+                node.data.Settings = data;
                 success();
             }, function(message) {
                 fail(message);

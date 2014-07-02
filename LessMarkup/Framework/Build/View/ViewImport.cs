@@ -53,7 +53,7 @@ namespace LessMarkup.Framework.Build.View
             switch (extension)
             {
                 case "xml":
-                case "properties":
+                case "resources":
                     return;
             }
 
@@ -87,6 +87,14 @@ namespace LessMarkup.Framework.Build.View
                 using (var reader = new BinaryReader(stream))
                 {
                     template.Binary = reader.ReadBytes((int) stream.Length);
+                }
+
+                if (extension == "html" && template.Binary.Length > 3 && template.Binary[0] == 239 && template.Binary[1] == 187 && template.Binary[2] == 191)
+                {
+                    // it is a byte order mask
+                    var binary = template.Binary;
+                    template.Binary = new byte[binary.Length-3];
+                    Array.Copy(binary, 3, template.Binary, 0, template.Binary.Length);
                 }
             }
 

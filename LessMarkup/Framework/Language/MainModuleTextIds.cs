@@ -204,5 +204,14 @@ namespace LessMarkup.Framework.Language
         SuccessfullySaved,
         ApplyButton,
         ContactFormSent,
+        Message,
+        SendMessage,
+        ViewTestMessage,
+        FromEmail,
+        ToEmail,
+        Subject,
+        DateSent,
+        Template,
+        ViewTestMessages,
     }
 }

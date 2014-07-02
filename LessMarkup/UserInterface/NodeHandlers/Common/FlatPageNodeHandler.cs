@@ -22,6 +22,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public string Settings { get; set; }
             public string Anchor { get; set; }
             public string UniqueId { get; set; }
+            public int Level { get; set; }
+            public string Path { get; set; }
         }
 
         class TreeNodeEntry
@@ -37,10 +39,20 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _dataCache = dataCache;
         }
 
-        private void FillFlatList(CachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 0)
+        private void FillFlatList(CachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
         {
+            if (parent.Children == null)
+            {
+                return;
+            }
+
             foreach (var child in parent.Children)
             {
+                if (child.HandlerType == typeof (FlatPageNodeHandler))
+                {
+                    continue;
+                }
+
                 var childAnchor = string.IsNullOrEmpty(anchor) ? "" : anchor + "_";
 
                 var entry = new FlatNodeEntry
@@ -49,7 +61,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     HandlerType = child.HandlerType,
                     NodeId = child.NodeId,
                     Settings = child.Settings,
-                    Anchor = childAnchor + child.Path
+                    Anchor = childAnchor + child.Path,
+                    Level = level,
+                    Path = child.FullPath
                 };
 
                 var treeNode = new TreeNodeEntry
@@ -63,9 +77,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
                 nodes.Add(entry);
 
-                if (level < 2)
+                if (level < maxLevel)
                 {
-                    FillFlatList(child, nodes, treeNode, entry.Anchor, level + 1);
+                    FillFlatList(child, nodes, treeNode, entry.Anchor, level + 1, maxLevel);
                 }
             }
         }
@@ -81,9 +95,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             var flatNodeList = new List<FlatNodeEntry>();
             var treeRoot = new TreeNodeEntry {Children = new List<TreeNodeEntry>()};
 
-            FillFlatList(currentNode, flatNodeList, treeRoot);
+            var maxLevel = 2;
 
-            if (settingsModel.LoadOnShow)
+            FillFlatList(currentNode, flatNodeList, treeRoot, "", 1, maxLevel);
+
+            if (settingsModel == null || settingsModel.LoadOnShow)
             {
                 foreach (var node in flatNodeList)
                 {
@@ -110,7 +126,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new
             {
                 Tree = treeRoot.Children,
-                Flat = flatNodeList
+                Flat = flatNodeList,
+                Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right
             };
         }
 

@@ -151,6 +151,8 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     return hasChanges;
                 }
             }
+
+            public bool DeleteOnly { get { return false; } }
         }
 
         public long AccessId { get; set; }

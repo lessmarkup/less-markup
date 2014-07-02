@@ -66,5 +66,8 @@ namespace LessMarkup.UserInterface
         Customize,
         FlatPageSettings,
         LoadOnShow,
+        SiteConfiguration,
+        GlobalConfiguration,
+        Position
     }
 }

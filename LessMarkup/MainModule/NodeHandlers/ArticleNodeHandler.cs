@@ -10,11 +10,16 @@ namespace LessMarkup.MainModule.NodeHandlers
 {
     public class ArticleNodeHandler : AbstractNodeHandler
     {
+        public ArticleNodeHandler()
+        {
+            AddScript("/Scripts/article.js");
+        }
+
         public override object GetViewData(long objectId, object settings, object controller)
         {
             return new
             {
-                ((ArticleModel)settings).Body
+                Body = settings != null ? ((ArticleModel)settings).Body : ""
             };
         }
 

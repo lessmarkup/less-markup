@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Framework.FileSystem;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.UserInterface.Exceptions;
 using LessMarkup.UserInterface.Model.RecordModel;
@@ -90,7 +91,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "InputFormTemplate":
                 {
                     var resourceCache = _dataCache.Get<ResourceCache>();
-                    var templateBody = resourceCache.ReadText("~/Views/Structure/InputFormTemplate.cshtml");
+                    var templateBody = resourceCache.ReadText("~/Views/InputFormTemplate.cshtml");
                     return templateBody;
                 }
 
@@ -104,7 +105,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "View":
                 {
                     var model = DependencyResolver.Resolve<LoadNodeViewModel>();
-                    model.Initialize(data["-path-"], JsonConvert.DeserializeObject<List<string>>(data["-cached-"]), controller);
+                    if (!model.Initialize(data["-path-"], JsonConvert.DeserializeObject<List<string>>(data["-cached-"]), controller))
+                    {
+                        throw new ObjectNotFoundException("Unknown path");
+                    }
                     return model;
                 }
 

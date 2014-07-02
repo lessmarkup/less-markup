@@ -19,14 +19,22 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
     public class ConfigurationRootNodeHandler : AbstractNodeHandler
     {
+        class ConfigurationGroup
+        {
+            public string Title { get; set; }
+            public List<ConfigurationHandler> Handlers { get; set; }
+        }
+
         class ConfigurationHandler
         {
             public Type Type { get; set; }
             public object TitleTextId { get; set; }
             public ModuleType ModuleType { get; set; }
             public long Id { get; set; }
+            public string TypeName { get; set; }
         }
 
+        private readonly List<ConfigurationGroup> _configurationGroups = new List<ConfigurationGroup>(); 
         private readonly Dictionary<string, ConfigurationHandler> _configurationHandlers = new Dictionary<string, ConfigurationHandler>();
         private readonly IDataCache _dataCache;
 
@@ -38,6 +46,20 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             bool addGlobalHandlers = currentUser.IsGlobalAdministrator;
 
             long idCounter = 1;
+
+            _configurationGroups = new List<ConfigurationGroup>();
+
+            var normalGroup = new ConfigurationGroup
+            {
+                Handlers = new List<ConfigurationHandler>(),
+                Title = LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.SiteConfiguration)
+            };
+
+            var globalGroup = new ConfigurationGroup
+            {
+                Handlers = new List<ConfigurationHandler>(),
+                Title = LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.GlobalConfiguration)
+            };
 
             foreach (var module in moduleProvider.Modules)
             {
@@ -83,23 +105,43 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                         typeName = typeName.Remove(typeName.Length - "nodehandler".Length);
                     }
 
-                    _configurationHandlers[typeName] = new ConfigurationHandler
+                    var handler = new ConfigurationHandler
                     {
                         Type = type,
-                        ModuleType = configurationHandlerAttribute.ModuleType == ModuleType.None ? module.ModuleType : configurationHandlerAttribute.ModuleType,
+                        ModuleType =
+                            configurationHandlerAttribute.ModuleType == ModuleType.None
+                                ? module.ModuleType
+                                : configurationHandlerAttribute.ModuleType,
                         TitleTextId = configurationHandlerAttribute.TitleTextId,
-                        Id = idCounter++
+                        Id = idCounter++,
+                        TypeName = typeName
                     };
+
+                    _configurationHandlers[typeName] = handler;
+
+                    if (configurationHandlerAttribute.IsGlobal)
+                    {
+                        globalGroup.Handlers.Add(handler);
+                    }
+                    else
+                    {
+                        normalGroup.Handlers.Add(handler);
+                    }
                 }
+            }
+
+            if (globalGroup.Handlers.Any())
+            {
+                _configurationGroups.Add(globalGroup);
+            }
+
+            if (normalGroup.Handlers.Any())
+            {
+                _configurationGroups.Add(normalGroup);
             }
         }
 
         public override bool HasChildren
-        {
-            get { return true; }
-        }
-
-        public override bool IsStatic
         {
             get { return true; }
         }
@@ -110,10 +152,15 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             return new
             {
-                Items = _configurationHandlers.Select(h => new
+                Groups = _configurationGroups.Select(g => new
                 {
-                    Path = path + "/" + h.Key,
-                    Title = LanguageHelper.GetText(h.Value.ModuleType, h.Value.TitleTextId)
+                    g.Title,
+
+                    Items = g.Handlers.OrderBy(h => h.TitleTextId.ToString()).Select(h => new
+                    {
+                        Path = path + "/" + h.TypeName,
+                        Title = LanguageHelper.GetText(h.ModuleType, h.TitleTextId)
+                    }).ToList()
                 }).ToList()
             };
         }

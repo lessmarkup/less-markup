@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.Language;
 using LessMarkup.Interfaces.Module;
@@ -23,11 +24,21 @@ namespace LessMarkup.MainModule.NodeHandlers
             return result;
         }
 
+        protected override string ApplyCaption
+        {
+            get { return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.SendMessage); }
+        }
+
         protected override string SaveObject(SendContactModel changedObject)
         {
             changedObject.Submit();
 
             return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.ContactFormSent);
+        }
+
+        public override Type SettingsModel
+        {
+            get { return typeof(ContactFormModel); }
         }
     }
 }

@@ -196,7 +196,7 @@ namespace LessMarkup.Framework.HtmlTemplate
 
             BuildTemplate(builder, cacheItem);
 
-            return builder.ToString();
+            return builder.ToString().Trim();
         }
 
         public void Initialize(out DateTime? expirationTime, long? objectId = null)

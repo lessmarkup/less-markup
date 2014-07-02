@@ -11,5 +11,6 @@ namespace LessMarkup.Interfaces.RecordModel
         TR AddRecord(TR record, bool returnObject);
         TR UpdateRecord(TR record, bool returnObject);
         bool DeleteRecords(IEnumerable<long> recordIds);
+        bool DeleteOnly { get; }
     }
 }

@@ -11,8 +11,19 @@ function DialogNodeController($http, $scope, $timeout) {
     $scope.applyCaption = $scope.viewData.ApplyCaption;
     $scope.changesApplied = false;
 
+    $scope.openForm = function() {
+        $scope.changesApplied = false;
+        $scope.submitError = "";
+        $scope.submitSuccess = "";
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    }
+
     var ret = InputFormController($scope, null, $scope.definition, $scope.object, function (changedObject, success, fail) {
-        $scope.$apply();
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
         $scope.sendAction("Save", {
             "changedObject": changedObject
         }, function(data) {

@@ -25,6 +25,8 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly Dictionary<long, CachedNodeInformation> _idToNode = new Dictionary<long, CachedNodeInformation>();
         private CachedNodeInformation _rootNode;
 
+        public CachedNodeInformation RootNode { get { return _rootNode; } }
+
         public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration)
         {
             _domainModelProvider = domainModelProvider;
@@ -65,17 +67,22 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
 
             _cachedNodes.Add(node);
-            _idToNode[node.NodeId] = _rootNode;
+            _idToNode[node.NodeId] = node;
 
-            foreach (var child in node.Children.Where(c => c.Enabled))
+            if (node.Children != null)
             {
-                child.Parent = node;
-                InitializeTree(child);
+                foreach (var child in node.Children.Where(c => c.Enabled))
+                {
+                    child.Parent = node;
+                    InitializeTree(child);
+                }
             }
         }
 
         private void InitializeNode(CachedNodeInformation node, List<CachedNodeInformation> nodes, int from, int count)
         {
+            node.Children = new List<CachedNodeInformation>();
+
             if (count == 0)
             {
                 return;
@@ -83,8 +90,6 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var lowLevel = nodes[from].Level;
             var to = from + count;
-
-            node.Children = new List<CachedNodeInformation>();
 
             var firstNode = nodes[from];
             node.Children.Add(firstNode);
@@ -228,7 +233,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 HandlerType = typeof (ConfigurationRootNodeHandler),
                 NodeId = nodeId,
                 HandlerId = "configuration",
-                Root = _rootNode
+                Root = _rootNode,
+                Children = new List<CachedNodeInformation>()
             };
 
             _rootNode.Children.Add(configurationNode);

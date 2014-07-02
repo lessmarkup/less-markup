@@ -8,7 +8,6 @@ using System.IO;
 using System.Web.Mvc;
 using LessMarkup.Framework.HtmlTemplate;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
@@ -43,7 +42,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 viewName = viewName.Substring(0, viewName.Length - "NodeHandler".Length);
             }
 
-            return "~/Views/Structure/" + viewName;
+            return "~/Views/" + viewName;
         }
 
         public static string GetViewContents(string viewName, object model, System.Web.Mvc.Controller controller)
@@ -70,7 +69,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return template;
         }
 
-        public void Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller)
+        public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller)
         {
             var nodeCache = _dataCache.Get<NodeCache>();
 
@@ -81,7 +80,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (node == null)
             {
-                return;
+                return false;
             }
 
             var node1 = node;
@@ -98,7 +97,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (handler == null)
             {
-                return;
+                return false;
             }
 
             var objectId = node.NodeId;
@@ -109,33 +108,30 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var settings = node.Settings;
 
-            if (!string.IsNullOrWhiteSpace(rest))
+            while (!string.IsNullOrWhiteSpace(rest))
             {
-                for (;;)
+                var childSettings = handler.GetChildHandler(rest);
+                if (childSettings == null || !childSettings.Id.HasValue)
                 {
-                    var childSettings = handler.GetChildHandler(rest);
-                    if (childSettings == null || !childSettings.Id.HasValue)
-                    {
-                        throw new ObjectNotFoundException("Unknown path");
-                    }
-                    Breadcrumbs.Add(new NodeBreadcrumbModel
-                    {
-                        Text = Title,
-                        Url = Path
-                    });
-                    objectId = childSettings.Id.Value;
-                    handler = childSettings.Handler;
-                    Title = childSettings.Title;
-                    Path += "/" + childSettings.Path;
-                    settings = null;
-
-                    if (string.IsNullOrWhiteSpace(childSettings.Rest))
-                    {
-                        break;
-                    }
-
-                    rest = childSettings.Rest;
+                    return false;
                 }
+                Breadcrumbs.Add(new NodeBreadcrumbModel
+                {
+                    Text = Title,
+                    Url = Path
+                });
+                objectId = childSettings.Id.Value;
+                handler = childSettings.Handler;
+                Title = childSettings.Title;
+                Path += "/" + childSettings.Path;
+                settings = null;
+
+                if (string.IsNullOrWhiteSpace(childSettings.Rest))
+                {
+                    break;
+                }
+
+                rest = childSettings.Rest;
             }
 
             TemplateId = handler.TemplateId;
@@ -154,6 +150,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             ViewData = handler.GetViewData(objectId, settingsObject, controller);
             IsStatic = handler.IsStatic;
+
+            return true;
         }
     }
 }

@@ -7,8 +7,12 @@ function getApplication() {
     return angular.module('application');
 }
 
+function getHeaderHeight() {
+    return $("#header").height();
+}
+
 function applyHeaderHeight() {
-    $(".header-placeholder").height($(".navbar-inner").height());
+    $(".header-placeholder").height(getHeaderHeight());
 }
 
 getApplication().directive('a', function () {

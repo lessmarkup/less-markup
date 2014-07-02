@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using LessMarkup.Framework.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -30,21 +31,14 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public bool Initialize(string path, System.Web.Mvc.Controller controller)
         {
-            var nodeCache = _dataCache.Get<NodeCache>();
-
-            CachedNodeInformation cachedNode;
-            string rest;
-            nodeCache.GetNode(path, out cachedNode, out rest);
-            if (cachedNode == null || !string.IsNullOrEmpty(rest))
-            {
-                return false;
-            }
-
             var viewData = DependencyResolver.Resolve<LoadNodeViewModel>();
             string nodeLoadError = null;
             try
             {
-                viewData.Initialize(path, null, controller);
+                if (!viewData.Initialize(path, null, controller))
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
@@ -52,12 +46,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 nodeLoadError = e.Message;
             }
 
-            Title = cachedNode.Root.Title;
+            var rootNode = _dataCache.Get<NodeCache>().RootNode;
+            Title = rootNode.Title;
 
             InitialData = JsonConvert.SerializeObject(new
             {
-                RootPath = cachedNode.Root.FullPath,
-                RootTitle = cachedNode.Root.Title,
+                RootPath = rootNode.FullPath,
+                RootTitle = rootNode.Title,
                 Path = path ?? "",
                 HasLogin = true,
                 HasSearch = false,
@@ -82,7 +77,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             controller.ViewData.Model = this;
             result.ViewData = controller.ViewData;
             result.TempData = controller.TempData;
-            result.ViewName = "~/Views/Structure/EntryPoint.cshtml";
+            result.ViewName = "~/Views/EntryPoint.cshtml";
             result.MasterName = null;
             result.ViewEngineCollection = controller.ViewEngineCollection;
             return result;

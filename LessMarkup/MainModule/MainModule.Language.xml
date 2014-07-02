@@ -199,15 +199,15 @@
     <Translation Id="SuccessfullySaved" Text="Successfully saved"/>
     <Translation Id="ApplyButton" Text="Apply"/>
     <Translation Id="ContactFormSent" Text="Successfully sent contact form data"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="Message" Text="Message"/>
+    <Translation Id="SendMessage" Text="Send Message"/>
+    <Translation Id="ViewTestMessage" Text="View Test Message"/>
+    <Translation Id="FromEmail" Text="FromEmail"/>
+    <Translation Id="ToEmail" Text="ToEmail"/>
+    <Translation Id="Subject" Text="Subject"/>
+    <Translation Id="DateSent" Text="Date Sent"/>
+    <Translation Id="Template" Text="Template"/>
+    <Translation Id="ViewTestMessages" Text="View Test Messages"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

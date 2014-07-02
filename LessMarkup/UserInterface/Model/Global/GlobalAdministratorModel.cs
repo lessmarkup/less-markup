@@ -138,6 +138,8 @@ namespace LessMarkup.UserInterface.Model.Global
                 }
                 return true;
             }
+
+            public bool DeleteOnly { get { return false; } }
         }
 
         public long UserId { get; set; }

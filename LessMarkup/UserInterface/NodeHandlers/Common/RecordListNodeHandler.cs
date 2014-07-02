@@ -173,6 +173,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 var data = new
                 {
                     Editable = _editableCollection != null,
+                    DeleteOnly = _editableCollection != null && _editableCollection.DeleteOnly,
                     PerPage = recordsPerPage,
                     Type = definition.Id,
                     RecordIds = recordIds.ToList(),

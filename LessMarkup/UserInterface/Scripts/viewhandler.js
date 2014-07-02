@@ -12,10 +12,10 @@ getApplication().directive("bindCompiledHtml", function ($compile) {
             var applyFunction = function(value) {
                 element.contents().remove();
                 if (value) {
-                    element.append($compile(value)(scope.parameter.scope()));
+                    element.append($compile(value)(scope.parameter.scope(scope.parameter.context)));
                 }
             };
-            scope.parameter.scope()[scope.parameter.name] = applyFunction;
+            scope.parameter.scope(scope.parameter.context)[scope.parameter.name] = applyFunction;
             if (scope.parameter.html && scope.parameter.html != null && scope.parameter.html.length > 0) {
                 applyFunction(scope.parameter.html);
             }
@@ -194,14 +194,18 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         }
     }
 
-    $scope.sendAction = function(action, data, success, failure) {
+    $scope.sendAction = function(action, data, success, failure, path) {
         data["-action-"] = action;
-        return $scope.sendCommand("Action", data, success, failure);
+        return $scope.sendCommand("Action", data, success, failure, path);
     }
 
-    $scope.sendCommand = function (command, data, success, failure) {
+    $scope.sendCommand = function (command, data, success, failure, path) {
         data["-command-"] = command;
-        data["-path-"] = $scope.path;
+        if (!path) {
+            data["-path-"] = $scope.path;
+        } else {
+            data["-path-"] = path;
+        }
         $scope.alerts = [];
         $http.post("", data).success(function (data) {
             validateLoggedIn(data.UserLoggedIn);
@@ -246,14 +250,18 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         });
     }
 
-    $scope.sendActionAsync = function (action, data, success, failure) {
+    $scope.sendActionAsync = function (action, data, success, failure, path) {
         data["-action-"] = action;
-        return $scope.sendCommandAsync("Action", data, success, failure);
+        return $scope.sendCommandAsync("Action", data, success, failure, path);
     }
 
-    $scope.sendCommandAsync = function(command, data, success, failure) {
+    $scope.sendCommandAsync = function(command, data, success, failure, path) {
         data["-command-"] = command;
-        data["-path-"] = $scope.path;
+        if (!path) {
+            data["-path-"] = $scope.path;
+        } else {
+            data["-path-"] = path;
+        }
         $scope.alerts = [];
         return $http.post("", data).then(function (result) {
             data = result.data;
@@ -311,6 +319,8 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         }
 
         commandHandler.reset();
+
+        $scope.$broadcast("onNodeLoaded", {});
 
         $scope.toolbarButtons = data.ToolbarButtons;
         $scope.viewData = data.ViewData;

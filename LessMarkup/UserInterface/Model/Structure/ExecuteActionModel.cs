@@ -74,15 +74,14 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 var parameterName = parameters[i].Name.ToLower();
 
-                if (parameterName == "settings")
-                {
-                    arguments[i] = JsonConvert.DeserializeObject<Dictionary<string, string>>(settings);
-                    continue;
-                }
-
                 string parameterText;
                 if (!dataLowered.TryGetValue(parameterName, out parameterText))
                 {
+                    if (parameterName == "settings")
+                    {
+                        arguments[i] = settings != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(settings) : null;
+                    }
+
                     continue;
                 }
 
@@ -106,12 +105,12 @@ namespace LessMarkup.UserInterface.Model.Structure
                 {
                     value = DependencyResolver.Resolve(parameterType);
 
-                    var valueData = JsonConvert.DeserializeObject<Dictionary<string, string>>(parameterText);
+                    var valueData = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameterText);
 
                     foreach (var property in parameterType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
                     {
-                        string propertyValue;
-                        if (!valueData.TryGetValue(property.Name, out propertyValue) || string.IsNullOrWhiteSpace(propertyValue))
+                        object propertyValue;
+                        if (!valueData.TryGetValue(property.Name, out propertyValue) || propertyValue == null)
                         {
                             continue;
                         }
@@ -122,11 +121,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                         }
                         else if (property.PropertyType == typeof (bool))
                         {
-                            property.SetValue(value, bool.Parse(propertyValue));
+                            property.SetValue(value, propertyValue);
                         }
                         else
                         {
-                            property.SetValue(value, JsonConvert.DeserializeObject(propertyValue, property.PropertyType));
+                            property.SetValue(value, JsonConvert.DeserializeObject(propertyValue.ToString(), property.PropertyType));
                         }
                     }
                 }

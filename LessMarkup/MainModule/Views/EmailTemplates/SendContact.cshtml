@@ -1,11 +1,13 @@
-﻿<!DOCTYPE html>
-
+﻿@model LessMarkup.MainModule.Model.SendContactModel
+<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Contact Form Message</title>
+    </head>
+    <body>
+        <h2>Contact Form Message</h2>
+        <p><b>Sender E-Mail:</b> @Model.Email</p>
+        <p><b>Sender Message:</b> @Model.Message</p>
+    </body>
 </html>

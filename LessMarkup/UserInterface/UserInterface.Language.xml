@@ -61,9 +61,9 @@
     <Translation Id="Customize" Text="Customize"/>
     <Translation Id="FlatPageSettings" Text="Flat Page Settings"/>
     <Translation Id="LoadOnShow" Text="Load Nodes On Show"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="SiteConfiguration" Text="Site Configuration"/>
+    <Translation Id="GlobalConfiguration" Text="Global Configuration"/>
+    <Translation Id="Position" Text="Position"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

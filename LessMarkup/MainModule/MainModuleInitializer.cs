@@ -35,6 +35,7 @@ namespace LessMarkup.MainModule
             base.InitializeDatabase();
 
             _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>(ModuleType.MainModule, "article");
+            _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>(ModuleType.MainModule, "contact");
         }
     }
 }

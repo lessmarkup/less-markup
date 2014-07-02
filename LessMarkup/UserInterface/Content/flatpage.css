@@ -1,0 +1,71 @@
+﻿.scrollspy-side > ul > li {
+    cursor: pointer;
+}
+
+.scrollspy-side > ul > li > a {
+    color: #bbb;
+    padding: 2px 10px;
+}
+
+.scrollspy-side > ul > li > a {
+    border-left: solid 2px transparent;
+}
+
+.scrollspy-side > ul > li.active > a {
+    border-left: solid 2px #888;
+    color: #555;
+}
+
+.scrollspy-side > ul > li > a:hover {
+    background: none;
+    color: #1e90ff;
+    text-decoration: underline;
+}
+
+.scrollspy-side > ul > li.active > a:hover {
+    border-left: solid 2px black;
+}
+
+.flat-design h2 {
+    padding-bottom: 5px;
+    border-bottom: solid 1px #eee;
+}
+
+.flat-design h3 {
+    padding-bottom: 5px;
+}
+
+.scrollspy-side > ul > li > ul {
+    list-style-type: none;
+    margin: 0;
+    padding-left: 1em;
+}
+
+.scrollspy-side > ul > li > ul > li {
+    font-size: smaller;
+}
+
+.scrollspy-side > ul > li > ul > li > a {
+    border-left: solid 1px transparent;
+    color: #bbb;
+    padding-left: 8px;
+}
+
+.scrollspy-side > ul > li > ul > li.active > a {
+    border-left: solid 1px #888;
+    color: #555;
+}
+
+.scrollspy-side > ul > li > ul > li.active > a:hover {
+    border-left: solid 1px black;
+    color: #1e90ff;
+}
+
+.scrollspy-side > ul > li > ul > li > a:hover {
+    border-left: solid 1px transparent;
+    color: #1e90ff;
+}
+
+.scrollspy-menu.active {
+    background: #ddd;
+}

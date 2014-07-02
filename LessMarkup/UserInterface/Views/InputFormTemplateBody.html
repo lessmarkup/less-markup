@@ -27,6 +27,7 @@
                     <option ng-repeat="select in field.SelectValues" value="{{select.Value}}" ng-bind="select.Text"></option>
                 </select>
                 <input type="text" ng-switch-when="Typeahead" class="form-control" ng-model="object[field.Property]" ng-readonly="readOnly(field)" typeahead="name for name in getTypeahead(field, $viewValue)"/>
+                <textarea class="form-control" ng-switch-when="MultiLineText" ng-model="object[field.Property]" ng-readonly="readOnly(field)"></textarea>
             </span>
             <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="hasErrors(field.Property)"></span>
             <span class="help-block" ng-bind="helpText(field)"></span>

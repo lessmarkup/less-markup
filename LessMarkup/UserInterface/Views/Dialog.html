@@ -1,0 +1,17 @@
+﻿<div ng-controller="DialogNodeController">
+    <div ng-if="!changesApplied">
+        [[[include InputFormTemplateBody.html]]]
+        <div class="dialog-buttons">
+            <button class="btn btn-primary" ng-click="submit()" ng-disabled="!hasChanges || isApplying">
+                <span ng-bind="applyCaption"></span>
+                <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>
+            </button>
+        </div>
+    </div>
+    <div ng-if="changesApplied">
+        <div class="bg-success" ng-bind="submitSuccess"></div>
+        <div class="dialog-buttons">
+            <button class="btn btn-default" ng-click="openForm()">Open Form</button>
+        </div>
+    </div>
+</div>

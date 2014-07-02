@@ -250,35 +250,37 @@ getApplication().controller('recordlist', function ($scope, inputForm, commandHa
             width: 30
         });
 
-        $scope.toolbarButtons.push({
-            Id: "recordlist-add",
-            Text: "Add"
-        });
+        if (!$scope.viewData.DeleteOnly) {
+            $scope.toolbarButtons.push({
+                Id: "recordlist-add",
+                Text: "Add"
+            });
 
-        commandHandler.subscribe('recordlist-add', function (sender, invoke) {
-            if (!invoke) {
+            commandHandler.subscribe('recordlist-add', function (sender, invoke) {
+                if (!invoke) {
+                    return true;
+                }
+                $scope.addRecord();
                 return true;
-            }
-            $scope.addRecord();
-            return true;
-        });
+            });
 
-        $scope.toolbarButtons.push({
-            Id: "recordlist-remove",
-            Text: "Remove"
-        });
+            $scope.toolbarButtons.push({
+                Id: "recordlist-remove",
+                Text: "Remove"
+            });
 
-        commandHandler.subscribe("recordlist-remove", function (sender, invoke) {
-            if ($scope.selectedItems.length == 0) {
-                return false;
-            }
-            if (!invoke) {
+            commandHandler.subscribe("recordlist-remove", function (sender, invoke) {
+                if ($scope.selectedItems.length == 0) {
+                    return false;
+                }
+                if (!invoke) {
+                    return true;
+                }
+                $scope.deleteRecords($scope.selectedItems);
+                $scope.recordListOptions.selectAll(false);
                 return true;
-            }
-            $scope.deleteRecords($scope.selectedItems);
-            $scope.recordListOptions.selectAll(false);
-            return true;
-        });
+            });
+        }
     }
 
     function createNewRecord(recordId) {
