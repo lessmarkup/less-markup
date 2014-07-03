@@ -21,6 +21,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             AddCellLink<SiteGroupsNodeHandler>("Groups", "groups");
             AddCellLink<ModulesNodeHandler>("Modules", "modules");
             AddCellLink<NodeListNodeHandler>("Nodes", "nodes");
+            AddCellLink<SitePropertiesNodeHandler>("Properties", "properties");
         }
     }
 }

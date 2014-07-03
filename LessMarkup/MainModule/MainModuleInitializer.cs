@@ -3,7 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Linq;
 using System.Reflection;
+using LessMarkup.Framework;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.MainModule.NodeHandlers;
 
@@ -27,7 +29,12 @@ namespace LessMarkup.MainModule
 
         public override Type[] ModelTypes
         {
-            get { return Assembly.GetExecutingAssembly().GetTypes(); }
+            get
+            {
+                var modelTypes = Assembly.GetExecutingAssembly().GetTypes().ToList();
+                modelTypes.AddRange(typeof(FrameworkTypeInitializer).Assembly.GetTypes());
+                return modelTypes.ToArray();
+            }
         }
 
         public override void InitializeDatabase()

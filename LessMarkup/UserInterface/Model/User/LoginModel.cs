@@ -8,7 +8,7 @@ using System.Threading;
 using System.Web;
 using LessMarkup.Interfaces.Security;
 
-namespace LessMarkup.UserInterface.Model.Structure
+namespace LessMarkup.UserInterface.Model.User
 {
     public class LoginModel
     {

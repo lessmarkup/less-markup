@@ -17,10 +17,10 @@ namespace LessMarkup.UserInterface.Controller
         {
             try
             {
-                if (JsonEntryPointModel.AppliesToRequest(Request))
+                if (JsonEntryPointModel.AppliesToRequest(Request, path))
                 {
                     var jsonModel = DependencyResolver.Resolve<JsonEntryPointModel>();
-                    return jsonModel.HandleRequest(this);
+                    return jsonModel.HandleRequest(this, path);
                 }
 
                 var nodeModel = DependencyResolver.Resolve<NodeEntryPointModel>();

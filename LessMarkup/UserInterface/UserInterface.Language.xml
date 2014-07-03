@@ -64,11 +64,11 @@
     <Translation Id="SiteConfiguration" Text="Site Configuration"/>
     <Translation Id="GlobalConfiguration" Text="Global Configuration"/>
     <Translation Id="Position" Text="Position"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="Email" Text="Email"/>
+    <Translation Id="Register" Text="Register"/>
+    <Translation Id="UserAgreement" Text="User Agreement"/>
+    <Translation Id="Agree" Text="I Agree"/>
+    <Translation Id="SiteProperties" Text="Site Properties"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

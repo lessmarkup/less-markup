@@ -70,7 +70,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
+                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
                     }
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.Group))
@@ -105,7 +105,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
+                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
                     }
                     else
                     {

@@ -213,5 +213,18 @@ namespace LessMarkup.Framework.Language
         DateSent,
         Template,
         ViewTestMessages,
+        DefaultUserGroup,
+        MaximumImageSize,
+        HasUsers,
+        HasNavigationBar,
+        HasSearch,
+        HasLanguages,
+        HasCurrencies,
+        DefaultCronJobId,
+        AdminLoginPath,
+        AdminNotifyNewUsers,
+        AdminApproveNewUsers,
+        UserAgreement,
+        SiteName
     }
 }

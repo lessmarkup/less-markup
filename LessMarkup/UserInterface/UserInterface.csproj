@@ -149,7 +149,7 @@
     <Compile Include="Model\Global\SiteModel.cs" />
     <Compile Include="Model\Structure\ExecuteActionModel.cs" />
     <Compile Include="Model\Structure\LoadNodeViewModel.cs" />
-    <Compile Include="Model\Structure\LoginModel.cs" />
+    <Compile Include="Model\User\LoginModel.cs" />
     <Compile Include="Model\Structure\NavigationBarModel.cs" />
     <Compile Include="Model\Structure\NodeBreadcrumbModel.cs" />
     <Compile Include="Model\Structure\NodeEntryPointModel.cs" />
@@ -163,6 +163,7 @@
     <Compile Include="Model\Structure\TypeaheadModel.cs" />
     <Compile Include="Model\Structure\CachedNodeAccess.cs" />
     <Compile Include="Model\Structure\CachedNodeInformation.cs" />
+    <Compile Include="Model\User\RegisterModel.cs" />
     <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
     <Compile Include="NodeHandlers\Configuration\ConfigurationRootNodeHandler.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="NodeHandlers\GlobalConfiguration\GlobalAdministratorsNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\ModulesNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteGroupsNodeHandler.cs" />
+    <Compile Include="NodeHandlers\GlobalConfiguration\SitePropertiesNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteUsersNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteCustomizeNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteNodeHandler.cs" />
@@ -465,7 +467,9 @@
     <EmbeddedResource Include="Scripts\spin.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="UserInterface.Language.xml" />
+    <EmbeddedResource Include="UserInterface.Language.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\bootstrap-theme.css" />

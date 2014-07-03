@@ -31,19 +31,21 @@ namespace LessMarkup.Framework.Security
         private readonly IDataCache _dataCache;
         private readonly IMailSender _mailSender;
         private readonly ISiteMapper _siteMapper;
+        private readonly IChangeTracker _changeTracker;
         private const string HexCodes = "0123456789abcdef";
 
         #endregion
 
         #region Initialization
 
-        public UserSecurity(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, ISiteMapper siteMapper)
+        public UserSecurity(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, ISiteMapper siteMapper, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _engineConfiguration = engineConfiguration;
             _dataCache = dataCache;
             _mailSender = mailSender;
             _siteMapper = siteMapper;
+            _changeTracker = changeTracker;
         }
 
         #endregion
@@ -279,6 +281,24 @@ namespace LessMarkup.Framework.Security
             return ret.ToString();
         }
 
+        public bool ConfirmUser(string validateSecret)
+        {
+            using (var domainModel = _domainModelProvider.CreateWithTransaction())
+            {
+                var user = domainModel.GetCollection<User>().FirstOrDefault(u => u.ValidateSecret == validateSecret);
+                if (user == null)
+                {
+                    return false;
+                }
+                user.ValidateSecret = null;
+                user.IsValidated = true;
+                _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, domainModel);
+                domainModel.SaveChanges();
+                domainModel.CompleteTransaction();
+                return true;
+            }
+        }
+
         #endregion
 
         #region Helper Methods
@@ -429,17 +449,17 @@ namespace LessMarkup.Framework.Security
             {
                 var group = domainModel.GetSiteCollection<UserGroup>().SingleOrDefault(g => g.Name == defaultGroup);
 
-                if (@group == null)
+                if (group == null)
                 {
-                    @group = domainModel.GetSiteCollection<UserGroup>().Create();
-                    @group.Name = defaultGroup;
-                    domainModel.GetSiteCollection<UserGroup>().Add(@group);
+                    group = domainModel.GetSiteCollection<UserGroup>().Create();
+                    group.Name = defaultGroup;
+                    domainModel.GetSiteCollection<UserGroup>().Add(group);
                     domainModel.SaveChanges();
                 }
 
                 var membership = domainModel.GetSiteCollection<UserGroupMembership>().Create();
                 membership.UserId = user.UserId;
-                membership.UserGroupId = @group.UserGroupId;
+                membership.UserGroupId = group.UserGroupId;
                 domainModel.GetSiteCollection<UserGroupMembership>().Add(membership);
             }
         }
@@ -449,8 +469,7 @@ namespace LessMarkup.Framework.Security
             var confirmationLink = confirmation(user.ValidateSecret);
             var confirmationModel = new UserConfirmationMailTemplateModel { Link = confirmationLink };
 
-            _mailSender.SendMail(null, user.UserId, null, Constants.MailTemplates.Core.ValidateUser,
-                confirmationModel);
+            _mailSender.SendMail(null, user.UserId, null, Constants.MailTemplates.Core.ValidateUser, confirmationModel);
         }
 
         private void SendGeneratedPassword(string email, string password, User user)

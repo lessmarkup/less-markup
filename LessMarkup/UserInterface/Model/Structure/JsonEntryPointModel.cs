@@ -9,11 +9,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Framework.FileSystem;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.UserInterface.Exceptions;
 using LessMarkup.UserInterface.Model.RecordModel;
+using LessMarkup.UserInterface.Model.User;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -30,13 +32,21 @@ namespace LessMarkup.UserInterface.Model.Structure
             _currentUser = currentUser;
         }
 
-        public static bool AppliesToRequest(HttpRequestBase request)
+        public const string ValidateUserPath = "validateuser";
+
+        public static bool AppliesToRequest(HttpRequestBase request, string path)
         {
-            return request.HttpMethod == "POST" && request.ContentType.StartsWith("application/json;");
+            return path == ValidateUserPath || (request.HttpMethod == "POST" && request.ContentType.StartsWith("application/json;"));
         }
 
-        public ActionResult HandleRequest(System.Web.Mvc.Controller controller)
+        public ActionResult HandleRequest(System.Web.Mvc.Controller controller, string path)
         {
+            if (path == ValidateUserPath)
+            {
+                var registerModel = DependencyResolver.Resolve<RegisterModel>();
+                return registerModel.ValidateSecret();
+            }
+
             HttpContext.Current.Request.InputStream.Seek(0, SeekOrigin.Begin);
             using (var reader = new StreamReader(HttpContext.Current.Request.InputStream, HttpContext.Current.Request.ContentEncoding))
             {
@@ -141,6 +151,18 @@ namespace LessMarkup.UserInterface.Model.Structure
                     var model = DependencyResolver.Resolve<TypeaheadModel>();
                     model.Initialize(data["-path-"], data["property"], data["searchText"]);
                     return model;
+                }
+
+                case "GetRegisterObject":
+                {
+                    var registerModel = DependencyResolver.Resolve<RegisterModel>();
+                    return registerModel.GetRegisterObject();
+                }
+
+                case "Register":
+                {
+                    var registerModel = (RegisterModel) JsonHelper.ResolveAndDeserializeObject(data["user"], typeof (RegisterModel));
+                    return registerModel.Register(controller);
                 }
 
                 default:

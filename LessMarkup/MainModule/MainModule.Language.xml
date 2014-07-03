@@ -208,20 +208,19 @@
     <Translation Id="DateSent" Text="Date Sent"/>
     <Translation Id="Template" Text="Template"/>
     <Translation Id="ViewTestMessages" Text="View Test Messages"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="DefaultUserGroup" Text="Default User Group"/>
+    <Translation Id="MaximumImageSize" Text="Maximum Image Size"/>
+    <Translation Id="HasUsers" Text="Has Users"/>
+    <Translation Id="HasNavigationBar" Text="Has Navigation Bar"/>
+    <Translation Id="HasSearch" Text="Has Search"/>
+    <Translation Id="HasLanguages" Text="Has Languages"/>
+    <Translation Id="HasCurrencies" Text="Has Currencies"/>
+    <Translation Id="DefaultCronJobId" Text="Default Cron Job Id"/>
+    <Translation Id="AdminLoginPath" Text="Administrator Login Path"/>
+    <Translation Id="AdminNotifyNewUsers" Text="Administrator Notify Of New Users"/>
+    <Translation Id="AdminApproveNewUsers" Text="Administrator Approves New Users"/>
+    <Translation Id="UserAgreement" Text="User Agreement"/>
+    <Translation Id="SiteName" Text="Site Name"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

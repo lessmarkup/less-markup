@@ -112,6 +112,26 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         });
     }
 
+    $scope.doRegister = function () {
+        $scope.sendCommand("GetRegisterObject", {}, function (data) {
+            var registerObject = data.RegisterObject;
+            var modelId = data.ModelId;
+            inputForm.editObject(registerObject, modelId, function(object, success, failure) {
+                $scope.sendCommand("Register", { user: object }, function (data) {
+                    $scope.userLoggedIn = true;
+                    $scope.userName = data.UserName;
+                    $scope.showConfiguration = data.ShowConfiguration;
+                    $scope.loginUserPassword = "";
+                    $scope.loginUserEmail = "";
+                    $scope.loginUserRemember = false;
+                    $scope.staticNodes = {};
+                    $scope.navigateToView($scope.path);
+                    success();
+                }, failure);
+            });
+        }, $scope.showError);
+    }
+
     $scope.doLogin = function () {
         $scope.userLoginError = "";
 

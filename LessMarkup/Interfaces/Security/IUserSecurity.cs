@@ -15,5 +15,6 @@ namespace LessMarkup.Interfaces.Security
         string CreateAccessToken(EntityType entityType, long entityId, EntityAccessType accessType, long? userId, DateTime? expirationTime = null);
         bool ValidateAccessToken(string token, EntityType entityType, long entityId, EntityAccessType accessType, long? userId);
         string GenerateUniqueId();
+        bool ConfirmUser(string validateSecret);
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Structure;
@@ -85,52 +86,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                     continue;
                 }
 
-                object value;
-
-                var parameterType = parameters[i].ParameterType;
-
-                if (parameterType == typeof (string))
-                {
-                    value = parameterText;
-                }
-                else if (parameterType == typeof (bool))
-                {
-                    value = !string.IsNullOrWhiteSpace(parameterText) && bool.Parse(parameterText);
-                }
-                else if (!parameterType.IsClass || parameterType == typeof(DateTime) || parameterType.GetConstructor(new Type[0]) != null)
-                {
-                    value = string.IsNullOrWhiteSpace(parameterText) ? null : JsonConvert.DeserializeObject(parameterText, parameterType);
-                }
-                else
-                {
-                    value = DependencyResolver.Resolve(parameterType);
-
-                    var valueData = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameterText);
-
-                    foreach (var property in parameterType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                    {
-                        object propertyValue;
-                        if (!valueData.TryGetValue(property.Name, out propertyValue) || propertyValue == null)
-                        {
-                            continue;
-                        }
-
-                        if (property.PropertyType == typeof(string))
-                        {
-                            property.SetValue(value, propertyValue);
-                        }
-                        else if (property.PropertyType == typeof (bool))
-                        {
-                            property.SetValue(value, propertyValue);
-                        }
-                        else
-                        {
-                            property.SetValue(value, JsonConvert.DeserializeObject(propertyValue.ToString(), property.PropertyType));
-                        }
-                    }
-                }
-
-                arguments[i] = value;
+                arguments[i] = JsonHelper.ResolveAndDeserializeObject(parameterText, parameters[i].ParameterType);
             }
 
             return method.Invoke(handler, arguments);

@@ -2,7 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using LessMarkup.Interfaces;
 using Newtonsoft.Json;
 
 namespace LessMarkup.Framework.Helpers
@@ -27,6 +30,57 @@ namespace LessMarkup.Framework.Helpers
                 return null;
             }
             return str;
+        }
+
+        public static object ResolveAndDeserializeObject(string text, Type type)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            if (type == typeof(string))
+            {
+                return text;
+            }
+
+            if (type == typeof(bool))
+            {
+                return bool.Parse(text);
+            }
+
+            if (!type.IsClass || type == typeof(DateTime) || type.GetConstructor(new Type[0]) != null)
+            {
+                return JsonConvert.DeserializeObject(text, type);
+            }
+
+            var value = DependencyResolver.Resolve(type);
+
+            var valueData = JsonConvert.DeserializeObject<Dictionary<string, object>>(text);
+
+            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                object propertyValue;
+                if (!valueData.TryGetValue(property.Name, out propertyValue) || propertyValue == null)
+                {
+                    continue;
+                }
+
+                if (property.PropertyType == typeof(string))
+                {
+                    property.SetValue(value, propertyValue);
+                }
+                else if (property.PropertyType == typeof(bool))
+                {
+                    property.SetValue(value, propertyValue);
+                }
+                else
+                {
+                    property.SetValue(value, JsonConvert.DeserializeObject(propertyValue.ToString(), property.PropertyType));
+                }
+            }
+
+            return value;
         }
     }
 }

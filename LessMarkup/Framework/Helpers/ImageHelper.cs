@@ -144,14 +144,14 @@ namespace LessMarkup.Framework.Helpers
                     imageHeight = imageData.Height;
                 }
 
-                using (var thumbnail = imageData.GetThumbnailImage(configurationCache.ThumbnailWidth, configurationCache.ThumbnailHeight, () => false, IntPtr.Zero))
+/*                using (var thumbnail = imageData.GetThumbnailImage(configurationCache.ThumbnailWidth, configurationCache.ThumbnailHeight, () => false, IntPtr.Zero))
                 {
                     using (var stream = new MemoryStream())
                     {
                         thumbnail.Save(stream, ImageFormat.Png);
                         thumbnailBytes = stream.ToArray();
                     }
-                }
+                }*/
             }
 
             Image image = null;
@@ -178,7 +178,7 @@ namespace LessMarkup.Framework.Helpers
             image.ImageType = ImageType.Png;
             image.UserId = currentUser.UserId;
             image.Data = imageBytes;
-            image.Thumbnail = thumbnailBytes;
+            image.Thumbnail = null;//thumbnailBytes;
 
             domainModel.SaveChanges();
  

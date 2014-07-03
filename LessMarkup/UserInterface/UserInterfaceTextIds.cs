@@ -68,6 +68,11 @@ namespace LessMarkup.UserInterface
         LoadOnShow,
         SiteConfiguration,
         GlobalConfiguration,
-        Position
+        Position,
+        Email,
+        Register,
+        UserAgreement,
+        Agree,
+        SiteProperties,
     }
 }

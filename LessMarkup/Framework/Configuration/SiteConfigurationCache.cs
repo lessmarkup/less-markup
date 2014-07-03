@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.Framework.Language;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Framework.Configuration
 {
+    [RecordModel]
     public class SiteConfigurationCache : ICacheHandler
     {
         #region Private Fields
@@ -33,19 +36,22 @@ namespace LessMarkup.Framework.Configuration
             _changeTracker = changeTracker;
         }
 
-        void Initialize(Dictionary<string, SiteProperty> existingProperties)
+        void InitializeFromProperties(Dictionary<string, SiteProperty> existingProperties)
         {
             foreach (var property in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (existingProperties == null || !existingProperties.ContainsKey(property.Name))
                 {
-                    var defaultValue = property.GetCustomAttribute<DefaultValueAttribute>();
-                    if (defaultValue == null)
+                    var inputFieldAttribute = property.GetCustomAttribute<InputFieldAttribute>();
+                    if (inputFieldAttribute == null)
                     {
                         continue;
                     }
 
-                    property.SetValue(this, defaultValue.Value);
+                    if (inputFieldAttribute.DefaultValue != null)
+                    {
+                        property.SetValue(this, inputFieldAttribute.DefaultValue);
+                    }
                     continue;
                 }
 
@@ -74,26 +80,30 @@ namespace LessMarkup.Framework.Configuration
             }
         }
 
-        void ICacheHandler.Initialize(out DateTime? expirationTime, long? objectId)
+        public void Initialize(long? siteId)
         {
-            if (objectId.HasValue)
-            {
-                throw new ArgumentOutOfRangeException("objectId");
-            }
+            DateTime? dateTime;
+            Initialize(out dateTime, siteId);
+        }
 
+        public void Initialize(out DateTime? expirationTime, long? siteId)
+        {
             expirationTime = null;
 
-            var siteId = _siteMapper.SiteId;
             if (!siteId.HasValue)
             {
-                Initialize(null);
-                return;
+                siteId = _siteMapper.SiteId;
+                if (!siteId.HasValue)
+                {
+                    InitializeFromProperties(null);
+                    return;
+                }
             }
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var existingProperties = domainModel.GetCollection<SiteProperty>().Where(p => p.SiteId == siteId).ToDictionary(p => p.Name);
-                Initialize(existingProperties);
+                var existingProperties = domainModel.GetCollection<SiteProperty>().Where(p => p.SiteId == siteId.Value).ToDictionary(p => p.Name);
+                InitializeFromProperties(existingProperties);
             }
         }
 
@@ -101,12 +111,15 @@ namespace LessMarkup.Framework.Configuration
 
         #region Public Methods
 
-        public void Save()
+        public void Save(long? siteId)
         {
-            var siteId = _siteMapper.SiteId;
             if (!siteId.HasValue)
             {
-                return;
+                siteId = _siteMapper.SiteId;
+                if (!siteId.HasValue)
+                {
+                    throw new ArgumentOutOfRangeException("siteId");
+                }
             }
 
             using (var domainModel = _domainModelProvider.Create())
@@ -125,7 +138,7 @@ namespace LessMarkup.Framework.Configuration
                         }
                     }
 
-                    var propertyRecord = domainModel.GetCollection<SiteProperty>().FirstOrDefault(p => p.SiteId == siteId && p.Name == property.Name);
+                    var propertyRecord = domainModel.GetCollection<SiteProperty>().FirstOrDefault(p => p.SiteId == siteId.Value && p.Name == property.Name);
 
                     if (propertyRecord == null)
                     {
@@ -173,76 +186,52 @@ namespace LessMarkup.Framework.Configuration
 
         #endregion
 
-        [DefaultValue(10)]
-        public int RecordsPerPage { get; set; }
-
-        public string NoReplyEmail { get; set; }
-
-        public string NoReplyName { get; set; }
-
-        [DefaultValue("Registered")]
-        public string DefaultUserGroup { get; set; }
-
-        [DefaultValue("Your Site")]
+        [InputField(InputFieldType.Text, MainModuleTextIds.SiteName, DefaultValue = "Site", Required = true)]
         public string SiteName { get; set; }
 
-        public string HomePageEntity { get; set; }
+        [InputField(InputFieldType.Number, MainModuleTextIds.RecordsPerPage, DefaultValue = 10)]
+        public int RecordsPerPage { get; set; }
 
-        [DefaultValue("Navigation Bar")]
-        public string NavigationBar { get; set; }
+        [InputField(InputFieldType.Email, MainModuleTextIds.EmailForNoReply)]
+        public string NoReplyEmail { get; set; }
 
-        [DefaultValue(1024 * 1024 * 10)]
+        [InputField(InputFieldType.Text, MainModuleTextIds.UserNameForNoReply)]
+        public string NoReplyName { get; set; }
+
+        [InputField(InputFieldType.Text, MainModuleTextIds.DefaultUserGroup, DefaultValue = "Registered")]
+        public string DefaultUserGroup { get; set; }
+
+        [InputField(InputFieldType.Number, MainModuleTextIds.MaximumImageSize, DefaultValue = 1024 * 1024 * 10)]
         public int MaximumImageSize { get; set; }
 
-        [DefaultValue(40)]
-        public int ThumbnailWidth { get; set; }
-
-        [DefaultValue(40)]
-        public int ThumbnailHeight { get; set; }
-
-        [DefaultValue(180)]
-        public int BoxWidth { get; set; }
-
-        [DefaultValue(100)]
-        public int BoxHeight { get; set; }
-
-        [DefaultValue(100)]
-        public int AvatarWidth { get; set; }
-
-        [DefaultValue(100)]
-        public int AvatarHeight { get; set; }
-
-        [DefaultValue(500)]
-        public int MaximumImageWidth { get; set; }
-
-        [DefaultValue(600)]
-        public int MaximumImageHeight { get; set; }
-
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasUsers, DefaultValue = false)]
         public bool HasUsers { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasNavigationBar, DefaultValue = false)]
         public bool HasNavigationBar { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasSearch, DefaultValue = false)]
         public bool HasSearch { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasLanguages, DefaultValue = false)]
         public bool HasLanguages { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasCurrencies, DefaultValue = false)]
         public bool HasCurrencies { get; set; }
 
-        [DefaultValue("Default")]
+        [InputField(InputFieldType.Text, MainModuleTextIds.DefaultCronJobId, DefaultValue = "Default")]
         public string DefaultCronJobId { get; set; }
 
-        [DefaultValue("")]
-        public string AdminLoginPage { get; set; }
+        [InputField(InputFieldType.Text, MainModuleTextIds.AdminLoginPath)]
+        public string AdminLoginPath { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.AdminNotifyNewUsers, DefaultValue = false)]
         public bool AdminNotifyNewUsers { get; set; }
 
-        [DefaultValue(false)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.AdminApproveNewUsers, DefaultValue = false)]
         public bool AdminApproveNewUsers { get; set; }
+
+        [InputField(InputFieldType.RichText, MainModuleTextIds.UserAgreement)]
+        public string UserAgreement { get; set; }
     }
 }
