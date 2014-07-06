@@ -20,7 +20,7 @@ namespace LessMarkup.UserInterface.Controller
                 if (HttpContext.IsWebSocketRequest)
                 {
                     var model = DependencyResolver.Resolve<WebSocketEntryPointModel>();
-                    return model.
+                    return model.HandleRequest(this, path);
                 }
 
                 if (JsonEntryPointModel.AppliesToRequest(Request, path))

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Structure;
+using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.MainModule.Model;
 
 namespace LessMarkup.MainModule.NodeHandlers
