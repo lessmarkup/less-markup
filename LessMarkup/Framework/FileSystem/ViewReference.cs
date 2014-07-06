@@ -4,7 +4,7 @@
 
 using System;
 
-namespace LessMarkup.Framework.FileSystem
+namespace LessMarkup.Engine.FileSystem
 {
     public class ViewReference
     {

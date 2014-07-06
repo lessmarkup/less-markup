@@ -220,9 +220,9 @@
       <Project>{feb3bf37-1f52-4556-8137-b6b61d76ea03}</Project>
       <Name>DataObjects</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Framework\Framework.csproj">
+    <ProjectReference Include="..\Framework\Engine.csproj">
       <Project>{6E63AAB8-6BA5-494A-B566-7737D9D46AB4}</Project>
-      <Name>Framework</Name>
+      <Name>Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
       <Project>{AF5FD7AE-34D2-4656-A051-0868B363485B}</Project>

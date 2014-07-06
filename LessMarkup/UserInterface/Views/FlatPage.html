@@ -1,0 +1,41 @@
+﻿<div class="flat-design" ng-controller="flatpage" ng-switch="position">
+    <div ng-switch-when="Right" class="row">
+        <div class="col-md-10">
+            <div ng-repeat="page in flat">
+                <div ng-switch="page.Level">
+                    <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}"></h2>
+                    <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}"></h3>
+                </div>
+                <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
+            </div>
+        </div>
+        <div class="col-md-2 scrollspy scrollspy-side">
+            <ul class="nav" scrollspy-side>
+                <li ng-repeat="node in tree">
+                    <a href="#{{node.Anchor}}" ng-bind="node.Title" ng-click="scrollToPage(node.Anchor)"></a>
+                    <ul ng-if="node.Children.length > 0">
+                        <li ng-repeat="child in node.Children">
+                            <a href="#{{child.Anchor}}" ng-bind="child.Title" ng-click="scrollToPage(child.Anchor)"></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div ng-switch-when="Top">
+        <div ng-repeat="page in flat">
+            <div ng-switch="page.Level">
+                <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}"></h2>
+                <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}"></h3>
+            </div>
+            <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
+        </div>
+        <div scrollspy-top>
+            <ul class="nav navbar-nav navbar-left">
+                <li ng-repeat="node in tree" class="scrollspy-menu">
+                    <a href="#{{node.Anchor}}" ng-bind="node.Title" ng-click="scrollToPage(node.Anchor)"></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

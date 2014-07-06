@@ -10,13 +10,13 @@ using System.Reflection;
 using System.Text;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.Framework.Build.View;
+using LessMarkup.Engine.Build.View;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.FileSystem
+namespace LessMarkup.Engine.FileSystem
 {
     public class ResourceCache : ICacheHandler
     {

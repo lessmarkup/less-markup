@@ -9,7 +9,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.Site
+namespace LessMarkup.Engine.Site
 {
     public class SiteCache : ICacheHandler
     {

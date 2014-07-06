@@ -5,7 +5,7 @@
 using System.Web.Hosting;
 using LessMarkup.Interfaces.Cache;
 
-namespace LessMarkup.Framework.FileSystem
+namespace LessMarkup.Engine.FileSystem
 {
     public class CompiledPathProvider : VirtualPathProvider
     {

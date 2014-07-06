@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace LessMarkup.Framework.Email
+namespace LessMarkup.Engine.Email
 {
     public class BufferBuilder
     {

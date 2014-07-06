@@ -4,7 +4,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     public static class EmailCheck
     {

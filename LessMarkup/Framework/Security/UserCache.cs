@@ -9,7 +9,7 @@ using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     class UserCache : ICacheHandler
     {

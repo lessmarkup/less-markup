@@ -7,7 +7,7 @@ using System.Reflection;
 using LessMarkup.DataFramework;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Email
+namespace LessMarkup.Engine.Email
 {
     class MailTemplateProvider : IMailTemplateProvider
     {

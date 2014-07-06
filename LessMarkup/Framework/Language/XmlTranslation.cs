@@ -5,7 +5,7 @@
 using System;
 using System.Xml.Serialization;
 
-namespace LessMarkup.Framework.Language
+namespace LessMarkup.Engine.Language
 {
     [Serializable]
     public class XmlTranslation

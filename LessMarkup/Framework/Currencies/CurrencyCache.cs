@@ -11,7 +11,7 @@ using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.Framework.Currencies
+namespace LessMarkup.Engine.Currencies
 {
     public class CurrencyCache : ICacheHandler
     {

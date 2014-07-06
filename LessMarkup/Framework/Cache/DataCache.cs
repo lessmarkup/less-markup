@@ -4,12 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Cache
+namespace LessMarkup.Engine.Cache
 {
     class DataCache : IDataCache
     {

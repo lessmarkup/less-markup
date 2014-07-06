@@ -6,7 +6,7 @@ using System.IO;
 using System.Web.Hosting;
 using LessMarkup.Interfaces.Cache;
 
-namespace LessMarkup.Framework.FileSystem
+namespace LessMarkup.Engine.FileSystem
 {
     class CompiledVirtualFile : VirtualFile
     {

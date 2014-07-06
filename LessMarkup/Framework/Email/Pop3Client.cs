@@ -10,9 +10,9 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 
-namespace LessMarkup.Framework.Email
+namespace LessMarkup.Engine.Email
 {
     public class Pop3Client
     {

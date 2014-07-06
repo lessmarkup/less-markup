@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LessMarkup.Framework.Email
+namespace LessMarkup.Engine.Email
 {
     public class Pop3Message
     {

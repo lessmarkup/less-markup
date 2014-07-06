@@ -13,15 +13,15 @@ using System.Web.Configuration;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
 using LessMarkup.DataFramework;
-using LessMarkup.Framework.Build.Mail;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Build.Mail;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 using Microsoft.CSharp;
 
-namespace LessMarkup.Framework.Build.View
+namespace LessMarkup.Engine.Build.View
 {
     class ViewBuilder
     {

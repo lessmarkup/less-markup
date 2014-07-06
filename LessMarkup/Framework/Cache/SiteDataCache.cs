@@ -5,12 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
-namespace LessMarkup.Framework.Cache
+namespace LessMarkup.Engine.Cache
 {
     class SiteDataCache : IDataCache
     {

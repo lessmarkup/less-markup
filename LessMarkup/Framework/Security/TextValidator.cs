@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     public class TextValidator
     {

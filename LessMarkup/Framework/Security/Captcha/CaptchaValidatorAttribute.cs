@@ -5,7 +5,7 @@
 using System.Web.Mvc;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Security.Captcha
+namespace LessMarkup.Engine.Security.Captcha
 {
     public class CaptchaValidatorAttribute : ActionFilterAttribute
     {

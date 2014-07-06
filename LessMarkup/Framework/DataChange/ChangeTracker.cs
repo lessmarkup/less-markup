@@ -8,13 +8,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.DataChange
+namespace LessMarkup.Engine.DataChange
 {
     class ChangeTracker : IChangeTracker
     {

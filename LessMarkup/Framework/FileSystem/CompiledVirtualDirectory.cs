@@ -8,7 +8,7 @@ using System.Linq;
 using System.Web.Hosting;
 using LessMarkup.Interfaces.Cache;
 
-namespace LessMarkup.Framework.FileSystem
+namespace LessMarkup.Engine.FileSystem
 {
     class CompiledVirtualDirectory : VirtualDirectory
     {

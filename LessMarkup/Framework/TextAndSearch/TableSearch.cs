@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.Framework.TextAndSearch
+namespace LessMarkup.Engine.TextAndSearch
 {
     public class TableSearch
     {

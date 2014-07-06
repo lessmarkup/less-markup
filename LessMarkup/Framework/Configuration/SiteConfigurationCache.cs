@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.Framework.Language;
+using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Configuration
+namespace LessMarkup.Engine.Configuration
 {
     [RecordModel]
     public class SiteConfigurationCache : ICacheHandler

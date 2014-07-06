@@ -9,13 +9,13 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using LessMarkup.DataFramework;
-using LessMarkup.Framework.FileSystem;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.FileSystem;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.System;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
-namespace LessMarkup.Framework.Configuration
+namespace LessMarkup.Engine.Configuration
 {
     class EngineConfiguration : IEngineConfiguration
     {

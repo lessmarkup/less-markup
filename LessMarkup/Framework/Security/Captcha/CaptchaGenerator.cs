@@ -8,7 +8,7 @@ using System.Web.UI;
 using LessMarkup.Interfaces.System;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
-namespace LessMarkup.Framework.Security.Captcha
+namespace LessMarkup.Engine.Security.Captcha
 {
     public static class CaptchaGenerator
     {

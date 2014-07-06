@@ -1,4 +1,4 @@
-﻿using LessMarkup.Framework.Configuration;
+﻿using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 

@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Framework.Helpers;
-using LessMarkup.Framework.Language;
+using LessMarkup.Engine.Helpers;
+using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface.NodeHandlers.Common;

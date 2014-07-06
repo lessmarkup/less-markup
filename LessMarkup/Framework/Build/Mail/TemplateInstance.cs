@@ -9,7 +9,7 @@ using System.Text;
 using System.Web.WebPages;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Build.Mail
+namespace LessMarkup.Engine.Build.Mail
 {
     public abstract class TemplateInstance : WebPageExecutingBase, IDisposable
     {

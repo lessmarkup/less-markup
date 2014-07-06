@@ -11,7 +11,7 @@ using System.Web.Routing;
 using LessMarkup.Interfaces.Module;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
-namespace LessMarkup.Framework.Routing
+namespace LessMarkup.Engine.Routing
 {
     public class RouteConfiguration
     {

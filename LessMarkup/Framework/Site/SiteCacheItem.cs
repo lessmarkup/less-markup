@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.Site
+namespace LessMarkup.Engine.Site
 {
     public class SiteCacheItem
     {

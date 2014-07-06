@@ -7,12 +7,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Text;
 
-namespace LessMarkup.Framework.TextAndSearch
+namespace LessMarkup.Engine.TextAndSearch
 {
     class TextSearchEngine : ITextSearch
     {

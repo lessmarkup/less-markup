@@ -9,8 +9,8 @@ using System.Net.Mail;
 using System.Web.Mail;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.User;
-using LessMarkup.Framework.Configuration;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Configuration;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
@@ -19,7 +19,7 @@ using MailMessage = System.Net.Mail.MailMessage;
 // We use here deprecated version of Microsoft mail sender as it supports normal SSL processing
 #pragma warning disable 0618
 
-namespace LessMarkup.Framework.Email
+namespace LessMarkup.Engine.Email
 {
     public class MailSender : IMailSender
     {

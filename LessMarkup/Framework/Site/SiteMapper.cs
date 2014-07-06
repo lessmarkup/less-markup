@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Site
+namespace LessMarkup.Engine.Site
 {
     class SiteMapper : ISiteMapper, IRequestMapper, IInitialize
     {

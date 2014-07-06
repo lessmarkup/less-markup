@@ -8,7 +8,7 @@ using System.Reflection;
 using LessMarkup.Interfaces;
 using Newtonsoft.Json;
 
-namespace LessMarkup.Framework.Helpers
+namespace LessMarkup.Engine.Helpers
 {
     public static class JsonHelper
     {

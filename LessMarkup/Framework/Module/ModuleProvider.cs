@@ -9,15 +9,15 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using Autofac;
-using LessMarkup.Framework.Configuration;
-using LessMarkup.Framework.FileSystem;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Configuration;
+using LessMarkup.Engine.FileSystem;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
-namespace LessMarkup.Framework.Module
+namespace LessMarkup.Engine.Module
 {
     public class ModuleProvider : IModuleProvider
     {

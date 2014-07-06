@@ -9,12 +9,12 @@ using System.Net;
 using System.Web;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Statistics;
-using LessMarkup.Framework.Logging;
-using LessMarkup.Framework.Response;
+using LessMarkup.Engine.Logging;
+using LessMarkup.Engine.Response;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Helpers
+namespace LessMarkup.Engine.Helpers
 {
     public class StatisticsHelper
     {

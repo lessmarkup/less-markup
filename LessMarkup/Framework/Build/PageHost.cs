@@ -5,7 +5,7 @@
 using System.Web.Mvc.Razor;
 using System.Web.Razor;
 
-namespace LessMarkup.Framework.Build
+namespace LessMarkup.Engine.Build
 {
     class PageHost : MvcWebPageRazorHost
     {

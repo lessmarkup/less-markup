@@ -7,8 +7,8 @@
     <ProjectGuid>{6E63AAB8-6BA5-494A-B566-7737D9D46AB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LessMarkup.Framework</RootNamespace>
-    <AssemblyName>LessMarkup.Framework</AssemblyName>
+    <RootNamespace>LessMarkup.Engine</RootNamespace>
+    <AssemblyName>LessMarkup.Engine</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

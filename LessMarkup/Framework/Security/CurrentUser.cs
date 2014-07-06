@@ -12,13 +12,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Security;
-using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.User;
-using LessMarkup.Framework.Configuration;
-using LessMarkup.Framework.Helpers;
-using LessMarkup.Framework.Language;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Configuration;
+using LessMarkup.Engine.Helpers;
+using LessMarkup.Engine.Language;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -26,7 +25,7 @@ using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     class CurrentUser : ICurrentUser
     {

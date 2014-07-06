@@ -5,7 +5,7 @@
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.Framework.TextAndSearch
+namespace LessMarkup.Engine.TextAndSearch
 {
     public interface ITextTagHandler
     {

@@ -12,12 +12,12 @@ using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
 using AutoMapper;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.Language
+namespace LessMarkup.Engine.Language
 {
     public class LanguageCache : ICacheHandler
     {

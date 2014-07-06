@@ -9,11 +9,11 @@ using System.Linq;
 using System.Web.Configuration;
 using System.Web.Security;
 using LessMarkup.DataObjects.User;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Data;
 using WebMatrix.WebData;
-using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
-namespace LessMarkup.Framework.Security.Membership
+namespace LessMarkup.Engine.Security.Membership
 {
     public class MembershipProvider : ExtendedMembershipProvider
     {

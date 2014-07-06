@@ -4,7 +4,7 @@
 
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Security.Models
+namespace LessMarkup.Engine.Security.Models
 {
     public class GeneratedPassswordModel : MailTemplateModel
     {

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace LessMarkup.Framework.Scripting
+namespace LessMarkup.Engine.Scripting
 {
     class ScriptEvaluator
     {

@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LessMarkup.Framework.Scripting
+namespace LessMarkup.Engine.Scripting
 {
     class ExpressionParser
     {

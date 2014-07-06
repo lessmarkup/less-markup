@@ -4,7 +4,7 @@
 
 using System;
 using System.Web.Mvc;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.UserInterface.Model.Structure;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -12,7 +12,7 @@ namespace LessMarkup.UserInterface.Controller
 {
     public class NodeController : System.Web.Mvc.Controller
     {
-        [Framework.Routing.Route("Node", "{*path}")]
+        [Engine.Routing.Route("Node", "{*path}")]
         public ActionResult NodeEntryPoint(string path)
         {
             try

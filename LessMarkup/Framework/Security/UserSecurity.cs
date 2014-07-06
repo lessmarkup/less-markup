@@ -12,14 +12,14 @@ using System.Web.Security;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.User;
-using LessMarkup.Framework.Configuration;
-using LessMarkup.Framework.Security.Models;
+using LessMarkup.Engine.Configuration;
+using LessMarkup.Engine.Security.Models;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     class UserSecurity : IUserSecurity
     {

@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Exceptions;
 
-namespace LessMarkup.Framework.Language
+namespace LessMarkup.Engine.Language
 {
     public class CachedLanguage
     {

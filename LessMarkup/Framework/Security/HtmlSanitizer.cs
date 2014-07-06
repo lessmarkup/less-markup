@@ -7,7 +7,7 @@ using System.IO;
 using HtmlAgilityPack;
 using LessMarkup.Interfaces.Security;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     public class HtmlSanitizer : IHtmlSanitizer
     {

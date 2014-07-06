@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.Build.View
+namespace LessMarkup.Engine.Build.View
 {
     public class ViewImport
     {

@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Framework.Build.Data;
-using LessMarkup.Framework.Build.View;
+using LessMarkup.Engine.Build.Data;
+using LessMarkup.Engine.Build.View;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Build
+namespace LessMarkup.Engine.Build
 {
     class BuildEngine : IBuildEngine
     {

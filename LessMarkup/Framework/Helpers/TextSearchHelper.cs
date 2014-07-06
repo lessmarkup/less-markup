@@ -4,7 +4,7 @@
 
 using System.Web;
 
-namespace LessMarkup.Framework.Helpers
+namespace LessMarkup.Engine.Helpers
 {
     public static class TextSearchHelper
     {

@@ -8,7 +8,7 @@ using System.Text;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.Framework.TextAndSearch
+namespace LessMarkup.Engine.TextAndSearch
 {
     public static class FormattedText
     {

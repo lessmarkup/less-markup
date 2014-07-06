@@ -5,13 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using LessMarkup.Framework.FileSystem;
-using LessMarkup.Framework.Helpers;
+using LessMarkup.Engine.FileSystem;
+using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 
-namespace LessMarkup.Framework.HtmlTemplate
+namespace LessMarkup.Engine.HtmlTemplate
 {
     public class HtmlTemplateCache : ICacheHandler
     {

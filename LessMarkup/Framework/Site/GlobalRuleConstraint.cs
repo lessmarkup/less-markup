@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Routing;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Framework.Site
+namespace LessMarkup.Engine.Site
 {
     public class GlobalRuleConstraint : IRouteConstraint
     {

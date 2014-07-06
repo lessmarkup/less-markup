@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace LessMarkup.Framework.Configuration
+namespace LessMarkup.Engine.Configuration
 {
     [XmlRoot(ElementName = "Configuration", Namespace = "http://www.lessmarkup.com/LessMarkup/EngineConfiguration")]
     public class FileConfiguration

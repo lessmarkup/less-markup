@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Timers;
-using LessMarkup.Framework.Helpers;
+using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces.Exceptions;
 
-namespace LessMarkup.Framework.Logging
+namespace LessMarkup.Engine.Logging
 {
     public static class LoggingHelper
     {

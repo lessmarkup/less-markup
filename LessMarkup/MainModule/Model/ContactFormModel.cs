@@ -1,4 +1,4 @@
-﻿using LessMarkup.Framework.Language;
+﻿using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.RecordModel;
 
 namespace LessMarkup.MainModule.Model

@@ -4,7 +4,7 @@
 
 using System.IO;
 
-namespace LessMarkup.Framework.Response
+namespace LessMarkup.Engine.Response
 {
     public class ResponseFilterStream : Stream
     {

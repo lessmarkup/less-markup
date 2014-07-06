@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;
 
-namespace LessMarkup.Framework.Helpers
+namespace LessMarkup.Engine.Helpers
 {
     public static class LoadHelper
     {

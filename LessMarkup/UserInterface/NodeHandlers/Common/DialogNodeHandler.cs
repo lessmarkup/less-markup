@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.Framework.Helpers;
-using LessMarkup.Framework.Language;
+using LessMarkup.Engine.Helpers;
+using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;

@@ -5,7 +5,7 @@
 using System;
 using LessMarkup.Interfaces.Cache;
 
-namespace LessMarkup.Framework.Cache
+namespace LessMarkup.Engine.Cache
 {
     internal class CacheItem
     {

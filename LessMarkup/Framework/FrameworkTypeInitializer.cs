@@ -5,14 +5,14 @@
 using System;
 using System.Linq;
 using Autofac;
-using LessMarkup.Framework.Build;
-using LessMarkup.Framework.Cache;
-using LessMarkup.Framework.DataChange;
-using LessMarkup.Framework.Email;
-using LessMarkup.Framework.Module;
-using LessMarkup.Framework.Security;
-using LessMarkup.Framework.Site;
-using LessMarkup.Framework.TextAndSearch;
+using LessMarkup.Engine.Build;
+using LessMarkup.Engine.Cache;
+using LessMarkup.Engine.DataChange;
+using LessMarkup.Engine.Email;
+using LessMarkup.Engine.Module;
+using LessMarkup.Engine.Security;
+using LessMarkup.Engine.Site;
+using LessMarkup.Engine.TextAndSearch;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -20,7 +20,7 @@ using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 using LessMarkup.Interfaces.Text;
 
-namespace LessMarkup.Framework
+namespace LessMarkup.Engine
 {
     public class FrameworkTypeInitializer
     {

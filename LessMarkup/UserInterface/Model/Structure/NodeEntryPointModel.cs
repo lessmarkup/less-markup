@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;

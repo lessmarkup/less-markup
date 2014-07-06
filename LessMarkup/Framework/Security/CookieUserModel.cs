@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace LessMarkup.Framework.Security
+namespace LessMarkup.Engine.Security
 {
     class CookieUserModel
     {

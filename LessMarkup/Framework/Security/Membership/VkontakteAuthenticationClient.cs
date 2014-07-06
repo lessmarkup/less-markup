@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using DotNetOpenAuth.AspNet;
 
-namespace LessMarkup.Framework.Security.Membership
+namespace LessMarkup.Engine.Security.Membership
 {
     public class VkontakteAuthenticationClient : IAuthenticationClient
     {

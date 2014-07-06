@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Cache;
 
-namespace LessMarkup.Framework.HtmlTemplate
+namespace LessMarkup.Engine.HtmlTemplate
 {
     public static class TemplateHelper
     {

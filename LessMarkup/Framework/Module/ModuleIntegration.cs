@@ -5,14 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using LessMarkup.Framework.Logging;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.Interfaces.Text;
 
-namespace LessMarkup.Framework.Module
+namespace LessMarkup.Engine.Module
 {
     class ModuleIntegration : IModuleIntegration
     {

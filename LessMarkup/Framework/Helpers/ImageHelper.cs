@@ -11,12 +11,12 @@ using System.Linq;
 using System.Web;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.Gallery;
-using LessMarkup.Framework.Configuration;
+using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 
-namespace LessMarkup.Framework.Helpers
+namespace LessMarkup.Engine.Helpers
 {
     public static class ImageHelper
     {
