@@ -4,8 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using LessMarkup.Interfaces.Structure;
 
-namespace LessMarkup.Interfaces.Structure
+namespace LessMarkup.Framework.NodeHandlers
 {
     public abstract class AbstractNodeHandler : INodeHandler
     {

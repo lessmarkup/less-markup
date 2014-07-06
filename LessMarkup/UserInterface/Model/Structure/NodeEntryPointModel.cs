@@ -4,11 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
-using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -73,6 +73,11 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public ActionResult CreateResult(System.Web.Mvc.Controller controller)
         {
+            if (controller.HttpContext.IsWebSocketRequest)
+            {
+                
+            }
+
             var result = new ViewResult();
             controller.ViewData.Model = this;
             result.ViewData = controller.ViewData;

@@ -225,7 +225,7 @@
       <Project>{b47a0f26-803c-4536-a6d8-4649c2db011a}</Project>
       <Name>DataFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Framework\Engine.csproj">
+    <ProjectReference Include="..\Engine\Engine.csproj">
       <Project>{6E63AAB8-6BA5-494A-B566-7737D9D46AB4}</Project>
       <Name>Engine</Name>
     </ProjectReference>
