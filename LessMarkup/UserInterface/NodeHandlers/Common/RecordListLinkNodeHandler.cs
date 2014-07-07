@@ -32,12 +32,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             AddCellLink(text, link);
         }
 
-        public override bool HasChildren
+        protected override bool HasChildren
         {
             get { return _cellLinkHandlers.Any(); }
         }
 
-        public override ChildHandlerSettings GetChildHandler(string path)
+        protected override ChildHandlerSettings GetChildHandler(string path)
         {
             var split = path.Split(new[] {'/'});
             if (split.Length < 2)

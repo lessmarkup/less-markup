@@ -12,7 +12,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.EngineConfiguration, IsGlobal = true)]
     public class EngineNodeHandler : DialogNodeHandler<EngineConfigurationModel>
     {
-        protected override EngineConfigurationModel LoadObject(object settings)
+        protected override EngineConfigurationModel LoadObject()
         {
             var model = DependencyResolver.Resolve<EngineConfigurationModel>();
             model.Initialize();

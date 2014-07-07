@@ -190,7 +190,6 @@ namespace LessMarkup.Engine.Language
         RegisterHere,
         EnterPassword,
         UserIsNotValidated,
-        ViewsTree,
         Up,
         Down,
         Left,

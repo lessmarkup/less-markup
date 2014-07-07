@@ -69,6 +69,7 @@
     <Translation Id="UserAgreement" Text="User Agreement"/>
     <Translation Id="Agree" Text="I Agree"/>
     <Translation Id="SiteProperties" Text="Site Properties"/>
+    <Translation Id="ViewsTree" Text="Views Tree"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

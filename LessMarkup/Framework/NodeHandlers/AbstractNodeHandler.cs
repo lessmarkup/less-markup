@@ -13,25 +13,82 @@ namespace LessMarkup.Framework.NodeHandlers
         private readonly List<string> _scripts = new List<string>(); 
         private readonly List<string> _stylesheets = new List<string>();
 
-        public abstract object GetViewData(long objectId, object settings, object controller);
-        public virtual bool HasChildren { get { return false; } }
-        public virtual ChildHandlerSettings GetChildHandler(string path)
+        private long _objectId;
+        private string _path;
+        private object _settings;
+
+        protected string Path { get { return _path; } }
+
+        protected long ObjectId { get { return _objectId; } }
+
+        protected T GetSettings<T>()
+        {
+            return (T) _settings;
+        }
+
+        #region INodeHandler Implementation
+
+        object INodeHandler.GetViewData()
+        {
+            return GetViewData();
+        }
+
+        object INodeHandler.Initialize(long objectId, object settings, object controller, string path)
+        {
+            _objectId = objectId;
+            _path = path;
+            _settings = settings;
+
+            return Initialize(controller);
+        }
+
+        bool INodeHandler.HasChildren { get { return HasChildren; } }
+
+        ChildHandlerSettings INodeHandler.GetChildHandler(string path)
+        {
+            return GetChildHandler(path);
+        }
+
+        bool INodeHandler.IsStatic { get { return IsStatic; } }
+
+        string[] INodeHandler.Scripts { get { return _scripts.ToArray(); } }
+        string[] INodeHandler.Stylesheets { get { return _stylesheets.ToArray(); } }
+
+        Type INodeHandler.SettingsModel { get { return SettingsModel; } }
+
+        string INodeHandler.TemplateId { get { return TemplateId; } }
+
+        string INodeHandler.ViewType { get { return ViewType; } }
+
+        #endregion
+
+        protected virtual object GetViewData()
         {
             return null;
         }
 
-        public virtual bool IsStatic { get { return false; } }
+        protected virtual object Initialize(object controller)
+        {
+            return null;
+        }
 
-        public string[] Scripts { get { return _scripts.ToArray(); } }
-        public string[] Stylesheets { get { return _stylesheets.ToArray(); } }
-        public virtual Type SettingsModel { get { return null; } }
+        protected virtual bool HasChildren {get { return false; }}
 
-        public string TemplateId
+        protected virtual ChildHandlerSettings GetChildHandler(string path)
+        {
+            return null;
+        }
+
+        protected virtual bool IsStatic { get { return false; } }
+
+        protected virtual Type SettingsModel { get { return null; } }
+
+        protected virtual string TemplateId
         {
             get { return ViewType.ToLower(); }
         }
 
-        public virtual string ViewType
+        protected virtual string ViewType
         {
             get { return GetType().Name; }
         }

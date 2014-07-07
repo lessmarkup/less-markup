@@ -99,7 +99,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return (IModelCollection<T>) DependencyResolver.Resolve(_recordModel.CollectionType);
         }
 
-        public override string ViewType
+        protected override string ViewType
         {
             get { return "RecordList"; }
         }
@@ -140,7 +140,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _cellLinks.Add(new CellLink { Text = text, Link = link });
         }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object GetViewData()
         {
             var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;

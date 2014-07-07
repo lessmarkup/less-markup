@@ -8,12 +8,7 @@ namespace LessMarkup.UserInterface.NodeHandlers
 {
     public class DefaultRootNodeHandler : AbstractNodeHandler
     {
-        public override object GetViewData(long objectId, object settings, object controller)
-        {
-            return null;
-        }
-
-        public override bool IsStatic
+        protected override bool IsStatic
         {
             get { return true; }
         }

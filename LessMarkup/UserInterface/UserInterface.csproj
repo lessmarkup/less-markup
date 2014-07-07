@@ -169,7 +169,6 @@
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
     <Compile Include="NodeHandlers\Configuration\ConfigurationRootNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\DialogNodeHandler.cs" />
-    <Compile Include="NodeHandlers\Common\ElementNodeHandler.cs" />
     <Compile Include="Model\Global\EmailConfigurationModel.cs" />
     <Compile Include="NodeHandlers\Configuration\NodeAccessNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\EmailNodeHandler.cs" />

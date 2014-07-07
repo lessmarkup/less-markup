@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.NodeHandlers;
@@ -21,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
-    [ConfigurationHandler(MainModuleTextIds.ViewsTree)]
+    [ConfigurationHandler(UserInterfaceTextIds.ViewsTree)]
     public class NodeListNodeHandler : AbstractNodeHandler, IRecordNodeHandler
     {
         private long? _siteId;
@@ -64,7 +63,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 : domainModel.GetSiteCollection<Node>();
         }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object GetViewData()
         {
             var modelCache = _dataCache.Get<RecordModelCache>();
 
@@ -270,12 +269,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             return settings;
         }
 
-        public override bool HasChildren
+        protected override bool HasChildren
         {
             get { return true; }
         }
 
-        public override ChildHandlerSettings GetChildHandler(string path)
+        protected override ChildHandlerSettings GetChildHandler(string path)
         {
             var split = path.Split(new[] {'/'});
             long nodeId;

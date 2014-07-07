@@ -9,7 +9,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     {
         private long? _siteId;
 
-        protected override SiteConfigurationCache LoadObject(object settings)
+        protected override SiteConfigurationCache LoadObject()
         {
             var cache = Interfaces.DependencyResolver.Resolve<SiteConfigurationCache>();
             cache.Initialize(_siteId);

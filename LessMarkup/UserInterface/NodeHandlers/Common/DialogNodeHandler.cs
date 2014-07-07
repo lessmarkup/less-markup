@@ -13,12 +13,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
     public abstract class DialogNodeHandler<T> : AbstractNodeHandler
     {
-        protected abstract T LoadObject(object settings);
+        protected abstract T LoadObject();
         protected abstract string SaveObject(T changedObject);
 
         protected virtual string ApplyCaption { get { return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object GetViewData()
         {
             var definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
             definitionModel.Initialize(typeof (T));
@@ -26,7 +26,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new
             {
                 Definition = definitionModel,
-                Object = LoadObject(settings),
+                Object = LoadObject(),
                 ApplyCaption
             };
         }
@@ -36,7 +36,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return SaveObject(changedObject) ?? LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.SuccessfullySaved);
         }
 
-        public override string ViewType
+        protected override string ViewType
         {
             get { return "Dialog"; }
         }

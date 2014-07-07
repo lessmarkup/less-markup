@@ -39,6 +39,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public List<TreeNodeEntry> Children { get; set; }
         }
 
+        private readonly List<FlatNodeEntry> _flatNodeList = new List<FlatNodeEntry>();
+        private TreeNodeEntry _treeRoot;
+
         public FlatPageNodeHandler(IDataCache dataCache)
         {
             _dataCache = dataCache;
@@ -89,26 +92,23 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
         }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object Initialize(object controller)
         {
-            var settingsModel = (FlatPageSettingsModel) settings;
+            var settingsModel = GetSettings<FlatPageSettingsModel>();
 
             var nodeCache = _dataCache.Get<NodeCache>();
 
-            var currentNode = nodeCache.GetNode(objectId);
+            var currentNode = nodeCache.GetNode(ObjectId);
 
-            var flatNodeList = new List<FlatNodeEntry>();
-            var treeRoot = new TreeNodeEntry {Children = new List<TreeNodeEntry>()};
+            _treeRoot = new TreeNodeEntry { Children = new List<TreeNodeEntry>() };
 
-            var maxLevel = 2;
-
-            FillFlatList(currentNode, flatNodeList, treeRoot, "", 1, maxLevel);
+            FillFlatList(currentNode, _flatNodeList, _treeRoot);
 
             if (settingsModel == null || settingsModel.LoadOnShow)
             {
-                foreach (var node in flatNodeList)
+                foreach (var node in _flatNodeList)
                 {
-                    var handler = (INodeHandler) Interfaces.DependencyResolver.Resolve(node.HandlerType);
+                    var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(node.HandlerType);
                     object nodeSettings = null;
 
                     if (handler.SettingsModel != null && !string.IsNullOrEmpty(node.Settings))
@@ -116,27 +116,36 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
                     }
 
-                    node.ViewData = handler.GetViewData(node.NodeId, nodeSettings, controller);
-                    node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller) controller);
+                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path);
+
+                    node.ViewData = handler.GetViewData();
+                    node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller)controller);
                 }
             }
 
             var pageIndex = 1;
 
-            foreach (var node in flatNodeList)
+            foreach (var node in _flatNodeList)
             {
                 node.UniqueId = string.Format("flatpage{0}", pageIndex++);
             }
 
+            return null;
+        }
+
+        protected override object GetViewData()
+        {
+            var settingsModel = GetSettings<FlatPageSettingsModel>();
+
             return new
             {
-                Tree = treeRoot.Children,
-                Flat = flatNodeList,
+                Tree = _treeRoot.Children,
+                Flat = _flatNodeList,
                 Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right
             };
         }
 
-        public override Type SettingsModel
+        protected override Type SettingsModel
         {
             get { return typeof(FlatPageSettingsModel); }
         }

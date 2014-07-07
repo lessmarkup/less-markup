@@ -147,7 +147,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, _nodeHandler.SettingsModel);
             }
 
-            ViewData = _nodeHandler.GetViewData(objectId, settingsObject, controller);
+            _nodeHandler.Initialize(objectId, settingsObject, controller, path);
+            ViewData = _nodeHandler.GetViewData();
             IsStatic = _nodeHandler.IsStatic;
 
             return true;

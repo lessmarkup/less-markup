@@ -15,6 +15,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
     {
         private readonly object _syncLock = new object();
         private readonly Dictionary<long, TrackerSite> _sites = new Dictionary<long, TrackerSite>();
+        private readonly Dictionary<string, long?> _channelToSite = new Dictionary<string, long?>();
         private TrackerSite _globalSite;
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
@@ -93,6 +94,8 @@ namespace LessMarkup.UserInterface.ChangeTracking
                 }
             }
 
+            _channelToSite[channelId] = siteId;
+
             trackerSite.RegisterChannel(channelId, modelId, filter, _dataCache);
         }
 
@@ -116,7 +119,26 @@ namespace LessMarkup.UserInterface.ChangeTracking
 
         public void DeregisterChannel(string channelId)
         {
-            var site = Site;
+            long? siteId;
+            if (!_channelToSite.TryGetValue(channelId, out siteId))
+            {
+                return;
+            }
+
+            TrackerSite site;
+
+            if (siteId.HasValue)
+            {
+                if (!_sites.TryGetValue(siteId.Value, out site))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                site = _globalSite;
+            }
+
             if (site != null)
             {
                 site.DeregisterChannel(channelId);

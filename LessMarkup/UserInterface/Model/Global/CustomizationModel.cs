@@ -129,7 +129,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 }
             }
 
-            public bool DeleteOnly { get { return true; } }
+            public bool DeleteOnly { get { return false; } }
         }
 
         [InputField(InputFieldType.Hidden, DefaultValue = false)]

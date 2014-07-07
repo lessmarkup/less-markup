@@ -140,14 +140,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             }
         }
 
-        public override bool HasChildren
+        protected override bool HasChildren
         {
             get { return true; }
         }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object GetViewData()
         {
-            var path = _dataCache.Get<NodeCache>().GetNode(objectId).FullPath;
+            var path = _dataCache.Get<NodeCache>().GetNode(ObjectId).FullPath;
 
             return new
             {
@@ -164,7 +164,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             };
         }
 
-        public override ChildHandlerSettings GetChildHandler(string path)
+        protected override ChildHandlerSettings GetChildHandler(string path)
         {
             var parts = path.Split(new[] {'/'}).Select(p => p.Trim()).ToList();
             if (parts.Count == 0)

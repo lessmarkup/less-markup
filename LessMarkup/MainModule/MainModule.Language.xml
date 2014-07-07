@@ -185,7 +185,6 @@
     <Translation Id="RegisterHere" Text="Register here"/>
     <Translation Id="EnterPassword" Text="Enter Password"/>
     <Translation Id="UserIsNotValidated" Text="User is not validated. You cannot submit any data until you complete the validation. You should receive validation instructions by e-mail."/>
-    <Translation Id="ViewsTree" Text="Views Tree"/>
     <Translation Id="Up" Text="Up"/>
     <Translation Id="Down" Text="Down"/>
     <Translation Id="Left" Text="Left"/>

@@ -15,15 +15,17 @@ namespace LessMarkup.MainModule.NodeHandlers
             AddScript("/Scripts/article.js");
         }
 
-        public override object GetViewData(long objectId, object settings, object controller)
+        protected override object GetViewData()
         {
+            var settings = GetSettings<ArticleModel>();
+
             return new
             {
-                Body = settings != null ? ((ArticleModel)settings).Body : ""
+                Body = settings != null ? settings.Body : ""
             };
         }
 
-        public override Type SettingsModel
+        protected override Type SettingsModel
         {
             get { return typeof(ArticleModel); }
         }

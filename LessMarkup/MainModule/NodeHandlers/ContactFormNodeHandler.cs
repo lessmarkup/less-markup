@@ -13,9 +13,9 @@ namespace LessMarkup.MainModule.NodeHandlers
 {
     public class ContactFormNodeHandler : DialogNodeHandler<SendContactModel>
     {
-        protected override SendContactModel LoadObject(object settings)
+        protected override SendContactModel LoadObject()
         {
-            var contactFormSettings = (ContactFormModel) settings;
+            var contactFormSettings = GetSettings<ContactFormModel>();
 
             var result = Interfaces.DependencyResolver.Resolve<SendContactModel>();
             result.UserEmail = contactFormSettings.ContactEmail;
@@ -36,7 +36,7 @@ namespace LessMarkup.MainModule.NodeHandlers
             return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ContactFormSent);
         }
 
-        public override Type SettingsModel
+        protected override Type SettingsModel
         {
             get { return typeof(ContactFormModel); }
         }

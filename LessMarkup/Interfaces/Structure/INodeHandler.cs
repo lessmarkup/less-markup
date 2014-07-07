@@ -8,7 +8,8 @@ namespace LessMarkup.Interfaces.Structure
 {
     public interface INodeHandler
     {
-        object GetViewData(long objectId, object settings, object controller);
+        object Initialize(long objectId, object settings, object controller, string path);
+        object GetViewData();
         bool HasChildren { get; }
         bool IsStatic { get; }
         ChildHandlerSettings GetChildHandler(string path);
