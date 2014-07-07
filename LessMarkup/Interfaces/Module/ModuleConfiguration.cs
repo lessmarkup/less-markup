@@ -28,7 +28,7 @@ namespace LessMarkup.Interfaces.Module
 
         public IModuleInitializer Initializer { get; set; }
 
-        public ModuleType ModuleType { get; set; }
+        public string ModuleType { get; set; }
 
         public Assembly Assembly { get { return _assembly; } }
 

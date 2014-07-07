@@ -69,9 +69,9 @@
     <Translation Id="UserAgreement" Text="User Agreement"/>
     <Translation Id="Agree" Text="I Agree"/>
     <Translation Id="SiteProperties" Text="Site Properties"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="UniqueId" Text="Unique ID"/>
+    <Translation Id="EditFile" Text="Edit File"/>
+    <Translation Id="FileName" Text="File Name"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

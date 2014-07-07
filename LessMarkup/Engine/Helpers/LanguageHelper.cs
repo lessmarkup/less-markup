@@ -5,7 +5,6 @@
 using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Helpers
 {
@@ -18,7 +17,7 @@ namespace LessMarkup.Engine.Helpers
             return languageCache;
         }
 
-        public static string GetText(ModuleType moduleType, object id, params object[] args)
+        public static string GetText(string moduleType, object id, params object[] args)
         {
             if (id == null)
             {
@@ -27,7 +26,7 @@ namespace LessMarkup.Engine.Helpers
             return string.Format(GetLanguageCache().GetTranslation(id.ToString(), moduleType), args);
         }
 
-        public static string GetTextWithDefault(ModuleType moduleType, object id, object defaultId, ModuleType defaultModuleType, params object[] args)
+        public static string GetTextWithDefault(string moduleType, object id, object defaultId, string defaultModuleType, params object[] args)
         {
             if (id == null)
             {

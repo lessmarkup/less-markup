@@ -37,7 +37,7 @@ namespace LessMarkup.Engine.Language
             _moduleProvider = moduleProvider;
         }
 
-        private void LoadTranslation(Assembly assembly, ModuleType moduleType)
+        private void LoadTranslation(Assembly assembly, string moduleType)
         {
             var resourceName = assembly.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith("Language.xml"));
 
@@ -171,7 +171,7 @@ namespace LessMarkup.Engine.Language
             }
         }
 
-        public string GetTranslation(string id, ModuleType moduleType, bool throwIfNotFound = true)
+        public string GetTranslation(string id, string moduleType, bool throwIfNotFound = true)
         {
             var language = CurrentLanguage;
 

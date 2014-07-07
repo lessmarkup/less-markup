@@ -310,7 +310,7 @@
     <Compile Include="FileSystem\SpecialFolder.cs" />
     <Compile Include="TextAndSearch\TableSearch.cs" />
     <Compile Include="TextAndSearch\TextSearchEngine.cs" />
-    <Compile Include="FrameworkTypeInitializer.cs" />
+    <Compile Include="EngineTypeInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFramework\DataFramework.csproj">

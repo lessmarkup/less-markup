@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
-using LessMarkup.Interfaces.Module;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -26,14 +26,14 @@ namespace LessMarkup.MainModule.NodeHandlers
 
         protected override string ApplyCaption
         {
-            get { return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.SendMessage); }
+            get { return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.SendMessage); }
         }
 
         protected override string SaveObject(SendContactModel changedObject)
         {
             changedObject.Submit();
 
-            return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.ContactFormSent);
+            return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ContactFormSent);
         }
 
         public override Type SettingsModel

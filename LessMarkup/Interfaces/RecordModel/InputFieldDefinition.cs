@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Interfaces.RecordModel
 {
@@ -23,7 +22,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public object DefaultValue { get; set; }
         public List<InputFieldEnum> EnumValues { get; set; }
 
-        public void Initialize(InputFieldAttribute configuration, PropertyInfo property, ModuleType moduleType)
+        public void Initialize(InputFieldAttribute configuration, PropertyInfo property, string moduleType)
         {
             Id = configuration.Id;
             ReadOnly = configuration.ReadOnly;

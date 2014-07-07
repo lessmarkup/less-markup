@@ -6,6 +6,11 @@
                     <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}"></h2>
                     <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}"></h3>
                 </div>
+
+                <div class="toolbar">
+        	    <button ng-repeat="button in getPageScope(page).toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.Id)" ng-click="onToolbarButtonClick(button.Id)" ng-bind="button.Text"></button>
+	        </div>
+
                 <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
             </div>
         </div>

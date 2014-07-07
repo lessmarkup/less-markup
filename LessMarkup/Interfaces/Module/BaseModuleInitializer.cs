@@ -25,7 +25,7 @@ namespace LessMarkup.Interfaces.Module
         }
 
         public abstract string Name { get; }
-        public abstract ModuleType Type { get; }
+        public abstract string ModuleType { get; }
         public abstract Type[] ModelTypes { get; }
     }
 }

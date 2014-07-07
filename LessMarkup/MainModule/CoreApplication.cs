@@ -70,7 +70,7 @@ namespace LessMarkup.MainModule
             _resolverInitialized = true;
             var builder = new ContainerBuilder();
             DataFrameworkTypeInitializer.Load(builder);
-            FrameworkTypeInitializer.Load(builder);
+            EngineTypeInitializer.Load(builder);
             builder.RegisterFilterProvider();
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly());
 
@@ -360,14 +360,6 @@ namespace LessMarkup.MainModule
             }
 
             currentUser.MapCurrentUser();
-
-            if (!isResourceRequest)
-            {
-                foreach (var handler in DependencyResolver.Resolve<IModuleIntegration>().GetRequestHandlers<IModuleRequestHandler>())
-                {
-                    handler.HandleRequest();
-                }
-            }
         }
 
         private void OnError(object sender, EventArgs eventArgs)

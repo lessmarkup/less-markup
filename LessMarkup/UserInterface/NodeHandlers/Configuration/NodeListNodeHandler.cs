@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.NodeHandlers;
@@ -20,7 +21,7 @@ using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
-    [ConfigurationHandler(MainModuleTextIds.ViewsTree, ModuleType = ModuleType.MainModule)]
+    [ConfigurationHandler(MainModuleTextIds.ViewsTree, ModuleType = Constants.ModuleType.MainModule)]
     public class NodeListNodeHandler : AbstractNodeHandler, IRecordNodeHandler
     {
         private long? _siteId;
@@ -46,7 +47,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             _currentUser = currentUser;
         }
 
-        public static string GetHandlerName(Type handlerType, ModuleType moduleType)
+        public static string GetHandlerName(Type handlerType, string moduleType)
         {
             var typeName = handlerType.Name;
             if (typeName.EndsWith("NodeHandler"))

@@ -28,9 +28,9 @@ namespace LessMarkup.Engine.Site
             _engineConfiguration = engineConfiguration;
         }
 
-        private HashSet<ModuleType> GetSystemModuleTypes()
+        private HashSet<string> GetSystemModuleTypes()
         {
-            return new HashSet<ModuleType>(_moduleProvider.Modules.Where(m => m.System).Select(m => m.ModuleType));
+            return new HashSet<string>(_moduleProvider.Modules.Where(m => m.System).Select(m => m.ModuleType));
         }
 
         private void OnSiteMapped(SiteCacheItem site)
@@ -254,7 +254,7 @@ namespace LessMarkup.Engine.Site
             }
         }
 
-        public IEnumerable<ModuleType> ModuleTypes
+        public IEnumerable<string> ModuleTypes
         {
             get
             {
@@ -267,7 +267,7 @@ namespace LessMarkup.Engine.Site
             }
         }
 
-        public bool ModuleEnabled(ModuleType moduleType)
+        public bool ModuleEnabled(string moduleType)
         {
             var currentSite = GetCurrentSite();
             return currentSite != null && currentSite.Enabled && currentSite.ModuleTypes.Contains(moduleType);

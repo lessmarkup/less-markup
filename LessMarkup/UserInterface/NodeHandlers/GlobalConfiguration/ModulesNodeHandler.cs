@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
@@ -32,8 +32,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             _domainModelProvider = domainModelProvider;
             _siteMapper = siteMapper;
 
-            AddCellButton(LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.Enable), "enable", "Enabled == false");
-            AddCellButton(LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.Disable), "disable", "Enabled == true");
+            AddCellButton(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.Enable), "enable", "Enabled == false");
+            AddCellButton(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.Disable), "disable", "Enabled == true");
         }
 
         public void Initialize(long recordId)

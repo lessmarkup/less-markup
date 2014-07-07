@@ -62,7 +62,7 @@ getApplication().controller("flatpage", function($scope, $rootScope) {
         return pageToScope[page.UniqueId];
     }
 
-    function createCommands(scope, page) {
+    function initializePageScope(scope, page) {
         scope.sendAction = function (action, data, success, failure, path) {
             if (!path) {
                 path = page.Path;
@@ -90,12 +90,15 @@ getApplication().controller("flatpage", function($scope, $rootScope) {
             }
             return $scope.sendCommandAsync(action, data, success, failure, path);
         }
+
+    	scope.toolbarButtons = [];
+	scope.path = page.path;
     }
 
     for (var i = 0; i < $scope.flat.length; i++) {
         var page = $scope.flat[i];
         var pageScope = $scope.$new();
-        createCommands(pageScope, page);
+        initializePageScope(pageScope, page);
         pageToScope[page.UniqueId] = pageScope;
         pageScope.viewData = page.ViewData;
     }

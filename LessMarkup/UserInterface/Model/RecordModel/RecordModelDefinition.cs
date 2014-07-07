@@ -5,10 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Scripting;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 
 namespace LessMarkup.UserInterface.Model.RecordModel
@@ -20,7 +20,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
         public Type CollectionType { get; set; }
         public object TitleTextId { get; set; }
-        public ModuleType ModuleType { get; set; }
+        public string ModuleType { get; set; }
         public Type DataType { get; set; }
         public string Id { get; set; }
         public EntityType EntityType { get; set; }
@@ -29,7 +29,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
         public List<ColumnDefinition> Columns { get { return _columns; } }
 
-        public void Initialize(Type type, RecordModelAttribute formType, ModuleType moduleType)
+        public void Initialize(Type type, RecordModelAttribute formType, string moduleType)
         {
             TitleTextId = formType.TitleTextId;
             ModuleType = moduleType;
@@ -105,7 +105,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                     }
                 }
 
-                var errorText = LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.PropertyMustBeSpecified);
+                var errorText = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PropertyMustBeSpecified);
                 var fieldText = LanguageHelper.GetText(ModuleType, field.TextId);
 
                 throw new Exception(string.Format(errorText, fieldText));

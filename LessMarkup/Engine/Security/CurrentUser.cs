@@ -21,7 +21,6 @@ using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 
@@ -616,7 +615,7 @@ namespace LessMarkup.Engine.Security
 
                 if (!CheckPassword(user.UserId, user.Password, user.Salt, false, false, null, password, null, HttpContext.Current.Request.UserHostAddress))
                 {
-                    throw new Exception(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.WrongUserPassword));
+                    throw new Exception(LanguageHelper.GetText(DataFramework.Constants.ModuleType.MainModule, MainModuleTextIds.WrongUserPassword));
                 }
 
                 user.IsRemoved = true;

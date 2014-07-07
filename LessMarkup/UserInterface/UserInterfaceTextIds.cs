@@ -74,5 +74,8 @@ namespace LessMarkup.UserInterface
         UserAgreement,
         Agree,
         SiteProperties,
+        UniqueId,
+        EditFile,
+        FileName,
     }
 }

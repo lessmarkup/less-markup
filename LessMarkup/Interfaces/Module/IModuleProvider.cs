@@ -18,7 +18,7 @@ namespace LessMarkup.Interfaces.Module
         void InitializeModules();
         void InitializeModulesDatabase();
         Type GetControllerType(string controllerName);
-        ModuleType GetControllerModuleType(Type controllerType);
-        ModuleType GetControllerModuleType(string controllerName);
+        string GetControllerModuleType(Type controllerType);
+        string GetControllerModuleType(string controllerName);
     }
 }

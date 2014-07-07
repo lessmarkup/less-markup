@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
@@ -14,7 +15,6 @@ using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Exceptions;
@@ -60,7 +60,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             if (_recordModel == null)
             {
-                throw new ArgumentException(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
+                throw new ArgumentException(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
             }
 
             _idProperty = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(p => p.Name.EndsWith("Id"));
@@ -90,7 +90,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             if (_collection == null)
             {
-                throw new ArgumentException(LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
+                throw new ArgumentException(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.MissingParameter, typeof(T).FullName));
             }
         }
 

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
@@ -199,7 +200,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 cachedNodes.Add(new CachedNodeInformation
                 {
                     AccessList = new List<CachedNodeAccess> {new CachedNodeAccess {AccessType = NodeAccessType.Read}},
-                    HandlerModuleType = ModuleType.MainModule,
+                    HandlerModuleType = Constants.ModuleType.MainModule,
                     HandlerType = typeof (DefaultRootNodeHandler),
                     Title = "Home",
                     NodeId = 1,
@@ -226,10 +227,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 },
                 FullPath = "configuration",
                 Path = "configuration",
-                HandlerModuleType = ModuleType.MainModule,
+                HandlerModuleType = Constants.ModuleType.MainModule,
                 ParentNodeId = _rootNode.NodeId,
                 Parent = _rootNode,
-                Title = LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.Configuration),
+                Title = LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.Configuration),
                 HandlerType = typeof (ConfigurationRootNodeHandler),
                 NodeId = nodeId,
                 HandlerId = "configuration",

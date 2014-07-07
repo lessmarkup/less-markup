@@ -12,7 +12,7 @@ namespace LessMarkup.Interfaces.Module
         void InitializeDatabase();
         string DefaultNamespace { get; }
         string Name { get; }
-        ModuleType Type { get; }
+        string ModuleType { get; }
         Type[] ModelTypes { get; }
     }
 }

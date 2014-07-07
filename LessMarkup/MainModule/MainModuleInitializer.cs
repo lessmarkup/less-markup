@@ -22,9 +22,9 @@ namespace LessMarkup.MainModule
 
         public override string Name { get { return "MainModule"; } }
 
-        public override ModuleType Type
+        public override string ModuleType
         {
-            get { return ModuleType.MainModule; }
+            get { return DataFramework.Constants.ModuleType.MainModule; }
         }
 
         public override Type[] ModelTypes
@@ -32,7 +32,7 @@ namespace LessMarkup.MainModule
             get
             {
                 var modelTypes = Assembly.GetExecutingAssembly().GetTypes().ToList();
-                modelTypes.AddRange(typeof(FrameworkTypeInitializer).Assembly.GetTypes());
+                modelTypes.AddRange(typeof(EngineTypeInitializer).Assembly.GetTypes());
                 return modelTypes.ToArray();
             }
         }
@@ -41,8 +41,9 @@ namespace LessMarkup.MainModule
         {
             base.InitializeDatabase();
 
-            _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>(ModuleType.MainModule, "article");
-            _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>(ModuleType.MainModule, "contact");
+            _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>("article");
+            _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>("contact");
+            _moduleIntegration.RegisterNodeHandler<FileListNodeHandler>("filelist");
         }
     }
 }

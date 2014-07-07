@@ -56,5 +56,6 @@ namespace LessMarkup.DataAccess
         public DbSet<DaySummaryHistory> DaySummaryHistories { get; set; }
         public DbSet<Node> Nodes { get; set; }
         public DbSet<NodeAccess> NodeAccesses { get; set; }
+        public DbSet<File> Files { get; set; }
     }
 }

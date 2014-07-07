@@ -37,9 +37,9 @@ namespace LessMarkup.UserInterface
             get { return "UserInterface"; }
         }
 
-        public override ModuleType Type
+        public override string ModuleType
         {
-            get { return ModuleType.UserInterface; }
+            get { return DataFramework.Constants.ModuleType.UserInterface; }
         }
 
         public override Type[] ModelTypes
@@ -51,7 +51,7 @@ namespace LessMarkup.UserInterface
         {
             base.InitializeDatabase();
             RecordChangeTracker.Initialize();
-            _moduleIntegration.RegisterNodeHandler<FlatPageNodeHandler>(ModuleType.UserInterface, "flatpage");
+            _moduleIntegration.RegisterNodeHandler<FlatPageNodeHandler>("flatpage");
         }
     }
 }

@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -23,7 +22,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public List<CachedNodeInformation> Children { get; set; }
         public string FullPath { get; set; }
         public Type HandlerType { get; set; }
-        public ModuleType HandlerModuleType { get; set; }
+        public string HandlerModuleType { get; set; }
         public string Settings { get; set; }
         public CachedNodeInformation Root { get; set; }
     }

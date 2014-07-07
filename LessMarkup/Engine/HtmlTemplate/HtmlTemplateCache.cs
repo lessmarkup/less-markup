@@ -9,7 +9,6 @@ using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.HtmlTemplate
 {
@@ -142,11 +141,7 @@ namespace LessMarkup.Engine.HtmlTemplate
                         {
                             break;
                         }
-                        ModuleType moduleType;
-                        if (!Enum.TryParse(directive.Body.Substring(0, pos), true, out moduleType))
-                        {
-                            break;
-                        }
+                        string moduleType = directive.Body.Substring(0, pos);
                         var text = LanguageHelper.GetText(moduleType, directive.Body.Substring(pos + 1));
                         builder.Append(text);
                         break;

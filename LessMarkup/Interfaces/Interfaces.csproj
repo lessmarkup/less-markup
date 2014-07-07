@@ -125,7 +125,6 @@
     <Compile Include="Structure\RecordActionAttribute.cs" />
     <Compile Include="Text\TranslationAttribute.cs" />
     <Compile Include="Data\EntityType.cs" />
-    <Compile Include="Module\ModuleType.cs" />
     <Compile Include="Module\IActionUrlHelper.cs" />
     <Compile Include="Module\ICategoryHandler.cs" />
     <Compile Include="Module\IEntityNameProvider.cs" />

@@ -4,9 +4,9 @@
 
 using System;
 using System.Web.Mvc;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
-using LessMarkup.Interfaces.Module;
 using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.Model
@@ -19,7 +19,7 @@ namespace LessMarkup.UserInterface.Model
         {
             try
             {
-                Error = LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.UnknownErrorOccurred);
+                Error = LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.UnknownErrorOccurred);
             }
             catch (Exception)
             {

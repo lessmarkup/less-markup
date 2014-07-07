@@ -193,10 +193,12 @@
     <Compile Include="MainModuleInitializer.cs" />
     <Compile Include="Model\ArticleModel.cs" />
     <Compile Include="Model\ContactFormModel.cs" />
+    <Compile Include="Model\FileModel.cs" />
     <Compile Include="Model\SendContactModel.cs" />
     <Compile Include="Model\TestMessageModel.cs" />
     <Compile Include="NodeHandlers\ArticleNodeHandler.cs" />
     <Compile Include="NodeHandlers\ContactFormNodeHandler.cs" />
+    <Compile Include="NodeHandlers\FileListNodeHandler.cs" />
     <Compile Include="NodeHandlers\TestMessagesNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteConfig.cs" />

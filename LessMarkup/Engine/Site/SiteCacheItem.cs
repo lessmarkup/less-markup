@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Site
 {
@@ -13,7 +12,7 @@ namespace LessMarkup.Engine.Site
         public HashSet<string> Hosts { get; set; }
         public string Title { get; set; }
         public bool Enabled { get; set; }
-        public HashSet<ModuleType> ModuleTypes { get; set; }
+        public HashSet<string> ModuleTypes { get; set; }
         public Dictionary<string, string> Properties { get; set; }
     }
 }

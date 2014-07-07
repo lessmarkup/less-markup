@@ -14,6 +14,6 @@ namespace LessMarkup.Interfaces.Data
         public bool Enabled { get; set; }
         public bool Removed { get; set; }
         public bool System { get; set; }
-        public ModuleType Type { get; set; }
+        public string ModuleType { get; set; }
     }
 }

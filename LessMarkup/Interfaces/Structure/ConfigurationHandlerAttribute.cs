@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Interfaces.Structure
 {
@@ -12,14 +11,13 @@ namespace LessMarkup.Interfaces.Structure
     {
         public object TitleTextId { get; set; }
 
-        public ModuleType ModuleType { get; set; }
+        public string ModuleType { get; set; }
 
         public bool IsGlobal { get; set; }
 
         public ConfigurationHandlerAttribute(object titleTextId)
         {
             TitleTextId = titleTextId;
-            ModuleType = ModuleType.None;
         }
     }
 }

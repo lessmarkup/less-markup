@@ -28,7 +28,7 @@ namespace LessMarkup.Engine.Module
 
         class ControllerConfiguration
         {
-            public ModuleType ModuleType { get; set; }
+            public string ModuleType { get; set; }
             public Type Type { get; set; }
         }
 
@@ -113,7 +113,7 @@ namespace LessMarkup.Engine.Module
                     {
                         existingModules.Add(reference);
                         module.System = reference.System;
-                        module.Type = reference.ModuleType;
+                        module.ModuleType = reference.ModuleType;
                     }
                 }
 
@@ -126,7 +126,7 @@ namespace LessMarkup.Engine.Module
                         Path = source.Path,
                         Removed = false,
                         System = source.System,
-                        Type = source.ModuleType
+                        ModuleType = source.ModuleType
                     };
 
                     domainModel.GetCollection<Interfaces.Data.Module>().Add(module);
@@ -141,6 +141,13 @@ namespace LessMarkup.Engine.Module
         {
             var modulesToRemove = new List<ModuleConfiguration>();
 
+            var moduleIntegration = DependencyResolver.Resolve<IModuleIntegration>() as ModuleIntegration;
+
+            if (moduleIntegration == null)
+            {
+                throw new NullReferenceException("Cannot read module integration");
+            }
+
             foreach (var module in _moduleConfigurations)
             {
                 this.LogDebug("Initializing module '" + module.Path + "'");
@@ -154,12 +161,20 @@ namespace LessMarkup.Engine.Module
                     continue;
                 }
 
-                initializer.Initialize();
+                moduleIntegration.RegisteringModuleType = module.ModuleType;
+                try
+                {
+                    initializer.Initialize();
+                }
+                finally
+                {
+                    moduleIntegration.RegisteringModuleType = null;
+                }
 
                 module.Namespace = initializer.DefaultNamespace;
                 module.Name = initializer.Name;
                 module.Initializer = initializer;
-                module.ModuleType = initializer.Type;
+                module.ModuleType = initializer.ModuleType;
 
                 foreach (var type in module.Assembly.GetTypes().Where(t => t.IsSubclassOf(typeof (Controller))))
                 {
@@ -172,7 +187,7 @@ namespace LessMarkup.Engine.Module
 
                     var controllerConfiguration = new ControllerConfiguration
                     {
-                        ModuleType = initializer.Type,
+                        ModuleType = initializer.ModuleType,
                         Type = type
                     };
 
@@ -191,12 +206,27 @@ namespace LessMarkup.Engine.Module
 
         public void InitializeModulesDatabase()
         {
+            var moduleIntegration = DependencyResolver.Resolve<IModuleIntegration>() as ModuleIntegration;
+
+            if (moduleIntegration == null)
+            {
+                throw new NullReferenceException("Cannot read module integration");
+            }
+            
             foreach (var module in _moduleConfigurations)
             {
                 if (module.Initializer != null)
                 {
                     this.LogDebug("Initializing module " + module.Name);
-                    module.Initializer.InitializeDatabase();
+                    moduleIntegration.RegisteringModuleType = module.ModuleType;
+                    try
+                    {
+                        module.Initializer.InitializeDatabase();
+                    }
+                    finally
+                    {
+                        moduleIntegration.RegisteringModuleType = null;
+                    }
                 }
             }
         }
@@ -211,22 +241,22 @@ namespace LessMarkup.Engine.Module
             return ret.Type;
         }
 
-        public ModuleType GetControllerModuleType(Type controllerType)
+        public string GetControllerModuleType(Type controllerType)
         {
             ControllerConfiguration ret;
             if (!_controllersByType.TryGetValue(controllerType, out ret))
             {
-                return ModuleType.None;
+                return null;
             }
             return ret.ModuleType;
         }
 
-        public ModuleType GetControllerModuleType(string controllerName)
+        public string GetControllerModuleType(string controllerName)
         {
             ControllerConfiguration ret;
             if (!_controllersByName.TryGetValue(controllerName, out ret))
             {
-                return ModuleType.None;
+                return null;
             }
             return ret.ModuleType;
         }

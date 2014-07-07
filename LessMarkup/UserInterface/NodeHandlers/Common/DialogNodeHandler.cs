@@ -2,12 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
-using LessMarkup.Interfaces.Module;
-using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.RecordModel;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
@@ -17,7 +16,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected abstract T LoadObject(object settings);
         protected abstract string SaveObject(T changedObject);
 
-        protected virtual string ApplyCaption { get { return LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
+        protected virtual string ApplyCaption { get { return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
 
         public override object GetViewData(long objectId, object settings, object controller)
         {
@@ -34,7 +33,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         public string Save(T changedObject)
         {
-            return SaveObject(changedObject) ?? LanguageHelper.GetText(ModuleType.MainModule, MainModuleTextIds.SuccessfullySaved);
+            return SaveObject(changedObject) ?? LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.SuccessfullySaved);
         }
 
         public override string ViewType

@@ -26,7 +26,7 @@ namespace LessMarkup.Engine.Site
             _moduleProvider = moduleProvider;
         }
 
-        private List<ModuleType> GetSystemModuleTypes()
+        private List<string> GetSystemModuleTypes()
         {
             return _moduleProvider.Modules.Where(m => m.System).Select(m => m.ModuleType).ToList();
         }
@@ -50,7 +50,7 @@ namespace LessMarkup.Engine.Site
                     s.Host,
                     s.Title,
                     s.Enabled,
-                    ModuleTypes = s.Modules.Select(m => m.Module.Type),
+                    ModuleTypes = s.Modules.Select(m => m.Module.ModuleType),
                     Properties = s.Properties.Select(p => new {p.Name, p.Value})
                 }))
                 {
@@ -61,7 +61,7 @@ namespace LessMarkup.Engine.Site
                         SiteId = site.SiteId,
                         Title = site.Title,
                         Properties = site.Properties.ToDictionary(p => p.Name, p => p.Value),
-                        ModuleTypes = new HashSet<ModuleType>(site.ModuleTypes)
+                        ModuleTypes = new HashSet<string>(site.ModuleTypes)
                     };
 
                     // System modules shoule be always enabled

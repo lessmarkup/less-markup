@@ -6,6 +6,13 @@ namespace LessMarkup.DataFramework
 {
     public static class Constants
     {
+        public static class ModuleType
+        {
+            public const string None = null;
+            public const string MainModule = "Main";
+            public const string UserInterface = "UserInterface";
+        }
+
         public static class DataAccessGenerator
         {
             public const string DefaultNamespace = "LessMarkup.DataAccessGen";

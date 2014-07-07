@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
@@ -30,7 +31,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             public Type Type { get; set; }
             public object TitleTextId { get; set; }
-            public ModuleType ModuleType { get; set; }
+            public string ModuleType { get; set; }
             public long Id { get; set; }
             public string TypeName { get; set; }
         }
@@ -53,13 +54,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             var normalGroup = new ConfigurationGroup
             {
                 Handlers = new List<ConfigurationHandler>(),
-                Title = LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.SiteConfiguration)
+                Title = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.SiteConfiguration)
             };
 
             var globalGroup = new ConfigurationGroup
             {
                 Handlers = new List<ConfigurationHandler>(),
-                Title = LanguageHelper.GetText(ModuleType.UserInterface, UserInterfaceTextIds.GlobalConfiguration)
+                Title = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.GlobalConfiguration)
             };
 
             foreach (var module in moduleProvider.Modules)
@@ -80,8 +81,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         switch (module.ModuleType)
                         {
-                            case ModuleType.MainModule:
-                            case ModuleType.UserInterface:
+                            case Constants.ModuleType.MainModule:
+                            case Constants.ModuleType.UserInterface:
                                 break;
                             default:
                                 continue;
@@ -110,7 +111,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         Type = type,
                         ModuleType =
-                            configurationHandlerAttribute.ModuleType == ModuleType.None
+                            configurationHandlerAttribute.ModuleType == Constants.ModuleType.None
                                 ? module.ModuleType
                                 : configurationHandlerAttribute.ModuleType,
                         TitleTextId = configurationHandlerAttribute.TitleTextId,

@@ -22,7 +22,7 @@ using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Engine
 {
-    public class FrameworkTypeInitializer
+    public class EngineTypeInitializer
     {
         public static void Load(ContainerBuilder builder)
         {
