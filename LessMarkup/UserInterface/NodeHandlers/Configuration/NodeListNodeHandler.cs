@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
-    [ConfigurationHandler(MainModuleTextIds.ViewsTree, ModuleType = Constants.ModuleType.MainModule)]
+    [ConfigurationHandler(MainModuleTextIds.ViewsTree)]
     public class NodeListNodeHandler : AbstractNodeHandler, IRecordNodeHandler
     {
         private long? _siteId;

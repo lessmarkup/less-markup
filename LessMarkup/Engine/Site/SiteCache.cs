@@ -42,7 +42,7 @@ namespace LessMarkup.Engine.Site
             expirationTime = null;
             var systemModuleTypes = GetSystemModuleTypes();
 
-            using (var domainModel = _domainModelProvider.Create())
+            using (var domainModel = _domainModelProvider.Create(null))
             {
                 foreach (var site in domainModel.GetCollection<Interfaces.Data.Site>().Select(s => new
                 {

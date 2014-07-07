@@ -225,6 +225,11 @@ namespace LessMarkup.Engine.Language
         AdminNotifyNewUsers,
         AdminApproveNewUsers,
         UserAgreement,
-        SiteName
+        SiteName,
+        UniqueId,
+        EditFile,
+        FileName,
+        File,
+        Files,
     }
 }

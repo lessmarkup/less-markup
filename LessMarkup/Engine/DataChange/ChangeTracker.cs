@@ -82,7 +82,7 @@ namespace LessMarkup.Engine.DataChange
                 {
                     try
                     {
-                        using (var model = _domainModelProvider.Create())
+                        using (var model = _domainModelProvider.Create(null))
                         {
                             var sql = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {Id = c.EntityChangeHistoryId}).ToString();
 
@@ -115,7 +115,7 @@ namespace LessMarkup.Engine.DataChange
 
                 if (!initialized)
                 {
-                    using (var model = _domainModelProvider.Create())
+                    using (var model = _domainModelProvider.Create(null))
                     {
                         var lastChange = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {Id = c.EntityChangeHistoryId}).FirstOrDefault();
                         if (lastChange != null)
@@ -162,7 +162,7 @@ namespace LessMarkup.Engine.DataChange
         {
             _timerStarted = false;
 
-            using (var model = _domainModelProvider.Create())
+            using (var model = _domainModelProvider.Create(null))
             {
                 foreach (var change in model.GetCollection<EntityChangeHistory>().Where(c => c.EntityChangeHistoryId > _lastUpdateId).OrderBy(c => c.EntityChangeHistoryId))
                 {

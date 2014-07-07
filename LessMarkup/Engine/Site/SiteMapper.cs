@@ -230,7 +230,8 @@ namespace LessMarkup.Engine.Site
             var site = _threadSiteId.Value;
             if (site == null)
             {
-                return null;
+                MapRequest(Interfaces.DependencyResolver.Resolve<IDataCache>());
+                site = _threadSiteId.Value;
             }
 
             return site;

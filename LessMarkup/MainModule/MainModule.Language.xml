@@ -221,8 +221,11 @@
     <Translation Id="AdminApproveNewUsers" Text="Administrator Approves New Users"/>
     <Translation Id="UserAgreement" Text="User Agreement"/>
     <Translation Id="SiteName" Text="Site Name"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="UniqueId" Text="Unique ID"/>
+    <Translation Id="EditFile" Text="Edit File"/>
+    <Translation Id="FileName" Text="File Name"/>
+    <Translation Id="File" Text="File"/>
+    <Translation Id="Files" Text="Files"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

@@ -174,9 +174,15 @@ function InputFormController($scope, $modalInstance, definition, object, success
             var value = $scope.object[field.Property];
 
             if (field.Type == 'File') {
-                if (field.Required && $scope.isNewObject && value == name) {
+                if (field.Required && $scope.isNewObject && (value == null || value.length == 0)) {
                     $scope.validationErrors[field.Property] = "Field is required";
                     valid = false;
+                }
+                else {
+                    var pos = value.indexOf("base64,");
+                    if (pos > 0) {
+                        $scope.object[field.Property] = value.substring(pos + 7);
+                    }
                 }
                 continue;
             }

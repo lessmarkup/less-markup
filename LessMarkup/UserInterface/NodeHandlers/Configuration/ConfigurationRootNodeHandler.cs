@@ -110,10 +110,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     var handler = new ConfigurationHandler
                     {
                         Type = type,
-                        ModuleType =
-                            configurationHandlerAttribute.ModuleType == Constants.ModuleType.None
-                                ? module.ModuleType
-                                : configurationHandlerAttribute.ModuleType,
+                        ModuleType = module.ModuleType,
                         TitleTextId = configurationHandlerAttribute.TitleTextId,
                         Id = idCounter++,
                         TypeName = typeName

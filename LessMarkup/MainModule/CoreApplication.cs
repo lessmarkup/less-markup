@@ -257,12 +257,14 @@ namespace LessMarkup.MainModule
                 DependencyResolver.Resolve<IControllerFactory>().Initialize();
                 HostingEnvironment.RegisterVirtualPathProvider(new CompiledPathProvider(DependencyResolver.Resolve<IDataCache>()));
 
-                this.LogDebug("Initializing custom routes");
                 RouteTable.Routes.RouteExistingFiles = true;
-                DependencyResolver.Resolve<RouteConfiguration>().Create(RouteTable.Routes);
 
                 this.LogDebug("Registering routes, bundles etc");
-                RouteConfig.RegisterRoutes(RouteTable.Routes, engineConfiguration);
+                RouteConfig.RegisterRoutes(RouteTable.Routes, engineConfiguration, moduleProvider);
+
+                this.LogDebug("Initializing custom routes");
+                DependencyResolver.Resolve<RouteConfiguration>().Create(RouteTable.Routes);
+
 
                 this.LogDebug("Initializing site mapper");
                 ((IInitialize)DependencyResolver.Resolve<ISiteMapper>()).Initialize();
