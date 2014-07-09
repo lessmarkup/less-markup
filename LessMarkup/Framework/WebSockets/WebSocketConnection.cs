@@ -43,6 +43,11 @@ namespace LessMarkup.Framework.WebSockets
                     var buffer = new Byte[1024];
                     var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken.Token);
 
+                    if (_cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
                     if (!result.EndOfMessage)
                     {
                         if (readStream == null)
@@ -218,7 +223,7 @@ namespace LessMarkup.Framework.WebSockets
 
             if (socket == null)
             {
-                // We don't throw here an exception as it is possible for the machine to send image before it relizes the connection is closed
+                // We don't throw here an exception as it is possible for the machine to send image before it realizes the connection is closed
                 return;
             }
 
@@ -229,15 +234,17 @@ namespace LessMarkup.Framework.WebSockets
 
             lock (_sendLock)
             {
-                waitTasks = _sendTasks.ToList();
-                ourTask = new Task(() => SendRequest(socket, fullData, messageType));
+                waitTasks = _sendTasks.Count > 0 ? _sendTasks.ToList() : null;
+                ourTask = new Task(() => SendRequest(socket, fullData, messageType), _cancellationToken.Token, TaskCreationOptions.None);
                 _sendTasks.Add(ourTask);
             }
 
-            if (waitTasks.Any())
+            if (waitTasks != null)
             {
                 await Task.WhenAll(waitTasks);
             }
+
+            ourTask.Start();
 
             await ourTask;
 
@@ -245,6 +252,8 @@ namespace LessMarkup.Framework.WebSockets
             {
                 _sendTasks.Remove(ourTask);
             }
+
+            ourTask.Dispose();
         }
 
         public async Task SendRequest(string method, byte[] binary, int offset, int count, object parameters = null)
