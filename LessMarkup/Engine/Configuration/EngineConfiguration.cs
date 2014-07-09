@@ -537,6 +537,18 @@ namespace LessMarkup.Engine.Configuration
             }
         }
 
+        public string ModuleSearchPath
+        {
+            get
+            {
+                return GetProperty("ModuleSearchPath");
+            }
+            set
+            {
+                SetProperty("ModuleSearchPath", value);
+            }
+        }
+
         public void Save()
         {
             lock (_syncConfiguration)

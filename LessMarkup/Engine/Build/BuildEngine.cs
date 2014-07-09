@@ -16,9 +16,9 @@ namespace LessMarkup.Engine.Build
         private readonly DataBuilder _dataBuilder;
         private readonly ViewBuilder _viewBuilder;
 
-        public BuildEngine(ISpecialFolder specialFolder, IModuleProvider moduleProvider)
+        public BuildEngine(ISpecialFolder specialFolder, IModuleProvider moduleProvider, IEngineConfiguration engineConfiguration)
         {
-            _dataBuilder = new DataBuilder(specialFolder);
+            _dataBuilder = new DataBuilder(specialFolder, engineConfiguration);
             _viewBuilder = new ViewBuilder(specialFolder, moduleProvider);
         }
 

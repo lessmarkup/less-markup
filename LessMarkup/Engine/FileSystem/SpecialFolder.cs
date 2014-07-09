@@ -4,6 +4,9 @@
 
 using System;
 using System.Data;
+using System.IO;
+using System.Reflection;
+using System.Security;
 using System.Web;
 using LessMarkup.Interfaces.System;
 
@@ -11,17 +14,52 @@ namespace LessMarkup.Engine.FileSystem
 {
     class SpecialFolder : ISpecialFolder
     {
+        private static readonly string _applicationDataFolder;
+
+        static SpecialFolder()
+        {
+            try
+            {
+                var folderPath = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
+
+                var pos = folderPath.LastIndexOf('\\');
+
+                if (pos <= 0)
+                {
+                    throw new Exception("Cannot parse folder name '" + folderPath + "'");
+                }
+
+                folderPath = folderPath.Substring(0, pos);
+                folderPath = Path.GetDirectoryName(folderPath);
+
+                if (folderPath == null)
+                {
+                    throw new NullReferenceException("folderPath");
+                }
+
+                if (folderPath.EndsWith("\bin") || folderPath.EndsWith("/bin"))
+                {
+                    folderPath = folderPath.Substring(0, folderPath.Length - "\bin".Length);
+                }
+
+                _applicationDataFolder = Path.Combine(folderPath, "ApplicationData");
+
+                Directory.CreateDirectory(_applicationDataFolder);
+            }
+            catch (Exception e)
+            {
+                throw new SecurityException("Failed to access or create ApplicationData folder", e);
+            }
+        }
+
         public static string ApplicationDataFolder
         {
-            get
-            {
-                var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                if (string.IsNullOrWhiteSpace(folderPath))
-                {
-                    throw new NoNullAllowedException("ApplicationDataFolder");
-                }
-                return System.IO.Path.Combine(folderPath, "LessMarkup");
-            }
+            get { return _applicationDataFolder; }
+        }
+
+        public static string LogFolder
+        {
+            get { return Path.Combine(ApplicationDataFolder, "Log"); }
         }
 
         public string ApplicationData
@@ -34,7 +72,7 @@ namespace LessMarkup.Engine.FileSystem
 
         public string GeneratedAssemblies
         {
-            get { return System.IO.Path.Combine(ApplicationData, "GeneratedAssemblies"); }
+            get { return Path.Combine(ApplicationData, "GeneratedAssemblies"); }
         }
 
         public string BinaryFiles
@@ -49,22 +87,22 @@ namespace LessMarkup.Engine.FileSystem
 
         public string GeneratedDataAssembly
         {
-            get { return System.IO.Path.Combine(GeneratedAssemblies, "DataAccessGen.dll"); }
+            get { return Path.Combine(GeneratedAssemblies, "DataAccessGen.dll"); }
         }
 
         public string GeneratedDataAssemblyNew
         {
-            get { return System.IO.Path.Combine(GeneratedAssemblies, "DataAccessGenNew.dll"); }
+            get { return Path.Combine(GeneratedAssemblies, "DataAccessGenNew.dll"); }
         }
 
         public string GeneratedViewAssembly
         {
-            get { return System.IO.Path.Combine(GeneratedAssemblies, "ViewGen.dll"); }
+            get { return Path.Combine(GeneratedAssemblies, "ViewGen.dll"); }
         }
 
         public string GeneratedViewAssemblyNew
         {
-            get { return System.IO.Path.Combine(GeneratedAssemblies, "ViewGenNew.dll"); }
+            get { return Path.Combine(GeneratedAssemblies, "ViewGenNew.dll"); }
         }
     }
 }

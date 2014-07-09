@@ -13,13 +13,16 @@ namespace LessMarkup.Framework.NodeHandlers
         private readonly List<string> _scripts = new List<string>(); 
         private readonly List<string> _stylesheets = new List<string>();
 
-        private long _objectId;
+        private long? _objectId;
         private string _path;
         private object _settings;
+        private NodeAccessType _accessType;
 
         protected string Path { get { return _path; } }
 
-        protected long ObjectId { get { return _objectId; } }
+        protected long? ObjectId { get { return _objectId; } }
+
+        protected NodeAccessType AccessType { get { return _accessType; } }
 
         protected T GetSettings<T>()
         {
@@ -33,11 +36,12 @@ namespace LessMarkup.Framework.NodeHandlers
             return GetViewData();
         }
 
-        object INodeHandler.Initialize(long objectId, object settings, object controller, string path)
+        object INodeHandler.Initialize(long? objectId, object settings, object controller, string path, NodeAccessType accessType)
         {
             _objectId = objectId;
             _path = path;
             _settings = settings;
+            _accessType = accessType;
 
             return Initialize(controller);
         }

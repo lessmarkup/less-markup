@@ -27,6 +27,11 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             _moduleProvider = moduleProvider;
         }
 
+        public RecordModelDefinition GetDefinition<T>()
+        {
+            return GetDefinition(typeof (T));
+        }
+
         public RecordModelDefinition GetDefinition(Type type)
         {
             RecordModelDefinition ret;

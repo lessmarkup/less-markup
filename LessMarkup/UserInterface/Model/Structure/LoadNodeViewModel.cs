@@ -8,6 +8,7 @@ using System.IO;
 using System.Web.Mvc;
 using LessMarkup.Engine.HtmlTemplate;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
@@ -18,6 +19,7 @@ namespace LessMarkup.UserInterface.Model.Structure
     {
         private readonly IDataCache _dataCache;
         private INodeHandler _nodeHandler;
+        private readonly ICurrentUser _currentUser;
 
         public string Template { get; set; }
         public string TemplateId { get; set; }
@@ -33,9 +35,10 @@ namespace LessMarkup.UserInterface.Model.Structure
         public List<NodeBreadcrumbModel> Breadcrumbs { get; set; }
         public List<ToolbarButtonModel> ToolbarButtons { get; set; } 
 
-        public LoadNodeViewModel(IDataCache dataCache)
+        public LoadNodeViewModel(IDataCache dataCache, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
         public static string GetViewPath(string viewName)
@@ -54,6 +57,10 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 var viewData = new ViewDataDictionary(model);
                 var view = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName);
+                if (view.View == null)
+                {
+                    return null;
+                }
                 var viewContext = new ViewContext(controller.ControllerContext, view.View, viewData, controller.TempData, stringWriter);
                 view.View.Render(viewContext, stringWriter);
                 return stringWriter.ToString();
@@ -66,6 +73,16 @@ namespace LessMarkup.UserInterface.Model.Structure
             var templateCache = dataCache.Get<HtmlTemplateCache>();
             var template = templateCache.GetTemplate(viewPath + ".html") ?? GetViewContents(viewPath + ".cshtml", handler, controller);
             return template;
+        }
+
+        private void FillBreadcrumbs(CachedNodeInformation node)
+        {
+            if (node.Parent != null)
+            {
+                FillBreadcrumbs(node.Parent);
+            }
+
+            Breadcrumbs.Insert(0, new NodeBreadcrumbModel { Text = node.Title, Url = node.FullPath });
         }
 
         public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller)
@@ -82,14 +99,27 @@ namespace LessMarkup.UserInterface.Model.Structure
                 return false;
             }
 
-            var node1 = node;
+            if (node.LoggedIn && !_currentUser.UserId.HasValue)
+            {
+                return false;
+            }
+
+            var accessType = node.CheckRights(_currentUser);
+
+            if (!accessType.HasValue)
+            {
+                accessType = NodeAccessType.Read;
+            } 
+            else if (accessType.Value == NodeAccessType.NoAccess)
+            {
+                return false;
+            }
 
             Breadcrumbs = new List<NodeBreadcrumbModel>();
 
-            while (node1.Parent != null)
+            if (node.Parent != null)
             {
-                node1 = node1.Parent;
-                Breadcrumbs.Insert(0, new NodeBreadcrumbModel { Text = node1.Title, Url = node1.FullPath });
+                FillBreadcrumbs(node.Parent);
             }
 
             _nodeHandler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
@@ -139,6 +169,10 @@ namespace LessMarkup.UserInterface.Model.Structure
             if (cachedTemplates == null || !cachedTemplates.Contains(TemplateId))
             {
                 Template = GetViewTemplate(_nodeHandler, _dataCache, controller);
+                if (Template == null)
+                {
+                    return false;
+                }
             }
 
             object settingsObject = null;
@@ -147,7 +181,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, _nodeHandler.SettingsModel);
             }
 
-            _nodeHandler.Initialize(objectId, settingsObject, controller, path);
+            _nodeHandler.Initialize(objectId, settingsObject, controller, path, accessType.Value);
             ViewData = _nodeHandler.GetViewData();
             IsStatic = _nodeHandler.IsStatic;
 

@@ -30,6 +30,7 @@ namespace LessMarkup.Engine.Build.Data
         private readonly Dictionary<string, PropertyInfo> _domainModelProperties = new Dictionary<string, PropertyInfo>();
         private readonly List<Type> _modelCreateTypes = new List<Type>(); 
         private readonly ISpecialFolder _specialFolder;
+        private readonly IEngineConfiguration _engineConfiguration;
 
         private readonly Func<IEnumerable<FileInfo>, IEnumerable<FileInfo>>  _filesFilter =
             fl => fl.Where(f => f.Name.Contains(".DataAccess.") && f.Name.EndsWith(".dll"));
@@ -38,9 +39,10 @@ namespace LessMarkup.Engine.Build.Data
 
         #region Initialization
 
-        public DataBuilder(ISpecialFolder specialFolder)
+        public DataBuilder(ISpecialFolder specialFolder, IEngineConfiguration engineConfiguration)
         {
             _specialFolder = specialFolder;
+            _engineConfiguration = engineConfiguration;
         }
 
         #endregion
@@ -115,7 +117,30 @@ namespace LessMarkup.Engine.Build.Data
         {
             get
             {
-                return _filesFilter(new DirectoryInfo(_specialFolder.BinaryFiles).GetFiles("*.dll"));
+                var files = new List<FileInfo>();
+                files.AddRange(_filesFilter(new DirectoryInfo(_specialFolder.BinaryFiles).GetFiles("*.dll")));
+
+                var directories = WebConfigurationManager.AppSettings.GetValues("ModuleSearchPath");
+                if (directories != null)
+                {
+                    foreach (var directory in directories)
+                    {
+                        if (string.IsNullOrWhiteSpace(directory))
+                        {
+                            continue;
+                        }
+                        files.AddRange(_filesFilter(new DirectoryInfo(directory).GetFiles("*.dll")));
+                    }
+                }
+
+                var moduleSearchPath = _engineConfiguration.ModuleSearchPath;
+
+                if (!string.IsNullOrWhiteSpace(moduleSearchPath))
+                {
+                    files.AddRange(_filesFilter(new DirectoryInfo(moduleSearchPath).GetFiles("*.dll")));
+                }
+
+                return files;
             }
         }
 

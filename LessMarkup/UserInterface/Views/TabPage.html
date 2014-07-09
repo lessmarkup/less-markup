@@ -1,0 +1,12 @@
+﻿<div ng-controller="tabpage">
+    <ul class="nav nav-tabs" role="tablist">
+        <li ng-repeat="page in pages" ng-class="{'active' : page.UniqueId == activePage.UniqueId }">
+            <a href="#{{page.UniqueId}}" role="tab" data-toggle="tab" ng-bind="page.Title"></a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div ng-repeat="page in pages" class="tab-pane" id="{{page.UniqueId}}" ng-class="{'active' : page.UniqueId == activePage.UniqueId }">
+            <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
+        </div>
+    </div>    
+</div>

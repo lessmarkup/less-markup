@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Timers;
+using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces.Exceptions;
 
@@ -22,7 +23,8 @@ namespace LessMarkup.Engine.Logging
 
         static LoggingHelper()
         {
-            _logFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LessMarkup");
+            _logFolder = SpecialFolder.LogFolder;
+
             Directory.CreateDirectory(_logFolder);
 
             _timer = new Timer(1000);

@@ -1,0 +1,28 @@
+﻿<div class="form-group">
+    <label for="loginUsername" class="col-sm-2 control-label">Email</label>
+    <input type="email" id="loginUsername" placeholder="Username" ng-model="loginUserEmail" class="form-control" ng-disabled="userLoginProgress">
+</div>
+
+<div class="form-group">
+    <label for="loginPassword" class="col-sm-2 control-label">Password</label>
+    <input type="password" id="loginPassword" placeholder="Password" ng-model="loginUserPassword" class="form-control" ng-disabled="userLoginProgress">
+</div>
+
+<div class="form-group">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="loginUserRemember" ng-disabled="userLoginProgress"> Remember me
+        </label>
+    </div>
+</div>
+
+<div class="bg-danger" ng-if="userLoginError.length > 0" ng-bind="userLoginError">
+</div>
+
+<div class="form-group">
+    <button type="submit" class="btn btn-default" ng-click="doLogin(viewData.AdministratorKey)" ng-disabled="userLoginProgress">
+        <span>Sign in</span>
+        <span us-spinner="{radius:5,width:2,length:4,lines:9}" ng-show="userLoginProgress"></span>
+    </button>
+    <button class="btn btn-default" ng-if="hasLogin" ng-click="doRegister()" ng-disabled="userLoginProgress">Register</button>
+</div>

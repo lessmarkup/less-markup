@@ -125,7 +125,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "Action":
                 {
                     var model = DependencyResolver.Resolve<ExecuteActionModel>();
-                    return model.HandleRequest(data);
+                    return model.HandleRequest(data, controller);
                 }
 
                 case "LoginStage1":

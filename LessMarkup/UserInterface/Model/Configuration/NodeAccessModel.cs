@@ -9,6 +9,7 @@ using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Configuration

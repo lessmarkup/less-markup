@@ -41,5 +41,6 @@ namespace LessMarkup.Interfaces.System
         string AdminLoginAddress { get; set; }
         bool UseChangeTracking { get; set; }
         DateTime? LastDatabaseUpdate { get; set; }
+        string ModuleSearchPath { get; set; }
     }
 }

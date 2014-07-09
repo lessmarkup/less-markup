@@ -48,7 +48,8 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
     $scope.configurationPath = initialData.ConfigurationPath;
     $scope.rootPath = initialData.RootPath;
     $scope.rootTitle = initialData.RootTitle;
-    $scope.navigationBar = initialData.NavigationBar;
+    $scope.navigationTree = initialData.NavigationTree;
+    $scope.hasNavigationTree = $scope.navigationTree != null && $scope.navigationTree.length > 0;
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
     $scope.getViewScope = function () { return $scope; }
@@ -84,7 +85,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
             $scope.userLoggedIn = false;
             $scope.userName = "";
             $scope.staticNodes = {};
-            $scope.navigateToView($scope.path);
+            $scope.navigateToView("/");
         });
     }
 
@@ -132,7 +133,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         }, $scope.showError);
     }
 
-    $scope.doLogin = function () {
+    $scope.doLogin = function (administratorKey) {
         $scope.userLoginError = "";
 
         var userEmail = $scope.loginUserEmail.trim();
@@ -159,10 +160,16 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
             $scope.userLoginProgress = false;
         }
 
-        $http.post("", {
+        var stage1Data = {
             "-command-": "LoginStage1",
             user: userEmail
-        }).success(function(data) {
+        };
+
+        if (administratorKey) {
+            stage1Data.administratorKey = administratorKey;
+        }
+
+        $http.post("", stage1Data).success(function(data) {
             if (!data.Success) {
                 $scope.userLoggedIn = false;
                 $scope.userLoginProgress = false;
@@ -173,12 +180,18 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
             var pass1 = CryptoJS.SHA512(data.Data.Pass1 + userPassword);
             var pass2 = CryptoJS.SHA512(data.Data.Pass2 + pass1);
 
-            $http.post("", {
+            var stage2Data = {
                 "-command-": "LoginStage2",
                 user: userEmail,
                 hash: data.Data.Pass2 + ';' + pass2,
                 remember: $scope.loginUserRemember
-            }).success(function(data) {
+            }
+
+            if (administratorKey) {
+                stage2Data.administratorKey = administratorKey;
+            }
+
+            $http.post("", stage2Data).success(function (data) {
                 $scope.userLoginProgress = false;
                 if (!data.Success) {
                     $scope.userLoginError = data.Message;
@@ -192,7 +205,14 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
                 $scope.loginUserEmail = "";
                 $scope.loginUserRemember = false;
                 $scope.staticNodes = {};
-                $scope.navigateToView($scope.path);
+
+                var path = data.Data.Path;
+
+                if (!path || path.length == 0) {
+                    path = $scope.path;
+                }
+
+                $scope.navigateToView(path);
 
             }).error(function (data, status) {
                 addLoginError(status);

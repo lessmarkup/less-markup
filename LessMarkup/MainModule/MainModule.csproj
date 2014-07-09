@@ -197,10 +197,12 @@
     <Compile Include="Model\FileModel.cs" />
     <Compile Include="Model\SendContactModel.cs" />
     <Compile Include="Model\TestMessageModel.cs" />
+    <Compile Include="Model\UserProfileModel.cs" />
     <Compile Include="NodeHandlers\ArticleNodeHandler.cs" />
     <Compile Include="NodeHandlers\ContactFormNodeHandler.cs" />
     <Compile Include="NodeHandlers\FileListNodeHandler.cs" />
     <Compile Include="NodeHandlers\TestMessagesNodeHandler.cs" />
+    <Compile Include="NodeHandlers\UserProfileCommonNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteConfig.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -250,7 +252,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MainModule.Language.xml" />
+    <EmbeddedResource Include="MainModule.Language.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\Article.html" />

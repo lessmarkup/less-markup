@@ -267,9 +267,30 @@ namespace LessMarkup.Engine.Build.View
 
             foreach (var module in _moduleProvider.Modules)
             {
+                var path = new Uri(module.Assembly.CodeBase).LocalPath;
+
+                var pos = path.LastIndexOf('\\');
+
+                if (pos > 0)
+                {
+                    path = path.Substring(0, pos);
+                }
+
                 foreach (var assemblyName in module.Assembly.GetReferencedAssemblies())
                 {
-                    var assembly = Assembly.Load(assemblyName);
+                    var assemblyPath = Path.Combine(path, assemblyName.Name + ".dll");
+
+                    Assembly assembly;
+
+                    if (File.Exists(assemblyPath))
+                    {
+                        assembly = Assembly.LoadFile(assemblyPath);
+                    }
+                    else
+                    {
+                        assembly = Assembly.Load(assemblyName);
+                    }
+
                     locations[Path.GetFileName(assembly.Location)] = assembly.Location;
                 }
             }

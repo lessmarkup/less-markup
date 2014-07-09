@@ -196,6 +196,8 @@ namespace LessMarkup.MainModule
 
                 moduleProvider.InitializeModules();
 
+                AppDomain.CurrentDomain.AssemblyResolve += moduleProvider.ResolveAssembly;
+
                 var buildEngine = DependencyResolver.Resolve<IBuildEngine>();
 
                 var isBuildEngineRecent = buildEngine.IsRecent;

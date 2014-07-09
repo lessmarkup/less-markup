@@ -15,13 +15,24 @@
 
                     <nav class="hidden-xs">
                         <ul class="nav navbar-nav navbar-left" id="navbar-menu">
-                            <a href="{{rootPath}}" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand"><span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span></a>
-
-                            <li class="dropdown" ng-if="navigationBar != null && navigationBar.length > 0">
-                                <a role="button" class="dropdown-toggle"><span ng-bind="title"></span> <b class="caret"></b></a>
+                            <a href="{{rootPath}}" ng-if="!hasNavigationTree" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand"><span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span></a>
+                            <li class="dropdown" ng-if="hasNavigationTree">
+                                <a role="button" class="dropdown-toggle navbar-brand">
+                                    <span ng-bind="title"></span> <b class="caret"></b>
+                                </a>
                                 <ul class="dropdown-menu">
-                                    <li ng-repeat="item in navigationBar">
+                                    <li>
+                                        <a href="{{rootPath}}" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
+                                            <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
+                                        </a>
+                                    </li>
+                                    <li ng-repeat="item in navigationTree">
                                         <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
+                                        <ul ng-if="item.Children.length > 0">
+                                            <li ng-repeat="child in item.Children">
+                                                <a href="{{child.Url}}" ng-click="navigateToView(child.Url)" ng-bind="child.Title"></a>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                             </li>
@@ -45,45 +56,19 @@
                                 <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> User <b class="caret"></b></a>
                                 <div class="dropdown-menu">
                                     <form role="form" class="login-form">
-                                        <div class="form-group">
-                                            <label for="loginUsername" class="col-sm-2 control-label">Email</label>
-                                            <input type="email" id="loginUsername" placeholder="Username" ng-model="loginUserEmail" class="form-control" ng-disabled="userLoginProgress">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="loginPassword" class="col-sm-2 control-label">Password</label>
-                                            <input type="password" id="loginPassword" placeholder="Password" ng-model="loginUserPassword" class="form-control" ng-disabled="userLoginProgress">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" ng-model="loginUserRemember" ng-disabled="userLoginProgress"> Remember me
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div class="bg-danger" ng-if="userLoginError.length > 0" ng-bind="userLoginError">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-default" ng-click="doLogin()" ng-disabled="userLoginProgress">
-                                                <span>Sign in</span>
-                                                <span us-spinner="{radius:5,width:2,length:4,lines:9}" ng-show="userLoginProgress"></span>
-                                            </button>
-                                            <button class="btn btn-default" ng-click="doRegister()" ng-disabled="userLoginProgress">Register</button>
-                                        </div>
+                                        [[[include Login.html]]]
                                     </form>
                                 </div>
                             </li>
 
-                            <li class="dropdown" ng-show="userLoggedIn && hasLogin">
+                            <li class="dropdown" ng-show="userLoggedIn">
                                 <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> {{userName}} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{profilePath}}" ng-click="navigateToView(profilePath)">Profile</a></li>
                                     <li><a href="#" ng-click="doLogout()">Logout</a></li>
                                 </ul>
                             </li>
+
                             <li ng-if="showConfiguration"><a href="{{configurationPath}}" ng-click="navigateToView(configurationPath)"><span class="glyphicon glyphicon-cog"></span></a></li>
                         </ul>
                     </nav>

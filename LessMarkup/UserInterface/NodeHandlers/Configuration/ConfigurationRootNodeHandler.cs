@@ -147,7 +147,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         protected override object GetViewData()
         {
-            var path = _dataCache.Get<NodeCache>().GetNode(ObjectId).FullPath;
+            var path = ObjectId.HasValue ? _dataCache.Get<NodeCache>().GetNode(ObjectId.Value).FullPath : null;
 
             return new
             {
@@ -157,7 +157,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
                     Items = g.Handlers.OrderBy(h => h.TitleTextId.ToString()).Select(h => new
                     {
-                        Path = path + "/" + h.TypeName,
+                        Path = path != null ? (path + "/" + h.TypeName) : h.TypeName,
                         Title = LanguageHelper.GetText(h.ModuleType, h.TitleTextId)
                     }).ToList()
                 }).ToList()
@@ -182,6 +182,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             path = parts[0];
             parts.RemoveAt(0);
+
+            handler.Initialize(handlerData.Id, null, null, path, NodeAccessType.Read);
 
             return new ChildHandlerSettings
             {

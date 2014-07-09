@@ -7,13 +7,18 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
+using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.NodeHandlers;
 using LessMarkup.UserInterface.NodeHandlers.Configuration;
+using LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration;
+using LessMarkup.UserInterface.NodeHandlers.User;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -21,6 +26,10 @@ namespace LessMarkup.UserInterface.Model.Structure
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
+        private readonly IEngineConfiguration _engineConfiguration;
+        private readonly IDataCache _dataCache;
+        private readonly ISiteMapper _siteMapper;
+        private long? _siteId;
 
         private readonly List<CachedNodeInformation> _cachedNodes = new List<CachedNodeInformation>();
         private readonly Dictionary<long, CachedNodeInformation> _idToNode = new Dictionary<long, CachedNodeInformation>();
@@ -28,10 +37,13 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public CachedNodeInformation RootNode { get { return _rootNode; } }
 
-        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration)
+        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ISiteMapper siteMapper)
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
+            _engineConfiguration = engineConfiguration;
+            _dataCache = dataCache;
+            _siteMapper = siteMapper;
         }
 
         private void InitializeTree(CachedNodeInformation node)
@@ -163,6 +175,36 @@ namespace LessMarkup.UserInterface.Model.Structure
             rest = nodeParts.Count > 0 ? string.Join("/", nodeParts) : "";
         }
 
+        private CachedNodeInformation AddVirtualNode<T>(string path, string title, string moduleType, NodeAccessType accessType) where T : INodeHandler
+        {
+            var nodeId = _idToNode.Keys.Max() + 1;
+
+            var node = new CachedNodeInformation
+            {
+                AccessList = new List<CachedNodeAccess>
+                {
+                    new CachedNodeAccess {AccessType = accessType },
+                },
+                FullPath = path,
+                Path = path,
+                HandlerModuleType = moduleType,
+                ParentNodeId = _rootNode.NodeId,
+                Parent = _rootNode,
+                Title = title,
+                HandlerType = typeof(T),
+                NodeId = nodeId,
+                HandlerId = path,
+                Root = _rootNode,
+                Children = new List<CachedNodeInformation>(),
+                Visible = false,
+            };
+
+            _rootNode.Children.Add(node);
+            _idToNode[nodeId] = node;
+
+            return node;
+        }
+
         public void Initialize(out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId.HasValue)
@@ -170,33 +212,44 @@ namespace LessMarkup.UserInterface.Model.Structure
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
+            _siteId = _siteMapper.SiteId;
+
             expirationTime = null;
 
-            List<CachedNodeInformation> cachedNodes;
+            List<CachedNodeInformation> cachedNodes = null;
 
-            using (var domainModel = _domainModelProvider.Create())
-            {
-                cachedNodes = domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
+            if (_siteId.HasValue)
+            { 
+                using (var domainModel = _domainModelProvider.Create())
                 {
-                    NodeId = p.NodeId,
-                    Enabled = p.Enabled,
-                    HandlerId = p.HandlerId,
-                    Level = p.Level,
-                    Order = p.Order,
-                    Path = p.Path,
-                    Title = p.Title,
-                    Settings = p.Settings,
-                    AccessList = p.NodeAccess.Select(a => new CachedNodeAccess
+                    cachedNodes = domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
                     {
-                        AccessType = a.AccessType,
-                        GroupId = a.GroupId,
-                        UserId = a.UserId
-                    }).ToList()
-                }).ToList();
+                        NodeId = p.NodeId,
+                        Enabled = p.Enabled,
+                        HandlerId = p.HandlerId,
+                        Level = p.Level,
+                        Order = p.Order,
+                        Path = p.Path,
+                        Title = p.Title,
+                        Settings = p.Settings,
+                        Visible = true,
+                        AccessList = p.NodeAccess.Select(a => new CachedNodeAccess
+                        {
+                            AccessType = a.AccessType,
+                            GroupId = a.GroupId,
+                            UserId = a.UserId
+                        }).ToList()
+                    }).ToList();
+                }
             }
 
-            if (cachedNodes.Count == 0)
+            if (cachedNodes == null || cachedNodes.Count == 0)
             {
+                if (cachedNodes == null)
+                {
+                    cachedNodes = new List<CachedNodeInformation>();
+                }
+
                 cachedNodes.Add(new CachedNodeInformation
                 {
                     AccessList = new List<CachedNodeAccess> {new CachedNodeAccess {AccessType = NodeAccessType.Read}},
@@ -217,40 +270,46 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             _rootNode.Root = _rootNode;
 
-            var nodeId = _idToNode.Keys.Max() + 1;
+            AddVirtualNode<ConfigurationRootNodeHandler>(Constants.NodePath.Configuration,
+                LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.Configuration),
+                Constants.ModuleType.UserInterface, NodeAccessType.NoAccess);
 
-            var configurationNode = new CachedNodeInformation
+            string adminLoginPage;
+
+            if (_siteMapper.SiteId.HasValue)
             {
-                AccessList = new List<CachedNodeAccess>
-                {
-                    new CachedNodeAccess {AccessType = NodeAccessType.NoAccess},
-                },
-                FullPath = "configuration",
-                Path = "configuration",
-                HandlerModuleType = Constants.ModuleType.MainModule,
-                ParentNodeId = _rootNode.NodeId,
-                Parent = _rootNode,
-                Title = LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.Configuration),
-                HandlerType = typeof (ConfigurationRootNodeHandler),
-                NodeId = nodeId,
-                HandlerId = "configuration",
-                Root = _rootNode,
-                Children = new List<CachedNodeInformation>()
-            };
+                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                adminLoginPage = siteConfiguration.AdminLoginPage;
+            }
+            else
+            {
+                adminLoginPage = _engineConfiguration.AdminLoginPage;
+            }
 
-            _rootNode.Children.Add(configurationNode);
-            _idToNode[nodeId] = configurationNode;
+            if (!string.IsNullOrWhiteSpace(adminLoginPage))
+            {
+                AddVirtualNode<AdministratorLoginNodeHandler>(adminLoginPage,
+                    LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.AdministratorLogin),
+                    Constants.ModuleType.UserInterface, NodeAccessType.Read);
+            }
+
+            if (_siteId.HasValue)
+            {
+                var node = AddVirtualNode<UserProfileNodeHandler>(Constants.NodePath.Profile,
+                    LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserProfile),
+                    Constants.ModuleType.UserInterface, NodeAccessType.Read);
+                node.LoggedIn = true;
+            }
 
             _cachedNodes.Clear();
-
         }
 
         public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
         {
-            return entityType == EntityType.Node;
+            return entityType == EntityType.Node || (entityType == EntityType.Site && _siteId.HasValue && entityId == _siteId.Value);
         }
 
-        private static readonly EntityType[] _handledTypes = {EntityType.Node};
+        private static readonly EntityType[] _handledTypes = {EntityType.Node, EntityType.Site};
 
         public EntityType[] HandledTypes { get { return _handledTypes; } }
     }

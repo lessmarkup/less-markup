@@ -100,7 +100,7 @@ namespace LessMarkup.Engine.Configuration
                 }
             }
 
-            using (var domainModel = _domainModelProvider.Create())
+            using (var domainModel = _domainModelProvider.Create(siteId.Value))
             {
                 var existingProperties = domainModel.GetCollection<SiteProperty>().Where(p => p.SiteId == siteId.Value).ToDictionary(p => p.Name);
                 InitializeFromProperties(existingProperties);
@@ -222,8 +222,8 @@ namespace LessMarkup.Engine.Configuration
         [InputField(InputFieldType.Text, MainModuleTextIds.DefaultCronJobId, DefaultValue = "Default")]
         public string DefaultCronJobId { get; set; }
 
-        [InputField(InputFieldType.Text, MainModuleTextIds.AdminLoginPath)]
-        public string AdminLoginPath { get; set; }
+        [InputField(InputFieldType.Text, MainModuleTextIds.AdminLoginPage)]
+        public string AdminLoginPage { get; set; }
 
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.AdminNotifyNewUsers, DefaultValue = false)]
         public bool AdminNotifyNewUsers { get; set; }

@@ -43,7 +43,6 @@ namespace LessMarkup.MainModule
 
             _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>("article");
             _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>("contact");
-            _moduleIntegration.RegisterNodeHandler<FileListNodeHandler>("filelist");
         }
     }
 }

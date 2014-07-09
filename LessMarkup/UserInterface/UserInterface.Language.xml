@@ -70,8 +70,8 @@
     <Translation Id="Agree" Text="I Agree"/>
     <Translation Id="SiteProperties" Text="Site Properties"/>
     <Translation Id="ViewsTree" Text="Views Tree"/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="AdministratorLogin" Text="Administrator Login"/>
+    <Translation Id="UserProfile" Text="User Profile"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

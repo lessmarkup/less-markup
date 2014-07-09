@@ -92,7 +92,7 @@ getApplication().controller("flatpage", function($scope, $rootScope) {
         }
 
     	scope.toolbarButtons = [];
-	scope.path = page.path;
+	    scope.path = page.path;
     }
 
     for (var i = 0; i < $scope.flat.length; i++) {

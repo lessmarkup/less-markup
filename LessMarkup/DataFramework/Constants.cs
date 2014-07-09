@@ -105,5 +105,11 @@ namespace LessMarkup.DataFramework
         {
             public const int CheckConfigurationChangeMinutes = 2;
         }
+
+        public static class NodePath
+        {
+            public const string Configuration = "configuration";
+            public const string Profile = "profile";
+        }
     }
 }

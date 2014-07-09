@@ -215,7 +215,6 @@
     <Translation Id="HasLanguages" Text="Has Languages"/>
     <Translation Id="HasCurrencies" Text="Has Currencies"/>
     <Translation Id="DefaultCronJobId" Text="Default Cron Job Id"/>
-    <Translation Id="AdminLoginPath" Text="Administrator Login Path"/>
     <Translation Id="AdminNotifyNewUsers" Text="Administrator Notify Of New Users"/>
     <Translation Id="AdminApproveNewUsers" Text="Administrator Approves New Users"/>
     <Translation Id="UserAgreement" Text="User Agreement"/>
@@ -225,7 +224,7 @@
     <Translation Id="FileName" Text="File Name"/>
     <Translation Id="File" Text="File"/>
     <Translation Id="Files" Text="Files"/>
-    <Translation Id="" Text=""/>
+    <Translation Id="UserCommon" Text="Common"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

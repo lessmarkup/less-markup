@@ -74,6 +74,8 @@ namespace LessMarkup.UserInterface
         UserAgreement,
         Agree,
         SiteProperties,
-        ViewsTree
+        ViewsTree,
+        AdministratorLogin,
+        UserProfile,
     }
 }

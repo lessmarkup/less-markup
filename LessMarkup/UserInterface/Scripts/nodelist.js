@@ -282,8 +282,10 @@ getApplication().controller('nodelist', function ($scope, inputForm) {
         }, $scope.getTypeahead);
     }
 
-    $scope.canBeDeleted = function() {
-        return true;
+    $scope.canBeDeleted = function (node) {
+        var index = nodeIndex(node);
+        // we can remove only nodes with empty child list
+        return index + 1 >= $scope.nodes.length || $scope.nodes[index+1].data.Level <= node.data.Level;
     }
 
     $scope.deleteNode = function(node) {

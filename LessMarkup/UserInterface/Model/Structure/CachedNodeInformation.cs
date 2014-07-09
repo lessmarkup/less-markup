@@ -4,6 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -25,5 +28,59 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string HandlerModuleType { get; set; }
         public string Settings { get; set; }
         public CachedNodeInformation Root { get; set; }
+        public bool Visible { get; set; }
+        public bool LoggedIn { get; set; }
+
+        private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, List<long> groupIds)
+        {
+            if (!userId.HasValue)
+            {
+                return !nodeAccess.UserId.HasValue;
+            }
+
+            if (nodeAccess.UserId.HasValue && nodeAccess.UserId.Value == userId.Value)
+            {
+                return true;
+            }
+
+            if (nodeAccess.GroupId.HasValue)
+            {
+                return groupIds.Contains(nodeAccess.GroupId.Value);
+            }
+
+            return false;
+        }
+
+        private void CheckRights(long? userId, List<long> groupIds, ref NodeAccessType? accessType)
+        {
+            if (Parent != null)
+            {
+                Parent.CheckRights(userId, groupIds, ref accessType);
+            }
+
+            if (AccessList == null)
+            {
+                return;
+            }
+
+            var nodeAccess = AccessList.Where(a => AppliesTo(a, userId, groupIds)).Max(a => (NodeAccessType?)a.AccessType);
+
+            if (nodeAccess.HasValue && (!accessType.HasValue || accessType.Value > nodeAccess.Value))
+            {
+                accessType = nodeAccess;
+            }
+        }
+
+        public NodeAccessType? CheckRights(ICurrentUser currentUser)
+        {
+            if (currentUser.IsAdministrator)
+            {
+                return NodeAccessType.Manage;
+            }
+
+            NodeAccessType? accessType = null;
+            CheckRights(currentUser.UserId, currentUser.Groups, ref accessType);
+            return accessType;
+        }
     }
 }

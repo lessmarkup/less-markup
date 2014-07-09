@@ -57,7 +57,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         throw new NullReferenceException();
                     }
-                    return domainModel.GetCollection<User>().Where(u => u.SiteId == siteId.Value && (SqlFunctions.PatIndex(searchText, u.Name) > 0 || SqlFunctions.PatIndex(searchText, u.Email) > 0)).Select(u => u.Email);
+                    return domainModel.GetCollection<DataObjects.User.User>().Where(u => u.SiteId == siteId.Value && (SqlFunctions.PatIndex(searchText, u.Name) > 0 || SqlFunctions.PatIndex(searchText, u.Email) > 0)).Select(u => u.Email);
                 case "Group":
                     return domainModel.GetSiteCollection<UserGroup>(_siteId).Where(g => SqlFunctions.PatIndex(searchText, g.Name) > 0).Select(g => g.Name);
                 default:

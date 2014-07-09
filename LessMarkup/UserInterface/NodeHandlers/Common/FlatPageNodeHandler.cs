@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Common;
 using LessMarkup.UserInterface.Model.Structure;
@@ -16,6 +18,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
     public class FlatPageNodeHandler : AbstractNodeHandler
     {
         private readonly IDataCache _dataCache;
+        private readonly ICurrentUser _currentUser;
 
         class FlatNodeEntry
         {
@@ -29,6 +32,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public string UniqueId { get; set; }
             public int Level { get; set; }
             public string Path { get; set; }
+            public CachedNodeInformation Source { get; set; }
         }
 
         class TreeNodeEntry
@@ -42,9 +46,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly List<FlatNodeEntry> _flatNodeList = new List<FlatNodeEntry>();
         private TreeNodeEntry _treeRoot;
 
-        public FlatPageNodeHandler(IDataCache dataCache)
+        public FlatPageNodeHandler(IDataCache dataCache, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
         private void FillFlatList(CachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
@@ -71,7 +76,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     Settings = child.Settings,
                     Anchor = childAnchor + child.Path,
                     Level = level,
-                    Path = child.FullPath
+                    Path = child.FullPath,
+                    Source = child
                 };
 
                 var treeNode = new TreeNodeEntry
@@ -98,16 +104,29 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             var nodeCache = _dataCache.Get<NodeCache>();
 
-            var currentNode = nodeCache.GetNode(ObjectId);
-
             _treeRoot = new TreeNodeEntry { Children = new List<TreeNodeEntry>() };
 
-            FillFlatList(currentNode, _flatNodeList, _treeRoot);
+            if (ObjectId.HasValue)
+            {
+                var currentNode = nodeCache.GetNode(ObjectId.Value);
+                FillFlatList(currentNode, _flatNodeList, _treeRoot);
+            }
 
             if (settingsModel == null || settingsModel.LoadOnShow)
             {
                 foreach (var node in _flatNodeList)
                 {
+                    var accessType = node.Source.CheckRights(_currentUser);
+
+                    if (!accessType.HasValue)
+                    {
+                        accessType = NodeAccessType.Read;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
                     var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(node.HandlerType);
                     object nodeSettings = null;
 
@@ -116,11 +135,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
                     }
 
-                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path);
+                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path, accessType.Value);
 
                     node.ViewData = handler.GetViewData();
-                    node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller)controller);
+                    node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller) controller);
                 }
+
+                _flatNodeList.RemoveAll(n => n.ViewBody == null);
             }
 
             var pageIndex = 1;
@@ -140,7 +161,19 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new
             {
                 Tree = _treeRoot.Children,
-                Flat = _flatNodeList,
+                Flat = _flatNodeList.Select(f => new
+                {
+                    f.Anchor, 
+                    //f.HandlerType, 
+                    f.Level, 
+                    f.NodeId, 
+                    f.Path, 
+                    //f.Settings, 
+                    f.Title, 
+                    f.UniqueId, 
+                    f.ViewBody, 
+                    f.ViewData
+                }).ToList(),
                 Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right
             };
         }
@@ -148,6 +181,51 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected override Type SettingsModel
         {
             get { return typeof(FlatPageSettingsModel); }
+        }
+
+        protected override bool HasChildren
+        {
+            get { return true; }
+        }
+
+        protected override ChildHandlerSettings GetChildHandler(string path)
+        {
+            var node = _flatNodeList.FirstOrDefault(n => n.Path == path);
+
+            if (node == null)
+            {
+                return null;
+            }
+
+            var accessType = node.Source.CheckRights(_currentUser);
+
+            if (!accessType.HasValue)
+            {
+                accessType = NodeAccessType.Read;
+            }
+            else if (accessType.Value == NodeAccessType.NoAccess)
+            {
+                return null;
+            }
+
+            var handler = (INodeHandler) Interfaces.DependencyResolver.Resolve(node.HandlerType);
+
+            object nodeSettings = null;
+
+            if (handler.SettingsModel != null && !string.IsNullOrEmpty(node.Settings))
+            {
+                nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
+            }
+
+            handler.Initialize(node.NodeId, nodeSettings, null, node.Path, accessType.Value);
+
+            return new ChildHandlerSettings
+            {
+                Handler = handler,
+                Id = node.NodeId,
+                Path = path,
+                Title = node.Title
+            };
         }
     }
 }

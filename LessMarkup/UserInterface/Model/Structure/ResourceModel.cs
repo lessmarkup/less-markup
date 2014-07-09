@@ -18,6 +18,11 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public bool Initialize(string path)
         {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return false;
+            }
+
             var resourceCache = _dataCache.Get<ResourceCache>();
 
             if (!resourceCache.ResourceExists(path))

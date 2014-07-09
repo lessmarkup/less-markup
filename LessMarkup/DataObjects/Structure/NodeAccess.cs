@@ -5,6 +5,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.DataObjects.Structure
 {

@@ -220,7 +220,6 @@ namespace LessMarkup.Engine.Language
         HasLanguages,
         HasCurrencies,
         DefaultCronJobId,
-        AdminLoginPath,
         AdminNotifyNewUsers,
         AdminApproveNewUsers,
         UserAgreement,
@@ -230,5 +229,6 @@ namespace LessMarkup.Engine.Language
         FileName,
         File,
         Files,
+        UserCommon,
     }
 }

@@ -179,3 +179,57 @@ button [us-spinner] {
 button:not(.btn)[disabled=disabled] {
   color: #bbb;
 }
+
+#navbar-menu > li.dropdown {
+    margin-left: -1em;
+}
+
+#navbar-menu > li .navbar-brand {
+    height: auto;
+}
+
+.dropdown-menu > li > ul > li {
+    list-style-type: none;
+}
+
+.dropdown-menu > li > ul > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+.dropdown-menu > li > ul > li > a:hover,
+.dropdown-menu > li > ul > li > a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+
+.dropdown-menu > li > ul > .active > a,
+.dropdown-menu > li > ul > .active > a:hover,
+.dropdown-menu > li > ul > .active > a:focus {
+  color: #fff;
+  text-decoration: none;
+  background-color: #428bca;
+  outline: 0;
+}
+.dropdown-menu > li > ul > .disabled > a,
+.dropdown-menu > li > ul > .disabled > a:hover,
+.dropdown-menu > li > ul > .disabled > a:focus {
+  color: #999;
+}
+.dropdown-menu > li > ul > .disabled > a:hover,
+.dropdown-menu > li > ul > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+.nav-tabs {
+    margin-bottom: 15px;
+}

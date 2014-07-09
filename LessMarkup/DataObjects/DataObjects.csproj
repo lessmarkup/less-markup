@@ -59,7 +59,6 @@
     <Compile Include="Statistics\AddressToCountry.cs" />
     <Compile Include="Statistics\DaySummaryHistory.cs" />
     <Compile Include="Structure\NodeAccess.cs" />
-    <Compile Include="Structure\NodeAccessType.cs" />
     <Compile Include="Structure\Node.cs" />
     <Compile Include="User\MultiFactorAuthorization.cs" />
     <Compile Include="User\User.cs" />

@@ -23,7 +23,15 @@ namespace LessMarkup.Engine.Helpers
             {
                 return null;
             }
-            return string.Format(GetLanguageCache().GetTranslation(id.ToString(), moduleType), args);
+
+            var translation = GetLanguageCache().GetTranslation(id.ToString(), moduleType);
+
+            if (args == null || args.Length == 0)
+            {
+                return translation;
+            }
+
+            return string.Format(translation, args);
         }
 
         public static string GetTextWithDefault(string moduleType, object id, object defaultId, string defaultModuleType, params object[] args)

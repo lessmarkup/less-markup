@@ -99,6 +99,8 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\TextNotFoundException.cs" />
+    <Compile Include="Structure\NodeAccessType.cs" />
+    <Compile Include="Structure\UserProfileHandlerAttribute.cs" />
     <Compile Include="System\IResolverCallback.cs" />
     <Compile Include="Module\BaseModuleInitializer.cs" />
     <Compile Include="Module\IBackgroundJobHandler.cs" />

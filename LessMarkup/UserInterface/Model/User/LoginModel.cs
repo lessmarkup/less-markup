@@ -6,17 +6,26 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Web;
+using LessMarkup.Engine.Configuration;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.User
 {
     public class LoginModel
     {
         private readonly ICurrentUser _currentUser;
+        private readonly ISiteMapper _siteMapper;
+        private readonly IDataCache _dataCache;
+        private readonly IEngineConfiguration _engineConfiguration;
 
-        public LoginModel(ICurrentUser currentUser)
+        public LoginModel(ICurrentUser currentUser, ISiteMapper siteMapper, IDataCache dataCache, IEngineConfiguration engineConfiguration)
         {
             _currentUser = currentUser;
+            _siteMapper = siteMapper;
+            _dataCache = dataCache;
+            _engineConfiguration = engineConfiguration;
         }
 
         public object HandleStage1Request(Dictionary<string, string> data)
@@ -37,7 +46,30 @@ namespace LessMarkup.UserInterface.Model.User
             var passwordHash = data["hash"];
             var savePassword = data["remember"];
 
-            if (!_currentUser.LoginUserWithPassword(userName, "", savePassword != null && savePassword == true.ToString(), true, true,
+            string administratorKey;
+
+            if (!data.TryGetValue("administratorKey", out administratorKey))
+            {
+                administratorKey = "";
+            }
+
+            string adminLoginPage;
+
+            if (_siteMapper.SiteId.HasValue)
+            {
+                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                adminLoginPage = siteConfiguration.AdminLoginPage;
+            }
+            else
+            {
+                adminLoginPage = _engineConfiguration.AdminLoginPage;
+            }
+
+            bool allowAdministrator = string.IsNullOrWhiteSpace(adminLoginPage) || administratorKey == adminLoginPage;
+
+            bool allowUser = string.IsNullOrWhiteSpace(adminLoginPage);
+
+            if (!_currentUser.LoginUserWithPassword(userName, "", savePassword != null && savePassword == true.ToString(), allowAdministrator, allowUser,
                 HttpContext.Current.Request.UserHostAddress, passwordHash))
             {
                 throw new UnauthorizedAccessException("User not found or wrong password");
@@ -46,7 +78,8 @@ namespace LessMarkup.UserInterface.Model.User
             return new
             {
                 UserName = _currentUser.Email,
-                ShowConfiguration = _currentUser.IsAdministrator
+                ShowConfiguration = _currentUser.IsAdministrator,
+                Path = string.IsNullOrWhiteSpace(adminLoginPage) ? "" : "/"
             };
         }
 

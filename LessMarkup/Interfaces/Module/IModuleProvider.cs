@@ -20,5 +20,6 @@ namespace LessMarkup.Interfaces.Module
         Type GetControllerType(string controllerName);
         string GetControllerModuleType(Type controllerType);
         string GetControllerModuleType(string controllerName);
+        Assembly ResolveAssembly(object sender, ResolveEventArgs args);
     }
 }

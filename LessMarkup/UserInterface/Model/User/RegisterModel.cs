@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
 using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Engine.Configuration;
@@ -46,13 +47,34 @@ namespace LessMarkup.UserInterface.Model.User
 
         public object GetRegisterObject()
         {
-            UserAgreement = _dataCache.Get<SiteConfigurationCache>().UserAgreement;
+            var siteProperties = _dataCache.Get<SiteConfigurationCache>();
+
+            if (!siteProperties.HasUsers)
+            {
+                throw new Exception("Cannot register new user");
+            }
+
+            UserAgreement = siteProperties.UserAgreement;
             ShowUserAgreement = !string.IsNullOrWhiteSpace(UserAgreement);
-            return this;
+
+            var modelCache = _dataCache.Get<RecordModelCache>();
+
+            return new
+            {
+                RegisterObject = this,
+                ModelId = modelCache.GetDefinition<RegisterModel>().Id
+            };
         }
 
         public object Register(System.Web.Mvc.Controller controller)
         {
+            var siteProperties = _dataCache.Get<SiteConfigurationCache>();
+
+            if (!siteProperties.HasUsers)
+            {
+                throw new Exception("Cannot register new user");
+            }
+
             var modelCache = _dataCache.Get<RecordModelCache>();
             var definition = modelCache.GetDefinition(typeof (RegisterModel));
             definition.ValidateInput(this, true);

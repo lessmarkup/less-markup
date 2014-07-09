@@ -9,6 +9,7 @@ using System.Reflection;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Exceptions;
 using Newtonsoft.Json;
@@ -18,13 +19,15 @@ namespace LessMarkup.UserInterface.Model.Structure
     public class ExecuteActionModel
     {
         private readonly IDataCache _dataCache;
+        private readonly ICurrentUser _currentUser;
 
-        public ExecuteActionModel(IDataCache dataCache)
+        public ExecuteActionModel(IDataCache dataCache, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
-        public object HandleRequest(Dictionary<string, string> data)
+        public object HandleRequest(Dictionary<string, string> data, System.Web.Mvc.Controller controller)
         {
             var path = data["-path-"];
 
@@ -38,13 +41,34 @@ namespace LessMarkup.UserInterface.Model.Structure
                 throw new UnknownActionException();
             }
 
+            var accessType = node.CheckRights(_currentUser);
+
+            if (!accessType.HasValue)
+            {
+                accessType = NodeAccessType.Read;
+            }
+            else if (accessType.Value == NodeAccessType.NoAccess)
+            {
+                    throw new UnknownActionException();
+            }
+
             var handler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
+
             string settings = node.Settings;
+
+            object settingsObject = null;
+
+            if (!string.IsNullOrWhiteSpace(settings) && handler.SettingsModel != null)
+            {
+                settingsObject = JsonConvert.DeserializeObject(settings, handler.SettingsModel);
+            }
+
+            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, accessType.Value);
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
                 var childSettings = handler.GetChildHandler(rest);
-                if (childSettings == null || !childSettings.Id.HasValue)
+                if (childSettings == null)
                 {
                     throw new UnknownActionException();
                 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using Autofac;
 using LessMarkup.Engine.Configuration;
@@ -25,6 +26,7 @@ namespace LessMarkup.Engine.Module
         private readonly List<Assembly> _moduleAssemblies = new List<Assembly>();
         private readonly ISpecialFolder _specialFolder = new SpecialFolder();
         private readonly IEngineConfiguration _engineConfiguration = new EngineConfiguration();
+        private readonly Dictionary<string, Assembly> _assemblyToFullName = new Dictionary<string, Assembly>();
 
         class ControllerConfiguration
         {
@@ -61,35 +63,87 @@ namespace LessMarkup.Engine.Module
 
             var currentPath = _specialFolder.BinaryFiles;
 
-            foreach (var file in new DirectoryInfo(currentPath).GetFiles("*.dll").Where(f => f.FullName.EndsWith(".Module.dll")))
+            DiscoverDirectory(currentPath, assemblies);
+
+            var directories = WebConfigurationManager.AppSettings.GetValues("ModuleSearchPath");
+            if (directories != null)
             {
-                var assembly = Assembly.LoadFile(file.FullName);
-
-                var codeBase = assembly.CodeBase.ToLower();
-
-                if (_moduleAssemblies.Any(a => a.CodeBase.ToLower() == codeBase))
+                foreach (var directory in directories)
                 {
-                    continue;
-                }
-
-                var initializerType = assembly.GetTypes().FirstOrDefault(t => !t.IsAbstract && typeof (IModuleInitializer).IsAssignableFrom(t));
-
-                if (initializerType == null)
-                {
-                    continue;
-                }
-
-                RegisterModule(assembly, false, initializerType);
-
-                assemblies.Add(assembly);
-
-                foreach (var reference in assembly.GetReferencedAssemblies())
-                {
-                    assemblies.Add(Assembly.Load(reference));
+                    if (string.IsNullOrWhiteSpace(directory))
+                    {
+                        continue;
+                    }
+                    DiscoverDirectory(directory, assemblies);
                 }
             }
 
+            var moduleSearchPath = _engineConfiguration.ModuleSearchPath;
+
+            if (!string.IsNullOrWhiteSpace(moduleSearchPath))
+            {
+                DiscoverDirectory(moduleSearchPath, assemblies);
+            }
+
             return assemblies;
+        }
+
+        private void DiscoverDirectory(string currentPath, HashSet<Assembly> assemblies)
+        {
+            foreach (var file in new DirectoryInfo(currentPath).GetFiles("*.dll").Where(f => f.FullName.EndsWith(".Module.dll"))
+                )
+            {
+                DiscoverModule(file, assemblies);
+            }
+        }
+
+        private void DiscoverModule(FileInfo file, HashSet<Assembly> assemblies)
+        {
+            var assembly = Assembly.LoadFile(file.FullName);
+
+            var codeBase = assembly.CodeBase.ToLower();
+
+            if (_moduleAssemblies.Any(a => a.CodeBase.ToLower() == codeBase))
+            {
+                return;
+            }
+
+            var initializerType =
+                assembly.GetTypes().FirstOrDefault(t => !t.IsAbstract && typeof (IModuleInitializer).IsAssignableFrom(t));
+
+            if (initializerType == null)
+            {
+                return;
+            }
+
+            RegisterModule(assembly, false, initializerType);
+
+            assemblies.Add(assembly);
+
+            var path = new Uri(assembly.CodeBase).LocalPath;
+
+            var pos = path.LastIndexOf('\\');
+
+            if (pos > 0)
+            {
+                path = path.Substring(0, pos);
+            }
+
+            foreach (var reference in assembly.GetReferencedAssemblies())
+            {
+                var referencePath = Path.Combine(path, reference.Name + ".dll");
+                Assembly referencedAssembly;
+                if (File.Exists(referencePath))
+                {
+                    referencedAssembly = Assembly.LoadFile(referencePath);
+                }
+                else
+                {
+                    referencedAssembly = Assembly.Load(reference);
+                }
+                _assemblyToFullName[referencedAssembly.FullName] = referencedAssembly;
+                assemblies.Add(referencedAssembly);
+            }
         }
 
         public void UpdateModuleDatabase(IDomainModelProvider domainModelProvider)
@@ -261,11 +315,40 @@ namespace LessMarkup.Engine.Module
             return ret.ModuleType;
         }
 
+        public Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        {
+            Assembly ret;
+            if (_assemblyToFullName.TryGetValue(args.Name, out ret))
+            {
+                return ret;
+            }
+            return null;
+        }
+
         public void RegisterModule(Assembly moduleAssembly, bool systemModule, Type initializerType)
         {
+            var path = new Uri(moduleAssembly.CodeBase).LocalPath;
+
+            var pos = path.LastIndexOf('\\');
+
+            if (pos > 0)
+            {
+                path = path.Substring(0, pos);
+            }
+
             foreach (var reference in moduleAssembly.GetReferencedAssemblies())
             {
-                Assembly.Load(reference);
+                var assemblyPath = Path.Combine(path, reference.Name + ".dll");
+                Assembly assembly;
+                if (File.Exists(assemblyPath))
+                {
+                    assembly = Assembly.LoadFile(assemblyPath);
+                }
+                else
+                {
+                    assembly = Assembly.Load(reference);
+                }
+                _assemblyToFullName[assembly.FullName] = assembly;
             }
             
             _moduleAssemblies.Add(moduleAssembly);
