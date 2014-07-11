@@ -56,7 +56,7 @@ namespace LessMarkup.Engine.Cache
         }
 
 
-        public T Get<T>(long? objectId = null, bool create = true) where T : class, ICacheHandler
+        public T Get<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
             lock (_itemsLock)
             {
@@ -69,7 +69,7 @@ namespace LessMarkup.Engine.Cache
 
                 if (!create)
                 {
-                    return null;
+                    return default(T);
                 }
 
                 this.LogDebug(string.Format("Cache for site {0}: creating item for type {1}, id {2}", _siteId, typeof(T).Name, objectId ?? (object)"(null)"));
@@ -82,7 +82,7 @@ namespace LessMarkup.Engine.Cache
             }
         }
 
-        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : class, ICacheHandler
+        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
             throw new MemberAccessException();
         }
@@ -100,7 +100,7 @@ namespace LessMarkup.Engine.Cache
             throw new MemberAccessException();
         }
 
-        public T CreateWithUniqueId<T>() where T : class, ICacheHandler
+        public T CreateWithUniqueId<T>() where T : ICacheHandler
         {
             var random = new Random(Environment.TickCount);
 
@@ -123,7 +123,7 @@ namespace LessMarkup.Engine.Cache
             }
         }
 
-        public T CreateWithUniqueIdGlobal<T>() where T : class, ICacheHandler
+        public T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler
         {
             throw new MemberAccessException();
         }

@@ -107,22 +107,22 @@ namespace LessMarkup.Engine.Cache
             GlobalCache.Expired<T>(objectId);
         }
 
-        public T CreateWithUniqueId<T>() where T : class, ICacheHandler
+        public T CreateWithUniqueId<T>() where T : ICacheHandler
         {
             return SiteCache.CreateWithUniqueId<T>();
         }
 
-        public T CreateWithUniqueIdGlobal<T>() where T : class, ICacheHandler
+        public T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler
         {
             return GlobalCache.CreateWithUniqueId<T>();
         }
 
-        public T Get<T>(long? objectId = null, bool create = true) where T : class, ICacheHandler
+        public T Get<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
             return SiteCache.Get<T>(objectId, create);
         }
 
-        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : class, ICacheHandler
+        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
             return GlobalCache.Get<T>(objectId, create);
         }

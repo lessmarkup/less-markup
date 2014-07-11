@@ -14,7 +14,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             var loadNodeModel = Interfaces.DependencyResolver.Resolve<LoadNodeViewModel>();
 
-            if (!loadNodeModel.Initialize(path, null, controller))
+            if (!loadNodeModel.Initialize(path, null, controller, false))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
             }

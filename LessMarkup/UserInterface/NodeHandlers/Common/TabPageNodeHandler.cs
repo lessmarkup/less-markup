@@ -52,7 +52,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected override object Initialize(object controller)
         {
-            var nodeCache = _dataCache.Get<NodeCache>();
+            var nodeCache = _dataCache.Get<INodeCache>();
 
             var parentPath = "";
 

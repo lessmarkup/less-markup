@@ -4,9 +4,12 @@
 
 using System;
 using System.Reflection;
+using Autofac;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.ChangeTracking;
+using LessMarkup.UserInterface.Model.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -52,6 +55,11 @@ namespace LessMarkup.UserInterface
             base.InitializeDatabase();
             RecordChangeTracker.Initialize();
             _moduleIntegration.RegisterNodeHandler<FlatPageNodeHandler>("flatpage");
+        }
+
+        public static void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<NodeCache>().As<INodeCache>();
         }
     }
 }

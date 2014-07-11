@@ -32,7 +32,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public string UniqueId { get; set; }
             public int Level { get; set; }
             public string Path { get; set; }
-            public CachedNodeInformation Source { get; set; }
+            public ICachedNodeInformation Source { get; set; }
         }
 
         class TreeNodeEntry
@@ -52,7 +52,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _currentUser = currentUser;
         }
 
-        private void FillFlatList(CachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
+        private void FillFlatList(ICachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
         {
             if (parent.Children == null)
             {
@@ -102,7 +102,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var settingsModel = GetSettings<FlatPageSettingsModel>();
 
-            var nodeCache = _dataCache.Get<NodeCache>();
+            var nodeCache = _dataCache.Get<INodeCache>();
 
             _treeRoot = new TreeNodeEntry { Children = new List<TreeNodeEntry>() };
 

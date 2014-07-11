@@ -22,7 +22,7 @@ using LessMarkup.UserInterface.NodeHandlers.User;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
-    public class NodeCache : ICacheHandler
+    public class NodeCache : INodeCache
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
@@ -31,11 +31,11 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly ISiteMapper _siteMapper;
         private long? _siteId;
 
-        private readonly List<CachedNodeInformation> _cachedNodes = new List<CachedNodeInformation>();
-        private readonly Dictionary<long, CachedNodeInformation> _idToNode = new Dictionary<long, CachedNodeInformation>();
+        private readonly List<ICachedNodeInformation> _cachedNodes = new List<ICachedNodeInformation>();
+        private readonly Dictionary<long, ICachedNodeInformation> _idToNode = new Dictionary<long, ICachedNodeInformation>();
         private CachedNodeInformation _rootNode;
 
-        public CachedNodeInformation RootNode { get { return _rootNode; } }
+        public ICachedNodeInformation RootNode { get { return _rootNode; } }
 
         public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ISiteMapper siteMapper)
         {
@@ -84,8 +84,9 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (node.Children != null)
             {
-                foreach (var child in node.Children.Where(c => c.Enabled))
+                foreach (var cachedNodeInformation in node.Children.Where(c => c.Enabled))
                 {
+                    var child = (CachedNodeInformation) cachedNodeInformation;
                     child.Parent = node;
                     InitializeTree(child);
                 }
@@ -94,8 +95,6 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         private void InitializeNode(CachedNodeInformation node, List<CachedNodeInformation> nodes, int from, int count)
         {
-            node.Children = new List<CachedNodeInformation>();
-
             if (count == 0)
             {
                 return;
@@ -105,7 +104,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             var to = from + count;
 
             var firstNode = nodes[from];
-            node.Children.Add(firstNode);
+            node.AddChild(firstNode);
 
             from++;
 
@@ -114,11 +113,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                 var nextNode = nodes[i];
                 if (nextNode.Level <= lowLevel)
                 {
-                    node.Children.Add(nextNode);
+                    node.AddChild(nextNode);
                     i++;
                     continue;
                 }
-                var parent = node.Children.Last();
+                var parent = (CachedNodeInformation) node.Children.Last();
                 var childFrom = i;
                 for (i++; i < to; i++)
                 {
@@ -132,13 +131,13 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
         }
 
-        public CachedNodeInformation GetNode(long nodeId)
+        public ICachedNodeInformation GetNode(long nodeId)
         {
-            CachedNodeInformation ret;
+            ICachedNodeInformation ret;
             return _idToNode.TryGetValue(nodeId, out ret) ? ret : null;
         }
 
-        public void GetNode(string path, out CachedNodeInformation node, out string rest)
+        public void GetNode(string path, out ICachedNodeInformation node, out string rest)
         {
             var nodeParts = (path ?? "").ToLower().Split(new[] {'/'}).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
@@ -195,11 +194,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 NodeId = nodeId,
                 HandlerId = path,
                 Root = _rootNode,
-                Children = new List<CachedNodeInformation>(),
                 Visible = false,
             };
 
-            _rootNode.Children.Add(node);
+            _rootNode.AddChild(node);
             _idToNode[nodeId] = node;
 
             return node;
@@ -257,8 +255,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                     HandlerType = typeof (DefaultRootNodeHandler),
                     Title = "Home",
                     NodeId = 1,
-                    HandlerId = "home",
-                    Children = new List<CachedNodeInformation>(),
+                    HandlerId = "home"
                 });
             }
 

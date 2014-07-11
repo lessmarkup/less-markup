@@ -15,7 +15,6 @@ using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
-using LessMarkup.UserInterface.Model.Structure;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
@@ -147,7 +146,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         protected override object GetViewData()
         {
-            var path = ObjectId.HasValue ? _dataCache.Get<NodeCache>().GetNode(ObjectId.Value).FullPath : null;
+            var path = ObjectId.HasValue ? _dataCache.Get<INodeCache>().GetNode(ObjectId.Value).FullPath : null;
 
             return new
             {

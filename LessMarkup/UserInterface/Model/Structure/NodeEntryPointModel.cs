@@ -37,7 +37,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             _engineConfiguration = engineConfiguration;
         }
 
-        private NavigationBarModel CreateNavigationBarChild(CachedNodeInformation node)
+        private NavigationBarModel CreateNavigationBarChild(ICachedNodeInformation node)
         {
             var model = new NavigationBarModel
             {
@@ -77,7 +77,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             string nodeLoadError = null;
             try
             {
-                if (!viewData.Initialize(path, null, controller))
+                if (!viewData.Initialize(path, null, controller, true))
                 {
                     return false;
                 }
@@ -88,7 +88,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 nodeLoadError = e.Message;
             }
 
-            var nodeCache = _dataCache.Get<NodeCache>();
+            var nodeCache = _dataCache.Get<INodeCache>();
 
             var rootNode = nodeCache.RootNode;
             Title = rootNode.Title;

@@ -29,9 +29,9 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public void Initialize(string path, string property, string searchText)
         {
-            var nodeCache = _dataCache.Get<NodeCache>();
+            var nodeCache = _dataCache.Get<INodeCache>();
 
-            CachedNodeInformation node;
+            ICachedNodeInformation node;
             string rest;
             nodeCache.GetNode(path, out node, out rest);
             if (node == null)

@@ -325,6 +325,45 @@ namespace LessMarkup.Engine.Module
             return null;
         }
 
+        private void LoadReferences(Assembly baseAssembly, string directoryPath)
+        {
+            foreach (var reference in baseAssembly.GetReferencedAssemblies())
+            {
+                if (_assemblyToFullName.ContainsKey(reference.FullName))
+                {
+                    continue;
+                }
+
+                var assemblyPath = Path.Combine(directoryPath, reference.Name + ".dll");
+                Assembly assembly;
+
+                try
+                {
+                    if (File.Exists(assemblyPath))
+                    {
+                        assembly = Assembly.LoadFile(assemblyPath);
+                    }
+                    else
+                    {
+                        assembly = Assembly.Load(reference);
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+
+                if (assembly == null)
+                {
+                    continue;
+                }
+
+                _assemblyToFullName[reference.FullName] = assembly;
+
+                LoadReferences(assembly, directoryPath);
+            }
+        }
+
         public void RegisterModule(Assembly moduleAssembly, bool systemModule, Type initializerType)
         {
             var path = new Uri(moduleAssembly.CodeBase).LocalPath;
@@ -336,21 +375,8 @@ namespace LessMarkup.Engine.Module
                 path = path.Substring(0, pos);
             }
 
-            foreach (var reference in moduleAssembly.GetReferencedAssemblies())
-            {
-                var assemblyPath = Path.Combine(path, reference.Name + ".dll");
-                Assembly assembly;
-                if (File.Exists(assemblyPath))
-                {
-                    assembly = Assembly.LoadFile(assemblyPath);
-                }
-                else
-                {
-                    assembly = Assembly.Load(reference);
-                }
-                _assemblyToFullName[assembly.FullName] = assembly;
-            }
-            
+            LoadReferences(moduleAssembly, path);
+
             _moduleAssemblies.Add(moduleAssembly);
 
             var configuration = new ModuleConfiguration(moduleAssembly, systemModule, initializerType);

@@ -10,8 +10,10 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
-    public class CachedNodeInformation
+    public class CachedNodeInformation : ICachedNodeInformation
     {
+        private readonly List<ICachedNodeInformation> _children = new List<ICachedNodeInformation>(); 
+
         public long NodeId { get; set; }
         public bool Enabled { get; set; }
         public string Path { get; set; }
@@ -20,16 +22,21 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string Title { get; set; }
         public string HandlerId { get; set; }
         public long? ParentNodeId { get; set; }
-        public CachedNodeInformation Parent { get; set; }
+        public ICachedNodeInformation Parent { get; set; }
         public List<CachedNodeAccess> AccessList { get; set; }
-        public List<CachedNodeInformation> Children { get; set; }
+        public IEnumerable<ICachedNodeInformation> Children { get { return _children; } }
         public string FullPath { get; set; }
         public Type HandlerType { get; set; }
         public string HandlerModuleType { get; set; }
         public string Settings { get; set; }
-        public CachedNodeInformation Root { get; set; }
+        public ICachedNodeInformation Root { get; set; }
         public bool Visible { get; set; }
         public bool LoggedIn { get; set; }
+
+        public void AddChild(ICachedNodeInformation node)
+        {
+            _children.Add(node);
+        }
 
         private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, List<long> groupIds)
         {
@@ -55,7 +62,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             if (Parent != null)
             {
-                Parent.CheckRights(userId, groupIds, ref accessType);
+                ((CachedNodeInformation)Parent).CheckRights(userId, groupIds, ref accessType);
             }
 
             if (AccessList == null)

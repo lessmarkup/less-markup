@@ -162,7 +162,6 @@
     <Compile Include="Controller\NodeController.cs" />
     <Compile Include="Model\Global\UserModel.cs" />
     <Compile Include="Model\Structure\TypeaheadModel.cs" />
-    <Compile Include="Model\Structure\CachedNodeAccess.cs" />
     <Compile Include="Model\Structure\CachedNodeInformation.cs" />
     <Compile Include="Model\User\RegisterModel.cs" />
     <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />

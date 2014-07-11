@@ -21,7 +21,6 @@ namespace LessMarkup.Framework.WebSockets
         private WebSocket _socket;
         private readonly CancellationTokenSource _cancellationToken;
         private readonly object _sendLock = new object();
-        private readonly List<Task> _sendTasks = new List<Task>();
 
         public WebSocketConnection(ISocketConnectionParent instance, WebSocket socket)
         {
@@ -193,31 +192,7 @@ namespace LessMarkup.Framework.WebSockets
             }
         }
 
-        private async Task SendRequest(WebSocket socket, byte[] fullData, WebSocketMessageType messageType)
-        {
-            var rest = fullData.Length;
-            var offset = 0;
-
-            while (rest > 0)
-            {
-                var bufferSize = rest;
-                bool endOfMessage = true;
-                if (bufferSize > 1024)
-                {
-                    bufferSize = 1024;
-                    endOfMessage = false;
-                }
-
-                var array = new ArraySegment<byte>(fullData, offset, bufferSize);
-
-                await socket.SendAsync(array, messageType, endOfMessage, CancellationToken.None);
-
-                rest -= bufferSize;
-                offset += bufferSize;
-            }
-        }
-
-        private async Task SendRequest(byte[] fullData, WebSocketMessageType messageType)
+        private void SendRequest(byte[] fullData, WebSocketMessageType messageType)
         {
             var socket = _socket;
 
@@ -227,36 +202,37 @@ namespace LessMarkup.Framework.WebSockets
                 return;
             }
 
-            List<Task> waitTasks;
-            Task ourTask;
-
-            // We should wait until all send previous tasks will be completed
-
             lock (_sendLock)
             {
-                waitTasks = _sendTasks.Count > 0 ? _sendTasks.ToList() : null;
-                ourTask = new Task(() => SendRequest(socket, fullData, messageType), _cancellationToken.Token, TaskCreationOptions.None);
-                _sendTasks.Add(ourTask);
+                var rest = fullData.Length;
+                var offset = 0;
+
+                while (rest > 0)
+                {
+                    var bufferSize = rest;
+                    bool endOfMessage = true;
+                    if (bufferSize > 1024)
+                    {
+                        bufferSize = 1024;
+                        endOfMessage = false;
+                    }
+
+                    var array = new ArraySegment<byte>(fullData, offset, bufferSize);
+
+                    Task.WaitAll(socket.SendAsync(array, messageType, endOfMessage, _cancellationToken.Token));
+
+                    rest -= bufferSize;
+                    offset += bufferSize;
+                }
             }
-
-            if (waitTasks != null)
-            {
-                await Task.WhenAll(waitTasks);
-            }
-
-            ourTask.Start();
-
-            await ourTask;
-
-            lock (_sendLock)
-            {
-                _sendTasks.Remove(ourTask);
-            }
-
-            ourTask.Dispose();
         }
 
-        public async Task SendRequest(string method, byte[] binary, int offset, int count, object parameters = null)
+        private Task SendRequestCreateTask(byte[] fullData, WebSocketMessageType messageType)
+        {
+            return Task.Factory.StartNew(() => SendRequest(fullData, messageType));
+        }
+
+        public Task SendRequest(string method, byte[] binary, int offset, int count, object parameters = null)
         {
             var methodData = Encoding.UTF8.GetBytes(method);
             var parametersData = parameters != null ? Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(parameters)) : null;
@@ -271,13 +247,13 @@ namespace LessMarkup.Framework.WebSockets
                 Buffer.BlockCopy(parametersData, 0, fullData, 8 + methodData.Length, parametersData.Length);
             }
             Buffer.BlockCopy(binary, offset, fullData, methodData.Length + 8 + (parametersData != null ? parametersData.Length : 0), count);
-            await SendRequest(fullData, WebSocketMessageType.Binary);
+            return SendRequestCreateTask(fullData, WebSocketMessageType.Binary);
         }
 
-        public async Task SendRequest(string method, object data = null)
+        public Task SendRequest(string method, object data = null)
         {
             var fullData = Encoding.UTF8.GetBytes(method + ";" + (data != null ? JsonConvert.SerializeObject(data) : ""));
-            await SendRequest(fullData, WebSocketMessageType.Text);
+            return SendRequestCreateTask(fullData, WebSocketMessageType.Text);
         }
 
         private void LogException(Exception e)

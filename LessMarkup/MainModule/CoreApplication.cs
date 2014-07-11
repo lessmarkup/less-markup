@@ -71,6 +71,7 @@ namespace LessMarkup.MainModule
             var builder = new ContainerBuilder();
             DataFrameworkTypeInitializer.Load(builder);
             EngineTypeInitializer.Load(builder);
+            UserInterfaceModuleInitializer.Load(builder);
             builder.RegisterFilterProvider();
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly());
 
