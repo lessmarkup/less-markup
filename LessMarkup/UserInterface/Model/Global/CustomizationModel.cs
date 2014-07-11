@@ -53,6 +53,7 @@ namespace LessMarkup.UserInterface.Model.Global
                             Path = c.Path,
                             Type = c.Type,
                             Body = c.Body,
+                            Append = c.Append,
                             TypeDefined = true
                         });
             }
@@ -68,6 +69,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         Path = record.Path,
                         Type = record.Type,
                         Body = record.Body,
+                        Append = record.Append
                     };
 
                     domainModel.GetSiteCollection<SiteCustomization>(_siteId).Add(customization);
@@ -94,6 +96,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     var customization = domainModel.GetSiteCollection<SiteCustomization>(_siteId).Single(c => c.SiteCustomizationId == record.Id);
                     customization.Path = record.Path;
+                    customization.Append = record.Append;
                     if (record.Body != null)
                     {
                         customization.Body = record.Body;
@@ -147,6 +150,9 @@ namespace LessMarkup.UserInterface.Model.Global
         [InputField(InputFieldType.Text, UserInterfaceTextIds.Path, Required = true)]
         [Column(UserInterfaceTextIds.Path)]
         public string Path { get; set; }
+
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Append)]
+        public bool Append { get; set; }
 
         [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "Type=='Image' || Type=='Binary'", Required = true)]
         public byte[] File

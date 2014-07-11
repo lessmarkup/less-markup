@@ -18,8 +18,12 @@ namespace LessMarkup.MainModule.NodeHandlers
             var contactFormSettings = GetSettings<ContactFormModel>();
 
             var result = Interfaces.DependencyResolver.Resolve<SendContactModel>();
-            result.UserEmail = contactFormSettings.ContactEmail;
-            result.Subject = contactFormSettings.ContactSubject;
+
+            if (contactFormSettings != null)
+            {
+                result.UserEmail = contactFormSettings.ContactEmail;
+                result.Subject = contactFormSettings.ContactSubject;
+            }
 
             return result;
         }

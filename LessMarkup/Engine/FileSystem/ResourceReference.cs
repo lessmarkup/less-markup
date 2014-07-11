@@ -7,7 +7,6 @@ namespace LessMarkup.Engine.FileSystem
     class ResourceReference
     {
         public long RecordId { get; set; }
-        public bool DataLoaded { get; set; }
         public byte[] Binary { get; set; }
     }
 }

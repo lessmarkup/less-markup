@@ -184,8 +184,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 {
                     new CachedNodeAccess {AccessType = accessType },
                 },
-                FullPath = path,
-                Path = path,
+                FullPath = path.ToLower(),
+                Path = path.ToLower(),
                 HandlerModuleType = moduleType,
                 ParentNodeId = _rootNode.NodeId,
                 Parent = _rootNode,
@@ -255,7 +255,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                     HandlerType = typeof (DefaultRootNodeHandler),
                     Title = "Home",
                     NodeId = 1,
-                    HandlerId = "home"
+                    HandlerId = "home",
+                    Visible = true
                 });
             }
 
@@ -277,6 +278,10 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
                 adminLoginPage = siteConfiguration.AdminLoginPage;
+                if (string.IsNullOrWhiteSpace(adminLoginPage))
+                {
+                    adminLoginPage = _engineConfiguration.AdminLoginPage;
+                }
             }
             else
             {

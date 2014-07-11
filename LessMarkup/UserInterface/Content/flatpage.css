@@ -35,6 +35,12 @@
     padding-bottom: 5px;
 }
 
+.scrollspy.scrollspy-side {
+    position: fixed;
+    top: 70px;
+    right: 0;
+}
+
 .scrollspy-side > ul > li > ul {
     list-style-type: none;
     margin: 0;

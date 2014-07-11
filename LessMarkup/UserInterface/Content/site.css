@@ -233,3 +233,7 @@ button:not(.btn)[disabled=disabled] {
 .nav-tabs {
     margin-bottom: 15px;
 }
+
+.form-group .control-label {
+    float: none;
+}

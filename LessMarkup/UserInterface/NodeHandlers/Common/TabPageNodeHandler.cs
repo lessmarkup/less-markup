@@ -64,7 +64,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
                 if (currentNode.Children != null)
                 {
-                    foreach (var child in currentNode.Children)
+                    foreach (var child in currentNode.Children.Where(c => c.Visible))
                     {
                         var accessType = child.CheckRights(_currentUser);
 

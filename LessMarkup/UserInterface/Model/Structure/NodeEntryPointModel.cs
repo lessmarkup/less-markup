@@ -100,7 +100,12 @@ namespace LessMarkup.UserInterface.Model.Structure
             if (_siteMapper.SiteId.HasValue)
             {
                 var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
-                hasLogin = siteConfiguration.HasUsers || string.IsNullOrWhiteSpace(siteConfiguration.AdminLoginPage);
+                var adminLoginPage = siteConfiguration.AdminLoginPage;
+                if (string.IsNullOrWhiteSpace(adminLoginPage))
+                {
+                    adminLoginPage = _engineConfiguration.AdminLoginPage;
+                }
+                hasLogin = siteConfiguration.HasUsers || string.IsNullOrWhiteSpace(adminLoginPage);
                 hasSearch = siteConfiguration.HasSearch;
                 hasTree = siteConfiguration.HasNavigationBar;
             }

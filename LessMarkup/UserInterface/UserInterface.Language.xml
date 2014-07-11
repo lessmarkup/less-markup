@@ -72,7 +72,7 @@
     <Translation Id="ViewsTree" Text="Views Tree"/>
     <Translation Id="AdministratorLogin" Text="Administrator Login"/>
     <Translation Id="UserProfile" Text="User Profile"/>
-    <Translation Id="" Text=""/>
+    <Translation Id="Append" Text="Append"/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

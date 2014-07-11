@@ -32,6 +32,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public string UniqueId { get; set; }
             public int Level { get; set; }
             public string Path { get; set; }
+            public NodeAccessType AccessType { get; set; }
             public ICachedNodeInformation Source { get; set; }
         }
 
@@ -52,7 +53,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _currentUser = currentUser;
         }
 
-        private void FillFlatList(ICachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
+        private void FillFlatAndTreeList(ICachedNodeInformation parent, List<FlatNodeEntry> nodes, TreeNodeEntry parentTreeNode, string anchor = "", int level = 1, int maxLevel = 2)
         {
             if (parent.Children == null)
             {
@@ -61,7 +62,18 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             foreach (var child in parent.Children)
             {
-                if (child.HandlerType == typeof (FlatPageNodeHandler))
+                if (child.HandlerType == typeof (FlatPageNodeHandler) || !child.Visible)
+                {
+                    continue;
+                }
+
+                var accessType = child.CheckRights(_currentUser);
+
+                if (!accessType.HasValue)
+                {
+                    accessType = NodeAccessType.Read;
+                }
+                else if (accessType == NodeAccessType.NoAccess)
                 {
                     continue;
                 }
@@ -77,7 +89,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     Anchor = childAnchor + child.Path,
                     Level = level,
                     Path = child.FullPath,
-                    Source = child
+                    Source = child,
+                    AccessType = accessType.Value
                 };
 
                 var treeNode = new TreeNodeEntry
@@ -93,7 +106,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
                 if (level < maxLevel)
                 {
-                    FillFlatList(child, nodes, treeNode, entry.Anchor, level + 1, maxLevel);
+                    FillFlatAndTreeList(child, nodes, treeNode, entry.Anchor, level + 1, maxLevel);
                 }
             }
         }
@@ -109,24 +122,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             if (ObjectId.HasValue)
             {
                 var currentNode = nodeCache.GetNode(ObjectId.Value);
-                FillFlatList(currentNode, _flatNodeList, _treeRoot);
+                FillFlatAndTreeList(currentNode, _flatNodeList, _treeRoot);
             }
 
             if (settingsModel == null || settingsModel.LoadOnShow)
             {
                 foreach (var node in _flatNodeList)
                 {
-                    var accessType = node.Source.CheckRights(_currentUser);
-
-                    if (!accessType.HasValue)
-                    {
-                        accessType = NodeAccessType.Read;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
                     var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(node.HandlerType);
                     object nodeSettings = null;
 
@@ -135,7 +137,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
                     }
 
-                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path, accessType.Value);
+                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path, node.AccessType);
 
                     node.ViewData = handler.GetViewData();
                     node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller) controller);

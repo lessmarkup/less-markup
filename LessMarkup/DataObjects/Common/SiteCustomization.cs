@@ -15,5 +15,6 @@ namespace LessMarkup.DataObjects.Common
         public byte[] Body { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
+        public bool Append { get; set; }
     }
 }

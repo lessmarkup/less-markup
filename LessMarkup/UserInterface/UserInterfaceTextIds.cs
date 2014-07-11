@@ -77,5 +77,6 @@ namespace LessMarkup.UserInterface
         ViewsTree,
         AdministratorLogin,
         UserProfile,
+        Append,
     }
 }

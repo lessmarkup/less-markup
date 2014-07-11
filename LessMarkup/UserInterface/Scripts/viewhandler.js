@@ -340,7 +340,7 @@ getApplication().controller('main', function ($scope, $http, commandHandler, inp
         $scope.path = url;
         $scope.resetAlerts();
 
-        var newFullPath = window.location.origin + url;
+        var newFullPath = window.location.protocol + "//" + window.location.host + url;
 
         if (window.location.href != newFullPath) {
             history.pushState(newFullPath, data.Title, newFullPath);

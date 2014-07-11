@@ -61,31 +61,6 @@ namespace LessMarkup.Engine.FileSystem
                 return null;
             }
 
-            if (reference.DataLoaded)
-            {
-                return reference;
-            }
-
-            lock (_loadLock)
-            {
-                if (reference.DataLoaded)
-                {
-                    return reference;
-                }
-
-                using (var domainModel = _domainModelProvider.Create())
-                {
-                    var record = domainModel.GetSiteCollection<SiteCustomization>().SingleOrDefault(c => c.SiteCustomizationId == reference.RecordId);
-                    if (record == null)
-                    {
-                        reference.DataLoaded = true;
-                        return reference;
-                    }
-
-                    reference.Binary = record.Body;
-                }
-            }
-
             return reference;
         }
 
@@ -233,7 +208,6 @@ namespace LessMarkup.Engine.FileSystem
                 _resourceReferences[path.ToLower()] = new ResourceReference
                 {
                     Binary = resource,
-                    DataLoaded = true,
                 };
             }
             else
@@ -274,10 +248,26 @@ namespace LessMarkup.Engine.FileSystem
 
                 foreach (var record in collection)
                 {
-                    _resourceReferences[record.Path.ToLower()] = new ResourceReference
+                    var recordPath = record.Path.ToLower();
+
+                    ResourceReference resourceReference;
+
+                    if (record.Append && _resourceReferences.TryGetValue(recordPath, out resourceReference))
+                    {
+                        var binary = new byte[resourceReference.Binary.Length + record.Body.Length];
+                        Buffer.BlockCopy(resourceReference.Binary, 0, binary, 0, resourceReference.Binary.Length);
+                        Buffer.BlockCopy(record.Body, 0, binary, resourceReference.Binary.Length, record.Body.Length);
+                        resourceReference.Binary = binary;
+                        continue;
+                    }
+
+                    resourceReference = new ResourceReference
                     {
                         RecordId = record.SiteCustomizationId,
+                        Binary = record.Body,
                     };
+
+                    _resourceReferences[record.Path.ToLower()] = resourceReference;
                 }
             }
         }
