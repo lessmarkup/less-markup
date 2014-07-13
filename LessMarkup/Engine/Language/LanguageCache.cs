@@ -15,6 +15,7 @@ using AutoMapper;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Language
