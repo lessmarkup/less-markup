@@ -95,7 +95,7 @@ namespace LessMarkup.Engine.Currencies
             return (value / shopCurrencyRate) * userCurrencyRate;
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId.HasValue)
             {

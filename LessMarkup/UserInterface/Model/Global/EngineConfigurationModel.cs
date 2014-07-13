@@ -4,6 +4,7 @@
 
 using System.Data.SqlClient;
 using System.Web;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.System;
 
@@ -64,10 +65,12 @@ namespace LessMarkup.UserInterface.Model.Global
         public string AdminLoginAddress { get; set; }
 
         private readonly IEngineConfiguration _engineConfiguration;
+        private readonly IDataCache _dataCache;
 
-        public EngineConfigurationModel(IEngineConfiguration engineConfiguration)
+        public EngineConfigurationModel(IEngineConfiguration engineConfiguration, IDataCache dataCache)
         {
             _engineConfiguration = engineConfiguration;
+            _dataCache = dataCache;
         }
 
         public void Initialize()
@@ -121,6 +124,8 @@ namespace LessMarkup.UserInterface.Model.Global
             _engineConfiguration.AdminLoginAddress = AdminLoginAddress;
 
             _engineConfiguration.Save();
+
+            _dataCache.Reset();
 
             if (databaseChanged || safeModeChanged)
             {

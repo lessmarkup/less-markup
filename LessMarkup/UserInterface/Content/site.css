@@ -237,3 +237,8 @@ button:not(.btn)[disabled=disabled] {
 .form-group .control-label {
     float: none;
 }
+
+.ngGrid > .ngViewport {
+    height: auto !important;
+    overflow-y: hidden;
+}

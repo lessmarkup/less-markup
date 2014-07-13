@@ -1,4 +1,5 @@
-﻿using LessMarkup.Engine.Configuration;
+﻿using System;
+using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -12,7 +13,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
         protected override SiteConfigurationCache LoadObject()
         {
             var cache = Interfaces.DependencyResolver.Resolve<SiteConfigurationCache>();
-            cache.Initialize(_siteId);
+            DateTime? expirationTime;
+            cache.Initialize(_siteId, out expirationTime, null);
             return cache;
         }
 

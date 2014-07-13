@@ -75,7 +75,7 @@ namespace LessMarkup.Engine.Cache
                 this.LogDebug(string.Format("Cache for site {0}: creating item for type {1}, id {2}", _siteId, typeof(T).Name, objectId ?? (object)"(null)"));
                 var newObject = DependencyResolver.Resolve<T>();
                 DateTime? expirationTime;
-                newObject.Initialize(out expirationTime, objectId);
+                newObject.Initialize(_siteId, out expirationTime, objectId);
                 Set(newObject, objectId, expirationTime);
                 ret = _items[key];
                 return (T)ret.CachedObject;
@@ -124,6 +124,11 @@ namespace LessMarkup.Engine.Cache
         }
 
         public T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler
+        {
+            throw new MemberAccessException();
+        }
+
+        public void Reset()
         {
             throw new MemberAccessException();
         }

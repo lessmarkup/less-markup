@@ -42,6 +42,17 @@ namespace LessMarkup.Engine.Helpers
             HttpContext.Current.Items[Constants.RequestItemKeys.ErrorFlag] = message;
         }
 
+        private class ArchiveHistoryRecord
+        {
+            public long Day { get; set; }
+            public int Requests { get; set; }
+            public long Received { get; set; }
+            public long Sent { get; set; }
+            public int MobileRequests { get; set; }
+            public int Errors { get; set; }
+            public List<long> Entries { get; set; } 
+        }
+
         private void ArchiveOldItems()
         {
             var siteId = _siteMapper.SiteId;
@@ -77,7 +88,9 @@ namespace LessMarkup.Engine.Helpers
 
                 var dayFrom = DateTime.UtcNow.AddDays(-StoreDetailedHistoryDays).Date.Ticks;
 
-                using (var domainModel = _domainModelProvider.CreateWithTransaction())
+                List<ArchiveHistoryRecord> days;
+
+                using (var domainModel = _domainModelProvider.Create())
                 {
                     var collection = domainModel.GetSiteCollection<AddressHistory>().Where(h => h.Date < dayFrom);
 
@@ -86,16 +99,21 @@ namespace LessMarkup.Engine.Helpers
                         return;
                     }
 
-                    foreach (var day in collection.GroupBy(h => h.Date).Select(h => new
+                    days = collection.GroupBy(h => h.Date).Select(h => new ArchiveHistoryRecord
                     {
-                        Day = h.Key, 
+                        Day = h.Key,
                         Requests = h.Sum(v => v.Requests),
                         Received = h.Sum(v => v.Received),
                         Sent = h.Sum(v => v.Sent),
                         Errors = h.Sum(v => v.HasError),
                         MobileRequests = h.Sum(v => v.MobileRequests),
-                        Entries = h.Select(v => v.AddressHistoryId)
-                    }))
+                        Entries = h.Select(v => v.AddressHistoryId).ToList()
+                    }).ToList();
+                }
+
+                foreach (var day in days)
+                {
+                    using (var domainModel = _domainModelProvider.Create())
                     {
                         var record = domainModel.GetSiteCollection<DaySummaryHistory>().SingleOrDefault(h => h.Day == day.Day);
                         if (record == null)
@@ -103,24 +121,22 @@ namespace LessMarkup.Engine.Helpers
                             record = new DaySummaryHistory {Day = day.Day};
                             domainModel.GetSiteCollection<DaySummaryHistory>().Add(record);
                         }
+
                         record.Errors += day.Errors;
                         record.Requests += day.Requests;
                         record.Received += day.Received;
                         record.Sent += day.Sent;
                         record.MobileRequests += day.MobileRequests;
 
-                        foreach (var recordId in day.Entries)
-                        {
-                            var history = domainModel.GetSiteCollection<AddressHistory>().SingleOrDefault(h => h.AddressHistoryId == recordId);
-                            if (history != null)
-                            {
-                                domainModel.GetSiteCollection<AddressHistory>().Remove(history);
-                            }
-                        }
-                    }
+                        var entries = day.Entries;
 
-                    domainModel.SaveChanges();
-                    domainModel.CompleteTransaction();
+                        foreach (var history in domainModel.GetSiteCollection<AddressHistory>().Where(h => entries.Contains(h.AddressHistoryId)))
+                        {
+                            domainModel.GetSiteCollection<AddressHistory>().Remove(history);
+                        }
+
+                        domainModel.SaveChanges();
+                    }
                 }
             }
         }

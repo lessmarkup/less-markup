@@ -68,7 +68,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             return idString;
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             using (var hashAlgorithm = HashAlgorithm.Create("SHA512"))
             {

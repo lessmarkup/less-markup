@@ -32,7 +32,7 @@ namespace LessMarkup.Engine.Site
         }
 
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId.HasValue)
             {

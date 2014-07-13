@@ -22,18 +22,18 @@ namespace LessMarkup.Engine.Configuration
 
         private readonly EntityType[] _handledTypes = { EntityType.Site };
         private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ISiteMapper _siteMapper;
         private readonly IChangeTracker _changeTracker;
+        private readonly ISiteMapper _siteMapper;
 
         #endregion
 
         #region Initialization
 
-        public SiteConfigurationCache(IDomainModelProvider domainModelProvider, ISiteMapper siteMapper, IChangeTracker changeTracker)
+        public SiteConfigurationCache(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
         {
             _domainModelProvider = domainModelProvider;
-            _siteMapper = siteMapper;
             _changeTracker = changeTracker;
+            _siteMapper = siteMapper;
         }
 
         void InitializeFromProperties(Dictionary<string, SiteProperty> existingProperties)
@@ -80,24 +80,14 @@ namespace LessMarkup.Engine.Configuration
             }
         }
 
-        public void Initialize(long? siteId)
-        {
-            DateTime? dateTime;
-            Initialize(out dateTime, siteId);
-        }
-
-        public void Initialize(out DateTime? expirationTime, long? siteId)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId)
         {
             expirationTime = null;
 
             if (!siteId.HasValue)
             {
-                siteId = _siteMapper.SiteId;
-                if (!siteId.HasValue)
-                {
-                    InitializeFromProperties(null);
-                    return;
-                }
+                InitializeFromProperties(null);
+                return;
             }
 
             using (var domainModel = _domainModelProvider.Create(siteId.Value))

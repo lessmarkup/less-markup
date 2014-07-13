@@ -98,14 +98,7 @@ namespace LessMarkup.Engine.Security
                     throw;
                 }
 
-                domainModel.GetCollection<EntityChangeHistory>().Add(new EntityChangeHistory
-                {
-                    ChangeType = (int)EntityChangeType.Added,
-                    Created = DateTime.UtcNow,
-                    EntityType = (int)EntityType.User,
-                    EntityId = user.UserId,
-                    UserId = user.UserId
-                });
+                _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Added, domainModel);
 
                 if (_siteMapper.SiteId.HasValue)
                 {

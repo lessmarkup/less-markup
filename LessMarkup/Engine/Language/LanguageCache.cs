@@ -15,7 +15,6 @@ using AutoMapper;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Language
@@ -73,7 +72,7 @@ namespace LessMarkup.Engine.Language
             }
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId != null)
             {

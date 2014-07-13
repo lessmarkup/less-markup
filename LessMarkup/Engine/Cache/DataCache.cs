@@ -117,6 +117,16 @@ namespace LessMarkup.Engine.Cache
             return GlobalCache.CreateWithUniqueId<T>();
         }
 
+        public void Reset()
+        {
+            lock (_siteCachesLock)
+            {
+                _globalCache = null;
+                _nullCache = null;
+                _siteCaches.Clear();
+            }
+        }
+
         public T Get<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
             return SiteCache.Get<T>(objectId, create);
@@ -131,27 +141,37 @@ namespace LessMarkup.Engine.Cache
         {
             if (_globalCache != null)
             {
-                this.LogDebug(string.Format("Handling history item for global site, id={0}", recordId));
+                this.LogDebug(string.Format("Handling data change item for global site, id={0}", recordId));
                 _globalCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
             }
 
             if (!siteId.HasValue)
             {
-                this.LogDebug(string.Format("Handling history item for null site, id={0}", recordId));
+                this.LogDebug(string.Format("Handling data change item for null site, id={0}", recordId));
 
                 if (_nullCache != null)
                 {
                     _nullCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
                 }
+
+                return;
             }
-            else
+
+            if (entityType == EntityType.Site)
             {
-                this.LogDebug(string.Format("Handling history item for global site, id={0}, siteid={1}", recordId, siteId.Value));
-                SiteDataCache siteDataCache;
-                if (_siteCaches.TryGetValue(siteId.Value, out siteDataCache))
+                this.LogDebug(string.Format("Detected site change, removing complete site configuration for site {0}", entityId));
+                lock (_siteCachesLock)
                 {
-                    siteDataCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
+                    _siteCaches.Remove(entityId);
                 }
+                return;
+            }
+
+            this.LogDebug(string.Format("Handled data change item for site id={0}, siteid={1}", recordId, siteId.Value));
+            SiteDataCache siteDataCache;
+            if (_siteCaches.TryGetValue(siteId.Value, out siteDataCache))
+            {
+                siteDataCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
             }
         }
     }

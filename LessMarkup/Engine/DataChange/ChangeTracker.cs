@@ -201,6 +201,7 @@ namespace LessMarkup.Engine.DataChange
                         change = _changeQueue.Dequeue();
                     }
 
+                    this.LogDebug(string.Format("ChangeTracker: detected {0}/{1}, change {2}", (EntityType)change.EntityType, change.EntityId, (EntityChangeType)change.ChangeType));
                     recordChanged(change.EntityChangeHistoryId, change.UserId, change.EntityId, (EntityType)change.EntityType, (EntityChangeType)change.ChangeType, change.SiteId);
                 }
             }
@@ -214,6 +215,8 @@ namespace LessMarkup.Engine.DataChange
 
         public void AddChange(long entityId, EntityType entityType, EntityChangeType changeType, IDomainModel domainModel)
         {
+            this.LogDebug(string.Format("ChangeTracker: recorded {0}/{1}, change {2}", entityType, entityId, changeType));
+
             var userId = _currentUser.UserId;
 
             if (_currentUser.IsFakeUser)

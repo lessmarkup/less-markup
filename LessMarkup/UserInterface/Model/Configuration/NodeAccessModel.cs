@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.Structure;
@@ -25,6 +26,19 @@ namespace LessMarkup.UserInterface.Model.Configuration
             private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
             private readonly ISiteMapper _siteMapper;
+
+            private long SiteId
+            {
+                get
+                {
+                    var ret = _siteId ?? _siteMapper.SiteId;
+                    if (!ret.HasValue)
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                    return ret.Value;
+                }
+            }
 
             public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
             {
@@ -80,6 +94,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     }
 
                     domainModel.GetSiteCollection<NodeAccess>(_siteId).Add(access);
+                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
@@ -122,6 +137,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                         access.GroupId = null;
                     }
 
+                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
@@ -144,6 +160,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (hasChanges)
                     {
+                        _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                         _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                         domainModel.CompleteTransaction();

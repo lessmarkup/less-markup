@@ -12,5 +12,6 @@ namespace LessMarkup.Interfaces.Cache
         void ExpiredGlobal<T>(long? objectId = null) where T : ICacheHandler;
         T CreateWithUniqueId<T>() where T : ICacheHandler;
         T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler;
+        void Reset();
     }
 }

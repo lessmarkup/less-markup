@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.Engine.Language;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -14,6 +13,7 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Configuration;
 using LessMarkup.UserInterface.Model.RecordModel;
 using Newtonsoft.Json;
@@ -36,14 +36,29 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly ICurrentUser _currentUser;
+        private readonly ISiteMapper _siteMapper;
 
-        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ICurrentUser currentUser)
+        private long SiteId
+        {
+            get
+            {
+                var ret = _siteId ?? _siteMapper.SiteId;
+                if (!ret.HasValue)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                return ret.Value;
+            }
+        }
+
+        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ICurrentUser currentUser, ISiteMapper siteMapper)
         {
             _moduleIntegration = moduleIntegration;
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
             _currentUser = currentUser;
+            _siteMapper = siteMapper;
         }
 
         public static string GetHandlerName(Type handlerType, string moduleType)
@@ -132,6 +147,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             {
                 _siteId = recordId;
             }
+            else
+            {
+                _siteId = _siteMapper.SiteId;
+            }
         }
 
         public object UpdateLayout(List<LayoutInfo> layout)
@@ -152,6 +171,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     }
                 }
 
+                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
@@ -180,10 +200,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
                 GetNodeCollection(domainModel).Add(target);
                 domainModel.SaveChanges();
-
+                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                 _changeTracker.AddChange(target.NodeId, EntityType.Node, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
-
                 domainModel.CompleteTransaction();
 
                 node.NodeId = target.NodeId;
@@ -222,6 +241,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     }
                 }
 
+                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
@@ -245,7 +266,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 record.Path = node.Path;
                 record.Enabled = node.Enabled;
 
+                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                 _changeTracker.AddChange(node.NodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
@@ -260,6 +283,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 var node = GetNodeCollection(domainModel).Single(p => p.NodeId == nodeId);
 
                 node.Settings = settings != null ? JsonConvert.SerializeObject(settings) : null;
+
+                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                 _changeTracker.AddChange(nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
 
                 domainModel.SaveChanges();

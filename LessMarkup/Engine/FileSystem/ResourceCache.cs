@@ -22,20 +22,19 @@ namespace LessMarkup.Engine.FileSystem
     public class ResourceCache : ICacheHandler
     {
         private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ISiteMapper _siteMapper;
         private readonly ISpecialFolder _specialFolder;
         private readonly IModuleProvider _moduleProvider;
         private readonly object _loadLock = new object();
+        private long? _siteId;
 
         private Assembly _globalAssembly;
 
         private readonly Dictionary<string, ResourceReference> _resourceReferences = new Dictionary<string, ResourceReference>();
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
-        public ResourceCache(IDomainModelProvider domainModelProvider, ISiteMapper siteMapper, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
+        public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
         {
             _domainModelProvider = domainModelProvider;
-            _siteMapper = siteMapper;
             _specialFolder = specialFolder;
             _moduleProvider = moduleProvider;
         }
@@ -289,13 +288,14 @@ namespace LessMarkup.Engine.FileSystem
             }
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
+            _siteId = siteId;
             _globalAssembly = Assembly.LoadFile(_specialFolder.GeneratedViewAssembly);
 
             var viewImport = new ViewImport();
@@ -321,8 +321,6 @@ namespace LessMarkup.Engine.FileSystem
                 ImportContentTemplate(resource.Value);
             }
 
-            var siteId = _siteMapper.SiteId;
-
             expirationTime = DateTime.MaxValue;
 
             if (siteId.HasValue)
@@ -333,10 +331,10 @@ namespace LessMarkup.Engine.FileSystem
 
         public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
         {
-            return entityType == EntityType.SiteCustomization;
+            return entityType == EntityType.SiteCustomization || (entityType == EntityType.Site && _siteId.HasValue && _siteId.Value == entityId);
         }
 
-        private readonly EntityType[] _handledTypes = { EntityType.SiteCustomization };
+        private readonly EntityType[] _handledTypes = { EntityType.SiteCustomization, EntityType.Site };
 
         public EntityType[] HandledTypes
         {

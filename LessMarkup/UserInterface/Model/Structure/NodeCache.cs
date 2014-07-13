@@ -28,7 +28,6 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
-        private readonly ISiteMapper _siteMapper;
         private long? _siteId;
 
         private readonly List<ICachedNodeInformation> _cachedNodes = new List<ICachedNodeInformation>();
@@ -37,13 +36,12 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
 
-        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ISiteMapper siteMapper)
+        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
             _engineConfiguration = engineConfiguration;
             _dataCache = dataCache;
-            _siteMapper = siteMapper;
         }
 
         private void InitializeTree(CachedNodeInformation node)
@@ -203,14 +201,14 @@ namespace LessMarkup.UserInterface.Model.Structure
             return node;
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
-            _siteId = _siteMapper.SiteId;
+            _siteId = siteId;
 
             expirationTime = null;
 
@@ -274,7 +272,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             string adminLoginPage;
 
-            if (_siteMapper.SiteId.HasValue)
+            if (_siteId.HasValue)
             {
                 var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
                 adminLoginPage = siteConfiguration.AdminLoginPage;

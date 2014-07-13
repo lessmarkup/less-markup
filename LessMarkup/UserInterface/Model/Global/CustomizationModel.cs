@@ -10,6 +10,7 @@ using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.System;
 using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.Model.Global
@@ -23,9 +24,25 @@ namespace LessMarkup.UserInterface.Model.Global
 
             private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
+            private readonly ISiteMapper _siteMapper;
 
-            public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            private long SiteId
             {
+                get
+                {
+                    var ret = _siteId ?? _siteMapper.SiteId;
+                    if (!ret.HasValue)
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                    return ret.Value;
+                }
+            }
+
+
+            public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
+            {
+                _siteMapper = siteMapper;
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
@@ -74,6 +91,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
                     domainModel.GetSiteCollection<SiteCustomization>(_siteId).Add(customization);
                     domainModel.SaveChanges();
+                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     _changeTracker.AddChange(customization.SiteCustomizationId, EntityType.SiteCustomization, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
@@ -101,6 +119,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     {
                         customization.Body = record.Body;
                     }
+                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     _changeTracker.AddChange(record.Id, EntityType.SiteCustomization, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
@@ -126,6 +145,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         _changeTracker.AddChange(customization.SiteCustomizationId, EntityType.SiteCustomization, EntityChangeType.Removed, domainModel);
                     }
 
+                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                     return true;

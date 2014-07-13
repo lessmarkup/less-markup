@@ -194,7 +194,7 @@ namespace LessMarkup.Engine.HtmlTemplate
             return builder.ToString().Trim();
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             expirationTime = null;
         }

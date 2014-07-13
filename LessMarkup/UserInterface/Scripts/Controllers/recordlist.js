@@ -6,7 +6,7 @@ define([
     'app',
     'bootstrap-ui',
     'lib/nggrid/ng-grid',
-    'lib/nggrid/ng-grid-flexible-height',
+    //'lib/nggrid/ng-grid-flexible-height',
     'providers/commandhandler',
     'providers/inputform'
 ], function (app) {
@@ -32,7 +32,7 @@ define([
         $scope.recordListOptions = {
             data: 'pageRecords',
             // ReSharper disable once InconsistentNaming
-            plugins: [new ngGridFlexibleHeightPlugin()],
+            // plugins: [new ngGridFlexibleHeightPlugin()],
             columnDefs: $scope.data.Columns,
             selectedItems: $scope.selectedItems,
             enableColumnResize: $scope.data.ColumnsResizable

@@ -15,9 +15,10 @@ namespace LessMarkup.Interfaces.Cache
         /// <summary>
         /// Initializes the cache time.
         /// </summary>
+        /// <param name="siteId">The site id.</param>
         /// <param name="expirationTime">The expiration time.</param>
         /// <param name="objectId">The object identifier.</param>
-        void Initialize(out DateTime? expirationTime, long? objectId = null);
+        void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null);
         /// <summary>
         /// Expires the cache item.
         /// </summary>

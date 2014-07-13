@@ -32,7 +32,7 @@ namespace LessMarkup.Engine.Security
             _domainModelProvider = domainModelProvider;
         }
 
-        public void Initialize(out DateTime? expirationTime, long? objectId = null)
+        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
         {
             if (!objectId.HasValue)
             {
@@ -40,6 +40,7 @@ namespace LessMarkup.Engine.Security
             }
 
             _userId = objectId.Value;
+            SiteId = siteId;
             expirationTime = DateTime.UtcNow.AddMinutes(20);
 
             using (var domainModel = _domainModelProvider.Create())
@@ -73,7 +74,6 @@ namespace LessMarkup.Engine.Security
                 IsValidated = user.IsValidated;
                 IsBlocked = user.IsBlocked;
                 UnblockTime = user.UnblockTime;
-                SiteId = user.SiteId;
 
                 if (IsBlocked && UnblockTime.HasValue && UnblockTime.Value < DateTime.UtcNow)
                 {
