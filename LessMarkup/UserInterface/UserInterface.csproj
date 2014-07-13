@@ -545,15 +545,47 @@
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Require\domReady.js" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\Lib\CodeMirror\plugins\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Content\codemirror-dialog.css" />
     <EmbeddedResource Include="Content\codemirror-fullscreen.css" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Providers\invokequeue.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Lib\CodeMirror\plugins\anyword-hint.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\brace-fold.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\closebrackets.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\closetag.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\colorize.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\comment-fold.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\comment.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\continuecomment.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\css-hint.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\css.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\dialog.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\foldcode.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\fullscreen.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\html-hint.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\htmlembedded.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\htmlmixed.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\indent-fold.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\javascript-hint.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\javascript.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\mark-selection.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\markdown-fold.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\match-highlighter.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\matchbrackets.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\matchtags.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\placeholder.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\rulers.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\scrollpastend.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\search.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\searchcursor.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\xml-fold.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\xml-hint.js" />
+    <Content Include="Scripts\Lib\CodeMirror\plugins\xml.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
