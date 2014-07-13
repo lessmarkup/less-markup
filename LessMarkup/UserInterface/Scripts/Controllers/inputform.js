@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app', 'providers/invokequeue'], function (app) {
+define(['app'], function (app) {
 
     app.ensureModule('ui.codemirror');
     app.ensureModule('ui.tinymce');
 
-    var controllerFunction = function($scope, $modalInstance, definition, object, success, getTypeahead, invokeQueue) {
+    var controllerFunction = function($scope, $modalInstance, definition, object, success, getTypeahead) {
 
         $scope.definition = definition;
         $scope.validationErrors = {};

@@ -54,6 +54,10 @@ html, body {
     margin-bottom: 1.5em;
 }
 
+.breadcrumb li:first-child {
+    padding: 0 5px 0 0;
+}
+
 .navbar-brand {
     margin-left: 0;
     padding-left: 0;
@@ -136,6 +140,15 @@ button [us-spinner] {
 
 [ng-cloak] {
     display: none;
+}
+
+.loadmessage {
+    display: none;
+}
+
+.loadmessage[ng-cloak] {
+    margin-top: 1em;
+    display: block;
 }
 
 .dialog-buttons {

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 define(['app'], function (app) {
-    app.provider('invokeQueue', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', function ($controllerProvider, $provide, $compileProvider, $filterProvider) {
+    app.provider('lazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', function ($controllerProvider, $provide, $compileProvider, $filterProvider) {
 
             this.$get = ['$templateCache', '$rootElement',
                 function ($templateCache, $rootElement) {
@@ -38,14 +38,21 @@ define(['app'], function (app) {
 
                         if (module.hasOwnProperty("_invokeQueue")) {
                             var invokeQueue = module._invokeQueue;
-                            //module._invokeQueue = [];
 
-                            angular.forEach(invokeQueue, function (invokeArgs) {
+                            var entriesInvoked = 0;
+                            if (module.hasOwnProperty("__entriesInvoked")) {
+                                entriesInvoked = module["__entriesInvoked"];
+                            }
+
+                            for (var i = entriesInvoked; i < invokeQueue.length; i++) {
+                                var invokeArgs = invokeQueue[i];
                                 if (providers.hasOwnProperty(invokeArgs[0])) {
                                     var provider = providers[invokeArgs[0]];
                                     provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
                                 }
-                            });
+                            }
+
+                            module["__entriesInvoked"] = invokeQueue.length;
                         }
                     }
 
@@ -74,7 +81,7 @@ define(['app'], function (app) {
                     }
 
                     return {
-                        runInvokeQueue: function () {
+                        loadModules: function () {
 
                             var requires = [];
                             fillRequires(app, requires);

@@ -86,6 +86,11 @@ namespace LessMarkup.Engine.Configuration
 
             if (!siteId.HasValue)
             {
+                siteId = _siteMapper.SiteId;
+            }
+
+            if (!siteId.HasValue)
+            {
                 InitializeFromProperties(null);
                 return;
             }

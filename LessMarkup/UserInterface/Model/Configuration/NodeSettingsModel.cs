@@ -15,10 +15,12 @@ namespace LessMarkup.UserInterface.Model.Configuration
     public class NodeSettingsModel : IInputSource
     {
         private readonly IModuleIntegration _moduleIntegration;
+        private readonly IModuleProvider _moduleProvider;
 
-        public NodeSettingsModel(IModuleIntegration moduleIntegration)
+        public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider)
         {
             _moduleIntegration = moduleIntegration;
+            _moduleProvider = moduleProvider;
         }
 
         [InputField(InputFieldType.Text, UserInterfaceTextIds.Title, Required = true)]
@@ -52,9 +54,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 case "HandlerId":
                 {
+                    var modules = _moduleProvider.Modules.Select(m => m.ModuleType).ToList();
                     return
                         _moduleIntegration.GetNodeHandlers()
                             .Select(id => new {Id = id, Handler = _moduleIntegration.GetNodeHandler(id)})
+                            .Where(h => modules.Contains(h.Handler.Item2))
                             .Select(h => new EnumSource
                             {
                                 Value = h.Id,

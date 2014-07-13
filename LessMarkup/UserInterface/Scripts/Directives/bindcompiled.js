@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app', 'providers/invokequeue'], function (app) {
+define(['app', 'providers/lazyload'], function (app) {
 
-    app.directive("bindCompiledHtml", function ($compile, invokeQueue) {
+    app.directive("bindCompiledHtml", function ($compile, lazyLoad) {
         return {
             template: '<div></div>',
             scope: {
@@ -14,7 +14,7 @@ define(['app', 'providers/invokequeue'], function (app) {
                 var applyFunction = function (value) {
                     element.contents().remove();
                     if (value) {
-                        invokeQueue.runInvokeQueue();
+                        lazyLoad.loadModules();
                         element.append($compile(value)(scope.parameter.scope(scope.parameter.context)));
                     }
                 };

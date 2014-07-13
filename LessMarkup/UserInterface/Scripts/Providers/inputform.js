@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app'], function (app) {
+define(['app', 'providers/lazyload'], function (app) {
     app.provider('inputForm', function () {
         var definitions = {};
 
@@ -24,8 +24,8 @@ define(['app'], function (app) {
             }
         }
 
-        this.$get = ['$modal', '$http', '$location',
-            function ($modal, $http) {
+        this.$get = ['$modal', '$http', '$location', 'lazyLoad',
+            function ($modal, $http, $location, lazyLoad) {
                 return {
                     editObject: function (object, type, success, getTypeahead) {
                         getDefinition(type, $http, function (definition) {
@@ -35,18 +35,23 @@ define(['app'], function (app) {
                                 'lib/codemirror/ui-codemirror',
                                 'lib/tinymce/tinymce',
                                 'lib/tinymce/config',
-                                'lib/tinymce/tinymce-angular'], function (inputFormController) {
-                                $modal.open({
-                                    template: $('#inputform-template').html(),
-                                    controller: inputFormController,
-                                    size: 'lg',
-                                    resolve: {
-                                        definition: function() { return definition; },
-                                        object: function() { return object; },
-                                        success: function() { return success; },
-                                        getTypeahead: function() { return getTypeahead; }
+                                'lib/tinymce/tinymce-angular'],
+                                function (inputFormController) {
+                                    app.ensureModule('ui.tinymce');
+                                    app.ensureModule('ui.codemirror');
+                                    lazyLoad.loadModules();
+                                    $modal.open({
+                                        template: $('#inputform-template').html(),
+                                        controller: inputFormController,
+                                        size: 'lg',
+                                        resolve: {
+                                            definition: function() { return definition; },
+                                            object: function() { return object; },
+                                            success: function() { return success; },
+                                            getTypeahead: function() { return getTypeahead; }
+                                        }
                                     }
-                                });
+                                );
                             });
                         });
                     },

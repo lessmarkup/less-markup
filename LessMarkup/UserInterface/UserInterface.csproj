@@ -551,7 +551,7 @@
     <EmbeddedResource Include="Content\codemirror-fullscreen.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Providers\invokequeue.js" />
+    <EmbeddedResource Include="Scripts\Providers\lazyload.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\Lib\CodeMirror\plugins\anyword-hint.js" />

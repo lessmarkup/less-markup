@@ -12,6 +12,9 @@ define([
     'lib/tinymce/tinymce-angular'
 ], function (app, inputform) {
 
+    app.ensureModule('ui.tinymce');
+    app.ensureModule('ui.codemirror');
+
     var controllerFunction = function($http, $scope, $timeout) {
 
         $scope.definition = $scope.viewData.Definition;
