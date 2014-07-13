@@ -226,7 +226,6 @@
     <Compile Include="Build\ControllerFactory.cs" />
     <Compile Include="Build\Data\DataBuilder.cs" />
     <Compile Include="Build\Mail\TemplateInstance.cs" />
-    <Compile Include="Helpers\LoadHelper.cs" />
     <Compile Include="HtmlTemplate\CacheItem.cs" />
     <Compile Include="HtmlTemplate\Directive.cs" />
     <Compile Include="HtmlTemplate\DirectiveType.cs" />

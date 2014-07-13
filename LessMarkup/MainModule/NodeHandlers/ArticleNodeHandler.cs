@@ -10,9 +10,9 @@ namespace LessMarkup.MainModule.NodeHandlers
 {
     public class ArticleNodeHandler : AbstractNodeHandler
     {
-        public ArticleNodeHandler()
+        protected override string[] Scripts
         {
-            AddScript("/Scripts/article.js");
+            get { return new [] { "controllers/article" }; }
         }
 
         protected override object GetViewData()

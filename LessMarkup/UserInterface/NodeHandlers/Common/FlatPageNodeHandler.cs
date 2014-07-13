@@ -229,5 +229,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Title = node.Title
             };
         }
+
+        protected override string[] Scripts
+        {
+            get { return new []{ "controllers/flatpage" }; }
+        }
     }
 }

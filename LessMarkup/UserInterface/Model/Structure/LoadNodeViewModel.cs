@@ -5,7 +5,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Web.Mvc;
+using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.HtmlTemplate;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
@@ -26,9 +28,8 @@ namespace LessMarkup.UserInterface.Model.Structure
         public object ViewData { get; set; }
         public string Title { get; set; }
         public bool IsStatic { get; set; }
-        public string[] Stylesheets { get; set; }
-        public string[] Scripts { get; set; }
         public string Path { get; set; }
+        public string[] Require { get; set; }
 
         internal INodeHandler NodeHandler { get { return _nodeHandler; } }
 
@@ -189,12 +190,33 @@ namespace LessMarkup.UserInterface.Model.Structure
                     {
                         return false;
                     }
+
+                    var stylesheets = _nodeHandler.Stylesheets;
+
+                    if (stylesheets != null)
+                    {
+                        var resourceCache = _dataCache.Get<ResourceCache>();
+
+                        var style = new StringBuilder();
+
+                        style.AppendLine("<style>");
+
+                        foreach (var stylesheet in stylesheets)
+                        {
+                            style.AppendLine(resourceCache.ReadText(stylesheet));
+                        }
+
+                        style.AppendLine("</style>");
+
+                        Template = style + Template;
+                    }
                 }
 
                 ViewData = _nodeHandler.GetViewData();
             }
 
             IsStatic = _nodeHandler.IsStatic;
+            Require = _nodeHandler.Scripts;
 
             return true;
         }

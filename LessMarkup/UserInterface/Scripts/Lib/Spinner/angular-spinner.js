@@ -7,7 +7,7 @@
 (function (root) {
 	'use strict';
 
-	function factory(angular, Spinner) {
+	function factory(ng, Spinner) {
 
 		angular
 			.module('angularSpinner', [])
@@ -83,7 +83,7 @@
 
 	if (typeof define === 'function' && define.amd) {
 		/* AMD module */
-		define(['angular', 'spin'], factory);
+		define(['angular', 'lib/spinner/spin'], factory);
 	} else {
 		/* Browser global */
 		factory(root.angular);

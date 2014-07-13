@@ -28,6 +28,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string Title { get; set; }
         public string LogoImageUrl { get; set; }
         public string InitialData { get; set; }
+        public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
 
         public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ISiteMapper siteMapper)
         {

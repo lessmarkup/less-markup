@@ -3,16 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
 using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Framework.NodeHandlers
 {
     public abstract class AbstractNodeHandler : INodeHandler
     {
-        private readonly List<string> _scripts = new List<string>(); 
-        private readonly List<string> _stylesheets = new List<string>();
-
         private long? _objectId;
         private string _path;
         private object _settings;
@@ -55,8 +51,11 @@ namespace LessMarkup.Framework.NodeHandlers
 
         bool INodeHandler.IsStatic { get { return IsStatic; } }
 
-        string[] INodeHandler.Scripts { get { return _scripts.ToArray(); } }
-        string[] INodeHandler.Stylesheets { get { return _stylesheets.ToArray(); } }
+        protected virtual string[] Scripts { get { return null; } }
+        protected virtual string[] Stylesheets { get { return null; } }
+
+        string[] INodeHandler.Scripts { get { return Scripts; } }
+        string[] INodeHandler.Stylesheets { get { return Stylesheets; } }
 
         Type INodeHandler.SettingsModel { get { return SettingsModel; } }
 
@@ -95,16 +94,6 @@ namespace LessMarkup.Framework.NodeHandlers
         protected virtual string ViewType
         {
             get { return GetType().Name; }
-        }
-
-        protected void AddScript(string script)
-        {
-            _scripts.Add(script);
-        }
-
-        protected void AddStylesheet(string stylesheet)
-        {
-            _stylesheets.Add(stylesheet);
         }
     }
 }

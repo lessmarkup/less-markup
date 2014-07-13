@@ -202,7 +202,7 @@
     <EmbeddedResource Include="Content\fontawesome-webfont.woff" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\FlatPage.html" />
-    <EmbeddedResource Include="Scripts\flatpage.js" />
+    <EmbeddedResource Include="Scripts\Controllers\flatpage.js" />
     <EmbeddedResource Include="Views\InputFormTemplate.html" />
     <EmbeddedResource Include="Views\EntryPoint.cshtml" />
     <EmbeddedResource Include="Views\ConfigurationRoot.html" />
@@ -237,60 +237,59 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\bootstrap.css" />
-    <EmbeddedResource Include="Scripts\angular.js" />
-    <EmbeddedResource Include="Scripts\ui-bootstrap.js" />
+    <EmbeddedResource Include="Scripts\Lib\Angular\angular.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\ui-bootstrap.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\ng-grid-flexible-height.js" />
+    <EmbeddedResource Include="Scripts\Lib\NgGrid\ng-grid-flexible-height.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\ng-grid.css" />
-    <EmbeddedResource Include="Scripts\ng-grid.js" />
+    <EmbeddedResource Include="Scripts\Lib\NgGrid\ng-grid.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\site.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\bootstrap.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\bootstrap.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\command-handler.js" />
-    <EmbeddedResource Include="Scripts\inputform.js" />
-    <EmbeddedResource Include="Scripts\recordlist.js" />
+    <EmbeddedResource Include="Scripts\Providers\commandhandler.js" />
+    <EmbeddedResource Include="Scripts\Controllers\inputform.js" />
+    <EmbeddedResource Include="Scripts\Controllers\recordlist.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Tinymce\tinymce.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\tinymce-angular.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce-angular.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\visualblocks.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\toolbar.js" />
+    <EmbeddedResource Include="Scripts\Controllers\toolbar.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\jquery-2.1.1.intellisense.js" />
-    <EmbeddedResource Include="Scripts\jquery-2.1.1.js" />
-    <EmbeddedResource Include="Scripts\jquery-2.1.1.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.intellisense.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\jquery-ui-1.10.4.js" />
-    <EmbeddedResource Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-ui-1.10.4.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-ui-1.10.4.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\angular.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Angular\angular.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\bootstrap.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\bootstrap.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Tinymce\tinynce-angular.js" />
-    <EmbeddedResource Include="Scripts\ui-bootstrap.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\ui-bootstrap.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Tinymce\tinymce-theme.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\tinymce-theme.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\tinymce.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce-theme.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce-theme.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Tinymce\content.inline.min.css" />
@@ -305,172 +304,166 @@
     <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.svg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Advlist\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Advlist\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Anchor\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Anchor\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autolink\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autolink\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autoresize\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autoresize\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autosave\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Autosave\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Bbcode\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Bbcode\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Charmap\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Charmap\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Code\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Code\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Css\dialog.css" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\buttons.png" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\icons.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\items.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\menu_arrow.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\menu_check.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\progress.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Img\tabs.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\tiny_mce_popup.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\editable_selects.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\form_utils.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\mctabs.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Compat3x\Utils\validate.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Contextmenu\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Contextmenu\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Directionality\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Directionality\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-cool.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-cry.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-embarassed.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-foot-in-mouth.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-frown.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-innocent.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-kiss.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-laughing.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-money-mouth.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-sealed.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-smile.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-surprised.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-tongue-out.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-undecided.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-wink.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\Img\smiley-yell.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Emoticons\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullpage\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullpage\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullscreen\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Fullscreen\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Hr\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Hr\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Image\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Image\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Importcss\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Importcss\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Insertdatetime\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Insertdatetime\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Layer\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Layer\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Legacyoutput\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Legacyoutput\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Link\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Link\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Lists\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Lists\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\moxieplayer.swf" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Media\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Nonbreaking\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Nonbreaking\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Noneditable\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Noneditable\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Pagebreak\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Pagebreak\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Clipboard.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Quirks.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\Utils.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\Classes\WordFilter.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.dev.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Paste\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Preview\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Preview\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Print\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Print\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Save\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Save\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Searchreplace\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Searchreplace\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\Classes\DomTextMatcher.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\Classes\Plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.dev.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Spellchecker\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Tabfocus\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Tabfocus\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\CellSelection.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\Plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\Quirks.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\Classes\TableGrid.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.dev.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Table\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Template\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Template\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Textcolor\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Textcolor\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Css\visualblocks.css" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\address.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\article.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\aside.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\blockquote.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\div.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\dl.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\figure.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h1.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h2.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h3.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h4.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h5.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\h6.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\hgroup.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\ol.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\p.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\pre.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\section.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\Img\ul.gif" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualblocks\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualchars\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Visualchars\plugin.min.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Wordcount\plugin.js" />
-    <EmbeddedResource Include="Scripts\Tinymce\Plugins\Wordcount\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Advlist\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Advlist\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Anchor\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Anchor\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autolink\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autolink\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autoresize\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autoresize\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autosave\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Autosave\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Bbcode\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Bbcode\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Charmap\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Charmap\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Code\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Code\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Css\dialog.css" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\buttons.png" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\icons.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\items.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\menu_arrow.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\menu_check.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\progress.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Img\tabs.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\tiny_mce_popup.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Utils\editable_selects.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Utils\form_utils.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Utils\mctabs.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Compat3x\Utils\validate.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Contextmenu\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Contextmenu\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Directionality\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Directionality\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-cool.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-cry.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-embarassed.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-foot-in-mouth.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-frown.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-innocent.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-kiss.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-laughing.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-money-mouth.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-sealed.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-smile.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-surprised.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-tongue-out.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-undecided.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-wink.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\Img\smiley-yell.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Emoticons\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Fullpage\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Fullpage\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Fullscreen\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Fullscreen\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Hr\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Hr\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Image\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Image\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Importcss\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Importcss\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Insertdatetime\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Insertdatetime\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Layer\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Layer\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Legacyoutput\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Legacyoutput\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Link\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Link\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Lists\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Lists\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Media\moxieplayer.swf" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Media\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Media\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Nonbreaking\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Nonbreaking\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Noneditable\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Noneditable\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Pagebreak\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Pagebreak\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\Classes\Clipboard.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\Classes\Quirks.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\Classes\Utils.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\Classes\WordFilter.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Paste\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Preview\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Preview\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Print\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Print\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Save\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Save\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Searchreplace\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Searchreplace\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Spellchecker\Classes\DomTextMatcher.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Spellchecker\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Spellchecker\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Spellchecker\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Spellchecker\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Tabfocus\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Tabfocus\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\Classes\CellSelection.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\Classes\Plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\Classes\Quirks.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\Classes\TableGrid.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\plugin.dev.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Table\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Template\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Template\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Textcolor\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Textcolor\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Css\visualblocks.css" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\address.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\article.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\aside.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\blockquote.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\div.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\dl.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\figure.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h1.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h2.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h3.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h4.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h5.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\h6.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\hgroup.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\ol.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\p.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\pre.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\section.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\Img\ul.gif" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualblocks\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualchars\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Visualchars\plugin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Wordcount\plugin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Wordcount\plugin.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\hubs.js" />
+    <EmbeddedResource Include="Scripts\Lib\NgGrid\ng-grid.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\ng-grid.min.js" />
+    <EmbeddedResource Include="Scripts\Controllers\main.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\application.js" />
+    <EmbeddedResource Include="Scripts\Controllers\configuration.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\viewhandler.js" />
+    <EmbeddedResource Include="Scripts\Lib\sha512.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\configuration.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\sha512.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\angular-spinner.js" />
-    <EmbeddedResource Include="Scripts\angular-spinner.min.js" />
-    <EmbeddedResource Include="Scripts\spin.js" />
-    <EmbeddedResource Include="Scripts\spin.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\angular-spinner.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\angular-spinner.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\spin.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\spin.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UserInterface.Language.xml">
@@ -482,27 +475,27 @@
     <EmbeddedResource Include="Content\bootstrap-theme.min.css" />
     <EmbeddedResource Include="Content\bootstrap.min.css" />
     <EmbeddedResource Include="Content\codemirror.css" />
-    <EmbeddedResource Include="Scripts\codemirror.js" />
-    <EmbeddedResource Include="Scripts\jquery.signalR-2.1.0.js" />
-    <EmbeddedResource Include="Scripts\jquery.signalR-2.1.0.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\CodeMirror\codemirror.js" />
+    <EmbeddedResource Include="Scripts\Lib\SignalR\jquery.signalR-2.1.0.js" />
+    <EmbeddedResource Include="Scripts\Lib\SignalR\jquery.signalR-2.1.0.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\fontawesome-webfont.svg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\codemirror.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\CodeMirror\codemirror.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\codemirror.min.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\ui-codemirror.js" />
+    <EmbeddedResource Include="Scripts\Lib\CodeMirror\ui-codemirror.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\NodeList.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\nodelist.js" />
+    <EmbeddedResource Include="Scripts\Controllers\nodelist.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\nodelist.css" />
@@ -511,7 +504,7 @@
     <EmbeddedResource Include="Content\flatpage.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\websocket.js" />
+    <EmbeddedResource Include="Scripts\Interface\websocket.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\AdministratorLogin.html" />
@@ -521,7 +514,42 @@
     <EmbeddedResource Include="Views\TabPage.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\tabpage.js" />
+    <EmbeddedResource Include="Scripts\Controllers\tabpage.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Require\require.js" />
+    <EmbeddedResource Include="Scripts\Lib\Require\require.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\main.js" />
+    <EmbeddedResource Include="Scripts\Controllers\dialog.js" />
+    <EmbeddedResource Include="Scripts\Controllers\message.js" />
+    <EmbeddedResource Include="Scripts\Controllers\question.js" />
+    <EmbeddedResource Include="Scripts\Providers\inputform.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Tinymce\config.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Config\app.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Directives\fileread.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Directives\bindcompiled.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Config\start.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Require\domReady.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Utils\register.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Lib\CodeMirror\plugins\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

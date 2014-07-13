@@ -182,5 +182,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Id = page.PageId
             };
         }
+
+        protected override string[] Scripts
+        {
+            get { return new []{ "controllers/tabpage" }; }
+        }
     }
 }

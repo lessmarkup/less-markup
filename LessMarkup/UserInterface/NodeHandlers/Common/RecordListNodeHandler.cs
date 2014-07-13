@@ -305,5 +305,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Index = GetIndex(ret, filter)
             };
         }
+
+        protected override string[] Scripts
+        {
+            get { return new [] {"controllers/recordlist"}; }
+        }
     }
 }

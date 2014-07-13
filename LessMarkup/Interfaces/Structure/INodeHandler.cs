@@ -13,10 +13,10 @@ namespace LessMarkup.Interfaces.Structure
         bool HasChildren { get; }
         bool IsStatic { get; }
         ChildHandlerSettings GetChildHandler(string path);
-        string[] Scripts { get; }
         string[] Stylesheets { get; }
         Type SettingsModel { get; }
         string TemplateId { get; }
         string ViewType { get; }
+        string[] Scripts { get; }
     }
 }

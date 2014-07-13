@@ -193,5 +193,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 Rest = string.Join("/", parts)
             };
         }
+
+        protected override string[] Scripts
+        {
+            get { return new [] { "controllers/configuration" }; }
+        }
     }
 }

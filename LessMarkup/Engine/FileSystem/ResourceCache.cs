@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,11 +51,17 @@ namespace LessMarkup.Engine.FileSystem
 
         public bool ResourceExists(string path)
         {
+#if DEBUG
+            Trace.WriteLine("CheckExists: " + path);
+#endif
             return _resourceReferences.ContainsKey(ExtractPath(path).ToLower());
         }
 
         private ResourceReference LoadResource(string path)
         {
+#if DEBUG
+            Trace.WriteLine("LoadResource: " + path);
+#endif
             ResourceReference reference;
             if (!_resourceReferences.TryGetValue(path.ToLower(), out reference))
             {
@@ -97,6 +104,9 @@ namespace LessMarkup.Engine.FileSystem
 
         public bool DirectoryExists(string path)
         {
+#if DEBUG
+            Trace.WriteLine("DirectoryExists: " + path);
+#endif
             path = ExtractPath(path);
 
             if (string.IsNullOrWhiteSpace(path))
@@ -150,6 +160,9 @@ namespace LessMarkup.Engine.FileSystem
 
         public List<string> GetFiles(string path)
         {
+#if DEBUG
+            Trace.WriteLine("GetFiles: " + path);
+#endif
             path = ExtractPath(path);
 
             var ret = new List<string>();
@@ -174,6 +187,10 @@ namespace LessMarkup.Engine.FileSystem
 
         public Type LoadType(string path)
         {
+#if DEBUG
+            Trace.WriteLine("LoadType: " + path);
+#endif
+
             ViewReference viewReference;
             if (!_viewReferences.TryGetValue(path, out viewReference))
             {

@@ -294,5 +294,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 Id = nodeId
             };
         }
+
+        protected override string[] Scripts
+        {
+            get { return new []{ "controllers/nodelist" }; }
+        }
     }
 }
