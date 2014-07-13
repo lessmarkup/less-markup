@@ -1,42 +1,8 @@
-﻿define(['app'], function (app) {
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-    app.provider('invokeQueue', [
-        '$controllerProvider', '$provide', '$compileProvider', '$filterProvider', function($controllerProvider, $provide, $compileProvider, $filterProvider) {
-            var providers = {
-                $controllerProvider: $controllerProvider,
-                $compileProvider: $compileProvider,
-                $filterProvider: $filterProvider,
-                $provide: $provide
-            }
-
-            this.$get = [
-                function () {
-                    function runModuleInvokeQueue(module) {
-                        if (!module.hasOwnProperty("_invokeQueue")) {
-                            return;
-                        }
-                        var invokeQueue = module._invokeQueue;
-                        for (var i = 0, ii = invokeQueue.length; i < ii; i++) {
-                            var invokeArgs = invokeQueue[i];
-
-                            if (providers.hasOwnProperty(invokeArgs[0])) {
-                                var provider = providers[invokeArgs[0]];
-                                provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
-                            }
-                        }
-                    }
-                    return {
-                        runInvokeQueue: function() {
-                            runModuleInvokeQueue(app);
-                            angular.forEach(app.requires, function (module) {
-                                runModuleInvokeQueue(module);
-                            });
-                        }
-                    }
-                }
-            ];
-        }
-    ]);
+define(['app', 'providers/invokequeue'], function (app) {
 
     app.directive("bindCompiledHtml", function ($compile, invokeQueue) {
         return {

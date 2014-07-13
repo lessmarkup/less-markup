@@ -6,10 +6,6 @@ define(['app'], function(app) {
     var controllerFunction = function ($scope) {
         var pageToScope = {};
 
-        $scope.pages = $scope.viewData.Pages;
-
-        $scope.activePage = $scope.pages.length > 0 ? $scope.pages[0] : null;
-
         $scope.getPageScope = function (page) {
             return pageToScope[page.UniqueId];
         }
@@ -47,13 +43,29 @@ define(['app'], function(app) {
             scope.path = page.path;
         }
 
-        for (var i = 0; i < $scope.pages.length; i++) {
-            var page = $scope.pages[i];
-            var pageScope = $scope.$new();
-            initializePageScope(pageScope, page);
-            pageToScope[page.UniqueId] = pageScope;
-            pageScope.viewData = page.ViewData;
+        function loadPages() {
+            $scope.pages = $scope.viewData.Pages;
+            $scope.activePage = $scope.pages.length > 0 ? $scope.pages[0] : null;
+
+            for (var i = 0; i < $scope.pages.length; i++) {
+                var page = $scope.pages[i];
+                var pageScope = $scope.$new();
+                initializePageScope(pageScope, page);
+                pageToScope[page.UniqueId] = pageScope;
+                pageScope.viewData = page.ViewData;
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         }
+
+        if ($scope.viewData.Requires.length > 0) {
+            require($scope.viewData.Requires, loadPages);
+        } else {
+            loadPages();
+        }
+
     }
 
     app.controller("tabpage", controllerFunction);

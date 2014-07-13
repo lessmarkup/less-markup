@@ -46,6 +46,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         private readonly List<FlatNodeEntry> _flatNodeList = new List<FlatNodeEntry>();
         private TreeNodeEntry _treeRoot;
+        private readonly List<string> _scripts = new List<string>(); 
 
         public FlatPageNodeHandler(IDataCache dataCache, ICurrentUser currentUser)
         {
@@ -141,6 +142,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
                     node.ViewData = handler.GetViewData();
                     node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller) controller);
+
+                    var scripts = handler.Scripts;
+
+                    if (scripts != null)
+                    {
+                        _scripts.AddRange(scripts);
+                    }
                 }
 
                 _flatNodeList.RemoveAll(n => n.ViewBody == null);
@@ -176,7 +184,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     f.ViewBody, 
                     f.ViewData
                 }).ToList(),
-                Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right
+                Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right,
+                Scripts = _scripts
             };
         }
 

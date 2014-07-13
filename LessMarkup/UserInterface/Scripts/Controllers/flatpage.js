@@ -17,10 +17,6 @@ define(['app'], function(app) {
         console.log("onScrollChanged");
     }
 
-    /*function getScrollSpyId() {
-        return scrollSpyId;
-    }*/
-
     function setScrollSpyId(id) {
         console.log("setScrollSpy");
         scrollSpyId = id;
@@ -158,10 +154,6 @@ define(['app'], function(app) {
     });
 
     app.controller("flatpage", function ($scope, $rootScope) {
-        $scope.flat = $scope.viewData.Flat;
-        $scope.tree = $scope.viewData.Tree;
-        $scope.position = $scope.viewData.Position;
-
         var pageToScope = {};
 
         $scope.getPageScope = function (page) {
@@ -201,14 +193,6 @@ define(['app'], function(app) {
             scope.path = page.path;
         }
 
-        for (var i = 0; i < $scope.flat.length; i++) {
-            var page = $scope.flat[i];
-            var pageScope = $scope.$new();
-            initializePageScope(pageScope, page);
-            pageToScope[page.UniqueId] = pageScope;
-            pageScope.viewData = page.ViewData;
-        }
-
         $rootScope.scrollToPage = function (anchor) {
             var position = $("#" + anchor).offset().top;
             var headerHeight = getHeaderHeight();
@@ -216,5 +200,30 @@ define(['app'], function(app) {
             setScrollSpyId(anchor);
             scrollSetManually = true;
         }
+
+        function initializePages() {
+            $scope.flat = $scope.viewData.Flat;
+            $scope.tree = $scope.viewData.Tree;
+            $scope.position = $scope.viewData.Position;
+
+            for (var i = 0; i < $scope.flat.length; i++) {
+                var page = $scope.flat[i];
+                var pageScope = $scope.$new();
+                initializePageScope(pageScope, page);
+                pageToScope[page.UniqueId] = pageScope;
+                pageScope.viewData = page.ViewData;
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        }
+
+        if ($scope.viewData.Scripts.length > 0) {
+            require($scope.viewData.Scripts, initializePages);
+        } else {
+            initializePages();
+        }
+
     });
 });

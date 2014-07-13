@@ -33,6 +33,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly List<TabPage> _pages = new List<TabPage>();
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
+        private readonly List<string> _scripts = new List<string>(); 
 
         protected void AddPage<T>(string title, string path = null) where T : INodeHandler
         {
@@ -122,6 +123,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 page.ViewData = handler.GetViewData();
                 page.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller)controller);
                 page.UniqueId = string.Format("page_{0}", uniqueId++);
+
+                var scripts = handler.Scripts;
+
+                if (scripts != null)
+                {
+                    _scripts.AddRange(scripts);
+                }
             }
 
             _pages.RemoveAll(p => p.ViewBody == null);
@@ -141,7 +149,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     p.ViewBody,
                     p.ViewData,
                     p.UniqueId
-                })
+                }),
+                Requires = _scripts
             };
         }
 
@@ -179,7 +188,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Handler = handler,
                 Path = path,
                 Title = page.Title,
-                Id = page.PageId
+                Id = page.PageId,
             };
         }
 

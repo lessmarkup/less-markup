@@ -546,10 +546,14 @@
     <EmbeddedResource Include="Scripts\Lib\Require\domReady.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Utils\register.js" />
+    <Folder Include="Scripts\Lib\CodeMirror\plugins\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Scripts\Lib\CodeMirror\plugins\" />
+    <EmbeddedResource Include="Content\codemirror-dialog.css" />
+    <EmbeddedResource Include="Content\codemirror-fullscreen.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Providers\invokequeue.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

@@ -2,7 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app', 'bootstrap-ui', 'lib/nggrid/ng-grid', 'lib/nggrid/ng-grid-flexible-height', 'providers/commandhandler', 'providers/inputform'], function (app) {
+define([
+    'app',
+    'bootstrap-ui',
+    'lib/nggrid/ng-grid',
+    'lib/nggrid/ng-grid-flexible-height',
+    'providers/commandhandler',
+    'providers/inputform'
+], function (app) {
 
     app.ensureModule('ngGrid');
 
@@ -400,104 +407,6 @@ define(['app', 'bootstrap-ui', 'lib/nggrid/ng-grid', 'lib/nggrid/ng-grid-flexibl
             $scope.showPage($scope.currentPage);
         }
 
-        //if (!$scope.data.Live) {
-            $scope.showPage(1);
-        /*}
-        else {
-            function validateChange(change) {
-                if (change != $scope.changeNumber + 1) {
-                    if ($scope.changeNumber != -1) {
-                        $scope.changeNumber = -1;
-                        $.connection.recordListHub.server.getAllIds();
-                    }
-                    return false;
-                }
-                return true;
-            }
-
-            var hub = getHub();
-
-            hub.client.recordAdded = function (change, position, newId) {
-                if (!validateChange(change)) {
-                    return;
-                }
-                var newRecord = createNewRecord(newId);
-                $scope.changeNumber = change;
-                $scope.records.splice(position, 0, newRecord);
-                if ((position >= $scope.pageOffset && position < $scope.pageOffset + $scope.pageSize) || $scope.records.length == $scope.pageSize + 1) {
-                    $scope.loadVisibleRecords();
-                }
-            }
-
-            hub.client.recordRemoved = function (change, recordId) {
-                if (!validateChange(change)) {
-                    return;
-                }
-                $scope.changeNumber = change;
-                for (var i = 0; i < $scope.records.length; i++) {
-                    if ($scope.records[i][$scope.data.RecordId] == recordId) {
-                        $scope.records.splice(i, 1);
-                        if (i >= $scope.pageOffset && i < $scope.pageOffset + $scope.pageSize) {
-                            $scope.loadVisibleRecords();
-                        }
-                        break;
-                    }
-                }
-            }
-
-            hub.client.recordUpdated = function (change, recordId) {
-                if (!validateChange(change)) {
-                    return;
-                }
-                $scope.changeNumber = change;
-                for (var i = 0; i < $scope.records.length; i++) {
-                    if ($scope.records[i][$scope.data.RecordId] == recordId) {
-                        var record = createNewRecord(recordId);
-                        $scope.records[i] = record;
-
-                        if (i >= $scope.pageOffset && i < $scope.pageOffset + $scope.pageSize) {
-                            $scope.loadVisibleRecords();
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            hub.client.recordIds = function (change, recordIds) {
-                $scope.changeNumber = change;
-                $scope.records = [];
-                $scope.pageRecords = [];
-                for (var i = 0; i < recordIds.length; i++) {
-                    var recordId = recordIds[i];
-                    var record = createNewRecord(recordId);
-                    $scope.records.push(record);
-                }
-                $scope.loadVisibleRecords();
-            }
-
-            hub.client.records = function (change, records) {
-                if (change != $scope.changeNumber + 1) {
-                    $.connection.recordListHub.getAllIds();
-                    return;
-                }
-                $scope.changeNumber = change;
-                $scope.updateRecords(records);
-            }
-
-            try {
-                if (hub.connection.state == $.signalR.connectionState.disconnected) {
-                    $.connection.hub.start().done(function () {
-                        hub.server.registerForChanges($scope.data.Type, $scope.filter);
-                    });
-                } else {
-                    hub.server.registerForChanges($scope.data.Type, $scope.filter);
-                }
-            } catch (err) {
-
-            }
-
-            $scope.showPage(1);
-        }*/
+        $scope.showPage(1);
     });
 });

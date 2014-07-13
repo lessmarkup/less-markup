@@ -1,4 +1,16 @@
-﻿define(['app', 'controllers/inputform'], function (app, inputform) {
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+define([
+    'app',
+    'controllers/inputform',
+    'lib/codemirror/codemirror',
+    'lib/codemirror/ui-codemirror',
+    'lib/tinymce/tinymce',
+    'lib/tinymce/config',
+    'lib/tinymce/tinymce-angular'
+], function (app, inputform) {
 
     var controllerFunction = function($http, $scope, $timeout) {
 
@@ -18,7 +30,7 @@
             }
         }
 
-        var ret = inputform($scope, null, $scope.definition, $scope.object, function(changedObject, success, fail) {
+        inputform($scope, null, $scope.definition, $scope.object, function(changedObject, success, fail) {
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
@@ -46,8 +58,6 @@
         $timeout(function() {
             $scope.hasChanges = false;
         });
-
-        return ret;
     }
 
     app.controller("dialog", controllerFunction);

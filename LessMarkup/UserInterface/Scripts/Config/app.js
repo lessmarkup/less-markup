@@ -4,15 +4,16 @@
 
 define([
     'angular',
-    'require',
     'bootstrap-ui'
 ], function () {
     var app = angular.module('application', ['ui.bootstrap']);
 
     app.ensureModule = function(name) {
-        if (app.requires.indexOf(name) < 0) {
-            app.requires.push(name);
+        if (app.requires.indexOf(name) >= 0) {
+            return;
         }
+
+        app.requires.push(name);
     }
 
     app.directive('a', function () {

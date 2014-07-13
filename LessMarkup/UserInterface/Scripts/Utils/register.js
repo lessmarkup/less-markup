@@ -1,3 +1,0 @@
-﻿define(['app'], function(app) {
-
-});
