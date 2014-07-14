@@ -3,13 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 define([
-    'app',
-    'bootstrap-ui',
-    'lib/nggrid/ng-grid',
-    //'lib/nggrid/ng-grid-flexible-height',
-    'providers/commandhandler',
-    'providers/inputform'
-], function (app) {
+    'lib/nggrid/ng-grid'
+], function () {
 
     app.ensureModule('ngGrid');
 

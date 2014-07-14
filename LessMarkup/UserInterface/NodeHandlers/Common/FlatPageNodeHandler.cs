@@ -63,6 +63,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             foreach (var child in parent.Children)
             {
+                if (child.HandlerType == null)
+                {
+                    continue;
+                }
+
                 if (child.HandlerType == typeof (FlatPageNodeHandler) || !child.Visible)
                 {
                     continue;
@@ -237,11 +242,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Path = path,
                 Title = node.Title
             };
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new []{ "controllers/flatpage" }; }
         }
     }
 }

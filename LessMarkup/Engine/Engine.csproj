@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -231,6 +234,12 @@
     <Compile Include="HtmlTemplate\DirectiveType.cs" />
     <Compile Include="HtmlTemplate\TemplateHelper.cs" />
     <Compile Include="HtmlTemplate\HtmlTemplateCache.cs" />
+    <Compile Include="Minify\CssMinify.cs" />
+    <Compile Include="Minify\IMinify.cs" />
+    <Compile Include="Minify\JsMinify.cs" />
+    <Compile Include="Minify\XmlMinifyFile.cs" />
+    <Compile Include="Minify\ResourceMinifer.cs" />
+    <Compile Include="Minify\XmlMinifyResource.cs" />
     <Compile Include="Module\ModuleProvider.cs" />
     <Compile Include="Build\PageHost.cs" />
     <Compile Include="Build\View\ViewPage.cs" />

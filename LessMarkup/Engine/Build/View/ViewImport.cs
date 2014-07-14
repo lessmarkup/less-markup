@@ -89,7 +89,7 @@ namespace LessMarkup.Engine.Build.View
                     template.Binary = reader.ReadBytes((int) stream.Length);
                 }
 
-                if (extension == "html" && template.Binary.Length > 3 && template.Binary[0] == 239 && template.Binary[1] == 187 && template.Binary[2] == 191)
+                if (template.Binary.Length > 3 && template.Binary[0] == 239 && template.Binary[1] == 187 && template.Binary[2] == 191)
                 {
                     // it is a byte order mask
                     var binary = template.Binary;

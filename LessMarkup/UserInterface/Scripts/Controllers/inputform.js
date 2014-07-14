@@ -2,41 +2,191 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app'], function (app) {
+function InputFormController($scope, $modalInstance, definition, object, success, getTypeahead, lazyLoad) {
 
-    app.ensureModule('ui.codemirror');
-    app.ensureModule('ui.tinymce');
+    $scope.definition = definition;
+    $scope.validationErrors = {};
+    $scope.isModal = $modalInstance != null;
+    $scope.submitError = "";
+    $scope.isApplying = false;
 
-    var controllerFunction = function($scope, $modalInstance, definition, object, success, getTypeahead) {
-
-        $scope.definition = definition;
-        $scope.validationErrors = {};
-        $scope.isModal = $modalInstance != null;
-        $scope.submitError = "";
-        $scope.isApplying = false;
-
-        $scope.codeMirrorDefaultOptions = {
-            mode: 'text/html',
-            lineNumbers: true,
-            lineWrapping: true,
-            indentWithTabs: true,
-            theme: 'default',
-            extraKeys: {
-                "F11": function (cm) {
-                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                },
-                "Esc": function (cm) {
-                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                }
+    $scope.codeMirrorDefaultOptions = {
+        mode: 'text/html',
+        lineNumbers: true,
+        lineWrapping: true,
+        indentWithTabs: true,
+        theme: 'default',
+        extraKeys: {
+            "F11": function (cm) {
+                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+            },
+            "Esc": function (cm) {
+                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
             }
-        };
+        }
+    };
 
-        $scope.isNewObject = object == null;
+    $scope.isNewObject = object == null;
 
-        $scope.object = object != null ? jQuery.extend({}, object) : {};
+    $scope.object = object != null ? jQuery.extend({}, object) : {};
 
-        $scope.fields = [];
+    $scope.fields = [];
 
+    $scope.hasErrors = function (property) {
+        return $scope.validationErrors.hasOwnProperty(property);
+    }
+
+    $scope.errorText = function (property) {
+        return $scope.validationErrors[property];
+    }
+
+    $scope.helpText = function (field) {
+        var ret = field.HelpText;
+        if (ret == null) {
+            ret = "";
+        }
+        if ($scope.hasErrors(field.Property)) {
+            if (ret.length) {
+                ret += " / ";
+            }
+            ret += $scope.errorText(field.Property);
+        }
+        return ret;
+    }
+
+    $scope.fieldVisible = function (field) {
+        if (field.VisibleFunction == null) {
+            return true;
+        }
+        return field.VisibleFunction($scope.object);
+    }
+
+    $scope.getTypeahead = function (field, searchText) {
+        if (typeof (getTypeahead) != "function") {
+            return [];
+        }
+        return getTypeahead(field, searchText);
+    }
+
+    $scope.readOnly = function (field) {
+        if (field.ReadOnlyFunction == null) {
+            return "";
+        }
+        return field.ReadOnlyFunction($scope.object) ? "readonly" : "";
+    }
+
+    $scope.submit = function () {
+        var valid = true;
+
+        $scope.validationErrors = {}
+
+        for (var i = 0; i < definition.Fields.length; i++) {
+            var field = definition.Fields[i];
+
+            if (!$scope.fieldVisible(field) || $scope.readOnly(field)) {
+                continue;
+            }
+
+            var value = $scope.object[field.Property];
+
+            if (field.Type == 'File') {
+                if (field.Required && $scope.isNewObject && (value == null || value.length == 0)) {
+                    $scope.validationErrors[field.Property] = "Field is required";
+                    valid = false;
+                }
+                else {
+                    var pos = value.indexOf("base64,");
+                    if (pos > 0) {
+                        $scope.object[field.Property] = value.substring(pos + 7);
+                    }
+                }
+                continue;
+            }
+
+            if (typeof (value) == 'undefined' || value == null || value.toString().trim().length == 0) {
+                if (field.Required) {
+                    $scope.validationErrors[field.Property] = "Field is required";
+                    valid = false;
+                }
+                continue;
+            }
+
+            switch (field.Type) {
+                case 'Number':
+                    if (parseFloat(value) == NaN) {
+                        $scope.validationErrors[field.Property] = "Field '" + field.Text + "' is not a number";
+                        valid = false;
+                    }
+                    break;
+                case 'Email':
+                    if (!value.search(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/)) {
+                        $scope.validationErrors[field.Property] = "Field'" + field.Text + "' is not an e-mail";
+                        valid = false;
+                    }
+                    break;
+                case 'Password':
+                    var repeatPassword = $scope.object[field.Property + "-Repeat"];
+                    if (typeof (repeatPassword) == 'undefined' || repeatPassword == null || repeatPassword != value) {
+                        $scope.validationErrors[field.Property] = 'Passwords must be equal';
+                        valid = false;
+                    }
+            }
+        }
+
+        if (!valid) {
+            return;
+        }
+
+        $scope.submitError = "";
+
+        if (typeof (success) == "function") {
+            $scope.isApplying = true;
+            try {
+                success($scope.object, function () {
+                    $scope.isApplying = false;
+                    $modalInstance.close();
+                }, function (message) {
+                    $scope.isApplying = false;
+                    $scope.submitError = message;
+                });
+            } catch (err) {
+                $scope.isApplying = false;
+                $scope.submitError = err.toString();
+            }
+        } else {
+            $modalInstance.close();
+        }
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    }
+
+    var requires = [];
+
+    var hasTinymce = false;
+    var hasCodemirror = false;
+
+    for (var i = 0; i < definition.Fields.length && (!hasTinymce || !hasCodemirror); i++) {
+        var field = definition.Fields[i];
+
+        if (field.Type == "RichText" && !hasTinymce) {
+            hasTinymce = true;
+            requires.push("lib/tinymce/tinymce");
+            requires.push("lib/tinymce/config");
+            requires.push("lib/tinymce/tinymce-angular");
+            app.ensureModule('ui.tinymce');
+        }
+
+        if (field.Type == "CodeText" && !hasCodemirror) {
+            hasCodemirror = true;
+            requires.push("lib/codemirror/codemirror");
+            requires.push("lib/codemirror/ui-codemirror");
+            app.ensureModule('ui.codemirror');
+        }
+    }
+
+    function initializeFields() {
         for (var i = 0; i < definition.Fields.length; i++) {
             var field = definition.Fields[i];
             if (!$scope.object.hasOwnProperty(field.Property)) {
@@ -71,138 +221,17 @@ define(['app'], function (app) {
                 field.ReadOnlyFunction = null;
             }
         }
-
-        $scope.hasErrors = function (property) {
-            return $scope.validationErrors.hasOwnProperty(property);
-        }
-
-        $scope.errorText = function (property) {
-            return $scope.validationErrors[property];
-        }
-
-        $scope.helpText = function (field) {
-            var ret = field.HelpText;
-            if (ret == null) {
-                ret = "";
-            }
-            if ($scope.hasErrors(field.Property)) {
-                if (ret.length) {
-                    ret += " / ";
-                }
-                ret += $scope.errorText(field.Property);
-            }
-            return ret;
-        }
-
-        $scope.fieldVisible = function (field) {
-            if (field.VisibleFunction == null) {
-                return true;
-            }
-            return field.VisibleFunction($scope.object);
-        }
-
-        $scope.getTypeahead = function (field, searchText) {
-            if (typeof (getTypeahead) != "function") {
-                return [];
-            }
-            return getTypeahead(field, searchText);
-        }
-
-        $scope.readOnly = function (field) {
-            if (field.ReadOnlyFunction == null) {
-                return "";
-            }
-            return field.ReadOnlyFunction($scope.object) ? "readonly" : "";
-        }
-
-        $scope.submit = function () {
-            var valid = true;
-
-            $scope.validationErrors = {}
-
-            for (var i = 0; i < definition.Fields.length; i++) {
-                var field = definition.Fields[i];
-
-                if (!$scope.fieldVisible(field) || $scope.readOnly(field)) {
-                    continue;
-                }
-
-                var value = $scope.object[field.Property];
-
-                if (field.Type == 'File') {
-                    if (field.Required && $scope.isNewObject && (value == null || value.length == 0)) {
-                        $scope.validationErrors[field.Property] = "Field is required";
-                        valid = false;
-                    }
-                    else {
-                        var pos = value.indexOf("base64,");
-                        if (pos > 0) {
-                            $scope.object[field.Property] = value.substring(pos + 7);
-                        }
-                    }
-                    continue;
-                }
-
-                if (typeof (value) == 'undefined' || value == null || value.toString().trim().length == 0) {
-                    if (field.Required) {
-                        $scope.validationErrors[field.Property] = "Field is required";
-                        valid = false;
-                    }
-                    continue;
-                }
-
-                switch (field.Type) {
-                    case 'Number':
-                        if (parseFloat(value) == NaN) {
-                            $scope.validationErrors[field.Property] = "Field '" + field.Text + "' is not a number";
-                            valid = false;
-                        }
-                        break;
-                    case 'Email':
-                        if (!value.search(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/)) {
-                            $scope.validationErrors[field.Property] = "Field'" + field.Text + "' is not an e-mail";
-                            valid = false;
-                        }
-                        break;
-                    case 'Password':
-                        var repeatPassword = $scope.object[field.Property + "-Repeat"];
-                        if (typeof (repeatPassword) == 'undefined' || repeatPassword == null || repeatPassword != value) {
-                            $scope.validationErrors[field.Property] = 'Passwords must be equal';
-                            valid = false;
-                        }
-                }
-            }
-
-            if (!valid) {
-                return;
-            }
-
-            $scope.submitError = "";
-
-            if (typeof (success) == "function") {
-                $scope.isApplying = true;
-                try {
-                    success($scope.object, function () {
-                        $scope.isApplying = false;
-                        $modalInstance.close();
-                    }, function (message) {
-                        $scope.isApplying = false;
-                        $scope.submitError = message;
-                    });
-                } catch (err) {
-                    $scope.isApplying = false;
-                    $scope.submitError = err.toString();
-                }
-            } else {
-                $modalInstance.close();
-            }
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        }
     }
 
-    return controllerFunction;
-});
-
+    if (requires.length > 0) {
+        require(requires, function() {
+            initializeFields();
+            lazyLoad.loadModules();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        });
+    } else {
+        initializeFields();
+    }
+}

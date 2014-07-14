@@ -191,6 +191,9 @@
     <Compile Include="UserInterfaceTextIds.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Content\bootstrap-theme.min.css" />
+    <EmbeddedResource Include="Content\bootstrap.min.css" />
+    <EmbeddedResource Include="Content\codemirror.min.css" />
     <EmbeddedResource Include="Content\Tinymce\Fonts\tinymce.ttf" />
     <EmbeddedResource Include="Content\Tinymce\Fonts\tinymce.woff" />
     <EmbeddedResource Include="Content\Fonts\glyphicons-halflings-regular.eot" />
@@ -201,6 +204,14 @@
     <EmbeddedResource Include="Content\fontawesome-webfont.ttf" />
     <EmbeddedResource Include="Content\fontawesome-webfont.woff" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Scripts\Lib\Angular\angular.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\bootstrap.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Bootstrap\ui-bootstrap.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-ui-1.10.4.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Require\require.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\angular-spinner.min.js" />
+    <EmbeddedResource Include="Scripts\Lib\Spinner\spin.min.js" />
     <EmbeddedResource Include="Views\FlatPage.html" />
     <EmbeddedResource Include="Scripts\Controllers\flatpage.js" />
     <EmbeddedResource Include="Views\InputFormTemplate.html" />
@@ -269,22 +280,10 @@
     <EmbeddedResource Include="Scripts\Controllers\toolbar.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.intellisense.js" />
     <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.js" />
-    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-2.1.1.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-ui-1.10.4.js" />
-    <EmbeddedResource Include="Scripts\Lib\JQuery\jquery-ui-1.10.4.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\Angular\angular.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\Bootstrap\bootstrap.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\Bootstrap\ui-bootstrap.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Tinymce\tinymce-theme.js" />
@@ -448,9 +447,6 @@
     <EmbeddedResource Include="Scripts\Lib\Tinymce\Plugins\Wordcount\plugin.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\NgGrid\ng-grid.min.js" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Scripts\Controllers\main.js" />
   </ItemGroup>
   <ItemGroup>
@@ -461,9 +457,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Spinner\angular-spinner.js" />
-    <EmbeddedResource Include="Scripts\Lib\Spinner\angular-spinner.min.js" />
     <EmbeddedResource Include="Scripts\Lib\Spinner\spin.js" />
-    <EmbeddedResource Include="Scripts\Lib\Spinner\spin.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UserInterface.Language.xml">
@@ -472,21 +466,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\bootstrap-theme.css" />
-    <EmbeddedResource Include="Content\bootstrap-theme.min.css" />
-    <EmbeddedResource Include="Content\bootstrap.min.css" />
     <EmbeddedResource Include="Content\codemirror.css" />
     <EmbeddedResource Include="Scripts\Lib\CodeMirror\codemirror.js" />
     <EmbeddedResource Include="Scripts\Lib\SignalR\jquery.signalR-2.1.0.js" />
-    <EmbeddedResource Include="Scripts\Lib\SignalR\jquery.signalR-2.1.0.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\fontawesome-webfont.svg" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\CodeMirror\codemirror.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Content\codemirror.min.css" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\CodeMirror\ui-codemirror.js" />
@@ -518,7 +503,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Require\require.js" />
-    <EmbeddedResource Include="Scripts\Lib\Require\require.min.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\main.js" />
@@ -538,12 +522,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Directives\bindcompiled.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Config\start.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts\Lib\Require\domReady.js" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -586,6 +564,7 @@
     <Content Include="Scripts\Lib\CodeMirror\plugins\xml-fold.js" />
     <Content Include="Scripts\Lib\CodeMirror\plugins\xml-hint.js" />
     <Content Include="Scripts\Lib\CodeMirror\plugins\xml.js" />
+    <EmbeddedResource Include="UserInterface.Minify.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

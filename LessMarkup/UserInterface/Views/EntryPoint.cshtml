@@ -1,6 +1,4 @@
-﻿@using System.Web.Optimization
-@using LessMarkup.Engine.Helpers
-@using LessMarkup.Engine.HtmlTemplate
+﻿@using LessMarkup.Engine.HtmlTemplate
 @model LessMarkup.UserInterface.Model.Structure.NodeEntryPointModel
 @{
     /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,20 +7,20 @@
     
     Layout = null;
 }<!DOCTYPE html>
-<html lang="en" ng-controller="main">
+<html lang="en" ng-app="application" ng-controller="main">
     <head>
-        @* ReSharper disable Html.PathError *@
-        <link href="~/Images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-        @* ReSharper restore Html.PathError *@
+        @* <link href="~/Images/favicon.ico" rel="shortcut icon" type="image/x-icon" /> *@
         <meta name="viewport" content="width=device-width" />
         <link href="http://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet" type="text/css">
-        @Styles.Render("~/Content/bootstrap.css")
+        <link href="/minify.css" rel="stylesheet" type="text/css" />
+        @*@@Styles.Render("~/Content/bootstrap.css")
         @Styles.Render("~/Content/ng-grid.css")
         @Styles.Render("~/Content/site.css")
         @Styles.Render("~/Content/visualblocks.css")
         @Styles.Render("~/Content/codemirror.css")
         @Styles.Render("~/Content/nodelist.css")
         @Styles.Render("~/Content/flatpage.css")
+        *@
         <meta charset="utf-8" />
         <title ng-bind="title">@Model.Title</title>
     </head>
@@ -30,8 +28,8 @@
         @Html.RenderTemplate("~/Views/InputFormTemplate.html")
         @Html.RenderTemplate("~/Views/Body.html")
         @Html.Raw(Model.ScriptInitialData)
-
-        <script src="/scripts/lib/require/require.js" data-main="/scripts/main"></script>
+        
+        <script src="/minify.js" data-main="/scripts/main"></script>
 
         @*   @@Scripts.Render("~/Scripts/jquery-2.1.1.js")
         @Scripts.Render("~/Scripts/jquery-ui-1.10.4.js")

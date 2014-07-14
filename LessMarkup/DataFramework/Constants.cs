@@ -13,6 +13,12 @@ namespace LessMarkup.DataFramework
             public const string UserInterface = "UserInterface";
         }
 
+        public static class Minify
+        {
+            public const string JsMinify = "minify.js";
+            public const string CssMinify = "minify.css";
+        }
+
         public static class DataAccessGenerator
         {
             public const string DefaultNamespace = "LessMarkup.DataAccessGen";

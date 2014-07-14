@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Minify>
+  <Resources>
+    <Resource Minified="false" Path="scripts/controllers/article" />
+  </Resources>
+</Minify>

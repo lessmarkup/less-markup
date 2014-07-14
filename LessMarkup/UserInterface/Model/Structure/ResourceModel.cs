@@ -85,11 +85,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public ActionResult CreateResult(System.Web.Mvc.Controller controller)
         {
-#if DEBUG
             controller.Response.Cache.SetExpires(DateTime.Now.AddHours(-1));
-#else
-            controller.Response.Cache.SetExpires(DateTime.Now.AddHours(1));
-#endif
             var resourceCache = _dataCache.Get<ResourceCache>();
             return new FileStreamResult(resourceCache.ReadResource(_path), _contentType);
         }

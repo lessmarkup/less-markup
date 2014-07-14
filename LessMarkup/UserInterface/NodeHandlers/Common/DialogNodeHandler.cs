@@ -40,10 +40,5 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             get { return "Dialog"; }
         }
-
-        protected override string[] Scripts
-        {
-            get { return new []{ "controllers/dialog" }; }
-        }
     }
 }

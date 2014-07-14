@@ -2,27 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-define(['app', 'providers/lazyload'], function (app) {
-
-    app.directive("bindCompiledHtml", function ($compile, lazyLoad) {
-        return {
-            template: '<div></div>',
-            scope: {
-                parameter: '=bindCompiledHtml',
-            },
-            link: function (scope, element) {
-                var applyFunction = function (value) {
-                    element.contents().remove();
-                    if (value) {
-                        lazyLoad.loadModules();
-                        element.append($compile(value)(scope.parameter.scope(scope.parameter.context)));
-                    }
-                };
-                scope.parameter.scope(scope.parameter.context)[scope.parameter.name] = applyFunction;
-                if (scope.parameter.html && scope.parameter.html != null && scope.parameter.html.length > 0) {
-                    applyFunction(scope.parameter.html);
+app.directive("bindCompiledHtml", function ($compile, lazyLoad) {
+    return {
+        template: '<div></div>',
+        scope: {
+            parameter: '=bindCompiledHtml',
+        },
+        link: function (scope, element) {
+            var applyFunction = function (value) {
+                element.contents().remove();
+                if (value) {
+                    lazyLoad.loadModules();
+                    element.append($compile(value)(scope.parameter.scope(scope.parameter.context)));
                 }
+            };
+            scope.parameter.scope(scope.parameter.context)[scope.parameter.name] = applyFunction;
+            if (scope.parameter.html && scope.parameter.html != null && scope.parameter.html.length > 0) {
+                applyFunction(scope.parameter.html);
             }
-        };
-    });
+        }
+    };
 });

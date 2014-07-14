@@ -12,6 +12,7 @@ using System.Text;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Build.View;
+using LessMarkup.Engine.Minify;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -327,6 +328,9 @@ namespace LessMarkup.Engine.FileSystem
             {
                 LoadDatabaseResources(siteId.Value);
             }
+
+            var minifier = Interfaces.DependencyResolver.Resolve<ResourceMinifer>();
+            minifier.Minify(_resourceReferences);
         }
 
         public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
