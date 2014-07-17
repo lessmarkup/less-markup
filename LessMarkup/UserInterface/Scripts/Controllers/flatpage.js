@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var scrollChanged = false;
-var timerId;
 var scrollSpyId = "";
 var scrollSetManually = false;
 
@@ -12,14 +10,85 @@ function onScrollChanged() {
         scrollSetManually = false;
         return;
     }
-    scrollChanged = true;
-    //console.log("onScrollChanged");
+
+    var headerHeight = getHeaderHeight();
+
+    var windowHeight = $(window).height();
+
+    var scrollPosition = $(window).scrollTop();
+
+    var selectedId = "";
+
+    var visibleElements = [];
+
+    $('.spyelement').each(function (i, el) {
+        var position = $(el).offset().top - headerHeight - 10 - scrollPosition;
+
+        if (visibleElements.length > 0) {
+            var previous = visibleElements[visibleElements.length - 1];
+            previous.height = position - previous.position;
+        }
+
+        visibleElements.push({
+            position: position,
+            id: $(el).attr("id"),
+            height: windowHeight - headerHeight - 10 - position
+        });
+    });
+
+    if (visibleElements.length == 0) {
+        return;
+    }
+
+    if (scrollPosition == windowHeight) {
+        selectedId = visibleElements[visibleElements.length - 1].id;
+    } else {
+        var maxVisibleHeight = 0;
+        var maxVisibleElement = null;
+        var topVisibleElement = null;
+
+        angular.forEach(visibleElements, function(element) {
+
+            if (element.position >= windowHeight) {
+                return;
+            }
+
+            var visibleHeight = element.height;
+            if (element.position < 0) {
+                visibleHeight += element.position;
+            }
+            if (element.position + element.height > windowHeight) {
+                visibleHeight -= element.position + element.height - windowHeight;
+            }
+
+            if (visibleHeight > maxVisibleHeight) {
+                maxVisibleElement = element;
+                maxVisibleHeight = visibleHeight;
+            }
+
+            if (topVisibleElement == null && visibleHeight > 20) {
+                topVisibleElement = element;
+            }
+        });
+
+        if (maxVisibleHeight >= windowHeight / 2) {
+            selectedId = maxVisibleElement.id;
+        } else if (topVisibleElement != null) {
+            selectedId = topVisibleElement.id;
+        }
+    }
+
+    if (selectedId == scrollSpyId) {
+        return;
+    }
+
+    //console.log("checkScrollChanged");
+
+    setScrollSpyId(selectedId);
 }
 
 function setScrollSpyId(id) {
-    //console.log("setScrollSpy");
     scrollSpyId = id;
-    scrollChanged = false;
 
     var selectedRef = null;
 
@@ -45,79 +114,17 @@ function setScrollSpyId(id) {
     });
 }
 
-function checkScrollChanged() {
-    if (!scrollChanged) {
-        return;
-    }
-
-    scrollChanged = false;
-
-    var headerHeight = getHeaderHeight();
-
-    var windowHeight = $(window).height();
-
-    var validRange = (windowHeight - headerHeight - 10) / 2;
-
-    var scrollPosition = $(window).scrollTop();
-
-    var minDistance = -validRange;
-    var minId = "";
-
-    var reserveId = "";
-
-    $('.spyelement').each(function (i, el) {
-        var position = $(el).offset().top - headerHeight + 20 - scrollPosition;
-
-        if (position > validRange) {
-            reserveId = $(el).attr('id');
-            return;
-        }
-
-        if (minDistance < 0) {
-            if (position >= 0 || position > -windowHeight) {
-                minDistance = position;
-                minId = $(el).attr('id');
-            } else {
-                reserveId = $(el).attr('id');
-            }
-            return;
-        }
-
-        if (position < 0) {
-            return;
-        }
-
-        if (position < minDistance) {
-            minDistance = position;
-            minId = $(el).attr('id');
-        }
-    });
-
-    if (minId.length == 0) {
-        minId = reserveId;
-    }
-
-    if (minId == scrollSpyId) {
-        return;
-    }
-
-    //console.log("checkScrollChanged");
-
-    setScrollSpyId(minId);
-}
-
 function enableScrollSpy() {
     $(window).on('scroll', onScrollChanged);
-    timerId = setInterval(checkScrollChanged, 100);
+    $(window).on('resize', onScrollChanged);
     scrollSpyId = "";
-    scrollChanged = true;
+    onScrollChanged();
 }
 
 function disableScrollSpy() {
     $(window).off('scroll', onScrollChanged);
-    clearInterval(timerId);
+    $(window).off('resize', onScrollChanged);
     scrollSpyId = "";
-    scrollChanged = true;
 }
 
 app.directive("scrollspySide", function ($timeout) {

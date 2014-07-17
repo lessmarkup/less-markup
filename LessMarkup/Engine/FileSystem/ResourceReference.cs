@@ -9,5 +9,6 @@ namespace LessMarkup.Engine.FileSystem
         public long RecordId { get; set; }
         public byte[] Binary { get; set; }
         public bool Minified { get; set; }
+        public string Path { get; set; }
     }
 }

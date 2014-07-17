@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,12 +73,23 @@ namespace LessMarkup.Engine.Minify
             var content = new StringBuilder();
             content.AppendLine(initialContent);
 
+#if !DEBUG
             var minify = minifyJs ? (IMinify) new JsMinify() : new CssMinify();
+#endif
 
             foreach (var resource in toMinify)
             {
                 var source = Encoding.UTF8.GetString(resource.Binary);
+#if DEBUG
+                content.AppendLine("/************************");
+                content.AppendLine("/");
+                content.AppendLine("/ " + resource.Path);
+                content.AppendLine("/");
+                content.AppendLine("/*************************/");
+                var target = source;
+#else
                 var target = resource.Minified ? source : minify.Process(source);
+#endif
                 content.AppendLine(target);
             }
 
@@ -111,12 +126,28 @@ namespace LessMarkup.Engine.Minify
 
                     foreach (var resource in resourceFile.Resources)
                     {
-                        if (string.IsNullOrWhiteSpace(resource.Path))
+#if DEBUG
+                        var resource1 = resource.Plain;
+                        var minified = false;
+                        if (string.IsNullOrWhiteSpace(resource1))
+                        {
+                            resource1 = resource.Minified;
+                            minified = true;
+                        }
+#else
+                        var resource1 = resource.Minified;
+                        var minified = true;
+                        if (string.IsNullOrWhiteSpace(resource1))
+                        {
+                            resource1 = resource.Plain;
+                            minified = false;
+                        }
+#endif
+
+                        if (string.IsNullOrWhiteSpace(resource1))
                         {
                             continue;
                         }
-
-                        string resource1 = resource.Path;
 
                         foreach (var reference in references.Where(r => r.Key.StartsWith(resource1)))
                         {
@@ -129,11 +160,13 @@ namespace LessMarkup.Engine.Minify
                             switch (extension.ToLower())
                             {
                                 case ".js":
-                                    reference.Value.Minified = resource.Minified;
+                                    reference.Value.Minified = minified;
+                                    reference.Value.Path = resource1;
                                     _jsToMinify.Add(reference.Value);
                                     break;
                                 case ".css":
-                                    reference.Value.Minified = resource.Minified;
+                                    reference.Value.Minified = minified;
+                                    reference.Value.Path = resource1;
                                     _cssToMinify.Add(reference.Value);
                                     break;
                             }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-app.controller('main', function ($scope, $http, commandHandler, inputForm, $location, $browser, $timeout) {
+app.controller('main', function ($scope, $http, commandHandler, inputForm, $location, $browser, $timeout, lazyLoad) {
     var initialData = window.viewInitialData;
     window.viewInitialData = null;
 
@@ -411,6 +411,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     });
 
     $.connection.hub.start().done(function () {*/
+        lazyLoad.initialize();
         onNodeLoaded(initialData.ViewData, initialData.Path);
     /*}).fail(function () {
         $scope.showError("Cannot establish server callback connection");

@@ -235,17 +235,14 @@ namespace LessMarkup.MainModule
                     ((IInitialize) domainModelProvider).Initialize(databaseConfigurationUpToDate);
                     this.LogDebug("Domain provider initialization took " + (Environment.TickCount - startTime) + " ms");
 
-                    if (!databaseConfigurationUpToDate)
-                    {
-                        this.LogDebug("Updating modules database");
-                        moduleProvider.UpdateModuleDatabase(domainModelProvider);
+                    this.LogDebug("Updating modules database");
+                    moduleProvider.UpdateModuleDatabase(domainModelProvider);
 
-                        this.LogDebug("Refreshing template list");
-                        buildEngine.RefreshTemplateList(domainModelProvider);
+                    this.LogDebug("Refreshing template list");
+                    buildEngine.RefreshTemplateList(domainModelProvider);
 
-                        engineConfiguration.LastDatabaseUpdate = DateTime.UtcNow;
-                        engineConfiguration.Save();
-                    }
+                    engineConfiguration.LastDatabaseUpdate = DateTime.UtcNow;
+                    engineConfiguration.Save();
                 }
                 else
                 {

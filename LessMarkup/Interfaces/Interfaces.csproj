@@ -77,6 +77,11 @@
     <Compile Include="Cache\EntityChangeType.cs" />
     <Compile Include="Cache\ICacheHandler.cs" />
     <Compile Include="Cache\IDataCache.cs" />
+    <Compile Include="Composite\AbstractElement.cs" />
+    <Compile Include="Composite\ButtonElement.cs" />
+    <Compile Include="Composite\ContainerElement.cs" />
+    <Compile Include="Composite\MultilineTextElement.cs" />
+    <Compile Include="Composite\TextElement.cs" />
     <Compile Include="Data\DataObject.cs" />
     <Compile Include="Data\EntityAttribute.cs" />
     <Compile Include="Data\IChangeTracker.cs" />

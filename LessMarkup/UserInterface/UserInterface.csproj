@@ -164,6 +164,7 @@
     <Compile Include="Model\Structure\TypeaheadModel.cs" />
     <Compile Include="Model\Structure\CachedNodeInformation.cs" />
     <Compile Include="Model\User\RegisterModel.cs" />
+    <Compile Include="NodeHandlers\Common\CompositeNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\TabPageNodeHandler.cs" />
@@ -532,6 +533,9 @@
     <EmbeddedResource Include="Scripts\Providers\lazyload.js" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Views\Composite.html" />
+    <EmbeddedResource Include="Scripts\Controllers\composite.js" />
+    <EmbeddedResource Include="Scripts\Directives\composite.js" />
     <Content Include="Scripts\Lib\CodeMirror\plugins\anyword-hint.js" />
     <Content Include="Scripts\Lib\CodeMirror\plugins\brace-fold.js" />
     <Content Include="Scripts\Lib\CodeMirror\plugins\closebrackets.js" />

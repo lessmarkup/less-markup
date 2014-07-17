@@ -23,22 +23,59 @@ app.provider('inputForm', function () {
         }
     }
 
-    this.$get = ['$modal', '$http',
-        function ($modal, $http) {
+    this.$get = ['$modal', '$http', 'lazyLoad',
+        function ($modal, $http, lazyLoad) {
             return {
                 editObject: function (object, type, success, getTypeahead) {
                     getDefinition(type, $http, function (definition) {
-                        $modal.open({
-                            template: $('#inputform-template').html(),
-                            controller: InputFormController,
-                            size: 'lg',
-                            resolve: {
-                                definition: function() { return definition; },
-                                object: function() { return object; },
-                                success: function() { return success; },
-                                getTypeahead: function() { return getTypeahead; }
+
+                        var hasTinymce = false;
+                        var hasCodemirror = false;
+
+                        var requires = [];
+
+                        for (var i = 0; i < definition.Fields.length && (!hasTinymce || !hasCodemirror) ; i++) {
+                            var field = definition.Fields[i];
+
+                            if (field.Type == "RichText" && !hasTinymce) {
+                                hasTinymce = true;
+                                requires.push("lib/tinymce/tinymce");
+                                requires.push("lib/tinymce/config");
+                                requires.push("lib/tinymce/tinymce-angular");
+                                app.ensureModule('ui.tinymce');
                             }
-                        });
+
+                            if (field.Type == "CodeText" && !hasCodemirror) {
+                                hasCodemirror = true;
+                                requires.push("lib/codemirror/codemirror");
+                                requires.push("lib/codemirror/ui-codemirror");
+                                app.ensureModule('ui.codemirror');
+                            }
+                        }
+
+                        function open() {
+                            $modal.open({
+                                template: $('#inputform-template').html(),
+                                controller: InputFormController,
+                                size: 'lg',
+                                resolve: {
+                                    definition: function () { return definition; },
+                                    object: function () { return object; },
+                                    success: function () { return success; },
+                                    getTypeahead: function () { return getTypeahead; }
+                                }
+                            });
+                        }
+
+                        if (requires.length > 0) {
+                            require(requires, function() {
+                                lazyLoad.loadModules();
+                                open();
+                            });
+                        } else {
+                            open();
+                        }
+
                     });
                 },
                 question: function (message, title, success) {

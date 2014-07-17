@@ -2,17 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System.Collections.Generic;
+using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.UserInterface.Model.RecordModel;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
     public abstract class DialogNodeHandler<T> : AbstractNodeHandler
     {
+        private readonly HashSet<string> _scripts = new HashSet<string>();
+
         protected abstract T LoadObject();
         protected abstract string SaveObject(T changedObject);
 
@@ -22,6 +27,22 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
             definitionModel.Initialize(typeof (T));
+
+            foreach (var field in definitionModel.Fields)
+            {
+                switch (field.Type)
+                {
+                    case InputFieldType.CodeText:
+                        _scripts.Add("lib/codemirror/codemirror");
+                        _scripts.Add("lib/codemirror/ui-codemirror");
+                        break;
+                    case InputFieldType.RichText:
+                        _scripts.Add("lib/tinymce/tinymce");
+                        _scripts.Add("lib/tinymce/config");
+                        _scripts.Add("lib/tinymce/tinymce-angular");
+                        break;
+                }
+            }
 
             return new
             {
@@ -39,6 +60,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected override string ViewType
         {
             get { return "Dialog"; }
+        }
+
+        protected override string[] Scripts
+        {
+            get { return _scripts.ToArray(); }
         }
     }
 }

@@ -162,76 +162,38 @@ function InputFormController($scope, $modalInstance, definition, object, success
         $modalInstance.dismiss('cancel');
     }
 
-    var requires = [];
-
-    var hasTinymce = false;
-    var hasCodemirror = false;
-
-    for (var i = 0; i < definition.Fields.length && (!hasTinymce || !hasCodemirror); i++) {
+    for (var i = 0; i < definition.Fields.length; i++) {
         var field = definition.Fields[i];
-
-        if (field.Type == "RichText" && !hasTinymce) {
-            hasTinymce = true;
-            requires.push("lib/tinymce/tinymce");
-            requires.push("lib/tinymce/config");
-            requires.push("lib/tinymce/tinymce-angular");
-            app.ensureModule('ui.tinymce');
-        }
-
-        if (field.Type == "CodeText" && !hasCodemirror) {
-            hasCodemirror = true;
-            requires.push("lib/codemirror/codemirror");
-            requires.push("lib/codemirror/ui-codemirror");
-            app.ensureModule('ui.codemirror');
-        }
-    }
-
-    function initializeFields() {
-        for (var i = 0; i < definition.Fields.length; i++) {
-            var field = definition.Fields[i];
-            if (!$scope.object.hasOwnProperty(field.Property)) {
-                if (typeof (field.DefaultValue) != "undefined") {
-                    $scope.object[field.Property] = field.DefaultValue;
-                } else {
-                    $scope.object[field.Property] = "";
-                }
-            }
-            if (field.Type == 'Password') {
+        if (!$scope.object.hasOwnProperty(field.Property)) {
+            if (typeof (field.DefaultValue) != "undefined") {
+                $scope.object[field.Property] = field.DefaultValue;
+            } else {
                 $scope.object[field.Property] = "";
-                $scope.object[field.Property + "-Repeat"] = "";
-            }
-
-            if (field.Type != 'Hidden') {
-                $scope.fields.push(field);
-            }
-
-            if (field.Type == 'Select' && field.SelectValues.length > 0) {
-                $scope.object[field.Property] = field.SelectValues[0].Value;
-            }
-
-            if (typeof (field.VisibleCondition) != "undefined" && field.VisibleCondition != null && field.VisibleCondition.length > 0) {
-                field.VisibleFunction = new Function("obj", "with(obj) { return " + field.VisibleCondition + "; }");
-            } else {
-                field.VisibleFunction = null;
-            }
-
-            if (typeof (field.ReadOnlyCondition) != "undefined" && field.ReadOnlyCondition != null && field.ReadOnlyCondition.length > 0) {
-                field.ReadOnlyFunction = new Function("obj", "with(obj) { return " + field.ReadOnlyCondition + "; }");
-            } else {
-                field.ReadOnlyFunction = null;
             }
         }
-    }
+        if (field.Type == 'Password') {
+            $scope.object[field.Property] = "";
+            $scope.object[field.Property + "-Repeat"] = "";
+        }
 
-    if (requires.length > 0) {
-        require(requires, function() {
-            initializeFields();
-            lazyLoad.loadModules();
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
-        });
-    } else {
-        initializeFields();
+        if (field.Type != 'Hidden') {
+            $scope.fields.push(field);
+        }
+
+        if (field.Type == 'Select' && field.SelectValues.length > 0) {
+            $scope.object[field.Property] = field.SelectValues[0].Value;
+        }
+
+        if (typeof (field.VisibleCondition) != "undefined" && field.VisibleCondition != null && field.VisibleCondition.length > 0) {
+            field.VisibleFunction = new Function("obj", "with(obj) { return " + field.VisibleCondition + "; }");
+        } else {
+            field.VisibleFunction = null;
+        }
+
+        if (typeof (field.ReadOnlyCondition) != "undefined" && field.ReadOnlyCondition != null && field.ReadOnlyCondition.length > 0) {
+            field.ReadOnlyFunction = new Function("obj", "with(obj) { return " + field.ReadOnlyCondition + "; }");
+        } else {
+            field.ReadOnlyFunction = null;
+        }
     }
 }

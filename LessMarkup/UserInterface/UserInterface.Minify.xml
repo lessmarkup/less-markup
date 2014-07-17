@@ -1,29 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Minify>
   <Resources>
-    <Resource Minified="true" Path="scripts/lib/jquery/jquery-2.1.1.min" />
+    <Resource Plain="scripts/lib/jquery/jquery-2.1.1.js" Minified="scripts/lib/jquery/jquery-2.1.1.min.js" />
     <!--<Resource>scripts/lib/jquery/jquery-ui</Resource>-->
-    <Resource Minified="true" Path="scripts/lib/angular/angular.min" />
-    <Resource Minified="true" Path="scripts/lib/bootstrap/bootstrap.min" />
-    <Resource Minified="true" Path="scripts/lib/bootstrap/ui-bootstrap.min" />
-    <Resource Minified="true" Path="scripts/lib/spinner/spin.min" />
-    <Resource Minified="true" Path="scripts/lib/spinner/angular-spinner.min" />
-    <Resource Minified="true" Path="scripts/lib/require/require.min" />
-    <Resource Minified="false" Path="scripts/config/app" />
-    <Resource Minified="false" Path="scripts/providers/lazyload" />
-    <Resource Minified="false" Path="scripts/directives/bindcompiled" />
-    <Resource Minified="false" Path="scripts/providers/commandhandler" />
-    <Resource Minified="false" Path="scripts/providers/inputform" />
-    <Resource Minified="false" Path="scripts/controllers/main" />
-    <Resource Minified="false" Path="scripts/controllers/flatpage" />
-    <Resource Minified="false" Path="scripts/controllers/inputform" />
-    <Resource Minified="false" Path="scripts/controllers/dialog" />
-    <Resource Minified="true" Path="content/bootstrap.min" />
-    <Resource Minified="true" Path="content/ng-grid" />
-    <Resource Minified="false" Path="content/site" />
-    <Resource Minified="false" Path="content/visualblocks" />
-    <Resource Minified="true" Path="content/codemirror.min" />
-    <Resource Minified="false" Path="content/nodelist" />
-    <Resource Minified="false" Path="content/flatpage" />
+    <Resource Plain="scripts/lib/angular/angular.js" Minified="scripts/lib/angular/angular.min.js" />
+    <Resource Plain="scripts/lib/bootstrap/bootstrap.js" Minified="scripts/lib/bootstrap/bootstrap.min.js" />
+    <Resource Plain="scripts/lib/bootstrap/ui-bootstrap.js" Minified="scripts/lib/bootstrap/ui-bootstrap.min.js" />
+    <Resource Plain="scripts/lib/spinner/spin.js" Minified="scripts/lib/spinner/spin.min.js" />
+    <Resource Plain="scripts/lib/spinner/angular-spinner.js" Minified="scripts/lib/spinner/angular-spinner.min.js" />
+    <Resource Plain="scripts/lib/require/require.js" Minified="scripts/lib/require/require.min.js" />
+    <Resource Plain="scripts/config/app" />
+    <Resource Plain="scripts/providers/lazyload" />
+    <Resource Plain="scripts/directives/bindcompiled" />
+    <Resource Plain="scripts/providers/commandhandler" />
+    <Resource Plain="scripts/providers/inputform" />
+    <Resource Plain="scripts/directives/fileread" />
+    <Resource Plain="scripts/controllers/main" />
+    <Resource Plain="scripts/controllers/flatpage" />
+    <Resource Plain="scripts/controllers/inputform" />
+    <Resource Plain="scripts/controllers/dialog" />
+    
+    <Resource Plain="content/bootstrap.css" Minified="content/bootstrap.min.css" />
+    <Resource Minified="content/ng-grid" />
+    <Resource Plain="content/site" />
+    <Resource Plain="content/visualblocks" />
+    <Resource Minified="content/codemirror.min" />
+    <Resource Plain="content/nodelist" />
+    <Resource Plain="content/flatpage" />
   </Resources>
 </Minify>

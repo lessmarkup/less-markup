@@ -7,8 +7,8 @@ namespace LessMarkup.Engine.Minify
     public class XmlMinifyResource
     {
         [XmlAttribute]
-        public bool Minified { get; set; }
+        public string Minified { get; set; }
         [XmlAttribute]
-        public string Path { get; set; }
+        public string Plain { get; set; }
     }
 }

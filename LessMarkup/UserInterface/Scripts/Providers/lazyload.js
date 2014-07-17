@@ -80,6 +80,21 @@ app.provider('lazyLoad', ['$controllerProvider', '$provide', '$compileProvider',
                 }
 
                 return {
+
+                    initialize: function() {
+                        var requires = [];
+                        fillRequires(app, requires);
+                        angular.forEach(requires, function (name) {
+                            if (!name || name.trim().length == 0) {
+                                return;
+                            }
+                            var module = angular.module(name);
+                            if (module.hasOwnProperty("_invokeQueue")) {
+                                module["__entriesInvoked"] = module._invokeQueue.length;
+                            }
+                        });
+                    },
+
                     loadModules: function () {
 
                         var requires = [];
