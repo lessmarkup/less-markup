@@ -29,20 +29,17 @@ namespace LessMarkup.UserInterface.Model.Global
                 _siteId = siteId;
             }
 
-            public long SiteId
+            private long SiteId
             {
                 get
                 {
-                    if (_siteId.HasValue)
-                    {
-                        return _siteId.Value;
-                    }
+                    var siteId = _siteId ?? _siteMapper.SiteId;
 
-                    var siteId = _siteMapper.SiteId;
                     if (siteId.HasValue)
                     {
                         return siteId.Value;
                     }
+
                     throw new Exception("Unknown site");
                 }
             }

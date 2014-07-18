@@ -55,14 +55,14 @@ namespace LessMarkup.UserInterface.Model.Global
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
                 return
-                    domainModel.GetSiteCollection<SiteCustomization>(_siteId)
+                    domainModel.GetSiteCollection<SiteCustomization>(SiteId)
                         .Select(c => c.SiteCustomizationId);
             }
 
             public IQueryable<CustomizationModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 return
-                    domainModel.GetSiteCollection<SiteCustomization>(_siteId)
+                    domainModel.GetSiteCollection<SiteCustomization>(SiteId)
                         .Where(c => ids.Contains(c.SiteCustomizationId))
                         .Select(c => new CustomizationModel
                         {
@@ -89,7 +89,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         Append = record.Append
                     };
 
-                    domainModel.GetSiteCollection<SiteCustomization>(_siteId).Add(customization);
+                    domainModel.GetSiteCollection<SiteCustomization>(SiteId).Add(customization);
                     domainModel.SaveChanges();
                     _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     _changeTracker.AddChange(customization.SiteCustomizationId, EntityType.SiteCustomization, EntityChangeType.Added, domainModel);
@@ -112,7 +112,7 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var customization = domainModel.GetSiteCollection<SiteCustomization>(_siteId).Single(c => c.SiteCustomizationId == record.Id);
+                    var customization = domainModel.GetSiteCollection<SiteCustomization>(SiteId).Single(c => c.SiteCustomizationId == record.Id);
                     customization.Path = record.Path;
                     customization.Append = record.Append;
                     if (record.Body != null)
@@ -139,9 +139,9 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    foreach (var customization in domainModel.GetSiteCollection<SiteCustomization>(_siteId).Where(c => recordIds.Contains(c.SiteCustomizationId)))
+                    foreach (var customization in domainModel.GetSiteCollection<SiteCustomization>(SiteId).Where(c => recordIds.Contains(c.SiteCustomizationId)))
                     {
-                        domainModel.GetSiteCollection<SiteCustomization>(_siteId).Remove(customization);
+                        domainModel.GetSiteCollection<SiteCustomization>(SiteId).Remove(customization);
                         _changeTracker.AddChange(customization.SiteCustomizationId, EntityType.SiteCustomization, EntityChangeType.Removed, domainModel);
                     }
 

@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
@@ -20,11 +22,28 @@ namespace LessMarkup.UserInterface.Model.Global
 
             private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
+            private readonly ISiteMapper _siteMapper;
 
-            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            private long SiteId
+            {
+                get
+                {
+                    var siteId = _siteId ?? _siteMapper.SiteId;
+
+                    if (siteId.HasValue)
+                    {
+                        return siteId.Value;
+                    }
+
+                    throw new Exception("Unknown site");
+                }
+            }
+
+            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
             {
                 _changeTracker = changeTracker;
                 _domainModelProvider = domainModelProvider;
+                _siteMapper = siteMapper;
             }
 
             public void Initialize(long? siteId)
@@ -34,13 +53,13 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<UserGroup>(_siteId).Select(g => g.UserGroupId);
+                return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.UserGroupId);
             }
 
             public IQueryable<UserGroupModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 return
-                    domainModel.GetSiteCollection<UserGroup>(_siteId)
+                    domainModel.GetSiteCollection<UserGroup>(SiteId)
                         .Where(g => ids.Contains(g.UserGroupId))
                         .Select(g => new UserGroupModel
                         {
@@ -62,7 +81,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         Description = record.Description,
                     };
 
-                    domainModel.GetSiteCollection<UserGroup>(_siteId).Add(group);
+                    domainModel.GetSiteCollection<UserGroup>(SiteId).Add(group);
                     domainModel.SaveChanges();
                     _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
@@ -83,7 +102,7 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var group = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.UserGroupId == record.GroupId);
+                    var group = domainModel.GetSiteCollection<UserGroup>(SiteId).Single(g => g.UserGroupId == record.GroupId);
 
                     group.Name = record.Name;
                     group.Description = record.Description;
@@ -105,9 +124,9 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    foreach (var group in domainModel.GetSiteCollection<UserGroup>(_siteId).Where(g => recordIds.Contains(g.UserGroupId)))
+                    foreach (var group in domainModel.GetSiteCollection<UserGroup>(SiteId).Where(g => recordIds.Contains(g.UserGroupId)))
                     {
-                        domainModel.GetSiteCollection<UserGroup>(_siteId).Remove(group);
+                        domainModel.GetSiteCollection<UserGroup>(SiteId).Remove(group);
                         _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Removed, domainModel);
                     }
 

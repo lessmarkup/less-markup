@@ -41,12 +41,7 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 get
                 {
-                    if (_siteId.HasValue)
-                    {
-                        return _siteId.Value;
-                    }
-
-                    var siteId = _siteMapper.SiteId;
+                    var siteId = _siteId ?? _siteMapper.SiteId;
                     if (siteId.HasValue)
                     {
                         return siteId.Value;
