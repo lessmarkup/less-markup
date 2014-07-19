@@ -41,7 +41,7 @@
     <Translation Id="Enabled" Text="Enabled"/>
     <Translation Id="Sites" Text="Sites"/>
     <Translation Id="IsAdministrator" Text="Administrator"/>
-    <Translation Id="CustomizationType" Text="Type"/>
+    <Translation Id="IsBinary" Text="Binary"/>
     <Translation Id="Path" Text="Path"/>
     <Translation Id="File" Text="File"/>
     <Translation Id="Text" Text="Text"/>
@@ -73,6 +73,8 @@
     <Translation Id="AdministratorLogin" Text="Administrator Login"/>
     <Translation Id="UserProfile" Text="User Profile"/>
     <Translation Id="Append" Text="Append"/>
+    <Translation Id="MigrateDataLossAllowed" Text="Allow Data Loss During Database Migration"/>
+    <!--<Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
@@ -187,8 +189,6 @@
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
+    <Translation Id="" Text=""/>-->
   </Translations>
 </Language>

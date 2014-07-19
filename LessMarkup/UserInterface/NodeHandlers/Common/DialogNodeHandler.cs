@@ -34,6 +34,38 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 {
                     case InputFieldType.CodeText:
                         _scripts.Add("lib/codemirror/codemirror");
+                        _scripts.Add("lib/codemirror/plugins/css");
+                        _scripts.Add("lib/codemirror/plugins/css-hint");
+                        _scripts.Add("lib/codemirror/plugins/dialog");
+                        _scripts.Add("lib/codemirror/plugins/anyword-hint");
+                        _scripts.Add("lib/codemirror/plugins/brace-fold");
+                        _scripts.Add("lib/codemirror/plugins/closebrackets");
+                        _scripts.Add("lib/codemirror/plugins/closetag");
+                        _scripts.Add("lib/codemirror/plugins/colorize");
+                        _scripts.Add("lib/codemirror/plugins/comment");
+                        _scripts.Add("lib/codemirror/plugins/comment-fold");
+                        _scripts.Add("lib/codemirror/plugins/continuecomment");
+                        _scripts.Add("lib/codemirror/plugins/foldcode");
+                        _scripts.Add("lib/codemirror/plugins/fullscreen");
+                        _scripts.Add("lib/codemirror/plugins/html-hint");
+                        _scripts.Add("lib/codemirror/plugins/htmlembedded");
+                        _scripts.Add("lib/codemirror/plugins/htmlmixed");
+                        _scripts.Add("lib/codemirror/plugins/indent-fold");
+                        _scripts.Add("lib/codemirror/plugins/javascript");
+                        _scripts.Add("lib/codemirror/plugins/javascript-hint");
+                        _scripts.Add("lib/codemirror/plugins/mark-selection");
+                        _scripts.Add("lib/codemirror/plugins/markdown-fold");
+                        _scripts.Add("lib/codemirror/plugins/match-highlighter");
+                        _scripts.Add("lib/codemirror/plugins/matchbrackets");
+                        _scripts.Add("lib/codemirror/plugins/matchtags");
+                        _scripts.Add("lib/codemirror/plugins/placeholder");
+                        _scripts.Add("lib/codemirror/plugins/rulers");
+                        _scripts.Add("lib/codemirror/plugins/scrollpastend");
+                        _scripts.Add("lib/codemirror/plugins/search");
+                        _scripts.Add("lib/codemirror/plugins/searchcursor");
+                        _scripts.Add("lib/codemirror/plugins/xml");
+                        _scripts.Add("lib/codemirror/plugins/xml-fold");
+                        _scripts.Add("lib/codemirror/plugins/xml-hint");
                         _scripts.Add("lib/codemirror/ui-codemirror");
                         break;
                     case InputFieldType.RichText:

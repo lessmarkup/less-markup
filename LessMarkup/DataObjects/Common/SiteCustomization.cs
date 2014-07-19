@@ -11,7 +11,7 @@ namespace LessMarkup.DataObjects.Common
     {
         public long SiteCustomizationId { get; set; }
         public string Path { get; set; }
-        public SiteCustomizationType Type { get; set; }
+        public bool IsBinary { get; set; }
         public byte[] Body { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }

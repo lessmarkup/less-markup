@@ -42,5 +42,6 @@ namespace LessMarkup.Interfaces.System
         bool UseChangeTracking { get; set; }
         DateTime? LastDatabaseUpdate { get; set; }
         string ModuleSearchPath { get; set; }
+        bool MigrateDataLossAllowed { get; set; }
     }
 }

@@ -48,6 +48,38 @@ app.provider('inputForm', function () {
                             if (field.Type == "CodeText" && !hasCodemirror) {
                                 hasCodemirror = true;
                                 requires.push("lib/codemirror/codemirror");
+                                requires.push("lib/codemirror/plugins/css");
+                                requires.push("lib/codemirror/plugins/css-hint");
+                                requires.push("lib/codemirror/plugins/dialog");
+                                requires.push("lib/codemirror/plugins/anyword-hint");
+                                requires.push("lib/codemirror/plugins/brace-fold");
+                                requires.push("lib/codemirror/plugins/closebrackets");
+                                requires.push("lib/codemirror/plugins/closetag");
+                                requires.push("lib/codemirror/plugins/colorize");
+                                requires.push("lib/codemirror/plugins/comment");
+                                requires.push("lib/codemirror/plugins/comment-fold");
+                                requires.push("lib/codemirror/plugins/continuecomment");
+                                requires.push("lib/codemirror/plugins/foldcode");
+                                requires.push("lib/codemirror/plugins/fullscreen");
+                                requires.push("lib/codemirror/plugins/html-hint");
+                                requires.push("lib/codemirror/plugins/htmlembedded");
+                                requires.push("lib/codemirror/plugins/htmlmixed");
+                                requires.push("lib/codemirror/plugins/indent-fold");
+                                requires.push("lib/codemirror/plugins/javascript");
+                                requires.push("lib/codemirror/plugins/javascript-hint");
+                                requires.push("lib/codemirror/plugins/mark-selection");
+                                requires.push("lib/codemirror/plugins/markdown-fold");
+                                requires.push("lib/codemirror/plugins/match-highlighter");
+                                requires.push("lib/codemirror/plugins/matchbrackets");
+                                requires.push("lib/codemirror/plugins/matchtags");
+                                requires.push("lib/codemirror/plugins/placeholder");
+                                requires.push("lib/codemirror/plugins/rulers");
+                                requires.push("lib/codemirror/plugins/scrollpastend");
+                                requires.push("lib/codemirror/plugins/search");
+                                requires.push("lib/codemirror/plugins/searchcursor");
+                                requires.push("lib/codemirror/plugins/xml");
+                                requires.push("lib/codemirror/plugins/xml-fold");
+                                requires.push("lib/codemirror/plugins/xml-hint");
                                 requires.push("lib/codemirror/ui-codemirror");
                                 app.ensureModule('ui.codemirror');
                             }

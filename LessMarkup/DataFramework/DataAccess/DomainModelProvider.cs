@@ -17,12 +17,14 @@ namespace LessMarkup.DataFramework.DataAccess
         private ConstructorInfo _constructor;
         private readonly ISpecialFolder _specialFolder;
         private readonly ISiteMapper _siteMapper;
+        private readonly IEngineConfiguration _engineConfiguration;
         private bool _initialized;
 
-        public DomainModelProvider(ISpecialFolder specialFolder, ISiteMapper siteMapper)
+        public DomainModelProvider(ISpecialFolder specialFolder, ISiteMapper siteMapper, IEngineConfiguration engineConfiguration)
         {
             _specialFolder = specialFolder;
             _siteMapper = siteMapper;
+            _engineConfiguration = engineConfiguration;
         }
 
         public void Initialize(params object[] args)
@@ -49,7 +51,7 @@ namespace LessMarkup.DataFramework.DataAccess
             var configuration = (DbMigrationsConfiguration) Activator.CreateInstance(configurationType);
             var migrator = new DbMigrator(configuration);
             migrator.Configuration.AutomaticMigrationsEnabled = true;
-            migrator.Configuration.AutomaticMigrationDataLossAllowed = true;
+            migrator.Configuration.AutomaticMigrationDataLossAllowed = _engineConfiguration.MigrateDataLossAllowed;
             migrator.Update();
 
             _initialized = true;

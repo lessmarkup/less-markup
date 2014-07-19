@@ -7,13 +7,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Serialization;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.System;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace LessMarkup.Engine.Configuration
 {
@@ -24,11 +23,18 @@ namespace LessMarkup.Engine.Configuration
         private readonly object _syncConfiguration = new object();
         private DateTime _lastConfigurationLoad;
 
+        private readonly MethodInfo _configurationManagerGetSetting;
+
         public EngineConfiguration()
         {
             try
             {
-                _isCloudEnvironment = RoleEnvironment.IsAvailable;
+                var azureAssembly = Assembly.Load("Microsoft.WindowsAzure.ServiceRuntime");
+                var roleEnvironmentType = azureAssembly.GetType("Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironment");
+                var configurationManagerType = azureAssembly.GetType("Microsoft.WindowsAzure.CloudConfigurationManager");
+                _configurationManagerGetSetting = configurationManagerType.GetMethod("GetSetting");
+                var isAvailableProperty = roleEnvironmentType.GetProperty("IsAvailable", BindingFlags.Static);
+                _isCloudEnvironment = (bool) isAvailableProperty.GetValue(null);
             }
             catch (Exception e)
             {
@@ -101,9 +107,9 @@ namespace LessMarkup.Engine.Configuration
         private string GetProperty(string name, string defaultValue = "")
         {
             string ret;
-            if (_isCloudEnvironment)
+            if (_isCloudEnvironment && _configurationManagerGetSetting != null)
             {
-                ret = CloudConfigurationManager.GetSetting(name);
+                ret = (string) _configurationManagerGetSetting.Invoke(null, new object[] {name});
                 return !string.IsNullOrWhiteSpace(ret) ? ret : defaultValue;
             }
 
@@ -546,6 +552,18 @@ namespace LessMarkup.Engine.Configuration
             set
             {
                 SetProperty("ModuleSearchPath", value);
+            }
+        }
+
+        public bool MigrateDataLossAllowed
+        {
+            get
+            {
+                return bool.Parse(GetProperty("MigrateDataLossAllowed", "false"));
+            }
+            set
+            {
+                SetProperty("MigrateDataLossAllowed", value.ToString());
             }
         }
 

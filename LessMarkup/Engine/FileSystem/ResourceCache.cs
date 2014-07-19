@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+#if DEBUG
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -213,21 +215,14 @@ namespace LessMarkup.Engine.FileSystem
             return viewReference.Type;
         }
 
-        private void ImportTemplateRecord(string recordId, string path, byte[] resource, SiteCustomizationType type)
+        private void ImportTemplateRecord(string recordId, string path, byte[] resource, bool isView)
         {
             if (resource == null)
             {
                 throw new ArgumentOutOfRangeException("resource");
             }
 
-            if (type != SiteCustomizationType.View)
-            {
-                _resourceReferences[path.ToLower()] = new ResourceReference
-                {
-                    Binary = resource,
-                };
-            }
-            else
+            if (isView)
             {
                 _viewReferences[path] = new ViewReference
                 {
@@ -236,12 +231,19 @@ namespace LessMarkup.Engine.FileSystem
                     Path = path,
                 };
             }
+            else
+            {
+                _resourceReferences[path.ToLower()] = new ResourceReference
+                {
+                    Binary = resource,
+                };
+            }
         }
 
         private void ImportMailTemplate(string key, ViewTemplate viewTemplate)
         {
             var className = Constants.MailTemplates.Namespace + "." + key;
-            ImportTemplateRecord(className, key, Encoding.UTF8.GetBytes(viewTemplate.Body), SiteCustomizationType.View);
+            ImportTemplateRecord(className, key, Encoding.UTF8.GetBytes(viewTemplate.Body), true);
         }
 
         private void ImportViewTemplate(ViewTemplate viewTemplate)
@@ -249,12 +251,12 @@ namespace LessMarkup.Engine.FileSystem
             string pageNamespace, pageClassName;
             ViewBuilder.ExtractPageClassName(viewTemplate, out pageNamespace, out pageClassName);
             var className = pageNamespace + "." + pageClassName;
-            ImportTemplateRecord(className, viewTemplate.Path, Encoding.UTF8.GetBytes(viewTemplate.Body), SiteCustomizationType.View);
+            ImportTemplateRecord(className, viewTemplate.Path, Encoding.UTF8.GetBytes(viewTemplate.Body), true);
         }
 
         private void ImportContentTemplate(ContentTemplate contentTemplate)
         {
-            ImportTemplateRecord(contentTemplate.Name, contentTemplate.Name, contentTemplate.Binary, SiteCustomizationType.Image);
+            ImportTemplateRecord(contentTemplate.Name, contentTemplate.Name, contentTemplate.Binary, false);
         }
 
         private void LoadDatabaseResources(long siteId)

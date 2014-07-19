@@ -42,7 +42,6 @@
     <Compile Include="Common\Language.cs" />
     <Compile Include="Common\Menu.cs" />
     <Compile Include="Common\Currency.cs" />
-    <Compile Include="Common\SiteCustomizationType.cs" />
     <Compile Include="Common\SiteCustomization.cs" />
     <Compile Include="Common\Smile.cs" />
     <Compile Include="Common\TestMail.cs" />

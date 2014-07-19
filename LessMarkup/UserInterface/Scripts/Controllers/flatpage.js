@@ -7,7 +7,6 @@ var scrollSetManually = false;
 
 function onScrollChanged() {
     if (scrollSetManually) {
-        scrollSetManually = false;
         return;
     }
 
@@ -40,7 +39,7 @@ function onScrollChanged() {
         return;
     }
 
-    if (scrollPosition == windowHeight) {
+    if (scrollPosition == $("html")[0].scrollHeight - $(window).height()) {
         selectedId = visibleElements[visibleElements.length - 1].id;
     } else {
         var maxVisibleHeight = 0;
@@ -199,12 +198,22 @@ app.controller("flatpage", function ($scope, $rootScope) {
         scope.path = page.path;
     }
 
-    $rootScope.scrollToPage = function (anchor) {
+    $rootScope.scrollToPage = function (anchor, exact) {
         var position = $("#" + anchor).offset().top;
         var headerHeight = getHeaderHeight();
-        $(window).scrollTop(position - headerHeight - 10);
+
+        if (!exact) {
+            position -= headerHeight;
+            position -= 10;
+        }
+
         setScrollSpyId(anchor);
+
         scrollSetManually = true;
+
+        $("html").stop().animate({ scrollTop: position }, 1000, "swing", function() {
+            scrollSetManually = false;
+        });
     }
 
     function initializePages() {

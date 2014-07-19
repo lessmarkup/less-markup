@@ -68,7 +68,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         {
                             Id = c.SiteCustomizationId,
                             Path = c.Path,
-                            Type = c.Type,
+                            IsBinary = c.IsBinary,
                             Body = c.Body,
                             Append = c.Append,
                             TypeDefined = true
@@ -84,7 +84,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     {
                         Created = DateTime.UtcNow,
                         Path = record.Path,
-                        Type = record.Type,
+                        IsBinary = record.IsBinary,
                         Body = record.Body,
                         Append = record.Append
                     };
@@ -163,23 +163,23 @@ namespace LessMarkup.UserInterface.Model.Global
         [JsonIgnore]
         public byte[] Body { get; set; }
         
-        [InputField(InputFieldType.Select, UserInterfaceTextIds.CustomizationType, VisibleCondition = "!TypeDefined")]
-        [Column(UserInterfaceTextIds.CustomizationType)]
-        public SiteCustomizationType Type { get; set; }
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.IsBinary, VisibleCondition = "!TypeDefined")]
+        [Column(UserInterfaceTextIds.IsBinary)]
+        public bool IsBinary { get; set; }
 
         [InputField(InputFieldType.Text, UserInterfaceTextIds.Path, Required = true)]
         [Column(UserInterfaceTextIds.Path)]
         public string Path { get; set; }
 
-        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Append)]
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Append, DefaultValue = false, VisibleCondition = "!IsBinary")]
         public bool Append { get; set; }
 
-        [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "Type=='Image' || Type=='Binary'", Required = true)]
+        [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "IsBinary", Required = true)]
         public byte[] File
         {
             get
             {
-                if (Type != SiteCustomizationType.Image)
+                if (!IsBinary)
                 {
                     return null;
                 }
@@ -194,12 +194,12 @@ namespace LessMarkup.UserInterface.Model.Global
             }
         }
 
-        [InputField(InputFieldType.CodeText, UserInterfaceTextIds.Text, VisibleCondition = "Type!='Image' && Type!='Binary'", Required = true)]
+        [InputField(InputFieldType.CodeText, UserInterfaceTextIds.Text, VisibleCondition = "!IsBinary", Required = true)]
         public string Text
         {
             get
             {
-                if (Type == SiteCustomizationType.Image || Body == null)
+                if (IsBinary || Body == null)
                 {
                     return null;
                 }

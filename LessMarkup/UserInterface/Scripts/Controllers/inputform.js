@@ -180,7 +180,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
             $scope.fields.push(field);
         }
 
-        if (field.Type == 'Select' && field.SelectValues.length > 0) {
+        if (field.Type == 'Select' && field.SelectedValues != null && field.SelectValues.length > 0) {
             $scope.object[field.Property] = field.SelectValues[0].Value;
         }
 

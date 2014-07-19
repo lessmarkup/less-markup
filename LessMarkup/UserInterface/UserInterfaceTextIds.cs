@@ -46,7 +46,7 @@ namespace LessMarkup.UserInterface
         Enabled,
         Sites,
         IsAdministrator,
-        CustomizationType,
+        IsBinary,
         Path,
         File,
         Text,
@@ -78,5 +78,6 @@ namespace LessMarkup.UserInterface
         AdministratorLogin,
         UserProfile,
         Append,
+        MigrateDataLossAllowed
     }
 }
