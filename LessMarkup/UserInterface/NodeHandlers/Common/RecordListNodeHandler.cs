@@ -240,12 +240,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             _recordModel.ValidateInput(typedObjectToAdd, false);
 
-            var ret = GetEditableCollectionManager().UpdateRecord(typedObjectToAdd, true);
+            GetEditableCollectionManager().UpdateRecord(typedObjectToAdd);
 
             return new
             {
-                Index = GetIndex(ret, filter),
-                Record = ret
+                Index = GetIndex(typedObjectToAdd, filter),
+                Record = typedObjectToAdd
             };
         }
 
@@ -255,12 +255,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             _recordModel.ValidateInput(typedObjectToAdd, true);
 
-            var ret = GetEditableCollectionManager().AddRecord(typedObjectToAdd, true);
+            GetEditableCollectionManager().AddRecord(typedObjectToAdd);
 
             return new
             {
-                Index = GetIndex(ret, filter),
-                Record = ret
+                Index = GetIndex(typedObjectToAdd, filter),
+                Record = typedObjectToAdd
             };
         }
 

@@ -76,7 +76,8 @@ namespace LessMarkup.UserInterface.Model.Global
             }
 
             public bool Filtered { get { return false; } }
-            public CustomizationModel AddRecord(CustomizationModel record, bool returnObject)
+
+            public void AddRecord(CustomizationModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -95,20 +96,11 @@ namespace LessMarkup.UserInterface.Model.Global
                     _changeTracker.AddChange(customization.SiteCustomizationId, EntityType.SiteCustomization, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
-
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    record.Body = null;
                     record.Id = customization.SiteCustomizationId;
-
-                    return record;
                 }
             }
 
-            public CustomizationModel UpdateRecord(CustomizationModel record, bool returnObject)
+            public void UpdateRecord(CustomizationModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -123,15 +115,6 @@ namespace LessMarkup.UserInterface.Model.Global
                     _changeTracker.AddChange(record.Id, EntityType.SiteCustomization, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
-
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    record.Body = null;
-
-                    return record;
                 }
             }
 

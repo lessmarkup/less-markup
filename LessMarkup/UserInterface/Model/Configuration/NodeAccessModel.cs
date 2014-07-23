@@ -71,7 +71,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public bool Filtered { get { return false; } }
 
-            public NodeAccessModel AddRecord(NodeAccessModel record, bool returnObject)
+            public void AddRecord(NodeAccessModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -101,16 +101,9 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     record.AccessId = access.NodeAccessId;
                 }
-
-                if (!returnObject)
-                {
-                    return null;
-                }
-
-                return record;
             }
 
-            public NodeAccessModel UpdateRecord(NodeAccessModel record, bool returnObject)
+            public void UpdateRecord(NodeAccessModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -142,8 +135,6 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
-
-                return record;
             }
 
             public bool DeleteRecords(IEnumerable<long> recordIds)

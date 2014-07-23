@@ -71,7 +71,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public bool Filtered { get { return false; } }
 
-            public UserModel AddRecord(UserModel record, bool returnObject)
+            public void AddRecord(UserModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -104,22 +104,12 @@ namespace LessMarkup.UserInterface.Model.Global
 
                     user.Password = null;
 
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    return new UserModel
-                    {
-                        Email = user.Email,
-                        Name = user.Name,
-                        Id = user.UserId,
-                        IsAdministrator = user.IsAdministrator
-                    };
+                    record.Password = null;
+                    record.Id = user.UserId;
                 }
             }
 
-            public UserModel UpdateRecord(UserModel record, bool returnObject)
+            public void UpdateRecord(UserModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -144,18 +134,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    return new UserModel
-                    {
-                        Email = user.Email,
-                        Name = user.Name,
-                        Id = user.UserId,
-                        IsAdministrator = user.IsAdministrator
-                    };
+                    record.Password = null;
                 }
             }
 

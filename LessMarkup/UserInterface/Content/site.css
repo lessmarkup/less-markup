@@ -122,20 +122,21 @@ html, body {
     border-radius: 3px;
 }
 
-[us-spinner] {
+.spinner {
     width: 20px;
     height: 20px;
     padding-top: 5px;
     display: inline-block;
 }
 
-button [us-spinner] {
+button .spinner {
     padding-left: 3px;
-    padding-top: 1px;
+    padding-top: 0;
     margin-left: 0.5em;
-    margin-right: 0.2em;
+    margin-right: 0.4em;
     width: 12px;
     height: 12px;
+    top: 5px !important;
 }
 
 [ng-cloak] {
@@ -254,4 +255,23 @@ button:not(.btn)[disabled=disabled] {
 .ngGrid > .ngViewport {
     height: auto !important;
     overflow-y: hidden;
+}
+
+@media (max-width: 767px) {
+    .navbar-brand {
+        padding-left: 15px;
+    }
+    .navbar-nav {
+        margin: 0;
+    }
+    .container > .navbar-header {
+        margin: 0;
+    }
+    .contents {
+        padding: 5px;
+    }
+}
+
+.visible-xs.collapse:not(.in) {
+    display: none !important;
 }

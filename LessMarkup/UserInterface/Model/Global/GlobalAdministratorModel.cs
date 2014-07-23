@@ -48,7 +48,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public bool Filtered { get { return false; } }
 
-            public GlobalAdministratorModel AddRecord(GlobalAdministratorModel record, bool returnObject)
+            public void AddRecord(GlobalAdministratorModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -78,18 +78,12 @@ namespace LessMarkup.UserInterface.Model.Global
 
                     domainModel.CompleteTransaction();
 
-                    user.Password = null;
-
-                    return new GlobalAdministratorModel
-                    {
-                        Email = user.Email,
-                        Name = user.Name,
-                        UserId = user.UserId
-                    };
+                    record.UserId = user.UserId;
+                    record.Password = null;
                 }
             }
 
-            public GlobalAdministratorModel UpdateRecord(GlobalAdministratorModel record, bool returnObject)
+            public void UpdateRecord(GlobalAdministratorModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -113,12 +107,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    return new GlobalAdministratorModel
-                    {
-                        Email = user.Email,
-                        Name = user.Name,
-                        UserId = user.UserId
-                    };
+                    record.Password = null;
                 }
             }
 

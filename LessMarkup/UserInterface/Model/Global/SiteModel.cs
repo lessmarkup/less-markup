@@ -44,7 +44,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public bool Filtered { get { return false; } }
 
-            public SiteModel AddRecord(SiteModel record, bool returnObject)
+            public void AddRecord(SiteModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -64,11 +64,10 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.CompleteTransaction();
 
                     record.SiteId = site.SiteId;
-                    return record;
                 }
             }
 
-            public SiteModel UpdateRecord(SiteModel record, bool returnObject)
+            public void UpdateRecord(SiteModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -80,7 +79,6 @@ namespace LessMarkup.UserInterface.Model.Global
                     _changeTracker.AddChange(record.SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
-                    return record;
                 }
             }
 

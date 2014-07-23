@@ -71,7 +71,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public bool Filtered { get { return false; } }
 
-            public UserGroupModel AddRecord(UserGroupModel record, bool returnObject)
+            public void AddRecord(UserGroupModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -88,17 +88,10 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.CompleteTransaction();
 
                     record.GroupId = group.UserGroupId;
-
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    return record;
                 }
             }
 
-            public UserGroupModel UpdateRecord(UserGroupModel record, bool returnObject)
+            public void UpdateRecord(UserGroupModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
@@ -110,13 +103,6 @@ namespace LessMarkup.UserInterface.Model.Global
                     _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
-
-                    if (!returnObject)
-                    {
-                        return null;
-                    }
-
-                    return record;
                 }
             }
 

@@ -32,6 +32,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
     $scope.getViewScope = function () { return $scope; }
+    $scope.showXsMenu = false;
 
     var browserUrl = $browser.url();
     // dirty hack to prevent AngularJS from reloading the page on pushState and fix $location.$$parse bug
@@ -371,7 +372,17 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
     }
 
+    $scope.hideXsMenu = function() {
+        if ($scope.showXsMenu) {
+            $scope.showXsMenu = false;
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        }
+    }
+
     $scope.navigateToView = function (url) {
+        $scope.hideXsMenu();
 
         if ($scope.staticNodes.hasOwnProperty(url)) {
             onNodeLoaded($scope.staticNodes[url], url);
@@ -405,16 +416,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         $scope.showError(initialData.NodeLoadError);
     }
 
-    /*
-    $.connection.hub.disconnected(function () {
-        $scope.showError("Server callback connection is closed");
-    });
-
-    $.connection.hub.start().done(function () {*/
-        lazyLoad.initialize();
-        onNodeLoaded(initialData.ViewData, initialData.Path);
-    /*}).fail(function () {
-        $scope.showError("Cannot establish server callback connection");
-    });*/
+    lazyLoad.initialize();
+    onNodeLoaded(initialData.ViewData, initialData.Path);
 });
 

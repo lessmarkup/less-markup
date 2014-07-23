@@ -45,12 +45,12 @@ namespace LessMarkup.MainModule.Model
 
             public bool Filtered { get { return false; } }
 
-            public TestMessageModel AddRecord(TestMessageModel record, bool returnObject)
+            public void AddRecord(TestMessageModel record)
             {
                 throw new InvalidOperationException();
             }
 
-            public TestMessageModel UpdateRecord(TestMessageModel record, bool returnObject)
+            public void UpdateRecord(TestMessageModel record)
             {
                 throw new InvalidOperationException();
             }

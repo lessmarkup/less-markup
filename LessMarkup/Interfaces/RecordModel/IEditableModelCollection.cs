@@ -8,8 +8,8 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IEditableModelCollection<TR> : IModelCollection<TR>
     {
-        TR AddRecord(TR record, bool returnObject);
-        TR UpdateRecord(TR record, bool returnObject);
+        void AddRecord(TR record);
+        void UpdateRecord(TR record);
         bool DeleteRecords(IEnumerable<long> recordIds);
         bool DeleteOnly { get; }
     }

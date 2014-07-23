@@ -618,7 +618,7 @@ namespace LessMarkup.MainModule.Model
 
             public bool Filtered { get { return false; } }
 
-            public FileModel AddRecord(FileModel record, bool returnObject)
+            public void AddRecord(FileModel record)
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
@@ -630,13 +630,15 @@ namespace LessMarkup.MainModule.Model
                     };
 
                     domainModel.GetSiteCollection<File>().Add(file);
+
                     domainModel.SaveChanges();
+
                     record.FileId = file.FileId;
-                    return record;
+                    record.File = null;
                 }
             }
 
-            public FileModel UpdateRecord(FileModel record, bool returnObject)
+            public void UpdateRecord(FileModel record)
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
@@ -653,7 +655,6 @@ namespace LessMarkup.MainModule.Model
                     domainModel.SaveChanges();
 
                     record.File = null;
-                    return record;
                 }
             }
 

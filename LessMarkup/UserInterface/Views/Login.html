@@ -22,7 +22,7 @@
 <div class="form-group">
     <button type="submit" class="btn btn-default" ng-click="doLogin(viewData.AdministratorKey)" ng-disabled="userLoginProgress">
         <span>Sign in</span>
-        <span us-spinner="{radius:5,width:2,length:4,lines:9}" ng-show="userLoginProgress"></span>
+        <span us-spinner="{radius:5,width:2,length:4,lines:9,top:0,left:0,position:'relative'}" ng-show="userLoginProgress"></span>
     </button>
     <button class="btn btn-default" ng-if="hasLogin" ng-click="doRegister()" ng-disabled="userLoginProgress">Register</button>
 </div>

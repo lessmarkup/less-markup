@@ -1,7 +1,7 @@
 ﻿<div class="flat-design" ng-controller="flatpage" ng-switch="position">
     <div ng-switch-when="Right" class="row">
         <div class="col-md-10">
-            <div ng-repeat="page in flat">
+            <div ng-repeat="page in flat" class="flatpage">
                 <div ng-switch="page.Level">
                     <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h2>
                     <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h3>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div ng-switch-when="Top">
-        <div ng-repeat="page in flat">
+        <div ng-repeat="page in flat" class="flatpage">
             <div ng-switch="page.Level">
                 <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h2>
                 <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h3>
