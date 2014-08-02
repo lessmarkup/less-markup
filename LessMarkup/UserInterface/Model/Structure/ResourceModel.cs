@@ -44,6 +44,9 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "html":
                     _contentType = "text/html";
                     break;
+                case "txt":
+                    _contentType = "text/plain";
+                    break;
                 case "js":
                     _contentType = "text/javascript";
                     break;

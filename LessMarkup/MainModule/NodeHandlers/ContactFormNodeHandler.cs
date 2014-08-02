@@ -4,8 +4,8 @@
 
 using System;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 

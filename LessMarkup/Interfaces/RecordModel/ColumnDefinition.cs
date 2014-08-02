@@ -20,6 +20,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public bool Pinnable { get; set; }
         public string CellClass { get; set; }
         public string HeaderClass { get; set; }
+        public string CellTemplate { get; set; }
         public object TextId { get; set; }
         public PropertyInfo Property { get; set; }
 
@@ -39,6 +40,7 @@ namespace LessMarkup.Interfaces.RecordModel
             HeaderClass = configuration.HeaderClass;
             TextId = configuration.TextId;
             Property = property;
+            CellTemplate = configuration.CellTemplate;
         }
     }
 }

@@ -289,7 +289,6 @@
     <Compile Include="Email\MailTemplateProvider.cs" />
     <Compile Include="TextAndSearch\FormattedText.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
-    <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="TextAndSearch\ITextTagHandler.cs" />
     <Compile Include="Language\CachedLanguage.cs" />
     <Compile Include="Language\CachedTranslation.cs" />
@@ -321,6 +320,10 @@
     <ProjectReference Include="..\DataObjects\DataObjects.csproj">
       <Project>{feb3bf37-1f52-4556-8137-b6b61d76ea03}</Project>
       <Name>DataObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Framework\Framework.csproj">
+      <Project>{CC460CDE-EBA2-40B9-887B-6194AA6A6FA1}</Project>
+      <Name>Framework</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
       <Project>{AF5FD7AE-34D2-4656-A051-0868B363485B}</Project>

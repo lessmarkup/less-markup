@@ -9,8 +9,8 @@ using System.Linq;
 using System.Reflection;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Configuration;
-using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -195,6 +195,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         pinnable = c.Pinnable,
                         cellClass = c.CellClass,
                         headerClass = c.HeaderClass,
+                        cellTemplate = c.CellTemplate,
                         cellFilter = GetCellFilter(c),
                     }).ToList(),
                     CellCommands = _cellButtons,

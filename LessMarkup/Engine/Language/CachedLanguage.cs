@@ -4,10 +4,11 @@
 
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Exceptions;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Language
 {
-    public class CachedLanguage
+    public class CachedLanguage : ILanguage
     {
         public long LanguageId { get; set; }
         public string Name { get; set; }

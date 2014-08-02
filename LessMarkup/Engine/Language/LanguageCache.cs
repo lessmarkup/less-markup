@@ -19,10 +19,11 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 #endif
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Language
 {
-    public class LanguageCache : ICacheHandler
+    public class LanguageCache : ILanguageCache
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
@@ -165,12 +166,9 @@ namespace LessMarkup.Engine.Language
             }
         }
 
-        public List<CachedLanguage> Languages
+        public List<ILanguage> Languages
         {
-            get
-            {
-                return _languagesList;
-            }
+            get { return _languagesList.Select(l => (ILanguage) l).ToList(); }
         }
 
         public string GetTranslation(string id, string moduleType, bool throwIfNotFound = true)

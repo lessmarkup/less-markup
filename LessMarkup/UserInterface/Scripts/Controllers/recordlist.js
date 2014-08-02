@@ -33,6 +33,12 @@ define([
             enableColumnResize: $scope.data.ColumnsResizable
         };
 
+        for (var column in $scope.recordListOptions.columnDefs) {
+            if (column.cellTemplate && column.cellTemplate.length > 0) {
+                column.cellTemplate = "<div class='ngCellText'>" + column.cellTemplate + "</div>";
+            }
+        }
+
         for (var recordAction in $scope.viewData.Actions) {
 
             $scope.toolbarButtons.push({

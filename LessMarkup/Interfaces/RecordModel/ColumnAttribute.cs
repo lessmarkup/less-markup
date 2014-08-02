@@ -30,6 +30,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public bool Groupable { get; set; }
         public bool Pinnable { get; set; }
         public string CellClass { get; set; }
+        public string CellTemplate { get; set; }
         public string HeaderClass { get; set; }
         public object TextId { get; set; }
     }

@@ -2,18 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Engine.Helpers
+namespace LessMarkup.Framework.Helpers
 {
     public static class LanguageHelper
     {
-        private static LanguageCache GetLanguageCache()
+        private static ILanguageCache GetLanguageCache()
         {
             var dataCache = DependencyResolver.Resolve<IDataCache>();
-            var languageCache = dataCache.Get<LanguageCache>();
+            var languageCache = dataCache.Get<ILanguageCache>();
             return languageCache;
         }
 
