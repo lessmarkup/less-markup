@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
-using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -18,7 +16,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Modules)]
-    public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>
+    public class ModulesNodeHandler : NewRecordListNodeHandler<ModuleModel>
     {
         private readonly IChangeTracker _changeTracker;
         private readonly IDomainModelProvider _domainModelProvider;
@@ -29,12 +27,21 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;
             _siteMapper = siteMapper;
-
-            AddCellButton(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.Enable), "enable", "Enabled == false");
-            AddCellButton(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.Disable), "disable", "Enabled == true");
         }
 
-        protected override ModuleModel RecordCommand(long recordId, string commandId)
+        [RecordAction(UserInterfaceTextIds.Enable, Visible = "!Enabled")]
+        public object EnableModule(long recordId, string filter)
+        {
+            return EnableModule(recordId, true);
+        }
+
+        [RecordAction(UserInterfaceTextIds.Disable, Visible = "Enabled")]
+        public object DisableModule(long recordId, string filter)
+        {
+            return EnableModule(recordId, false);
+        }
+
+        protected object EnableModule(long moduleId, bool enable)
         {
             var siteId = ObjectId;
             if (!siteId.HasValue)
@@ -48,40 +55,38 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                switch (commandId)
+                var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == ObjectId && m.ModuleId == moduleId);
+
+                if (enable)
                 {
-                    case "enable":
+                    if (siteModule == null)
                     {
-                        var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == ObjectId && m.ModuleId == recordId);
-                        if (siteModule != null)
-                        {
-                            break;
-                        }
-                        siteModule = new SiteModule {ModuleId = recordId, SiteId = siteId.Value};
+                        siteModule = new SiteModule {ModuleId = moduleId, SiteId = siteId.Value};
                         domainModel.GetCollection<SiteModule>().Add(siteModule);
                         _changeTracker.AddChange(siteId.Value, EntityType.Site, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
-                        break;
                     }
-                    case "disable":
-                    { 
-                        var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == siteId.Value && m.ModuleId == recordId);
-                        if (siteModule == null)
-                        {
-                            break;
-                        }
+                }
+                else
+                {
+                    if (siteModule != null)
+                    {
                         domainModel.GetCollection<SiteModule>().Remove(siteModule);
                         _changeTracker.AddChange(siteId.Value, EntityType.Site, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
-                        break;
-}
-                    default:
-                        return null;
+                    }
                 }
 
                 var collectionManager = DependencyResolver.Resolve<ModuleModel.Collection>();
                 collectionManager.Initialize(ObjectId, AccessType);
-                return collectionManager.Read(domainModel, new List<long> {recordId}).ToList()[0];
+
+                var record = collectionManager.Read(domainModel, new List<long> {moduleId}).ToList()[0];
+
+                return new
+                {
+                    record,
+                    index = GetIndex(record, null, domainModel)
+                };
             }
         }
     }

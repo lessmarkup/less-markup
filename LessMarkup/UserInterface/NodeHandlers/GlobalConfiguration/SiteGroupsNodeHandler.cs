@@ -4,7 +4,6 @@
 
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -12,7 +11,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Groups)]
-    public class SiteGroupsNodeHandler: RecordListNodeHandler<UserGroupModel>
+    public class SiteGroupsNodeHandler: NewRecordListNodeHandler<UserGroupModel>
     {
         public SiteGroupsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {

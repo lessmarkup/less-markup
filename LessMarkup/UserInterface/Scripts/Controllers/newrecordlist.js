@@ -155,10 +155,10 @@
         }
 
         $scope.isActionVisible = function(action) {
-            if ($scope.currentRecord == null) {
+            if (currentRecord == null) {
                 return false;
             }
-            return action.visibleFunction($scope.currentRecord);
+            return action.visibleFunction(currentRecord);
         }
 
         $scope.sortColumn = function (column) {
@@ -305,15 +305,15 @@
                 return;
             }
 
-            $scope.sendAction(action.name, { recordId: currentRecordId }, function (data) {
+            $scope.sendAction(action.name, { recordId: currentRecordId, filter: filter }, function (data) {
 
                 if (data.message && data.message.length > 0) {
                     inputForm.message(data.message, "Information");
-                } else if (data.removed) {
+                } else if (data.hasOwnProperty("removed")) {
                     hideOptions();
                     records.splice(index, 1);
                     $scope.loadVisibleRecords();
-                } else if (data.index && data.record) {
+                } else if (data.hasOwnProperty("index") && data.hasOwnProperty("record")) {
                     data.record.loaded = true;
                     if (data.index == index) {
                         records[index] = data.record;
