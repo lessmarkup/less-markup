@@ -12,16 +12,16 @@ using LessMarkup.UserInterface.NodeHandlers.Configuration;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Sites, IsGlobal = true)]
-    public class SiteNodeHandler : RecordListLinkNodeHandler<SiteModel>
+    public class SiteNodeHandler : NewRecordListLinkNodeHandler<SiteModel>
     {
         public SiteNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
-            AddCellLink<SiteCustomizeNodeHandler>("Customize", "customize");
-            AddCellLink<SiteUsersNodeHandler>("Users", "users");
-            AddCellLink<SiteGroupsNodeHandler>("Groups", "groups");
-            AddCellLink<ModulesNodeHandler>("Modules", "modules");
-            AddCellLink<NodeListNodeHandler>("Nodes", "nodes");
-            AddCellLink<SitePropertiesNodeHandler>("Properties", "properties");
+            AddCellLink<SiteCustomizeNodeHandler>(UserInterfaceTextIds.Customize, "customize");
+            AddCellLink<SiteUsersNodeHandler>(UserInterfaceTextIds.Users, "users");
+            AddCellLink<SiteGroupsNodeHandler>(UserInterfaceTextIds.Groups, "groups");
+            AddCellLink<ModulesNodeHandler>(UserInterfaceTextIds.Modules, "modules");
+            AddCellLink<NodeListNodeHandler>(UserInterfaceTextIds.Nodes, "nodes");
+            AddCellLink<SitePropertiesNodeHandler>(UserInterfaceTextIds.Properties, "properties");
         }
     }
 }

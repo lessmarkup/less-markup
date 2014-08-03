@@ -12,24 +12,10 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Groups)]
-    public class SiteGroupsNodeHandler: RecordListNodeHandler<UserGroupModel>, IRecordNodeHandler
+    public class SiteGroupsNodeHandler: RecordListNodeHandler<UserGroupModel>
     {
-        private long _siteId;
-
         public SiteGroupsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
-        }
-
-        public void Initialize(long siteId)
-        {
-            _siteId = siteId;
-        }
-
-        protected override IModelCollection<UserGroupModel> CreateCollection()
-        {
-            var collectionManager = (UserGroupModel.Collection) base.CreateCollection();
-            collectionManager.Initialize(_siteId);
-            return collectionManager;
         }
     }
 

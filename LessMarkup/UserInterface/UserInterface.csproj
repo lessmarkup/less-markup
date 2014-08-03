@@ -159,6 +159,8 @@
     <Compile Include="Model\User\RegisterModel.cs" />
     <Compile Include="NodeHandlers\Common\CompositeNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />
+    <Compile Include="NodeHandlers\Common\NewRecordListLinkNodeHandler.cs" />
+    <Compile Include="NodeHandlers\Common\NewRecordListNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\TabPageNodeHandler.cs" />
     <Compile Include="NodeHandlers\Configuration\ConfigurationRootNodeHandler.cs" />
@@ -517,7 +519,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Directives\bindcompiled.js" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Controllers\newrecordlist.js" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\codemirror-dialog.css" />
     <EmbeddedResource Include="Content\codemirror-fullscreen.css" />
@@ -562,6 +566,15 @@
     <EmbeddedResource Include="Scripts\Lib\CodeMirror\Plugins\xml-hint.js" />
     <EmbeddedResource Include="Scripts\Lib\CodeMirror\Plugins\xml.js" />
     <EmbeddedResource Include="UserInterface.Minify.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\NewRecordList.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\newrecordlist.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\NewRecordOptions.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

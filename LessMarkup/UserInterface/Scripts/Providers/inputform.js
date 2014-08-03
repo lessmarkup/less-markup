@@ -126,7 +126,7 @@ app.provider('inputForm', function () {
                 message: function (message, title) {
                     require(['controllers/message'], function(messageController) {
                         $modal.open({
-                            template: $('inputform-message-template').html(),
+                            template: $('#inputform-message-template').html(),
                             controller: messageController,
                             resolve: {
                                 title: function() { return title; },

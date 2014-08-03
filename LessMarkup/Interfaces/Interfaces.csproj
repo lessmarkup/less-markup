@@ -133,7 +133,6 @@
     <Compile Include="Structure\ChildHandlerSettings.cs" />
     <Compile Include="Structure\ConfigurationHandlerAttribute.cs" />
     <Compile Include="Structure\INodeHandler.cs" />
-    <Compile Include="Structure\IRecordNodeHandler.cs" />
     <Compile Include="Structure\RecordActionAttribute.cs" />
     <Compile Include="Text\TranslationAttribute.cs" />
     <Compile Include="Data\EntityType.cs" />

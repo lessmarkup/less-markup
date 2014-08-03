@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
@@ -22,11 +23,6 @@ namespace LessMarkup.UserInterface.Model.Global
             public Collection(ISiteMapper siteMapper)
             {
                 _siteMapper = siteMapper;
-            }
-
-            public void Initialize(long? siteId)
-            {
-                _siteId = siteId;
             }
 
             private long SiteId
@@ -70,6 +66,11 @@ namespace LessMarkup.UserInterface.Model.Global
             }
 
             public bool Filtered { get { return false; } }
+
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+                _siteId = objectId;
+            }
         }
 
         public long ModuleId { get; set; }

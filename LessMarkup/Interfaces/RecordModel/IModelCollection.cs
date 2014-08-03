@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Interfaces.RecordModel
 {
@@ -13,5 +14,6 @@ namespace LessMarkup.Interfaces.RecordModel
         IQueryable<long> ReadIds(IDomainModel domainModel, string filter);
         IQueryable<TR> Read(IDomainModel domainModel, List<long> ids);
         bool Filtered { get; }
+        void Initialize(long? objectId, NodeAccessType nodeAccessType);
     }
 }

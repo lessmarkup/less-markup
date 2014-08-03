@@ -78,6 +78,11 @@ namespace LessMarkup.UserInterface
         AdministratorLogin,
         UserProfile,
         Append,
-        MigrateDataLossAllowed
+        MigrateDataLossAllowed,
+        AddRecord,
+        RemoveRecord,
+        ModifyRecord,
+        Nodes,
+        Properties
     }
 }

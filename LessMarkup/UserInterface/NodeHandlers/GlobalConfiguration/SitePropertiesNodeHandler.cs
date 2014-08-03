@@ -6,27 +6,20 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.SiteProperties)]
-    public class SitePropertiesNodeHandler : DialogNodeHandler<SiteConfigurationCache>, IRecordNodeHandler
+    public class SitePropertiesNodeHandler : DialogNodeHandler<SiteConfigurationCache>
     {
-        private long? _siteId;
-
         protected override SiteConfigurationCache LoadObject()
         {
             var cache = Interfaces.DependencyResolver.Resolve<SiteConfigurationCache>();
             DateTime? expirationTime;
-            cache.Initialize(_siteId, out expirationTime, null);
+            cache.Initialize(ObjectId, out expirationTime, null);
             return cache;
         }
 
         protected override string SaveObject(SiteConfigurationCache changedObject)
         {
-            changedObject.Save(_siteId);
+            changedObject.Save(ObjectId);
             return null;
-        }
-
-        public void Initialize(long recordId)
-        {
-            _siteId = recordId;
         }
     }
 }

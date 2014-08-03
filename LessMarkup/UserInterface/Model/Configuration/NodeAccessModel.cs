@@ -71,6 +71,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public bool Filtered { get { return false; } }
 
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+                _siteId = objectId;
+            }
+
             public void AddRecord(NodeAccessModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

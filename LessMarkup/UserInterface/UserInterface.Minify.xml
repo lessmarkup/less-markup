@@ -24,6 +24,7 @@
     <Resource Minified="content/ng-grid" />
     <Resource Plain="content/site" />
     <Resource Plain="content/visualblocks" />
+    <Resource Plain="content/newrecordlist" />
     <Resource Minified="content/codemirror.min" />
     <Resource Plain="content/nodelist" />
     <Resource Plain="content/flatpage" />

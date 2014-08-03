@@ -10,6 +10,7 @@ using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.MainModule.Model
 {
@@ -617,6 +618,10 @@ namespace LessMarkup.MainModule.Model
             }
 
             public bool Filtered { get { return false; } }
+
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+            }
 
             public void AddRecord(FileModel record)
             {

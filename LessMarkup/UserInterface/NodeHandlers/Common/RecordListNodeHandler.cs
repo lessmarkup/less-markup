@@ -66,19 +66,19 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _idProperty = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(p => p.Name.EndsWith("Id"));
         }
 
-        private IEditableModelCollection<T> GetEditableCollectionManager()
+        private IEditableModelCollection<T> GetEditableCollection()
         {
-            InitializeCollectionManagers();
+            InitializeCollections();
             return _editableCollection;
         }
 
-        private IModelCollection<T> GetCollectionManager()
+        private IModelCollection<T> GetCollection()
         {
-            InitializeCollectionManagers();
+            InitializeCollections();
             return _collection;
         }
 
-        private void InitializeCollectionManagers()
+        private void InitializeCollections()
         {
             if (_collection != null)
             {
@@ -87,6 +87,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             _collection = CreateCollection();
             _editableCollection = _collection as IEditableModelCollection<T>;
+            _collection.Initialize(ObjectId, AccessType);
 
             if (_collection == null)
             {
@@ -169,7 +170,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var recordIds = GetCollectionManager().ReadIds(domainModel, null);
+                var recordIds = GetCollection().ReadIds(domainModel, null);
 
                 var data = new
                 {
@@ -227,7 +228,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var recordIds = GetCollectionManager().ReadIds(domainModel, filter).ToList();
+                var recordIds = GetCollection().ReadIds(domainModel, filter).ToList();
                 var recordId = (long)_idProperty.GetValue(modifiedObject);
                 index = recordIds.IndexOf(recordId);
             }
@@ -241,7 +242,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             _recordModel.ValidateInput(typedObjectToAdd, false);
 
-            GetEditableCollectionManager().UpdateRecord(typedObjectToAdd);
+            GetEditableCollection().UpdateRecord(typedObjectToAdd);
 
             return new
             {
@@ -256,7 +257,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             _recordModel.ValidateInput(typedObjectToAdd, true);
 
-            GetEditableCollectionManager().AddRecord(typedObjectToAdd);
+            GetEditableCollection().AddRecord(typedObjectToAdd);
 
             return new
             {
@@ -267,14 +268,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         public object RemoveRecords(List<long> recordIds)
         {
-            return GetEditableCollectionManager().DeleteRecords(recordIds);
+            return GetEditableCollection().DeleteRecords(recordIds);
         }
 
         public object Fetch(List<long> ids)
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var records = GetCollectionManager().Read(domainModel, ids).ToList();
+                var records = GetCollection().Read(domainModel, ids).ToList();
 
                 return new
                 {

@@ -9,6 +9,7 @@ using LessMarkup.Engine.Build;
 using LessMarkup.Engine.Cache;
 using LessMarkup.Engine.DataChange;
 using LessMarkup.Engine.Email;
+using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Security;
 using LessMarkup.Engine.Site;
@@ -38,6 +39,7 @@ namespace LessMarkup.Engine
             builder.RegisterType<ChangeTracker>().As<IChangeTracker>().SingleInstance();
             builder.RegisterType<CurrentUser>().As<ICurrentUser>();
             builder.RegisterType<HtmlSanitizer>().As<IHtmlSanitizer>();
+            builder.RegisterType<LanguageCache>().As<ILanguageCache>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

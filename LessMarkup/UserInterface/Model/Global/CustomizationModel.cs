@@ -10,6 +10,7 @@ using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using Newtonsoft.Json;
 
@@ -47,11 +48,6 @@ namespace LessMarkup.UserInterface.Model.Global
                 _changeTracker = changeTracker;
             }
 
-            public void Initialize(long? siteId)
-            {
-                _siteId = siteId;
-            }
-
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
                 return
@@ -76,6 +72,11 @@ namespace LessMarkup.UserInterface.Model.Global
             }
 
             public bool Filtered { get { return false; } }
+
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+                _siteId = objectId;
+            }
 
             public void AddRecord(CustomizationModel record)
             {

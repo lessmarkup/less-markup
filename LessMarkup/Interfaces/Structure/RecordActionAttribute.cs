@@ -17,5 +17,6 @@ namespace LessMarkup.Interfaces.Structure
         }
 
         public string Action { get; set; }
+        public string Visible { get; set; }
     }
 }

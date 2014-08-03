@@ -231,7 +231,7 @@ define([
                 commandId: commandId
             }, function (data) {
                 if (data.Message && data.Message.length > 0) {
-                    inputForm.message(message, "Information");
+                    inputForm.message(data.Message, "Information");
                 } else if (data.Index && data.Record) {
                     data.Record.loaded = true;
                     if (data.Index == index) {

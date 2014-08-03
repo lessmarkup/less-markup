@@ -9,6 +9,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
@@ -30,11 +31,6 @@ namespace LessMarkup.UserInterface.Model.Global
                 _userSecurity = userSecurity;
                 _changeTracker = changeTracker;
                 _siteMapper = siteMapper;
-            }
-
-            public void Initialize(long? siteId)
-            {
-                _siteId = siteId;
             }
 
             private long SiteId
@@ -70,6 +66,10 @@ namespace LessMarkup.UserInterface.Model.Global
             }
 
             public bool Filtered { get { return false; } }
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+                _siteId = objectId;
+            }
 
             public void AddRecord(UserModel record)
             {

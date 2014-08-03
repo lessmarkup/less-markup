@@ -1,0 +1,47 @@
+﻿.grid-control {
+    border-top: solid 1px #aaa;
+    border-bottom: solid 1px #aaa;
+    width: 100%;
+}
+
+.grid-control th {
+    font-weight: bold;
+    background: #eee;
+    border-bottom: solid 1px #ccc;
+    padding: 5px;
+}
+
+.grid-control .options-panel {
+    border: solid 1px black;
+}
+
+.grid-control.show-options .options-row {
+    border: solid 1px black;
+    border-bottom: solid 1px #ccc;
+}
+
+.grid-control .options-panel td {
+    padding: 10px;
+}
+
+.grid-control .options-panel td * {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.grid-control .grid-data {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.grid-control tr.odd .grid-data {
+    background: #f0f0f0;
+}
+
+.grid-control.show-options tr.options-row .grid-data {
+    background: none;
+}
+
+.grid-control.show-options .options-space {
+    height: 5px;
+}

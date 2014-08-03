@@ -11,7 +11,6 @@ using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Configuration;
@@ -21,10 +20,8 @@ using Newtonsoft.Json;
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
     [ConfigurationHandler(UserInterfaceTextIds.ViewsTree)]
-    public class NodeListNodeHandler : AbstractNodeHandler, IRecordNodeHandler
+    public class NodeListNodeHandler : AbstractNodeHandler
     {
-        private long? _siteId;
-
         public class LayoutInfo
         {
             public long NodeId { get; set; }
@@ -35,14 +32,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
-        private readonly ICurrentUser _currentUser;
         private readonly ISiteMapper _siteMapper;
 
         private long SiteId
         {
             get
             {
-                var ret = _siteId ?? _siteMapper.SiteId;
+                var ret = ObjectId ?? _siteMapper.SiteId;
                 if (!ret.HasValue)
                 {
                     throw new ArgumentOutOfRangeException();
@@ -51,13 +47,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             }
         }
 
-        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ICurrentUser currentUser, ISiteMapper siteMapper)
+        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
         {
             _moduleIntegration = moduleIntegration;
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
-            _currentUser = currentUser;
             _siteMapper = siteMapper;
         }
 
@@ -73,8 +68,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         private IDataObjectCollection<Node> GetNodeCollection(IDomainModel domainModel)
         {
-            return _siteId.HasValue
-                ? domainModel.GetSiteCollection<Node>(_siteId.Value)
+            return ObjectId.HasValue
+                ? domainModel.GetSiteCollection<Node>(ObjectId.Value)
                 : domainModel.GetSiteCollection<Node>();
         }
 
@@ -139,18 +134,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     Name = GetHandlerName(h.Handler.Item1, h.Handler.Item2),
                 })
             };
-        }
-
-        public void Initialize(long recordId)
-        {
-            if (_currentUser.IsGlobalAdministrator)
-            {
-                _siteId = recordId;
-            }
-            else
-            {
-                _siteId = _siteMapper.SiteId;
-            }
         }
 
         public object UpdateLayout(List<LayoutInfo> layout)
@@ -230,7 +213,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     _changeTracker.AddChange(node.NodeId, EntityType.Node, EntityChangeType.Removed, domainModel);
                 }
 
-                var nodes = domainModel.GetSiteCollection<Node>(_siteId).Where(p => !ids.Contains(p.NodeId)).OrderBy(p => p.Order).ToList();
+                var nodes = domainModel.GetSiteCollection<Node>(SiteId).Where(p => !ids.Contains(p.NodeId)).OrderBy(p => p.Order).ToList();
 
                 for (int i = 0; i < nodes.Count; i++)
                 {
@@ -309,7 +292,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             }
 
             var handler = DependencyResolver.Resolve<NodeAccessNodeHandler>();
-            handler.Initialize(_siteId, nodeId);
+
+            handler.Initialize(SiteId, nodeId);
 
             return new ChildHandlerSettings
             {

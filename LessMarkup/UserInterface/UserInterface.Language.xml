@@ -74,12 +74,12 @@
     <Translation Id="UserProfile" Text="User Profile"/>
     <Translation Id="Append" Text="Append"/>
     <Translation Id="MigrateDataLossAllowed" Text="Allow Data Loss During Database Migration"/>
+    <Translation Id="AddRecord" Text="Add"/>
+    <Translation Id="ModifyRecord" Text="Modify"/>
+    <Translation Id="RemoveRecord" Text="Remove"/>
+    <Translation Id="Nodes" Text="Nodes"/>
+    <Translation Id="Properties" Text="Properties"/>
     <!--<Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>
     <Translation Id="" Text=""/>

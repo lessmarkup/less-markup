@@ -10,7 +10,6 @@ using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Global;
@@ -19,9 +18,8 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Modules)]
-    public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>, IRecordNodeHandler
+    public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>
     {
-        private long? _siteId;
         private readonly IChangeTracker _changeTracker;
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly ISiteMapper _siteMapper;
@@ -36,21 +34,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             AddCellButton(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.Disable), "disable", "Enabled == true");
         }
 
-        public void Initialize(long recordId)
-        {
-            _siteId = recordId;
-        }
-
-        protected override IModelCollection<ModuleModel> CreateCollection()
-        {
-            var collectionManager = (ModuleModel.Collection) base.CreateCollection();
-            collectionManager.Initialize(_siteId);
-            return collectionManager;
-        }
-
         protected override ModuleModel RecordCommand(long recordId, string commandId)
         {
-            var siteId = _siteId;
+            var siteId = ObjectId;
             if (!siteId.HasValue)
             {
                 siteId = _siteMapper.SiteId;
@@ -66,7 +52,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                 {
                     case "enable":
                     {
-                        var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == _siteId && m.ModuleId == recordId);
+                        var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == ObjectId && m.ModuleId == recordId);
                         if (siteModule != null)
                         {
                             break;
@@ -94,7 +80,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                 }
 
                 var collectionManager = DependencyResolver.Resolve<ModuleModel.Collection>();
-                collectionManager.Initialize(_siteId);
+                collectionManager.Initialize(ObjectId, AccessType);
                 return collectionManager.Read(domainModel, new List<long> {recordId}).ToList()[0];
             }
         }

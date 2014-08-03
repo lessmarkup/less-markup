@@ -8,6 +8,7 @@ using System.Linq;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
@@ -43,6 +44,10 @@ namespace LessMarkup.UserInterface.Model.Global
             }
 
             public bool Filtered { get { return false; } }
+
+            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            {
+            }
 
             public void AddRecord(SiteModel record)
             {

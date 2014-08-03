@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -12,24 +13,24 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
-    public abstract class RecordListLinkNodeHandler<T> : RecordListNodeHandler<T> where T : class
+    public class NewRecordListLinkNodeHandler<T> : NewRecordListNodeHandler<T> where T : class
     {
         struct CellLinkHandler
         {
-            public string Text;
+            public object Text;
             public Type HandlerType;
         }
 
         private readonly Dictionary<string, CellLinkHandler> _cellLinkHandlers = new Dictionary<string, CellLinkHandler>();
 
-        protected RecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public NewRecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
 
-        protected void AddCellLink<TH>(string text, string link) where TH : INodeHandler
+        protected void AddCellLink<TH>(object text, string link) where TH : INodeHandler
         {
             _cellLinkHandlers.Add(link, new CellLinkHandler { Text = text, HandlerType = typeof(TH) });
-            AddCellLink(text, link);
+            AddRecordLink(text, "{" + IdProperty.Name + "}/" + link);
         }
 
         protected override bool HasChildren
@@ -39,7 +40,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected override ChildHandlerSettings GetChildHandler(string path)
         {
-            var split = path.Split(new[] {'/'});
+            var split = path.Split(new[] { '/' });
             if (split.Length < 2)
             {
                 return null;
@@ -69,7 +70,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new ChildHandlerSettings
             {
                 Path = string.Join("/", split.Take(2)),
-                Title = cellLinkHandler.Text,
+                Title = LanguageHelper.GetText(RecordModel.ModuleType, cellLinkHandler.Text),
                 Handler = handler,
                 Id = recordId,
                 Rest = string.Join("/", split.Skip(2))
