@@ -15,7 +15,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
-    public class NodeAccessNodeHandler : RecordListNodeHandler<NodeAccessModel>, IPropertyCollectionManager
+    public class NodeAccessNodeHandler : NewRecordListNodeHandler<NodeAccessModel>, IPropertyCollectionManager
     {
         private readonly ISiteMapper _siteMapper;
         private long? _siteId;

@@ -293,6 +293,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             var handler = DependencyResolver.Resolve<NodeAccessNodeHandler>();
 
+            ((INodeHandler) handler).Initialize(nodeId, null, null, path, AccessType);
+
             handler.Initialize(SiteId, nodeId);
 
             return new ChildHandlerSettings

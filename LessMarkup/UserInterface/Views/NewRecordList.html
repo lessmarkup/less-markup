@@ -1,4 +1,8 @@
 ﻿<div ng-controller="newrecordlist">
+    <div class="grid-control-panel-top" ng-if="toolbarButtons.length > 0">
+        <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>
+    </div>
+
     <table class="grid-control" ng-class="{ 'show-options' : showOptions }">
         <tr>
             <th ng-repeat="column in columns" width="{{column.width}}">
@@ -10,5 +14,10 @@
             </td>
         </tr>
     </table>
+
     <pagination ng-show="showPagination" items-per-page="pageSize" boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
+
+    <div class="grid-control-panel-bottom" ng-if="toolbarButtons.length > 0">
+        <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>
+    </div>
 </div>

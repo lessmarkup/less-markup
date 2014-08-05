@@ -66,6 +66,7 @@
         $scope.pageLoaded = false;
         $scope.actions = [];
         $scope.optionsTemplate = $scope.viewData.optionsTemplate;
+        $scope.toolbarButtons = [];
 
         $scope.getRecordListScope = function() {
             return $scope;
@@ -80,29 +81,52 @@
 
             var action = $scope.viewData.actions[i];
 
-            if (action.name == "AddRecord") {
-                $scope.toolbarButtons.push({
-                    Id: "recordlist-add",
-                    Text: action.text
-                });
-
-                commandHandler.subscribe('recordlist-add', function (sender, invoke) {
-                    if (!invoke) {
-                        return true;
-                    }
-                    addRecord();
-                    return true;
-                });
-                continue;
-            }
-
-            $scope.actions.push(action);
+            var visibleFunction;
 
             if (action.visible && action.visible.length > 0) {
                 action.visibleFunction = new Function("obj", "with(obj) { return " + action.visible + "; }");
             } else {
                 action.visibleFunction = function () { return true; };
             }
+
+            switch (action.type) {
+                case "Record":
+                    $scope.actions.push({
+                        name: action.name,
+                        text: action.text,
+                        visible: visibleFunction,
+                    });
+                    break;
+                case "Create":
+                    $scope.toolbarButtons.push({
+                        name: action.name,
+                        text: action.text,
+                        visible: visibleFunction,
+                        type: action.parameter,
+                    });
+                    break;
+            }
+        }
+
+        $scope.onToolbarButtonClick = function(action) {
+            inputForm.editObject(null, action.type, function (object, success, failure) {
+                $scope.sendAction(action.name, {
+                    newObject: object,
+                    filter: filter
+                }, function (data) {
+                    if (data.redirect) {
+                        $scope.navigateToView(data.redirect);
+                    } else if (data.record) {
+                        hideOptions();
+                        data.record.loaded = true;
+                        records.splice(data.index, 0, data.record);
+                        $scope.loadVisibleRecords();
+                    }
+                    success();
+                }, function (message) {
+                    failure(message);
+                });
+            }, $scope.getTypeahead);
         }
 
         function resetRecords(recordIds) {
@@ -235,29 +259,12 @@
             }
         }
 
-        function addRecord() {
-            inputForm.editObject(null, $scope.viewData.type, function (object, success, failure) {
-                $scope.sendAction("AddRecord", {
-                    objectToAdd: object,
-                    filter: filter
-                }, function (data) {
-                    hideOptions();
-                    data.record.loaded = true;
-                    records.splice(data.index, 0, data.record);
-                    $scope.loadVisibleRecords();
-                    success();
-                }, function (message) {
-                    failure(message);
-                });
-            }, $scope.getTypeahead);
-        }
-
         function editCurrentRecord(index) {
 
             inputForm.editObject(records[index], $scope.viewData.type, function (object, success, failure) {
 
                 $scope.sendAction("ModifyRecord", {
-                    objectToModify: object,
+                    modifiedObject: object,
                     filter: filter
                 }, function (data) {
                     // success

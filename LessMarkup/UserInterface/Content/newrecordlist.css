@@ -45,3 +45,16 @@
 .grid-control.show-options .options-space {
     height: 5px;
 }
+
+.grid-control-panel-bottom {
+    margin-top: 10px;
+}
+
+.grid-control-panel-top {
+    margin-bottom: 10px;
+}
+
+.grid-control-panel-bottom button, .grid-control-panel-top button {
+    margin-right: 10px;
+    display: inline-block;
+}

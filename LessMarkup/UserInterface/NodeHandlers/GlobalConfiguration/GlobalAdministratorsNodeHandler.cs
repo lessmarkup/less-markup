@@ -11,7 +11,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Administrators, IsGlobal = true)]
-    public class GlobalAdministratorsNodeHandler : RecordListNodeHandler<GlobalAdministratorModel>
+    public class GlobalAdministratorsNodeHandler : NewRecordListNodeHandler<GlobalAdministratorModel>
     {
         public GlobalAdministratorsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {

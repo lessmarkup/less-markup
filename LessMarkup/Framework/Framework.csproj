@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\LanguageHelper.cs" />
+    <Compile Include="Helpers\TextToUrl.cs" />
     <Compile Include="NodeHandlers\AbstractNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebSockets\AbstractWebSocketNodeHandler.cs" />
