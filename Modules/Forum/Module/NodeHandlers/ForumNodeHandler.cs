@@ -87,9 +87,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 throw new UnauthorizedAccessException();
             }
 
-            var threadId = newObject.CreateThread(ObjectId.Value, Path);
+            var threadPath = newObject.CreateThread(ObjectId.Value, Path);
 
-            var url = string.Format("{0}/{1}", Path, threadId);
+            var url = string.Format("{0}/{1}", Path, threadPath);
 
             return ReturnRedirectResult(url);
         }

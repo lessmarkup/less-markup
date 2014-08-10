@@ -1,5 +1,5 @@
 ﻿<div class="cell-subject">
-    <span ng-if="record.Subject && record.Subject.length" ng-bind="record.Subject"></span>
+    <span ng-if="record.Subject && record.Subject.length" ng-bind="record.Subject + ' - '"></span>
     <span>[[[translate Created]]]:</span>
     <span ng-bind="record.Created | date:'medium'"></span>
 </div>

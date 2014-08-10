@@ -34,7 +34,7 @@ namespace LessMarkup.Forum.Model
         [InputField(InputFieldType.RichText, ForumTextIds.ThreadPost, Required = true)]
         public string Post { get; set; }
 
-        public long CreateThread(long forumId, string path)
+        public string CreateThread(long forumId, string path)
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
@@ -80,7 +80,7 @@ namespace LessMarkup.Forum.Model
 
                 domainModel.CompleteTransaction();
 
-                return thread.ThreadId;
+                return thread.Path;
             }
         }
     }
