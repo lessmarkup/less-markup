@@ -144,7 +144,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
                 newObject: object,
                 filter: filter
             }, function (data) {
-                handleActionResult(data, -1, success);
+                handleActionResult(data, -1, success, failure);
             }, function (message) {
                 failure(message);
             });
@@ -303,15 +303,25 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         }, $scope.getTypeahead);
     }
 
-    function handleActionResult(data, index, success) {
+    function handleActionResult(data, index, success, failure) {
 
         if (data.redirect && data.redirect.length) {
+            if (success) {
+                success();
+            }
             $scope.navigateToView(data.redirect);
             return;
         }
 
         if (data.message && data.message.length) {
-            inputForm.message(data.message, "Information");
+            if (failure) {
+                failure(data.message);
+            } else {
+                inputForm.message(data.message, "Information");
+                if (success) {
+                    success();
+                }
+            }
             return;
         }
 
@@ -391,7 +401,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
 
         function sendAction(success, failure) {
             $scope.sendAction(action.name, actionData, function (data) {
-                handleActionResult(data, index, success);
+                handleActionResult(data, index, success, failure);
             }, failure);
         }
 

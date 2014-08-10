@@ -29,6 +29,7 @@ app.directive("fileread", [function () {
             clear.on('click', function() {
                 $(element).val('');
                 fileComment.html('');
+                scope.fileread = null;
             });
 
             element.bind("change", function (changeEvent) {
