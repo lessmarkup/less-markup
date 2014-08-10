@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Minify>
+  <Resources>
+    <Resource Plain="content/forum" />
+  </Resources>
+</Minify>

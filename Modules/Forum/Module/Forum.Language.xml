@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language Id="en" Name="English" ShortName="EN">
+  <Translations>
+    <Translation Id="Name" Text="Name"/>
+    <Translation Id="Posts" Text="Posts"/>
+    <Translation Id="NewThread" Text="New Thread"/>
+    <Translation Id="ThreadTitle" Text="Title"/>
+    <Translation Id="ThreadPost" Text="Post"/>
+    <Translation Id="Reply" Text="Reply"/>
+    <Translation Id="Delete" Text="Delete"/>
+    <Translation Id="CannotDeletePost" Text="You do not have enough rights to delete the post"/>
+    <Translation Id="CannotCreatePost" Text="You do not have enough rights to create post here"/>
+    <Translation Id="ReplyTo" Text="In Reply To"/>
+    <Translation Id="Subject" Text="Subject"/>
+    <Translation Id="PostText" Text="Post Text"/>
+    <Translation Id="Description" Text="Description"/>
+    <Translation Id="Close" Text="Close"/>
+    <Translation Id="Open" Text="Open"/>
+    <Translation Id="Restore" Text="Restore"/>
+    <Translation Id="Author" Text="Author"/>
+    <Translation Id="NewPost" Text="New Post"/>
+    <Translation Id="Edit" Text="Edit"/>
+    <Translation Id="Purge" Text="Purge"/>
+    <Translation Id="UserRemoved" Text="(removed)"/>
+    <Translation Id="MessageFrom" Text="Message from "/>
+    <Translation Id="Created" Text="Created"/>
+    <!--
+    <Translation Id="" Text=""/>
+    -->
+  </Translations>
+</Language>

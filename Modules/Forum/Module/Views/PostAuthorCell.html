@@ -1,0 +1,10 @@
+﻿<div>
+    <a ng-if="record.AuthorUrl && record.AuthorUrl.length" href="{{record.AuthorUrl}}" ng-click="navigateToView(record.AuthorUrl); $event.stopPropagation();" ng-bind="record.AuthorName"></a>
+    <span ng-if="!record.AuthorUrl || !record.AuthorUrl.length" ng-bind="record.AuthorName"></span>
+</div>
+<div ng-if="record.AuthorImage && record.AuthorImage.length">
+    <img ng-src="{{record.AuthorImage}}"/>
+</div>
+<div>
+    [[[translate Posts]]]: {{record.PostCount}}
+</div>
