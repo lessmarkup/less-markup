@@ -12,13 +12,13 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Engine.HtmlTemplate
 {
-    public class HtmlTemplateCache : ICacheHandler
+    public class HtmlTemplateCache : AbstractCacheHandler
     {
         private readonly IDataCache _dataCache;
         private readonly Dictionary<string, CacheItem> _cacheItems = new Dictionary<string, CacheItem>();
         private readonly object _syncLock = new object();
 
-        public HtmlTemplateCache(IDataCache dataCache)
+        public HtmlTemplateCache(IDataCache dataCache) : base(new[] { EntityType.SiteCustomization })
         {
             _dataCache = dataCache;
         }
@@ -29,7 +29,8 @@ namespace LessMarkup.Engine.HtmlTemplate
             {
                 TextParts = new List<string>(),
                 Directives = new List<Directive>(),
-                Path = path
+                Path = path,
+                ModuleType = reference.ModuleType
             };
 
             var body = Encoding.UTF8.GetString(reference.Binary);
@@ -110,14 +111,7 @@ namespace LessMarkup.Engine.HtmlTemplate
                         {
                             path = cacheItem.Path;
                             var index = path.LastIndexOf("/", StringComparison.Ordinal);
-                            if (index > 0)
-                            {
-                                path = path.Substring(0, index + 1);
-                            }
-                            else
-                            {
-                                path = "";
-                            }
+                            path = index > 0 ? path.Substring(0, index + 1) : "";
 
                             path += directive.Body;
                         }
@@ -136,13 +130,20 @@ namespace LessMarkup.Engine.HtmlTemplate
                         break;
                     case DirectiveType.Translate:
 
+                        string moduleType;
+                        string text;
                         var pos = directive.Body.IndexOf("/", StringComparison.Ordinal);
                         if (pos <= 0)
                         {
-                            break;
+                            moduleType = cacheItem.ModuleType;
+                            text = directive.Body;
                         }
-                        string moduleType = directive.Body.Substring(0, pos);
-                        var text = LanguageHelper.GetText(moduleType, directive.Body.Substring(pos + 1));
+                        else
+                        {
+                            moduleType = directive.Body.Substring(0, pos);
+                            text = directive.Body.Substring(pos + 1);
+                        }
+                        text = LanguageHelper.GetText(moduleType, text);
                         builder.Append(text);
                         break;
                 }
@@ -194,18 +195,8 @@ namespace LessMarkup.Engine.HtmlTemplate
             return builder.ToString().Trim();
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
-            expirationTime = null;
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.SiteCustomization;
-        }
-
-        private readonly EntityType[] _entityTypes = { EntityType.SiteCustomization};
-
-        public EntityType[] HandledTypes { get { return _entityTypes; } }
     }
 }

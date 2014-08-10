@@ -29,7 +29,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string Title { get; set; }
         public bool IsStatic { get; set; }
         public string Path { get; set; }
-        public string[] Require { get; set; }
+        public List<string> Require { get; set; }
 
         internal INodeHandler NodeHandler { get { return _nodeHandler; } }
 
@@ -73,6 +73,19 @@ namespace LessMarkup.UserInterface.Model.Structure
             var viewPath = GetViewPath(handler.ViewType);
             var templateCache = dataCache.Get<HtmlTemplateCache>();
             var template = templateCache.GetTemplate(viewPath + ".html") ?? GetViewContents(viewPath + ".cshtml", handler, controller);
+            var stylesheets = handler.Stylesheets;
+            if (stylesheets != null && stylesheets.Count > 0)
+            {
+                var resourceCache = dataCache.Get<ResourceCache>();
+                var sb = new StringBuilder();
+                sb.Append("<style scoped=\"scoped\">");
+                foreach (var stylesheet in stylesheets)
+                {
+                    sb.Append(resourceCache.ReadText(stylesheet + ".css"));
+                }
+                sb.Append("</style>");
+                template = sb + template;
+            }
             return template;
         }
 
@@ -189,26 +202,6 @@ namespace LessMarkup.UserInterface.Model.Structure
                     if (Template == null)
                     {
                         return false;
-                    }
-
-                    var stylesheets = _nodeHandler.Stylesheets;
-
-                    if (stylesheets != null)
-                    {
-                        var resourceCache = _dataCache.Get<ResourceCache>();
-
-                        var style = new StringBuilder();
-
-                        style.AppendLine("<style>");
-
-                        foreach (var stylesheet in stylesheets)
-                        {
-                            style.AppendLine(resourceCache.ReadText(stylesheet));
-                        }
-
-                        style.AppendLine("</style>");
-
-                        Template = style + Template;
                     }
                 }
 

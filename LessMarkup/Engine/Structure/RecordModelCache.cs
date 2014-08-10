@@ -8,31 +8,31 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 
-namespace LessMarkup.UserInterface.Model.RecordModel
+namespace LessMarkup.Engine.Structure
 {
-    public class RecordModelCache : ICacheHandler
+    class RecordModelCache : AbstractCacheHandler, IRecordModelCache
     {
         private readonly Dictionary<Type, RecordModelDefinition> _definitions = new Dictionary<Type, RecordModelDefinition>();
         private readonly Dictionary<string, RecordModelDefinition> _idToDefinition = new Dictionary<string, RecordModelDefinition>();
         private readonly Dictionary<Type, string> _typeToId = new Dictionary<Type, string>();
         private readonly IModuleProvider _moduleProvider;
 
-        public RecordModelCache(IModuleProvider moduleProvider)
+        public RecordModelCache(IModuleProvider moduleProvider) : base(null)
         {
             _moduleProvider = moduleProvider;
         }
 
-        public RecordModelDefinition GetDefinition<T>()
+        public IRecordModelDefinition GetDefinition<T>()
         {
             return GetDefinition(typeof (T));
         }
 
-        public RecordModelDefinition GetDefinition(Type type)
+        public IRecordModelDefinition GetDefinition(Type type)
         {
             RecordModelDefinition ret;
             if (!_definitions.TryGetValue(type, out ret))
@@ -42,7 +42,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             return ret;
         }
 
-        public RecordModelDefinition GetDefinition(string id)
+        public IRecordModelDefinition GetDefinition(string id)
         {
             RecordModelDefinition ret;
             if (!_idToDefinition.TryGetValue(id, out ret))
@@ -68,7 +68,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             return idString;
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             using (var hashAlgorithm = HashAlgorithm.Create("SHA512"))
             {
@@ -87,7 +87,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                             continue;
                         }
 
-                        var definition = new RecordModelDefinition();
+                        var definition = DependencyResolver.Resolve<RecordModelDefinition>();
                         definition.Initialize(type, recordModelAttribute, module.ModuleType);
 
                         _definitions.Add(type, definition);
@@ -109,17 +109,6 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                     }
                 }
             }
-
-            expirationTime = null;
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return false;
-        }
-
-        private readonly EntityType[] _entities = new EntityType[0];
-
-        public EntityType[] HandledTypes { get { return _entities; } }
     }
 }

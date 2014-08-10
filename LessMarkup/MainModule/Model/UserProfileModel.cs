@@ -4,6 +4,7 @@
 
 using System.Linq;
 using LessMarkup.DataObjects.User;
+using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -19,13 +20,15 @@ namespace LessMarkup.MainModule.Model
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IUserSecurity _userSecurity;
         private readonly IChangeTracker _changeTracker;
+        private readonly IDataCache _dataCache;
 
-        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker)
+        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache)
         {
             _currentUser = currentUser;
             _domainModelProvider = domainModelProvider;
             _userSecurity = userSecurity;
             _changeTracker = changeTracker;
+            _dataCache = dataCache;
         }
 
         [InputField(InputFieldType.Text, MainModuleTextIds.Name)]
@@ -33,6 +36,11 @@ namespace LessMarkup.MainModule.Model
 
         [InputField(InputFieldType.Password, MainModuleTextIds.Password)]
         public string Password { get; set; }
+
+        [InputField(InputFieldType.Image, MainModuleTextIds.ProfileAvatar)]
+        public long? Avatar { get; set; }
+
+        public InputFile AvatarFile { get; set; }
 
         public void Initialize()
         {
@@ -48,6 +56,7 @@ namespace LessMarkup.MainModule.Model
                 var user = domainModel.GetCollection<User>().Single(u => u.UserId == _currentUser.UserId.Value);
 
                 Name = user.Name;
+                Avatar = user.AvatarImageId;
             }
         }
 
@@ -63,6 +72,11 @@ namespace LessMarkup.MainModule.Model
                 var user = domainModel.GetCollection<User>().Single(u => u.UserId == _currentUser.UserId.Value);
 
                 user.Name = Name;
+
+                if (AvatarFile != null)
+                {
+                    user.AvatarImageId = ImageUploader.SaveImage(domainModel, user.AvatarImageId, AvatarFile, _currentUser, _dataCache);
+                }
 
                 if (!string.IsNullOrWhiteSpace(Password))
                 {

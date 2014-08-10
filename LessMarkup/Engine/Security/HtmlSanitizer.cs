@@ -23,12 +23,14 @@ namespace LessMarkup.Engine.Security
             "meta"
         };
 
-        public string Sanitize(string html)
+        public string Sanitize(string html, List<string> tagsToRemove = null)
         {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            SanitizeHtmlNode(doc.DocumentNode);
+            var context = new SanitizeContext(tagsToRemove);
+
+            context.Execute(doc.DocumentNode);
 
             using (var stringWriter = new StringWriter())
             {
@@ -37,60 +39,5 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        private static void SanitizeHtmlNode(HtmlNode node)
-        {
-            if (node.NodeType == HtmlNodeType.Element)
-            {
-                // check for blacklist items and remove
-                if (BlackList.Contains(node.Name))
-                {
-                    node.Remove();
-                    return;
-                }
-
-                if (node.Name == "style")
-                {
-                    if (string.IsNullOrEmpty(node.InnerText))
-                    {
-                        if (node.InnerHtml.Contains("expression") || node.InnerHtml.Contains("javascript:"))
-                        {
-                            node.ParentNode.RemoveChild(node);
-                        }
-                    }
-                }
-
-                if (node.HasAttributes)
-                {
-                    for (int i = node.Attributes.Count - 1; i >= 0; i--)
-                    {
-                        HtmlAttribute currentAttribute = node.Attributes[i];
-
-                        var attributeName = currentAttribute.Name.ToLower();
-                        var attributeValue = (currentAttribute.Value ?? "").ToLower();
-
-                        if (attributeName.StartsWith("on"))
-                        {
-                            node.Attributes.Remove(currentAttribute);
-                        }
-                        else if (attributeValue.Contains("script:"))
-                        {
-                            node.Attributes.Remove(currentAttribute);
-                        }
-                        else if (attributeName == "style" && attributeValue.Contains("expression") || attributeValue.Contains("script:"))
-                        {
-                            node.Attributes.Remove(currentAttribute);
-                        }
-                    }
-                }
-            }
-
-            if (node.HasChildNodes)
-            {
-                for (int i = node.ChildNodes.Count - 1; i >= 0; i--)
-                {
-                    SanitizeHtmlNode(node.ChildNodes[i]);
-                }
-            }
-        }
     }
 }

@@ -82,7 +82,13 @@ namespace LessMarkup.Engine.Module
 
             if (!string.IsNullOrWhiteSpace(moduleSearchPath))
             {
-                DiscoverDirectory(moduleSearchPath, assemblies);
+                foreach (var path in moduleSearchPath.Split(new[] {';'}))
+                {
+                    if (!string.IsNullOrWhiteSpace(path))
+                    {
+                        DiscoverDirectory(path, assemblies);
+                    }
+                }
             }
 
             return assemblies;
@@ -90,16 +96,70 @@ namespace LessMarkup.Engine.Module
 
         private void DiscoverDirectory(string currentPath, HashSet<Assembly> assemblies)
         {
-            foreach (var file in new DirectoryInfo(currentPath).GetFiles("*.dll").Where(f => f.FullName.EndsWith(".Module.dll"))
-                )
+            FileInfo[] files;
+
+            try
             {
-                DiscoverModule(file, assemblies);
+                files = new DirectoryInfo(currentPath).GetFiles("*.dll").Where(f => f.FullName.EndsWith(".Module.dll")).ToArray();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot discover directory " + currentPath, ex);
+            }
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    DiscoverModule(file, assemblies);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Cannot initialize module " + file.FullName, ex);
+                }
             }
         }
 
         private void DiscoverModule(FileInfo file, HashSet<Assembly> assemblies)
         {
             var assembly = Assembly.LoadFile(file.FullName);
+
+            var path = new Uri(assembly.CodeBase).LocalPath;
+
+            var pos = path.LastIndexOf('\\');
+
+            if (pos > 0)
+            {
+                path = path.Substring(0, pos);
+            }
+
+            foreach (var assemblyFile in new DirectoryInfo(path).GetFiles("*.dll"))
+            {
+                var folderAssembly = Assembly.LoadFile(assemblyFile.FullName);
+                if (folderAssembly != null && !_assemblyToFullName.ContainsKey(folderAssembly.FullName))
+                {
+                    _assemblyToFullName[folderAssembly.FullName] = folderAssembly;
+                }
+            }
+
+            foreach (var reference in assembly.GetReferencedAssemblies())
+            {
+                var referencePath = Path.Combine(path, reference.Name + ".dll");
+                Assembly referencedAssembly;
+                if (File.Exists(referencePath))
+                {
+                    referencedAssembly = Assembly.LoadFile(referencePath);
+                }
+                else
+                {
+                    referencedAssembly = Assembly.Load(reference);
+                }
+                if (!_assemblyToFullName.ContainsKey(referencedAssembly.FullName))
+                {
+                    _assemblyToFullName[referencedAssembly.FullName] = referencedAssembly;
+                }
+                assemblies.Add(referencedAssembly);
+            }
 
             var codeBase = assembly.CodeBase.ToLower();
 
@@ -119,31 +179,6 @@ namespace LessMarkup.Engine.Module
             RegisterModule(assembly, false, initializerType);
 
             assemblies.Add(assembly);
-
-            var path = new Uri(assembly.CodeBase).LocalPath;
-
-            var pos = path.LastIndexOf('\\');
-
-            if (pos > 0)
-            {
-                path = path.Substring(0, pos);
-            }
-
-            foreach (var reference in assembly.GetReferencedAssemblies())
-            {
-                var referencePath = Path.Combine(path, reference.Name + ".dll");
-                Assembly referencedAssembly;
-                if (File.Exists(referencePath))
-                {
-                    referencedAssembly = Assembly.LoadFile(referencePath);
-                }
-                else
-                {
-                    referencedAssembly = Assembly.Load(reference);
-                }
-                _assemblyToFullName[referencedAssembly.FullName] = referencedAssembly;
-                assemblies.Add(referencedAssembly);
-            }
         }
 
         public void UpdateModuleDatabase(IDomainModelProvider domainModelProvider)

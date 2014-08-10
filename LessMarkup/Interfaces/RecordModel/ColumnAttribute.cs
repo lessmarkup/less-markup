@@ -19,11 +19,9 @@ namespace LessMarkup.Interfaces.RecordModel
             TextId = textId;
         }
 
-        public int? WidthPercents { get; set; }
-        public int? WidthPixels { get; set; }
-        public int? WidthWeight { get; set; }
-        public int? MinWidth { get; set; }
-        public int? MaxWidth { get; set; }
+        public string Width { get; set; }
+        public string MinWidth { get; set; }
+        public string MaxWidth { get; set; }
         public bool Visible { get; set; }
         public bool Sortable { get; set; }
         public bool Resizable { get; set; }
@@ -33,5 +31,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public string CellTemplate { get; set; }
         public string HeaderClass { get; set; }
         public object TextId { get; set; }
+        public string CellUrl { get; set; }
+        public bool AllowUnsafe { get; set; }
     }
 }

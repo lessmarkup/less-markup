@@ -230,5 +230,8 @@ namespace LessMarkup.Engine.Language
         File,
         Files,
         UserCommon,
+        PropertyMustBeSpecified,
+        ThumbnailWidth,
+        ThumbnailHeight,
     }
 }

@@ -38,7 +38,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             _children.Add(node);
         }
 
-        private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, List<long> groupIds)
+        private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, IReadOnlyList<long> groupIds)
         {
             if (!userId.HasValue)
             {
@@ -58,7 +58,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return false;
         }
 
-        private void CheckRights(long? userId, List<long> groupIds, ref NodeAccessType? accessType)
+        private void CheckRights(long? userId, IReadOnlyList<long> groupIds, ref NodeAccessType? accessType)
         {
             if (Parent != null)
             {

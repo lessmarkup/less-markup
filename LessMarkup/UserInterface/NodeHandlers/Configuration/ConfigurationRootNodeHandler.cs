@@ -41,6 +41,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         public ConfigurationRootNodeHandler(IModuleProvider moduleProvider, IDataCache dataCache, ISiteMapper siteMapper, ICurrentUser currentUser)
         {
+            AddScript("controllers/configuration");
+
             _dataCache = dataCache;
 
             bool addSiteHandlers = siteMapper.SiteId.HasValue;
@@ -182,7 +184,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             path = parts[0];
             parts.RemoveAt(0);
 
-            handler.Initialize(handlerData.Id, null, null, path, NodeAccessType.Read);
+            handler.Initialize(null, null, null, path, NodeAccessType.Read);
 
             return new ChildHandlerSettings
             {
@@ -192,11 +194,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 Path = path,
                 Rest = string.Join("/", parts)
             };
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new [] { "controllers/configuration" }; }
         }
     }
 }

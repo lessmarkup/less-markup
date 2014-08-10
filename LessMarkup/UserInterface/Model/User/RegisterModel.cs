@@ -9,7 +9,6 @@ using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
-using LessMarkup.UserInterface.Model.RecordModel;
 using LessMarkup.UserInterface.Model.Structure;
 
 namespace LessMarkup.UserInterface.Model.User
@@ -57,7 +56,7 @@ namespace LessMarkup.UserInterface.Model.User
             UserAgreement = siteProperties.UserAgreement;
             ShowUserAgreement = !string.IsNullOrWhiteSpace(UserAgreement);
 
-            var modelCache = _dataCache.Get<RecordModelCache>();
+            var modelCache = _dataCache.Get<IRecordModelCache>();
 
             return new
             {
@@ -75,7 +74,7 @@ namespace LessMarkup.UserInterface.Model.User
                 throw new Exception("Cannot register new user");
             }
 
-            var modelCache = _dataCache.Get<RecordModelCache>();
+            var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof (RegisterModel));
             definition.ValidateInput(this, true);
 

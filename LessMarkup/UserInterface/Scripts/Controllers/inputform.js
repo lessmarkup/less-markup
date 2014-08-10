@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-function InputFormController($scope, $modalInstance, definition, object, success, getTypeahead, lazyLoad) {
+function InputFormController($scope, $modalInstance, definition, object, success, getTypeahead, $sce) {
 
     $scope.definition = definition;
     $scope.validationErrors = {};
@@ -31,6 +31,13 @@ function InputFormController($scope, $modalInstance, definition, object, success
     $scope.object = object != null ? jQuery.extend({}, object) : {};
 
     $scope.fields = [];
+
+    $scope.getValue = function (object, field) {
+        if (field.Type === "RichText" && $scope.readOnly(field)) {
+            return $sce.trustAsHtml(object[field.Property]);
+        }
+        return object[field.Property];
+    }
 
     $scope.hasErrors = function (property) {
         return $scope.validationErrors.hasOwnProperty(property);
@@ -70,7 +77,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
     $scope.readOnly = function (field) {
         if (field.ReadOnlyFunction == null) {
-            return "";
+            return field.ReadOnly ? "readonly" : "";
         }
         return field.ReadOnlyFunction($scope.object) ? "readonly" : "";
     }
@@ -93,12 +100,6 @@ function InputFormController($scope, $modalInstance, definition, object, success
                 if (field.Required && $scope.isNewObject && (value == null || value.length == 0)) {
                     $scope.validationErrors[field.Property] = "Field is required";
                     valid = false;
-                }
-                else {
-                    var pos = value.indexOf("base64,");
-                    if (pos > 0) {
-                        $scope.object[field.Property] = value.substring(pos + 7);
-                    }
                 }
                 continue;
             }
@@ -171,9 +172,12 @@ function InputFormController($scope, $modalInstance, definition, object, success
                 $scope.object[field.Property] = "";
             }
         }
+
         if (field.Type == 'Password') {
             $scope.object[field.Property] = "";
             $scope.object[field.Property + "-Repeat"] = "";
+        } else if (field.Type == 'Image') {
+            $scope.object[field.Property + "File"] = null;
         }
 
         if (field.Type != 'Hidden') {

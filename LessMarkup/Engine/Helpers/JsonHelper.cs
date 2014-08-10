@@ -66,17 +66,13 @@ namespace LessMarkup.Engine.Helpers
                     continue;
                 }
 
-                if (property.PropertyType == typeof(string))
-                {
-                    property.SetValue(value, propertyValue);
-                }
-                else if (property.PropertyType == typeof(bool))
+                if (property.PropertyType == propertyValue.GetType())
                 {
                     property.SetValue(value, propertyValue);
                 }
                 else
                 {
-                    property.SetValue(value, JsonConvert.DeserializeObject(propertyValue.ToString(), property.PropertyType));
+                    property.SetValue(value, JsonConvert.DeserializeObject(JsonConvert.SerializeObject(propertyValue), property.PropertyType));
                 }
             }
 

@@ -8,31 +8,35 @@ using System.Linq;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Security
 {
-    class UserCache : ICacheHandler
+    class UserCache : AbstractCacheHandler, IUserCache
     {
         private long _userId;
         private readonly IDomainModelProvider _domainModelProvider;
+        private List<long> _groups;
 
         public bool IsRemoved { get; private set; }
         public bool IsAdministrator { get; private set; }
         public bool IsGlobalAdministrator { get; private set; }
-        public List<long> Groups { get; private set; }
+        public IReadOnlyList<long> Groups { get { return _groups; } }
         public bool IsValidated { get; private set; }
         public string Email { get; private set; }
         public string Title { get; private set; }
         public bool IsBlocked { get; private set; }
         public DateTime? UnblockTime { get; private set; }
         public long? SiteId { get; private set; }
+        public string Name { get; private set; }
 
         public UserCache(IDomainModelProvider domainModelProvider)
+            : base(new[] { EntityType.User })
         {
             _domainModelProvider = domainModelProvider;
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (!objectId.HasValue)
             {
@@ -41,7 +45,6 @@ namespace LessMarkup.Engine.Security
 
             _userId = objectId.Value;
             SiteId = siteId;
-            expirationTime = DateTime.UtcNow.AddMinutes(20);
 
             using (var domainModel = _domainModelProvider.Create())
             {
@@ -68,12 +71,13 @@ namespace LessMarkup.Engine.Security
 
                 IsAdministrator = user.IsAdministrator;
                 IsGlobalAdministrator = IsAdministrator && !user.SiteId.HasValue;
-                Groups = user.Groups.ToList();
+                _groups = user.Groups.ToList();
                 Email = user.Email;
                 Title = user.Title;
                 IsValidated = user.IsValidated;
                 IsBlocked = user.IsBlocked;
                 UnblockTime = user.UnblockTime;
+                Name = user.Name;
 
                 if (IsBlocked && UnblockTime.HasValue && UnblockTime.Value < DateTime.UtcNow)
                 {
@@ -82,18 +86,9 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
+        protected override bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
         {
-            if (entityType == EntityType.User && entityId == _userId)
-            {
-                return true;
-            }
-
-            return false;
+            return entityType == EntityType.User && entityId == _userId;
         }
-
-        private readonly EntityType[] _handledTypes = { EntityType.User };
-
-        public EntityType[] HandledTypes { get { return _handledTypes; } }
     }
 }

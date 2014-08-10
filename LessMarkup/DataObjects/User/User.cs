@@ -44,6 +44,7 @@ namespace LessMarkup.DataObjects.User
         [ForeignKey("UserImage")]
         public long? UserImageId { get; set; }
         public string Title { get; set; }
+        public string Signature { get; set; }
         public bool ShowEmail { get; set; }
         [Timestamp]
         public byte[] Version { get; set; }

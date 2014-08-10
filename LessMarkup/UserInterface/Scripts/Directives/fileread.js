@@ -10,11 +10,46 @@ app.directive("fileread", [function () {
             fileread: "="
         },
         link: function (scope, element) {
+            $(element).css({
+                'display': 'none'
+            });
+
+            var button = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">Choose File</button>");
+            var clear = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">Clear</button>");
+            var fileComment = $("<span></span>");
+
+            $(element).after(button);
+            button.after(clear);
+            clear.after(fileComment);
+
+            button.on('click', function() {
+                $(element).click();
+            });
+
+            clear.on('click', function() {
+                $(element).val('');
+                fileComment.html('');
+            });
+
             element.bind("change", function (changeEvent) {
+                fileComment.html(changeEvent.target.files[0].name);
                 var reader = new FileReader();
                 reader.onload = function (loadEvent) {
                     scope.$apply(function () {
-                        scope.fileread = loadEvent.target.result;
+
+                        var value = loadEvent.target.result;
+
+                        var pos = value.indexOf("base64,");
+                        if (pos > 0) {
+                            value = value.substring(pos + 7);
+                        }
+
+                        scope.fileread = {
+                            File: value,
+                            Type: changeEvent.target.files[0].type,
+                            Name: changeEvent.target.files[0].name
+                        };
+                        
                     });
                 }
                 reader.readAsDataURL(changeEvent.target.files[0]);

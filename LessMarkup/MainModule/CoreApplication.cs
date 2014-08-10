@@ -38,8 +38,8 @@ namespace LessMarkup.MainModule
     {
         private static Exception _fatalException;
         private static bool _initialized;
-        private static readonly object _initializeLock = new object();
         private static bool _resolverInitialized;
+        private static readonly object _initializeLock = new object();
 
         class ResolverCallback : IResolverCallback
         {
@@ -81,6 +81,8 @@ namespace LessMarkup.MainModule
             }
 
             var moduleProvider = ModuleProvider.RegisterProvider(builder);
+
+            AppDomain.CurrentDomain.AssemblyResolve += moduleProvider.ResolveAssembly;
 
             foreach (var type in new[] {typeof (MainModuleInitializer), typeof(UserInterfaceModuleInitializer)})
             {
@@ -152,27 +154,7 @@ namespace LessMarkup.MainModule
             mailSender.SendPlainEmail(engineConfiguration.FatalErrorsEmail, Resources.FatalErrorEmailSubject, FatalExceptionMessage);
         }
 
-        private static void ReloadInSafeMode()
-        {
-            var engineConfiguration = DependencyResolver.Resolve<IEngineConfiguration>();
-
-            if (engineConfiguration == null)
-            {
-                return;
-            }
-
-            if (engineConfiguration.DisableSafeMode || engineConfiguration.SafeMode)
-            {
-                return;
-            }
-
-            engineConfiguration.SafeMode = true;
-            engineConfiguration.Save();
-
-            HttpRuntime.UnloadAppDomain();
-        }
-
-        void OnStart()
+        public void OnStart()
         {
             try
             {
@@ -196,8 +178,6 @@ namespace LessMarkup.MainModule
                 var moduleProvider = DependencyResolver.Resolve<IModuleProvider>();
 
                 moduleProvider.InitializeModules();
-
-                AppDomain.CurrentDomain.AssemblyResolve += moduleProvider.ResolveAssembly;
 
                 var buildEngine = DependencyResolver.Resolve<IBuildEngine>();
 
@@ -265,7 +245,6 @@ namespace LessMarkup.MainModule
                 this.LogDebug("Initializing custom routes");
                 DependencyResolver.Resolve<RouteConfiguration>().Create(RouteTable.Routes);
 
-
                 this.LogDebug("Initializing site mapper");
                 ((IInitialize)DependencyResolver.Resolve<ISiteMapper>()).Initialize();
             }
@@ -280,13 +259,14 @@ namespace LessMarkup.MainModule
                 {
                     EventLog.WriteEntry(Constants.EventLog.Source, string.Format(Resources.FatalStartupException, FatalExceptionMessage), EventLogEntryType.Error);
                     SendFatalExceptionNotification();
-                    ReloadInSafeMode();
                 }
                 catch (Exception e2)
                 {
                     EventLog.WriteEntry(Constants.EventLog.Source, string.Format(Resources.FatalStartupLoggingException, e2.Message), EventLogEntryType.Error);
                 }
             }
+
+            _initialized = true;
         }
 
         public override void Init()
@@ -305,17 +285,14 @@ namespace LessMarkup.MainModule
         {
             SiteMapperScope.ResetMapping();
 
-            if (!_initialized)
+            lock (_initializeLock)
             {
-                lock (_initializeLock)
+                if (!_initialized)
                 {
-                    if (!_initialized)
-                    {
-                        _initialized = true;
-                        var startTime = Environment.TickCount;
-                        OnStart();
-                        this.LogDebug("Initialization took " + (Environment.TickCount - startTime) + " ms");
-                    }
+                    _initialized = true;
+                    var startTime = Environment.TickCount;
+                    OnStart();
+                    this.LogDebug("Initialization took " + (Environment.TickCount - startTime) + " ms");
                 }
             }
 

@@ -48,19 +48,19 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
         public void Initialize(Type modelType)
         {
-            var cache = _dataCache.Get<RecordModelCache>();
+            var cache = _dataCache.Get<IRecordModelCache>();
             var definition = cache.GetDefinition(modelType);
             Initialize(definition);
         }
 
         public void Initialize(string id)
         {
-            var cache = _dataCache.Get<RecordModelCache>();
+            var cache = _dataCache.Get<IRecordModelCache>();
             var definition = cache.GetDefinition(id);
             Initialize(definition);
         }
 
-        private void Initialize(RecordModelDefinition definition)
+        private void Initialize(IRecordModelDefinition definition)
         {
             if (definition == null)
             {

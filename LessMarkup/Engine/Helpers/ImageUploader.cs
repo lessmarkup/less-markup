@@ -3,24 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Web;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.DataObjects.Gallery;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 
 namespace LessMarkup.Engine.Helpers
 {
-    public static class ImageHelper
+    public static class ImageUploader
     {
-        public static long? SaveGallery(IDomainModel domainModel, long? galleryId, IList<HttpPostedFile> files,
+        /*public static long? SaveGallery(IDomainModel domainModel, long? galleryId, IList<HttpPostedFile> files,
             long[] unchangedImages, ICurrentUser currentUser, IDataCache dataCache)
         {
             var fileCount = files.Count(f => f.ContentLength > 0);
@@ -108,12 +105,7 @@ namespace LessMarkup.Engine.Helpers
         public static long SaveImage(IDomainModel domainModel, long? imageId, HttpPostedFile file, ICurrentUser currentUser, IDataCache dataCache)
         {
             return SaveImage(domainModel, imageId, file.ContentLength, file.InputStream, file.FileName, currentUser, dataCache);
-        }
-
-        public static long SaveImage(IDomainModel domainModel, long? imageId, HttpPostedFileBase file, ICurrentUser currentUser, IDataCache dataCache)
-        {
-            return SaveImage(domainModel, imageId, file.ContentLength, file.InputStream, file.FileName, currentUser, dataCache);
-        }
+        }*/
 
         public static void DeleteImage(IDomainModel domainModel, long imageId)
         {
@@ -121,11 +113,11 @@ namespace LessMarkup.Engine.Helpers
             domainModel.GetSiteCollection<Image>().Remove(image);
         }
 
-        public static long SaveImage(IDomainModel domainModel, long? imageId, int contentLength, Stream inputStream, string fileName, ICurrentUser currentUser, IDataCache dataCache)
+        public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, ICurrentUser currentUser, IDataCache dataCache)
         {
             var configurationCache = dataCache.Get<SiteConfigurationCache>();
 
-            if (contentLength > configurationCache.MaximumImageSize)
+            if (file.File.Length > configurationCache.MaximumImageSize)
             {
                 throw new Exception(string.Format("Image size is bigger than allowed ({0})", configurationCache.MaximumImageSize));
             }
@@ -134,25 +126,29 @@ namespace LessMarkup.Engine.Helpers
             byte[] thumbnailBytes;
             int imageWidth, imageHeight;
 
-            using (var imageData = System.Drawing.Image.FromStream(inputStream, true, true))
+            using (var inputStream = new MemoryStream(file.File))
             {
-                using (var stream = new MemoryStream())
-                {
-                    imageData.Save(stream, ImageFormat.Png);
-                    imageBytes = stream.ToArray();
-                    imageWidth = imageData.Width;
-                    imageHeight = imageData.Height;
-                }
-
-/*                using (var thumbnail = imageData.GetThumbnailImage(configurationCache.ThumbnailWidth, configurationCache.ThumbnailHeight, () => false, IntPtr.Zero))
+                using (var imageData = System.Drawing.Image.FromStream(inputStream, true, true))
                 {
                     using (var stream = new MemoryStream())
                     {
-                        thumbnail.Save(stream, ImageFormat.Png);
-                        thumbnailBytes = stream.ToArray();
+                        imageData.Save(stream, ImageFormat.Png);
+                        imageBytes = stream.ToArray();
+                        imageWidth = imageData.Width;
+                        imageHeight = imageData.Height;
                     }
-                }*/
+
+                    using (var thumbnail = imageData.GetThumbnailImage(configurationCache.ThumbnailWidth, configurationCache.ThumbnailHeight, () => false, IntPtr.Zero))
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            thumbnail.Save(stream, ImageFormat.Png);
+                            thumbnailBytes = stream.ToArray();
+                        }
+                    }
+                }
             }
+
 
             Image image = null;
 
@@ -174,11 +170,11 @@ namespace LessMarkup.Engine.Helpers
 
             image.Width = imageWidth;
             image.Height = imageHeight;
-            image.FileName = fileName;
+            image.FileName = file.Name;
             image.ImageType = ImageType.Png;
             image.UserId = currentUser.UserId;
             image.Data = imageBytes;
-            image.Thumbnail = null;//thumbnailBytes;
+            image.Thumbnail = thumbnailBytes;
 
             domainModel.SaveChanges();
  

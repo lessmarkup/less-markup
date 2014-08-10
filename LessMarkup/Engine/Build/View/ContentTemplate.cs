@@ -7,6 +7,7 @@ namespace LessMarkup.Engine.Build.View
     public class ContentTemplate
     {
         public string Name { get; set; }
+        public string ModuleType { get; set; }
         public byte[] Binary { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
 
         public RecordChangeTracker(IChangeTracker changeTracker, IDomainModelProvider domainModelProvider, IDataCache dataCache, ISiteMapper siteMapper, IRequestMapper requestMapper)
         {
-            RecordListHub.ChangeTracker = this;
+            //RecordListHub.ChangeTracker = this;
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;

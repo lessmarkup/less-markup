@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using LessMarkup.MainModule;
-using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
 
@@ -14,8 +13,6 @@ namespace LessMarkup.MainModule
     {
         public void Configuration(IAppBuilder app)
         {
-            CoreApplication.InitializeDependencyResolver();
-            app.MapSignalR("/hubs", new HubConfiguration { });
         }
     }
 }

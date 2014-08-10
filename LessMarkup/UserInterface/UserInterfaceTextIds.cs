@@ -51,7 +51,6 @@ namespace LessMarkup.UserInterface
         File,
         Text,
         EditCustomization,
-        PropertyMustBeSpecified,
         Enable,
         Disable,
         NodeSettings,
@@ -83,6 +82,9 @@ namespace LessMarkup.UserInterface
         RemoveRecord,
         ModifyRecord,
         Nodes,
-        Properties
+        Properties,
+        ActionAccessException,
+        Signature,
+        UserCards,
     }
 }

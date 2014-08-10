@@ -11,10 +11,10 @@ using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Configuration;
-using LessMarkup.UserInterface.Model.RecordModel;
 using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
@@ -54,6 +54,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
             _siteMapper = siteMapper;
+            AddScript("controllers/nodelist");
         }
 
         public static string GetHandlerName(Type handlerType, string moduleType)
@@ -75,7 +76,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         protected override object GetViewData()
         {
-            var modelCache = _dataCache.Get<RecordModelCache>();
+            var modelCache = _dataCache.Get<IRecordModelCache>();
 
             var nodes = new List<NodeSettingsModel>();
 
@@ -164,7 +165,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         public object CreateNode(NodeSettingsModel node)
         {
-            var modelCache = _dataCache.Get<RecordModelCache>();
+            var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof (NodeSettingsModel));
             definition.ValidateInput(node, true);
 
@@ -235,7 +236,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         public object UpdateNode(NodeSettingsModel node)
         {
-            var modelCache = _dataCache.Get<RecordModelCache>();
+            var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof(NodeSettingsModel));
             definition.ValidateInput(node, false);
 
@@ -304,11 +305,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 Title = "Node Access",
                 Id = nodeId
             };
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new []{ "controllers/nodelist" }; }
         }
     }
 }

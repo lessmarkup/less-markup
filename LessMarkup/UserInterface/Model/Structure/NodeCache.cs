@@ -22,7 +22,7 @@ using LessMarkup.UserInterface.NodeHandlers.User;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
-    public class NodeCache : INodeCache
+    public class NodeCache : AbstractCacheHandler, INodeCache
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
@@ -37,6 +37,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
 
         public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache)
+            : base(new[] { EntityType.Node, EntityType.Site })
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
@@ -201,7 +202,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return node;
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (objectId.HasValue)
             {
@@ -209,8 +210,6 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
 
             _siteId = siteId;
-
-            expirationTime = null;
 
             List<CachedNodeInformation> cachedNodes = null;
 
@@ -272,9 +271,10 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             string adminLoginPage;
 
+            var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+
             if (_siteId.HasValue)
             {
-                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
                 adminLoginPage = siteConfiguration.AdminLoginPage;
                 if (string.IsNullOrWhiteSpace(adminLoginPage))
                 {
@@ -299,18 +299,16 @@ namespace LessMarkup.UserInterface.Model.Structure
                     LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserProfile),
                     Constants.ModuleType.UserInterface, NodeAccessType.Read);
                 node.LoggedIn = true;
+
+                if (siteConfiguration.HasUsers)
+                {
+                    AddVirtualNode<UserCardsNodeHandler>(Constants.NodePath.UserCards,
+                        LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserCards),
+                        Constants.ModuleType.UserInterface, NodeAccessType.Read);
+                }
             }
 
             _cachedNodes.Clear();
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.Node || (entityType == EntityType.Site && _siteId.HasValue && entityId == _siteId.Value);
-        }
-
-        private static readonly EntityType[] _handledTypes = {EntityType.Node, EntityType.Site};
-
-        public EntityType[] HandledTypes { get { return _handledTypes; } }
     }
 }

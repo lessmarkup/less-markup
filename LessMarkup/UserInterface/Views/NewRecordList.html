@@ -3,19 +3,21 @@
         <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>
     </div>
 
-    <table class="grid-control" ng-class="{ 'show-options' : showOptions }">
+    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
+
+    <table class="grid-control" ng-class="{ 'show-options' : showOptions, 'has-options' : hasOptionsBar }">
         <tr>
-            <th ng-repeat="column in columns" width="{{column.width}}">
+            <th ng-repeat="column in columns" width="{{column.width}}" colspan="{{column.colSpan}}">
                 <span ng-click="sortColumn(column)" ng-bind="column.text" ng-class="{ 'sort-up' : column.sort == 'up', 'sort-down' : column.sort == 'down' }"></span>
             </th>
         </tr>
         <tr ng-repeat="row in rows" ng-class="{ 'odd': row.isOdd }">
-            <td ng-repeat="column in columns" bind-cell="{ record: row, template: column.template }" ng-click="onShowOptions(row)" cell-show-options class="grid-data">
-            </td>
+            <td ng-if="hasOptionsBar" class="grid-cell-options grid-data" cell-show-options ng-click="onClickOptions(row)"><span></span></td>
+            <td ng-repeat="column in columns" bind-cell="{ record: row, template: column.template }" class="grid-data" cell-show-options ng-click="onClickOptions(row)"></td>
         </tr>
     </table>
 
-    <pagination ng-show="showPagination" items-per-page="pageSize" boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
+    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
 
     <div class="grid-control-panel-bottom" ng-if="toolbarButtons.length > 0">
         <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>

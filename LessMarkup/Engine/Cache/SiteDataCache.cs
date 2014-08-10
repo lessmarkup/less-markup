@@ -26,12 +26,12 @@ namespace LessMarkup.Engine.Cache
 
         public DateTime LastAccess { get; set; }
 
-        public void Set<T>(T cachedObject, long? objectId = null, DateTime? expirationTime = null) where T : ICacheHandler
+        private void Set<T>(T cachedObject, long? objectId) where T : ICacheHandler
         {
             lock (_itemsLock)
             {
                 var key = new Tuple<Type, long?>(typeof(T), objectId);
-                var cacheItem = new CacheItem(typeof(T), expirationTime, objectId, cachedObject);
+                var cacheItem = new CacheItem(typeof(T), objectId, cachedObject);
 
                 var exists = _items.ContainsKey(key);
 
@@ -42,19 +42,23 @@ namespace LessMarkup.Engine.Cache
                     return;
                 }
 
-                foreach (var entityType in cachedObject.HandledTypes)
+                var handledTypes = cachedObject.HandledTypes;
+
+                if (handledTypes != null)
                 {
-                    List<CacheItem> items;
-                    if (!_handledEntities.TryGetValue(entityType, out items))
+                    foreach (var entityType in handledTypes)
                     {
-                        items = new List<CacheItem>();
-                        _handledEntities.Add(entityType, items);
+                        List<CacheItem> items;
+                        if (!_handledEntities.TryGetValue(entityType, out items))
+                        {
+                            items = new List<CacheItem>();
+                            _handledEntities.Add(entityType, items);
+                        }
+                        items.Add(cacheItem);
                     }
-                    items.Add(cacheItem);
                 }
             }
         }
-
 
         public T Get<T>(long? objectId = null, bool create = true) where T : ICacheHandler
         {
@@ -64,7 +68,14 @@ namespace LessMarkup.Engine.Cache
                 CacheItem ret;
                 if (_items.TryGetValue(key, out ret))
                 {
-                    return (T)ret.CachedObject;
+                    if (ret.CachedObject.Expired)
+                    {
+                        _items.Remove(key);
+                    }
+                    else
+                    {
+                        return (T)ret.CachedObject;
+                    }
                 }
 
                 if (!create)
@@ -74,9 +85,8 @@ namespace LessMarkup.Engine.Cache
 
                 this.LogDebug(string.Format("Cache for site {0}: creating item for type {1}, id {2}", _siteId, typeof(T).Name, objectId ?? (object)"(null)"));
                 var newObject = DependencyResolver.Resolve<T>();
-                DateTime? expirationTime;
-                newObject.Initialize(_siteId, out expirationTime, objectId);
-                Set(newObject, objectId, expirationTime);
+                newObject.Initialize(_siteId, objectId);
+                Set(newObject, objectId);
                 ret = _items[key];
                 return (T)ret.CachedObject;
             }

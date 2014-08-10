@@ -19,7 +19,8 @@
     <Resource Plain="scripts/controllers/flatpage" />
     <Resource Plain="scripts/controllers/inputform" />
     <Resource Plain="scripts/controllers/dialog" />
-    
+    <Resource Plain="scripts/controllers/newrecordlist" />
+
     <Resource Plain="content/bootstrap.css" Minified="content/bootstrap.min.css" />
     <Resource Minified="content/ng-grid" />
     <Resource Plain="content/site" />

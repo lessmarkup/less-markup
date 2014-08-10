@@ -8,6 +8,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
     {
         private readonly List<AbstractElement> _elements = new List<AbstractElement>();
 
+        protected CompositeNodeHandler()
+        {
+            AddScript("controllers/composite");
+        }
+
         protected void AddElement(AbstractElement element)
         {
             _elements.Add(element);
@@ -24,11 +29,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected override string ViewType
         {
             get { return "Composite"; }
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new[] { "controllers/composite" }; }
         }
     }
 }

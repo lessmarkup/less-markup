@@ -13,6 +13,7 @@
 
 .grid-control .options-panel {
     border: solid 1px black;
+    background: #555;
 }
 
 .grid-control.show-options .options-row {
@@ -32,6 +33,7 @@
 .grid-control .grid-data {
     padding: 5px;
     cursor: pointer;
+    vertical-align: top;
 }
 
 .grid-control tr.odd .grid-data {
@@ -57,4 +59,19 @@
 .grid-control-panel-bottom button, .grid-control-panel-top button {
     margin-right: 10px;
     display: inline-block;
+}
+
+.grid-control-panel-bottom {
+    margin-bottom: 1em;
+}
+
+.grid-control .grid-cell-options > span:before {
+    font-family: fa;
+    content: "\f141";
+}
+
+.grid-control .grid-cell-options {
+    text-align: center;
+    cursor: pointer;
+    width: 1.7em;
 }

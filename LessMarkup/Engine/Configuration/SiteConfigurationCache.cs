@@ -16,11 +16,10 @@ using LessMarkup.Interfaces.System;
 namespace LessMarkup.Engine.Configuration
 {
     [RecordModel]
-    public class SiteConfigurationCache : ICacheHandler
+    public class SiteConfigurationCache : AbstractCacheHandler
     {
         #region Private Fields
 
-        private readonly EntityType[] _handledTypes = { EntityType.Site };
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly ISiteMapper _siteMapper;
@@ -30,6 +29,7 @@ namespace LessMarkup.Engine.Configuration
         #region Initialization
 
         public SiteConfigurationCache(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
+            : base(new[] { EntityType.Site })
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
@@ -80,10 +80,13 @@ namespace LessMarkup.Engine.Configuration
             }
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId)
+        public void Initialize(long? siteId)
         {
-            expirationTime = null;
+            Initialize(siteId, null);
+        }
 
+        protected override void Initialize(long? siteId, long? objectId)
+        {
             if (!siteId.HasValue)
             {
                 siteId = _siteMapper.SiteId;
@@ -170,17 +173,6 @@ namespace LessMarkup.Engine.Configuration
 
         #endregion
 
-        #region ICacheHandler Members
-
-        bool ICacheHandler.Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.Site;
-        }
-
-        EntityType[] ICacheHandler.HandledTypes { get { return _handledTypes; } }
-
-        #endregion
-
         [InputField(InputFieldType.Text, MainModuleTextIds.SiteName, DefaultValue = "Site", Required = true)]
         public string SiteName { get; set; }
 
@@ -198,6 +190,12 @@ namespace LessMarkup.Engine.Configuration
 
         [InputField(InputFieldType.Number, MainModuleTextIds.MaximumImageSize, DefaultValue = 1024 * 1024 * 10)]
         public int MaximumImageSize { get; set; }
+
+        [InputField(InputFieldType.Number, MainModuleTextIds.ThumbnailWidth, DefaultValue = 75)]
+        public int ThumbnailWidth { get; set; }
+
+        [InputField(InputFieldType.Number, MainModuleTextIds.ThumbnailHeight, DefaultValue = 75)]
+        public int ThumbnailHeight { get; set; }
 
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasUsers, DefaultValue = false)]
         public bool HasUsers { get; set; }

@@ -5,11 +5,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LessMarkup.UserInterface.ChangeTracking;
-using Microsoft.AspNet.SignalR;
 
 namespace LessMarkup.UserInterface.Hubs
 {
-    public class RecordListHub : Hub
+    /*public class RecordListHub : Hub
     {
         public static RecordChangeTracker ChangeTracker { get; set; }
 
@@ -78,5 +77,5 @@ namespace LessMarkup.UserInterface.Hubs
         {
             ChangeTracker.OnEndRequest();
         }
-    }
+    }*/
 }

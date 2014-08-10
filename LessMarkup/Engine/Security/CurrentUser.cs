@@ -149,7 +149,7 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        public List<long> Groups
+        public IReadOnlyList<long> Groups
         {
             get
             {
@@ -261,7 +261,7 @@ namespace LessMarkup.Engine.Security
 
             var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-            var currentUser = dataCache.Get<UserCache>(userId);
+            var currentUser = dataCache.Get<IUserCache>(userId);
 
             if (currentUser.IsRemoved)
             {

@@ -13,10 +13,12 @@ using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Security;
 using LessMarkup.Engine.Site;
+using LessMarkup.Engine.Structure;
 using LessMarkup.Engine.TextAndSearch;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 using LessMarkup.Interfaces.Text;
@@ -40,6 +42,8 @@ namespace LessMarkup.Engine
             builder.RegisterType<CurrentUser>().As<ICurrentUser>();
             builder.RegisterType<HtmlSanitizer>().As<IHtmlSanitizer>();
             builder.RegisterType<LanguageCache>().As<ILanguageCache>();
+            builder.RegisterType<RecordModelCache>().As<IRecordModelCache>();
+            builder.RegisterType<UserCache>().As<IUserCache>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

@@ -22,13 +22,12 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.FileSystem
 {
-    public class ResourceCache : ICacheHandler
+    public class ResourceCache : AbstractCacheHandler
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly ISpecialFolder _specialFolder;
         private readonly IModuleProvider _moduleProvider;
         private readonly object _loadLock = new object();
-        private long? _siteId;
 
         private Assembly _globalAssembly;
 
@@ -36,6 +35,7 @@ namespace LessMarkup.Engine.FileSystem
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
         public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
+            : base(new[] { EntityType.SiteCustomization, EntityType.Site })
         {
             _domainModelProvider = domainModelProvider;
             _specialFolder = specialFolder;
@@ -215,7 +215,7 @@ namespace LessMarkup.Engine.FileSystem
             return viewReference.Type;
         }
 
-        private void ImportTemplateRecord(string recordId, string path, byte[] resource, bool isView)
+        private void ImportTemplateRecord(string recordId, string path, byte[] resource, bool isView, string moduleType)
         {
             if (resource == null)
             {
@@ -229,6 +229,7 @@ namespace LessMarkup.Engine.FileSystem
                     ClassName = recordId,
                     IsSiteAssembly = false,
                     Path = path,
+                    ModuleType = moduleType
                 };
             }
             else
@@ -236,6 +237,7 @@ namespace LessMarkup.Engine.FileSystem
                 _resourceReferences[path.ToLower()] = new ResourceReference
                 {
                     Binary = resource,
+                    ModuleType = moduleType
                 };
             }
         }
@@ -243,7 +245,7 @@ namespace LessMarkup.Engine.FileSystem
         private void ImportMailTemplate(string key, ViewTemplate viewTemplate)
         {
             var className = Constants.MailTemplates.Namespace + "." + key;
-            ImportTemplateRecord(className, key, Encoding.UTF8.GetBytes(viewTemplate.Body), true);
+            ImportTemplateRecord(className, key, Encoding.UTF8.GetBytes(viewTemplate.Body), true, viewTemplate.ModuleType);
         }
 
         private void ImportViewTemplate(ViewTemplate viewTemplate)
@@ -251,12 +253,12 @@ namespace LessMarkup.Engine.FileSystem
             string pageNamespace, pageClassName;
             ViewBuilder.ExtractPageClassName(viewTemplate, out pageNamespace, out pageClassName);
             var className = pageNamespace + "." + pageClassName;
-            ImportTemplateRecord(className, viewTemplate.Path, Encoding.UTF8.GetBytes(viewTemplate.Body), true);
+            ImportTemplateRecord(className, viewTemplate.Path, Encoding.UTF8.GetBytes(viewTemplate.Body), true, viewTemplate.ModuleType);
         }
 
         private void ImportContentTemplate(ContentTemplate contentTemplate)
         {
-            ImportTemplateRecord(contentTemplate.Name, contentTemplate.Name, contentTemplate.Binary, false);
+            ImportTemplateRecord(contentTemplate.Name, contentTemplate.Name, contentTemplate.Binary, false, contentTemplate.ModuleType);
         }
 
         private void LoadDatabaseResources(long siteId)
@@ -291,14 +293,13 @@ namespace LessMarkup.Engine.FileSystem
             }
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
-            _siteId = siteId;
             _globalAssembly = Assembly.LoadFile(_specialFolder.GeneratedViewAssembly);
 
             var viewImport = new ViewImport();
@@ -324,8 +325,6 @@ namespace LessMarkup.Engine.FileSystem
                 ImportContentTemplate(resource.Value);
             }
 
-            expirationTime = DateTime.MaxValue;
-
             if (siteId.HasValue)
             {
                 LoadDatabaseResources(siteId.Value);
@@ -333,21 +332,6 @@ namespace LessMarkup.Engine.FileSystem
 
             var minifier = Interfaces.DependencyResolver.Resolve<ResourceMinifer>();
             minifier.Minify(_resourceReferences);
-        }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.SiteCustomization || (entityType == EntityType.Site && _siteId.HasValue && _siteId.Value == entityId);
-        }
-
-        private readonly EntityType[] _handledTypes = { EntityType.SiteCustomization, EntityType.Site };
-
-        public EntityType[] HandledTypes
-        {
-            get
-            {
-                return _handledTypes;
-            }
         }
     }
 }

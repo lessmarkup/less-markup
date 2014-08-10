@@ -43,14 +43,18 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 
         protected object EnableModule(long moduleId, bool enable)
         {
-            var siteId = ObjectId;
-            if (!siteId.HasValue)
+            long siteId;
+            if (ObjectId.HasValue)
             {
-                siteId = _siteMapper.SiteId;
-                if (!siteId.HasValue)
+                siteId = ObjectId.Value;
+            }
+            else
+            {
+                if (!_siteMapper.SiteId.HasValue)
                 {
                     throw new Exception("Unknown site");
                 }
+                siteId = _siteMapper.SiteId.Value;
             }
 
             using (var domainModel = _domainModelProvider.Create())
@@ -61,9 +65,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                 {
                     if (siteModule == null)
                     {
-                        siteModule = new SiteModule {ModuleId = moduleId, SiteId = siteId.Value};
+                        siteModule = new SiteModule
+                        {
+                            ModuleId = moduleId, 
+                            SiteId = siteId
+                        };
                         domainModel.GetCollection<SiteModule>().Add(siteModule);
-                        _changeTracker.AddChange(siteId.Value, EntityType.Site, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange(siteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                     }
                 }
@@ -72,7 +80,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                     if (siteModule != null)
                     {
                         domainModel.GetCollection<SiteModule>().Remove(siteModule);
-                        _changeTracker.AddChange(siteId.Value, EntityType.Site, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange(siteId, EntityType.Site, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                     }
                 }

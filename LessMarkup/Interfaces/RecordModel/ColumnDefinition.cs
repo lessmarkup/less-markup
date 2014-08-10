@@ -8,11 +8,9 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public class ColumnDefinition
     {
-        public int? WidthPercents { get; set; }
-        public int? WidthPixels { get; set; }
-        public int? WidthWeight { get; set; }
-        public int? MinWidth { get; set; }
-        public int? MaxWidth { get; set; }
+        public string Width { get; set; }
+        public string MinWidth { get; set; }
+        public string MaxWidth { get; set; }
         public bool Visible { get; set; }
         public bool Sortable { get; set; }
         public bool Resizable { get; set; }
@@ -23,12 +21,12 @@ namespace LessMarkup.Interfaces.RecordModel
         public string CellTemplate { get; set; }
         public object TextId { get; set; }
         public PropertyInfo Property { get; set; }
+        public string CellUrl { get; set; }
+        public bool AllowUnsafe { get; set; }
 
         public void Initialize(ColumnAttribute configuration, PropertyInfo property)
         {
-            WidthPercents = configuration.WidthPercents;
-            WidthPixels = configuration.WidthPixels;
-            WidthWeight = configuration.WidthWeight;
+            Width = configuration.Width;
             MinWidth = configuration.MinWidth;
             MaxWidth = configuration.MaxWidth;
             Visible = configuration.Visible;
@@ -41,6 +39,8 @@ namespace LessMarkup.Interfaces.RecordModel
             TextId = configuration.TextId;
             Property = property;
             CellTemplate = configuration.CellTemplate;
+            CellUrl = configuration.CellUrl;
+            AllowUnsafe = configuration.AllowUnsafe;
         }
     }
 }

@@ -31,6 +31,8 @@ namespace LessMarkup.Engine.Build.Data
         private readonly List<Type> _modelCreateTypes = new List<Type>(); 
         private readonly ISpecialFolder _specialFolder;
         private readonly IEngineConfiguration _engineConfiguration;
+        private readonly HashSet<string> _dataNamespaces = new HashSet<string>();
+        private readonly HashSet<Assembly> _dataAssemblies = new HashSet<Assembly>();
 
         private readonly Func<IEnumerable<FileInfo>, IEnumerable<FileInfo>>  _filesFilter =
             fl => fl.Where(f => f.Name.Contains(".DataAccess.") && f.Name.EndsWith(".dll"));
@@ -137,7 +139,13 @@ namespace LessMarkup.Engine.Build.Data
 
                 if (!string.IsNullOrWhiteSpace(moduleSearchPath))
                 {
-                    files.AddRange(_filesFilter(new DirectoryInfo(moduleSearchPath).GetFiles("*.dll")));
+                    foreach (var path in moduleSearchPath.Split(new[] {';'}))
+                    {
+                        if (!string.IsNullOrWhiteSpace(path))
+                        {
+                            files.AddRange(_filesFilter(new DirectoryInfo(path).GetFiles("*.dll")));
+                        }
+                    }
                 }
 
                 return files;
@@ -154,6 +162,11 @@ namespace LessMarkup.Engine.Build.Data
             var codeNamespace = new CodeNamespace(targetNamespace);
 
             foreach (var ns in Constants.DataAccessGenerator.UsingNamespaces)
+            {
+                codeNamespace.Imports.Add(new CodeNamespaceImport(ns));
+            }
+
+            foreach (var ns in _dataNamespaces)
             {
                 codeNamespace.Imports.Add(new CodeNamespaceImport(ns));
             }
@@ -246,6 +259,11 @@ namespace LessMarkup.Engine.Build.Data
                 assemblyMap[Path.GetFileName(assembly.Location)] = assembly.Location;
             }
 
+            foreach (var assembly in _dataAssemblies)
+            {
+                assemblyMap[Path.GetFileName(assembly.Location)] = assembly.Location;
+            }
+
             foreach (var item in assemblyMap)
             {
                 compilerParameters.ReferencedAssemblies.Add(item.Value);
@@ -331,6 +349,11 @@ namespace LessMarkup.Engine.Build.Data
                             }
 
                             _domainModelProperties[property.PropertyType.FullName] = property;
+
+                            var propertyType = property.PropertyType.GenericTypeArguments[0];
+
+                            _dataAssemblies.Add(propertyType.Assembly);
+                            _dataNamespaces.Add(propertyType.Namespace);
                         }
                     }
 

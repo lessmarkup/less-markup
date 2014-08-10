@@ -1,6 +1,6 @@
-﻿<tr ng-show="showOptions" class="options-panel">
-    <td colspan="{{columns.length}}">
-        <button class="btn btn-default" ng-show="isActionVisible(action)" ng-repeat="action in actions" ng-bind="action.text" ng-click="executeAction(action)"></button>
+﻿<tr class="options-panel" ng-show="showOptions">
+    <td colspan="{{columns.length+1}}">
+        <button class="btn" ng-disabled="!isActionVisible(action)" ng-repeat="action in actions" ng-bind="action.text" ng-click="executeAction(action)"></button>
         <a ng-repeat="link in links" href="{{linkUrl(link)}}" ng-click="navigateToLink(link)" ng-bind="link.text"></a>
     </td>
 </tr>

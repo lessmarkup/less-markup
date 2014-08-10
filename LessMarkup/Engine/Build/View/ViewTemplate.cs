@@ -10,5 +10,6 @@ namespace LessMarkup.Engine.Build.View
         public string Namespace { get; set; }
         public string Path { get; set; }
         public string Name { get; set; }
+        public string ModuleType { get; set; }
     }
 }

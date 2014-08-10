@@ -202,8 +202,16 @@
                 return $scope.sendCommandAsync(action, data, success, failure, path);
             }
 
+            scope.navigateToView = function(path) {
+                return $scope.navigateToView(path);
+            }
+
             scope.toolbarButtons = [];
-            scope.path = page.path;
+            scope.path = page.Path;
+
+            scope.getFullPath = function(path) {
+                return page.Path + "/" + path;
+            }
         }
 
         $rootScope.scrollToPage = function (anchor, exact) {

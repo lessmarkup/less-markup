@@ -13,5 +13,6 @@ namespace LessMarkup.Engine.FileSystem
         public bool IsSiteAssembly { get; set; }
         public bool TypeLoaded { get; set; }
         public Type Type { get; set; }
+        public string ModuleType { get; set; }
     }
 }

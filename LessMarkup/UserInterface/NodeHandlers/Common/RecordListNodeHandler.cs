@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using LessMarkup.DataFramework;
@@ -18,7 +17,6 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Exceptions;
-using LessMarkup.UserInterface.Model.RecordModel;
 using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
@@ -27,7 +25,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
     {
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
-        private readonly RecordModelDefinition _recordModel;
+        private readonly IRecordModelDefinition _recordModel;
         private IModelCollection<T> _collection;
         private IEditableModelCollection<T> _editableCollection;
         private readonly PropertyInfo _idProperty;
@@ -55,7 +53,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
 
-            var formCache = dataCache.Get<RecordModelCache>();
+            var formCache = dataCache.Get<IRecordModelCache>();
             _recordModel = formCache.GetDefinition(typeof(T));
 
             if (_recordModel == null)
@@ -64,6 +62,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
 
             _idProperty = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).First(p => p.Name.EndsWith("Id"));
+
+            AddScript("controllers/recordlist");
         }
 
         private IEditableModelCollection<T> GetEditableCollection()
@@ -107,17 +107,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         private static string GetColumnWidth(ColumnDefinition column)
         {
-            if (column.WidthPixels.HasValue)
+            if (!string.IsNullOrEmpty(column.Width))
             {
-                return column.WidthPixels.Value.ToString(CultureInfo.InvariantCulture);
-            }
-            if (column.WidthPercents.HasValue)
-            {
-                return column.WidthPercents.Value + "%";
-            }
-            if (column.WidthWeight.HasValue)
-            {
-                return new String('*', column.WidthWeight.Value);
+                return column.Width;
             }
             return "*";
         }
@@ -146,7 +138,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;
 
-            var definition = _dataCache.Get<RecordModelCache>().GetDefinition(typeof(T));
+            var definition = _dataCache.Get<IRecordModelCache>().GetDefinition(typeof(T));
 
             var recordsActions = new List<Tuple<string, string>>();
 
@@ -306,11 +298,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Record = ret,
                 Index = GetIndex(ret, filter)
             };
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new [] {"controllers/recordlist"}; }
         }
     }
 }

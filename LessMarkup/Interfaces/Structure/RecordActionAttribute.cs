@@ -7,7 +7,7 @@ using System;
 namespace LessMarkup.Interfaces.Structure
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class RecordActionAttribute : Attribute
+    public class RecordActionAttribute : ActionAccessAttribute
     {
         public object NameTextId { get; set; }
 
@@ -18,5 +18,7 @@ namespace LessMarkup.Interfaces.Structure
 
         public string Action { get; set; }
         public string Visible { get; set; }
+        public Type CreateType { get; set; }
+        public bool Initialize { get; set; }
     }
 }

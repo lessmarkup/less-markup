@@ -49,7 +49,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
             else if (accessType.Value == NodeAccessType.NoAccess)
             {
-                    throw new UnknownActionException();
+                throw new UnknownActionException();
             }
 
             var handler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
@@ -87,6 +87,16 @@ namespace LessMarkup.UserInterface.Model.Structure
             if (method == null)
             {
                 throw new UnknownActionException();
+            }
+
+            var accessAttribute = method.GetCustomAttribute<ActionAccessAttribute>(true);
+
+            if (accessAttribute != null)
+            {
+                if ((int) handler.AccessType < (int) accessAttribute.MinimumAccess)
+                {
+                    throw new ActionAccessException();
+                }
             }
 
             var parameters = method.GetParameters();

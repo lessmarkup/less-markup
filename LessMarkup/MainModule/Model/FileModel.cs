@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -17,7 +16,7 @@ namespace LessMarkup.MainModule.Model
     [RecordModel(TitleTextId = MainModuleTextIds.EditFile, CollectionType = typeof(Collection))]
     public class FileModel
     {
-        private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
+        /*private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
             #region Big freaking list of mime types
         // combination of values from Windows 7 Registry and 
         // from C:\Windows\System32\inetsrv\config\applicationHost.config
@@ -582,7 +581,7 @@ namespace LessMarkup.MainModule.Model
         {".z", "application/x-compress"},
         {".zip", "application/x-zip-compressed"},
         #endregion
-        };
+        };*/
 
         private readonly IDomainModelProvider _domainModelProvider;
 
@@ -629,17 +628,24 @@ namespace LessMarkup.MainModule.Model
                 {
                     var file = new File
                     {
-                        Data = record.File,
+                        Data = record.File.File,
+                        ContentType = record.File.Type,
                         UniqueId = record.UniqueId,
                         FileName = record.FileName,
                     };
+
+                    if (string.IsNullOrWhiteSpace(file.FileName))
+                    {
+                        file.FileName = record.File.Name;
+                    }
 
                     domainModel.GetSiteCollection<File>().Add(file);
 
                     domainModel.SaveChanges();
 
+                    record.File = new InputFile();
+                    record.FileName = file.FileName;
                     record.FileId = file.FileId;
-                    record.File = null;
                 }
             }
 
@@ -654,12 +660,19 @@ namespace LessMarkup.MainModule.Model
 
                     if (record.File != null)
                     {
-                        file.Data = record.File;
+                        file.Data = record.File.File;
+                        file.ContentType = record.File.Type;
+
+                        if (string.IsNullOrWhiteSpace(file.FileName))
+                        {
+                            file.FileName = record.File.Name;
+                        }
                     }
 
                     domainModel.SaveChanges();
 
-                    record.File = null;
+                    record.File = new InputFile();
+                    record.FileName = file.FileName;
                 }
             }
 
@@ -684,10 +697,10 @@ namespace LessMarkup.MainModule.Model
         [InputField(InputFieldType.Text, MainModuleTextIds.UniqueId, Required = true)]
         public string UniqueId { get; set; }
         [Column(MainModuleTextIds.FileName)]
-        [InputField(InputFieldType.Text, MainModuleTextIds.FileName, Required = true)]
+        [InputField(InputFieldType.Text, MainModuleTextIds.FileName)]
         public string FileName { get; set; }
         [InputField(InputFieldType.File, MainModuleTextIds.File, Required = true)]
-        public byte[] File { get; set; }
+        public InputFile File { get; set; }
 
         public ActionResult GetFile(string id)
         {
@@ -700,24 +713,7 @@ namespace LessMarkup.MainModule.Model
                     return new HttpNotFoundResult();
                 }
 
-                string extension = "bin";
-
-                if (!string.IsNullOrWhiteSpace(file.FileName))
-                {
-                    var pos = file.FileName.LastIndexOf('.');
-                    if (pos > 0)
-                    {
-                        extension = file.FileName.Substring(pos + 1).Trim().ToLower();
-                    }
-                }
-
-                string contentType;
-                if (!_mappings.TryGetValue(extension, out contentType))
-                {
-                    contentType = "application/octet-stream";
-                }
-
-                return new FileContentResult(file.Data, contentType) {FileDownloadName = file.FileName};
+                return new FileContentResult(file.Data, file.ContentType) {FileDownloadName = file.FileName};
             }
         }
     }

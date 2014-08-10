@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Collections.Generic;
-using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
@@ -16,69 +14,72 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
     public abstract class DialogNodeHandler<T> : AbstractNodeHandler
     {
-        private readonly HashSet<string> _scripts = new HashSet<string>();
-
         protected abstract T LoadObject();
         protected abstract string SaveObject(T changedObject);
+
+        private readonly InputFormDefinitionModel _definitionModel;
+
+        protected DialogNodeHandler()
+        {
+            _definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
+            _definitionModel.Initialize(typeof(T));
+
+            foreach (var field in _definitionModel.Fields)
+            {
+                switch (field.Type)
+                {
+                    case InputFieldType.CodeText:
+                        AddScript("lib/codemirror/codemirror");
+                        AddScript("lib/codemirror/plugins/css");
+                        AddScript("lib/codemirror/plugins/css-hint");
+                        AddScript("lib/codemirror/plugins/dialog");
+                        AddScript("lib/codemirror/plugins/anyword-hint");
+                        AddScript("lib/codemirror/plugins/brace-fold");
+                        AddScript("lib/codemirror/plugins/closebrackets");
+                        AddScript("lib/codemirror/plugins/closetag");
+                        AddScript("lib/codemirror/plugins/colorize");
+                        AddScript("lib/codemirror/plugins/comment");
+                        AddScript("lib/codemirror/plugins/comment-fold");
+                        AddScript("lib/codemirror/plugins/continuecomment");
+                        AddScript("lib/codemirror/plugins/foldcode");
+                        AddScript("lib/codemirror/plugins/fullscreen");
+                        AddScript("lib/codemirror/plugins/html-hint");
+                        AddScript("lib/codemirror/plugins/htmlembedded");
+                        AddScript("lib/codemirror/plugins/htmlmixed");
+                        AddScript("lib/codemirror/plugins/indent-fold");
+                        AddScript("lib/codemirror/plugins/javascript");
+                        AddScript("lib/codemirror/plugins/javascript-hint");
+                        AddScript("lib/codemirror/plugins/mark-selection");
+                        AddScript("lib/codemirror/plugins/markdown-fold");
+                        AddScript("lib/codemirror/plugins/match-highlighter");
+                        AddScript("lib/codemirror/plugins/matchbrackets");
+                        AddScript("lib/codemirror/plugins/matchtags");
+                        AddScript("lib/codemirror/plugins/placeholder");
+                        AddScript("lib/codemirror/plugins/rulers");
+                        AddScript("lib/codemirror/plugins/scrollpastend");
+                        AddScript("lib/codemirror/plugins/search");
+                        AddScript("lib/codemirror/plugins/searchcursor");
+                        AddScript("lib/codemirror/plugins/xml");
+                        AddScript("lib/codemirror/plugins/xml-fold");
+                        AddScript("lib/codemirror/plugins/xml-hint");
+                        AddScript("lib/codemirror/ui-codemirror");
+                        break;
+                    case InputFieldType.RichText:
+                        AddScript("lib/tinymce/tinymce");
+                        AddScript("lib/tinymce/config");
+                        AddScript("lib/tinymce/tinymce-angular");
+                        break;
+                }
+            }
+        }
 
         protected virtual string ApplyCaption { get { return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
 
         protected override object GetViewData()
         {
-            var definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
-            definitionModel.Initialize(typeof (T));
-
-            foreach (var field in definitionModel.Fields)
-            {
-                switch (field.Type)
-                {
-                    case InputFieldType.CodeText:
-                        _scripts.Add("lib/codemirror/codemirror");
-                        _scripts.Add("lib/codemirror/plugins/css");
-                        _scripts.Add("lib/codemirror/plugins/css-hint");
-                        _scripts.Add("lib/codemirror/plugins/dialog");
-                        _scripts.Add("lib/codemirror/plugins/anyword-hint");
-                        _scripts.Add("lib/codemirror/plugins/brace-fold");
-                        _scripts.Add("lib/codemirror/plugins/closebrackets");
-                        _scripts.Add("lib/codemirror/plugins/closetag");
-                        _scripts.Add("lib/codemirror/plugins/colorize");
-                        _scripts.Add("lib/codemirror/plugins/comment");
-                        _scripts.Add("lib/codemirror/plugins/comment-fold");
-                        _scripts.Add("lib/codemirror/plugins/continuecomment");
-                        _scripts.Add("lib/codemirror/plugins/foldcode");
-                        _scripts.Add("lib/codemirror/plugins/fullscreen");
-                        _scripts.Add("lib/codemirror/plugins/html-hint");
-                        _scripts.Add("lib/codemirror/plugins/htmlembedded");
-                        _scripts.Add("lib/codemirror/plugins/htmlmixed");
-                        _scripts.Add("lib/codemirror/plugins/indent-fold");
-                        _scripts.Add("lib/codemirror/plugins/javascript");
-                        _scripts.Add("lib/codemirror/plugins/javascript-hint");
-                        _scripts.Add("lib/codemirror/plugins/mark-selection");
-                        _scripts.Add("lib/codemirror/plugins/markdown-fold");
-                        _scripts.Add("lib/codemirror/plugins/match-highlighter");
-                        _scripts.Add("lib/codemirror/plugins/matchbrackets");
-                        _scripts.Add("lib/codemirror/plugins/matchtags");
-                        _scripts.Add("lib/codemirror/plugins/placeholder");
-                        _scripts.Add("lib/codemirror/plugins/rulers");
-                        _scripts.Add("lib/codemirror/plugins/scrollpastend");
-                        _scripts.Add("lib/codemirror/plugins/search");
-                        _scripts.Add("lib/codemirror/plugins/searchcursor");
-                        _scripts.Add("lib/codemirror/plugins/xml");
-                        _scripts.Add("lib/codemirror/plugins/xml-fold");
-                        _scripts.Add("lib/codemirror/plugins/xml-hint");
-                        _scripts.Add("lib/codemirror/ui-codemirror");
-                        break;
-                    case InputFieldType.RichText:
-                        _scripts.Add("lib/tinymce/tinymce");
-                        _scripts.Add("lib/tinymce/config");
-                        _scripts.Add("lib/tinymce/tinymce-angular");
-                        break;
-                }
-            }
-
             return new
             {
-                Definition = definitionModel,
+                Definition = _definitionModel,
                 Object = LoadObject(),
                 ApplyCaption
             };
@@ -92,11 +93,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected override string ViewType
         {
             get { return "Dialog"; }
-        }
-
-        protected override string[] Scripts
-        {
-            get { return _scripts.ToArray(); }
         }
     }
 }

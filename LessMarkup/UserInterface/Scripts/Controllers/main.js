@@ -2,6 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+function scopeProperty(scope, name) {
+    for (;;) {
+        if (scope.hasOwnProperty("name")) {
+            return scope.name;
+        }
+        if (!scope.hasOwnProperty("$parent")) {
+            return undefined;
+        }
+        scope = scope.$parent;
+    }
+}
+
 app.controller('main', function ($scope, $http, commandHandler, inputForm, $location, $browser, $timeout, lazyLoad) {
     var initialData = window.viewInitialData;
     window.viewInitialData = null;
@@ -381,12 +393,16 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
     }
 
+    $scope.getFullPath = function(path) {
+        return $scope.path + "/" + path;
+    }
+
     $scope.navigateToView = function (url) {
         $scope.hideXsMenu();
 
         if ($scope.staticNodes.hasOwnProperty(url)) {
             onNodeLoaded($scope.staticNodes[url], url);
-            return;
+            return false;
         }
 
         var cachedItems = [];
@@ -410,6 +426,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }).error(function (data, status) {
             $scope.showError(status > 0 ? "Request failed, error " + status.toString() : "Request failed, unknown communication error");
         });
+
+        return false;
     };
 
     if (initialData.NodeLoadError && initialData.NodeLoadError.length > 0) {

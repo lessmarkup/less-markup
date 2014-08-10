@@ -13,7 +13,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Engine.Currencies
 {
-    public class CurrencyCache : ICacheHandler
+    public class CurrencyCache : AbstractCacheHandler
     {
         private const string CookieCurrencyName = "currency";
         private readonly Dictionary<long, CurrencyCacheItem> _currencies = new Dictionary<long, CurrencyCacheItem>();
@@ -21,7 +21,7 @@ namespace LessMarkup.Engine.Currencies
         private readonly IDomainModelProvider _domainModelProvider;
         private long? _baseCurrencyId;
 
-        public CurrencyCache(IDomainModelProvider domainModelProvider)
+        public CurrencyCache(IDomainModelProvider domainModelProvider) : base(new[]{EntityType.Currency})
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -95,7 +95,7 @@ namespace LessMarkup.Engine.Currencies
             return (value / shopCurrencyRate) * userCurrencyRate;
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (objectId.HasValue)
             {
@@ -116,17 +116,6 @@ namespace LessMarkup.Engine.Currencies
                     }
                 }
             }
-
-            expirationTime = null;
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.Currency;
-        }
-
-        private readonly EntityType[] _handledTypes = {EntityType.Currency};
-
-        public EntityType[] HandledTypes { get { return _handledTypes; } }
     }
 }

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-function DialogController($http, $scope, $timeout, lazyLoad) {
+function DialogController($http, $scope, $timeout, lazyLoad, $sce) {
 
     $scope.definition = $scope.viewData.Definition;
     $scope.object = $scope.viewData.Object;
@@ -36,7 +36,7 @@ function DialogController($http, $scope, $timeout, lazyLoad) {
         });
     }
 
-    InputFormController($scope, null, $scope.definition, $scope.object, successFunction, $scope.getTypeahead, lazyLoad);
+    InputFormController($scope, null, $scope.definition, $scope.object, successFunction, $scope.getTypeahead, $sce);
 
     $scope.hasChanges = false;
 

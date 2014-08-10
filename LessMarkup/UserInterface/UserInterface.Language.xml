@@ -46,7 +46,6 @@
     <Translation Id="File" Text="File"/>
     <Translation Id="Text" Text="Text"/>
     <Translation Id="EditCustomization" Text="Edit Customization"/>
-    <Translation Id="PropertyMustBeSpecified" Text="Property {0} must be specified"/>
     <Translation Id="Enable" Text="Enable"/>
     <Translation Id="Disable" Text="Disable"/>
     <Translation Id="NodeSettings" Text="Node Settings"/>
@@ -79,116 +78,18 @@
     <Translation Id="RemoveRecord" Text="Remove"/>
     <Translation Id="Nodes" Text="Nodes"/>
     <Translation Id="Properties" Text="Properties"/>
-    <!--<Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>
-    <Translation Id="" Text=""/>-->
+    <Translation Id="ActionAccessException" Text="You do not have enough rights to run this operation"/>
+    <Translation Id="RememberMe" Text="Remember me"/>
+    <Translation Id="SignIn" Text="Sign in"/>
+    <Translation Id="Profile" Text="Profile"/>
+    <Translation Id="Logout" Text="Logout"/>
+    <Translation Id="PleaseWaitLoading" Text="Please wait, the site is loading..."/>
+    <Translation Id="SearchGo" Text="Go"/>
+    <Translation Id="ToggleNavigation" Text="Toggle Navigation"/>
+    <Translation Id="Signature" Text="Signature"/>
+    <Translation Id="UserCards" Text="Users"/>
+    <!--
+    <Translation Id="" Text=""/>
+    -->
   </Translations>
 </Language>

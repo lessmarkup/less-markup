@@ -10,5 +10,6 @@ namespace LessMarkup.Engine.FileSystem
         public byte[] Binary { get; set; }
         public bool Minified { get; set; }
         public string Path { get; set; }
+        public string ModuleType { get; set; }
     }
 }

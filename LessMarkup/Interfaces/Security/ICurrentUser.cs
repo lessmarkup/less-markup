@@ -11,7 +11,7 @@ namespace LessMarkup.Interfaces.Security
     public interface ICurrentUser
     {
         long? UserId { get; }
-        List<long> Groups { get; }
+        IReadOnlyList<long> Groups { get; }
         bool IsAdministrator { get; }
         bool IsGlobalAdministrator { get; }
         bool IsValidated { get; }

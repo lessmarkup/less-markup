@@ -11,9 +11,8 @@ using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Site
 {
-    public class SiteCache : ICacheHandler
+    public class SiteCache : AbstractCacheHandler
     {
-        private readonly EntityType[] _handledTypes = {EntityType.Site};
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly List<SiteCacheItem> _sites = new List<SiteCacheItem>();
         private readonly Dictionary<string, SiteCacheItem> _sitesByHost = new Dictionary<string, SiteCacheItem>();
@@ -21,6 +20,7 @@ namespace LessMarkup.Engine.Site
         private readonly IModuleProvider _moduleProvider;
 
         public SiteCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+            : base(new[] { EntityType.Site })
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
@@ -31,15 +31,13 @@ namespace LessMarkup.Engine.Site
             return _moduleProvider.Modules.Where(m => m.System).Select(m => m.ModuleType).ToList();
         }
 
-
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
-            expirationTime = null;
             var systemModuleTypes = GetSystemModuleTypes();
 
             using (var domainModel = _domainModelProvider.Create(null))
@@ -90,13 +88,6 @@ namespace LessMarkup.Engine.Site
                 }
             }
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.Site;
-        }
-
-        public EntityType[] HandledTypes { get { return _handledTypes; } }
 
         public SiteCacheItem GetByHostName(string hostName)
         {

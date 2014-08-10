@@ -5,14 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
-using LessMarkup.UserInterface.Hubs;
-using LessMarkup.UserInterface.Model.RecordModel;
-using Microsoft.AspNet.SignalR;
 
 namespace LessMarkup.UserInterface.ChangeTracking
 {
@@ -20,7 +16,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
     {
         public static TrackerRecordType Create(string connectionId, string modelId, object filter, IDataCache dataCache)
         {
-            var modelDefinition = dataCache.Get<RecordModelCache>().GetDefinition(modelId);
+            var modelDefinition = dataCache.Get<IRecordModelCache>().GetDefinition(modelId);
             var constructorInfo = typeof (TrackerRecordType<>).MakeGenericType(modelDefinition.DataType).GetConstructors().Single();
             return (TrackerRecordType) constructorInfo.Invoke(new[] {connectionId, modelDefinition.EntityType, modelDefinition.CollectionType, filter});
         }
@@ -58,7 +54,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
 
         private dynamic GetClient()
         {
-            return GlobalHost.ConnectionManager.GetHubContext<RecordListHub>().Clients.Client(_connectionId);
+            return null;//GlobalHost.ConnectionManager.GetHubContext<RecordListHub>().Clients.Client(_connectionId);
         }
 
         public override void GetAllIds(IDomainModelProvider domainModelProvider)

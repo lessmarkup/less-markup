@@ -11,5 +11,6 @@ namespace LessMarkup.Engine.HtmlTemplate
         public List<string> TextParts { get; set; }
         public List<Directive> Directives { get; set; }
         public string Path { get; set; }
+        public string ModuleType { get; set; }
     }
 }

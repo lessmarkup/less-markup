@@ -33,7 +33,8 @@ namespace LessMarkup.Engine.Build.View
                 Body = body, 
                 Namespace = module != null ? module.Namespace : null, 
                 Name = name,
-                Path = "/Views/" + name.Replace('.', '/') + ".cshtml"
+                Path = "/Views/" + name.Replace('.', '/') + ".cshtml",
+                ModuleType = module != null ? module.ModuleType : ""
             };
 
             _viewTemplates[name] = viewTemplate;
@@ -57,7 +58,7 @@ namespace LessMarkup.Engine.Build.View
                     return;
             }
 
-            var template = new ContentTemplate();
+            var template = new ContentTemplate {ModuleType = module.ModuleType};
             
             var folder = parts[0];
 

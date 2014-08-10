@@ -266,6 +266,7 @@
     <Compile Include="Security\HtmlSanitizer.cs" />
     <Compile Include="Security\Models\GeneratedPassswordModel.cs" />
     <Compile Include="Security\Models\NewUserCreatedModel.cs" />
+    <Compile Include="Security\SanitizeContext.cs" />
     <Compile Include="Security\UserCache.cs" />
     <Compile Include="Site\GlobalRuleConstraint.cs" />
     <Compile Include="Site\SiteCache.cs" />
@@ -287,8 +288,10 @@
     <Compile Include="Configuration\SiteConfigurationCache.cs" />
     <Compile Include="Email\MailSender.cs" />
     <Compile Include="Email\MailTemplateProvider.cs" />
+    <Compile Include="Structure\RecordModelCache.cs" />
+    <Compile Include="Structure\RecordModelDefinition.cs" />
     <Compile Include="TextAndSearch\FormattedText.cs" />
-    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\ImageUploader.cs" />
     <Compile Include="TextAndSearch\ITextTagHandler.cs" />
     <Compile Include="Language\CachedLanguage.cs" />
     <Compile Include="Language\CachedTranslation.cs" />

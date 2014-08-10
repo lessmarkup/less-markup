@@ -29,6 +29,7 @@ namespace LessMarkup.UserInterface
             JsonConvert.DefaultSettings = () =>
             {
                 var settings = new JsonSerializerSettings();
+                settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 settings.Converters.Add(new StringEnumConverter());
                 return settings;
             };

@@ -33,7 +33,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly List<TabPage> _pages = new List<TabPage>();
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
-        private readonly List<string> _scripts = new List<string>(); 
+        private readonly List<string> _scripts = new List<string>();
 
         protected void AddPage<T>(string title, string path = null) where T : INodeHandler
         {
@@ -47,6 +47,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         public TabPageNodeHandler(IDataCache dataCache, ICurrentUser currentUser)
         {
+            AddScript("controllers/tabpage");
             _dataCache = dataCache;
             _currentUser = currentUser;
         }
@@ -190,11 +191,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Title = page.Title,
                 Id = page.PageId,
             };
-        }
-
-        protected override string[] Scripts
-        {
-            get { return new []{ "controllers/tabpage" }; }
         }
     }
 }

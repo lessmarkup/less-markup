@@ -6,14 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using LessMarkup.DataFramework;
+using LessMarkup.Engine.FileSystem;
+using LessMarkup.Engine.HtmlTemplate;
+using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Scripting;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 
-namespace LessMarkup.UserInterface.Model.RecordModel
+namespace LessMarkup.Engine.Structure
 {
-    public class RecordModelDefinition
+    class RecordModelDefinition : IRecordModelDefinition
     {
         private readonly List<InputFieldDefinition> _fields = new List<InputFieldDefinition>();
         private readonly List<ColumnDefinition> _columns = new List<ColumnDefinition>();
@@ -25,9 +30,16 @@ namespace LessMarkup.UserInterface.Model.RecordModel
         public string Id { get; set; }
         public EntityType EntityType { get; set; }
 
-        public List<InputFieldDefinition> Fields { get { return _fields; } }
+        public IReadOnlyList<InputFieldDefinition> Fields { get { return _fields; } }
 
-        public List<ColumnDefinition> Columns { get { return _columns; } }
+        public IReadOnlyList<ColumnDefinition> Columns { get { return _columns; } }
+
+        private readonly IDataCache _dataCache;
+
+        public RecordModelDefinition(IDataCache dataCache)
+        {
+            _dataCache = dataCache;
+        }
 
         public void Initialize(Type type, RecordModelAttribute formType, string moduleType)
         {
@@ -43,18 +55,23 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
                 if (fieldAttribute != null)
                 {
-                    var fieldDefinition = new InputFieldDefinition();
+                    var fieldDefinition = DependencyResolver.Resolve<InputFieldDefinition>();
                     fieldDefinition.Initialize(fieldAttribute, property, moduleType);
-                    Fields.Add(fieldDefinition);
+                    _fields.Add(fieldDefinition);
                 }
 
                 var columnAttribute = property.GetCustomAttribute<ColumnAttribute>();
 
                 if (columnAttribute != null)
                 {
-                    var columnDefinition = new ColumnDefinition();
+                    var columnDefinition = DependencyResolver.Resolve<ColumnDefinition>();
                     columnDefinition.Initialize(columnAttribute, property);
-                    Columns.Add(columnDefinition);
+                    _columns.Add(columnDefinition);
+
+                    if (columnDefinition.CellTemplate != null && columnDefinition.CellTemplate.StartsWith("~/"))
+                    {
+                        columnDefinition.CellTemplate = _dataCache.Get<HtmlTemplateCache>().GetTemplate(columnDefinition.CellTemplate);
+                    }
                 }
             }
         }
@@ -105,7 +122,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                     }
                 }
 
-                var errorText = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PropertyMustBeSpecified);
+                var errorText = LanguageHelper.GetText(Constants.ModuleType.UserInterface, MainModuleTextIds.PropertyMustBeSpecified);
                 var fieldText = LanguageHelper.GetText(ModuleType, field.TextId);
 
                 throw new Exception(string.Format(errorText, fieldText));

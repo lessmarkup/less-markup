@@ -23,7 +23,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Language
 {
-    public class LanguageCache : ILanguageCache
+    public class LanguageCache : AbstractCacheHandler, ILanguageCache
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
@@ -35,6 +35,7 @@ namespace LessMarkup.Engine.Language
         private readonly Dictionary<string, string> _defaultTranslations = new Dictionary<string, string>();
 
         public LanguageCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+            : base(new[] { EntityType.Language })
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
@@ -76,7 +77,7 @@ namespace LessMarkup.Engine.Language
             }
         }
 
-        public void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null)
+        protected override void Initialize(long? siteId, long? objectId)
         {
             if (objectId != null)
             {
@@ -118,8 +119,6 @@ namespace LessMarkup.Engine.Language
             }
 
             _languagesList = _languagesMap.Values.ToList();
-
-            expirationTime = null;
         }
 
         public long? CurrentLanguageId
@@ -204,12 +203,5 @@ namespace LessMarkup.Engine.Language
             throw new TextNotFoundException(id);
 #endif
         }
-
-        public bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
-        {
-            return entityType == EntityType.Language;
-        }
-
-        public EntityType[] HandledTypes { get { return new[] {EntityType.Language}; } }
     }
 }

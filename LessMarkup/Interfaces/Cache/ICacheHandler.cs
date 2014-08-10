@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.Cache
@@ -16,9 +15,8 @@ namespace LessMarkup.Interfaces.Cache
         /// Initializes the cache time.
         /// </summary>
         /// <param name="siteId">The site id.</param>
-        /// <param name="expirationTime">The expiration time.</param>
         /// <param name="objectId">The object identifier.</param>
-        void Initialize(long? siteId, out DateTime? expirationTime, long? objectId = null);
+        void Initialize(long? siteId, long? objectId = null);
         /// <summary>
         /// Expires the cache item.
         /// </summary>
@@ -34,5 +32,7 @@ namespace LessMarkup.Interfaces.Cache
         /// The handled types.
         /// </value>
         EntityType[] HandledTypes { get; }
+
+        bool Expired { get; }
     }
 }
