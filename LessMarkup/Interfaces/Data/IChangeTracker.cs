@@ -11,7 +11,7 @@ namespace LessMarkup.Interfaces.Data
     public interface IChangeTracker
     {
         void AddChange(long entityId, EntityType entityType, EntityChangeType changeType, IDomainModel domainModel);
-
+        void Invalidate();
         event RecordChangeHandler RecordChanged;
     }
 }

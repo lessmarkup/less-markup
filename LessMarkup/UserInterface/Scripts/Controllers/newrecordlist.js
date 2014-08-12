@@ -1,16 +1,21 @@
 ﻿app.directive("bindCell", function($compile) {
     return {
-        //template: '<div></div>',
         scope: {
-            parameter: '=bindCell',
+            parameters: '=bindCell',
         },
         link: function (scope, element) {
-            element.contents().remove();
-            var parameter = scope.parameter;
-            scope = scope.$parent.$new();
-            scope.record = parameter.record;
-            var html = $compile(parameter.template)(scope);
-            element.append(html);
+
+            var innerScope = scope.$parent.$new();
+
+            function updateValue() {
+                element.contents().remove();
+                innerScope.data = scope.parameters.scope(innerScope);
+                var html = $compile(scope.parameters.template)(innerScope);
+                element.append(html);
+            }
+
+            updateValue();
+            scope.$watch("scope.parameters.scope(scope)", updateValue);
         }
     };
 });
@@ -79,12 +84,24 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         return $sce.trustAsHtml(html);
     }
 
-    if ($scope.viewData.extensionScript && $scope.viewData.extensionScript.length) {
-        window[$scope.viewData.extensionScript]($scope);
-    }
-
     $scope.getRecordListScope = function() {
         return $scope;
+    }
+
+    var createNewRecord;
+
+    function createNewRecord(recordId) {
+        var record = { loaded: false }
+        for (var i = 0; i < $scope.columns.length; i++) {
+            record[$scope.columns[i].name] = "";
+        }
+        record[recordIdField] = recordId;
+        return record;
+    }
+
+    function createRecordCopy(record) {
+        record.loaded = true;
+        return record;
     }
 
     var records = [];
@@ -95,6 +112,16 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
     for (var i = 0; i < $scope.columns.length; i++) {
         var column = $scope.columns[i];
         column.colSpan = 1;
+        if (!column.scope || !column.scope.length) {
+            column.scope = function(obj) {
+                return obj.row;
+            }
+        } else {
+            column.scope = new Function("obj", "with(obj) { return " + column.scope + "; }");
+        }
+    }
+
+    $scope.onDataReceived = function(scope, data) {
     }
 
     for (var i = 0; i < $scope.viewData.actions.length; i++) {
@@ -231,71 +258,42 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
 
         hideOptions();
 
-        if (unloadedRecords == 0) {
-
-            var field = column.name;
-
-            records.sort(function(a, b) {
-                var af = a[field];
-                var bf = b[field];
-                if (af == bf) {
-                    return 0;
-                }
-                if (af < bf) {
-                    return -1;
-                }
-                return 1;
-            });
-
-            $scope.showPage(1);
-
-        } else {
+        if (unloadedRecords != 0) {
             $scope.sendAction("Sort", { column: column.name, direction: current }, function (data) {
-
-                var recordsById = {};
-
-                for (var i = 0; i < records.length; i++) {
-                    var record = records[i];
-                    recordsById[record[recordIdField]] = record;
-                }
-
-                var newRecords = [];
-
-                for (var i = 0; i < data.recordIds.length; i++) {
-                    var recordId = data.recordIds[i];
-                    newRecords.push(recordsById[recordId]);
-                }
-
-                records = newRecords;
-
+                resetRecords(data.recordIds);
                 $scope.showPage(1);
+            }, function(message) {
+                inputForm.message(message, "Error");
             });
+            return;
         }
+
+        var field = column.name;
+
+        records.sort(function(a, b) {
+            var af = a[field];
+            var bf = b[field];
+            if (af == bf) {
+                return 0;
+            }
+            if (af < bf) {
+                return -1;
+            }
+            return 1;
+        });
+
+        $scope.showPage(1);
     }
 
     function editCurrentRecord(index) {
 
         inputForm.editObject(records[index], $scope.viewData.type, function (object, success, failure) {
-
             $scope.sendAction("ModifyRecord", {
                 modifiedObject: object,
                 filter: filter
             }, function (data) {
                 // success
-                data.record.loaded = true;
-
-                if (data.index == index) {
-                    records[index] = data.record;
-                } else {
-                    hideOptions();
-                    records.splice(index, 1);
-                    if (data.index >= 0) {
-                        records.splice(data.index, 0, data.record);
-                    }
-                }
-                $scope.loadVisibleRecords();
-                success();
-
+                handleActionResult(data, index, success, failure);
             }, function (message) {
                 // failed
                 failure(message);
@@ -304,6 +302,8 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
     }
 
     function handleActionResult(data, index, success, failure) {
+
+        $scope.onDataReceived($scope, data);
 
         if (data.redirect && data.redirect.length) {
             if (success) {
@@ -338,10 +338,11 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
 
         var isNew = data.hasOwnProperty("isNew") && data.isNew;
         var newIndex = data.hasOwnProperty("index") ? data.index : -1;
-        data.record.loaded = true;
+
+        var record = createRecordCopy(data.record);
 
         if (!isNew && index >= 0 && (newIndex == index || newIndex == -1)) {
-            records[index] = data.record;
+            records[index] = record;
             $scope.loadVisibleRecords();
         } else {
             hideOptions();
@@ -349,10 +350,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
                 records.splice(index, 1);
             }
             if (newIndex >= 0) {
-                records.splice(data.index, 0, data.record);
+                records.splice(data.index, 0, record);
             } else {
                 newIndex = records.length;
-                records.push(data.record);
+                records.push(record);
             }
             var totalItems = records.length;
             var itemsPerPage = $scope.viewData.recordsPerPage;
@@ -363,6 +364,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
                 var page = (newIndex / itemsPerPage) + 1;
                 $scope.showPage(page);
             }
+        }
+
+        if (!$scope.$$phase) {
+            $scope.$apply();
         }
 
         if (success) {
@@ -473,15 +478,6 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         return $scope.path + "/" + extractLink(link.url, currentRecord);
     }
 
-    function createNewRecord(recordId) {
-        var record = { loaded: false };
-        for (var i = 0; i < $scope.columns.length; i++) {
-            record[$scope.columns[i].name] = "";
-        }
-        record[recordIdField] = recordId;
-        return record;
-    }
-
     $scope.getColumnLink = function(column, row) {
         return $scope.path + "/" + extractLink(column.url, row);
     }
@@ -576,6 +572,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
             $scope.sendAction("Fetch", {
                 ids: recordIds
             }, function (data) {
+                $scope.onDataReceived($scope, data);
                 $scope.updateRecords(data.records);
                 if (!$scope.$$phase) {
                     $scope.$apply();
@@ -594,10 +591,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
 
     $scope.updateRecords = function (updated) {
         for (var i = 0; i < updated.length; i++) {
-            var record = updated[i];
-            record.loaded = true;
+            var source = updated[i];
+            var recordId = source[recordIdField];
+            var target = createRecordCopy(source);
 
-            var recordId = record[recordIdField];
             for (var j = 0; j < records.length; j++) {
                 var currentRecord = records[j];
                 var currentRecordId = currentRecord[recordIdField];
@@ -605,13 +602,13 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
                     continue;
                 }
 
-                records[j] = record;
+                records[j] = target;
 
                 for (var k = 0; k < $scope.rows.length; k++) {
                     var row = $scope.rows[k];
                     if (row[recordIdField] == recordId) {
-                        $scope.rows[k] = record;
-                        record.isOdd = (k % 2) != 0;
+                        $scope.rows[k] = target;
+                        target.isOdd = (k % 2) != 0;
                         break;
                     }
                 }
@@ -625,5 +622,14 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         $scope.showPage($scope.currentPage);
     }
 
-    $scope.showPage(1);
+    if ($scope.viewData.extensionScript && $scope.viewData.extensionScript.length) {
+        require([$scope.viewData.extensionScript], function(extensionScript) {
+            extensionScript($scope);
+            $scope.onDataReceived($scope, $scope.viewData);
+            $scope.showPage(1);
+        });
+    } else {
+        $scope.onDataReceived($scope, $scope.viewData);
+        $scope.showPage(1);
+    }
 });

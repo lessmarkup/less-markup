@@ -23,6 +23,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public PropertyInfo Property { get; set; }
         public string CellUrl { get; set; }
         public bool AllowUnsafe { get; set; }
+        public string Scope { get; set; }
 
         public void Initialize(ColumnAttribute configuration, PropertyInfo property)
         {
@@ -41,6 +42,7 @@ namespace LessMarkup.Interfaces.RecordModel
             CellTemplate = configuration.CellTemplate;
             CellUrl = configuration.CellUrl;
             AllowUnsafe = configuration.AllowUnsafe;
+            Scope = configuration.Scope;
         }
     }
 }

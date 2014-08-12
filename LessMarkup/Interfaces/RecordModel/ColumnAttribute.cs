@@ -33,5 +33,6 @@ namespace LessMarkup.Interfaces.RecordModel
         public object TextId { get; set; }
         public string CellUrl { get; set; }
         public bool AllowUnsafe { get; set; }
+        public string Scope { get; set; }
     }
 }

@@ -175,6 +175,12 @@ namespace LessMarkup.Engine.DataChange
             }
         }
 
+        public void Invalidate()
+        {
+            SendUpdates(null);
+            HandleQueue(null);
+        }
+
         private void HandleQueue(object sender)
         {
             try

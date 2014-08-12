@@ -190,6 +190,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         headerClass = c.HeaderClass,
                         cellTemplate = c.CellTemplate,
                         cellFilter = GetCellFilter(c),
+                        scope = c.Scope
                     }).ToList(),
                     CellCommands = _cellButtons,
                     CellLinks = _cellLinks,
