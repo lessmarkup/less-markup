@@ -1,7 +1,7 @@
 ﻿<div class="cell-subject">
-    <span ng-if="record.Subject && record.Subject.length" ng-bind="record.Subject + ' - '"></span>
+    <span ng-if="data.Subject && data.Subject.length" ng-bind="data.Subject + ' - '"></span>
     <span>[[[translate Created]]]:</span>
-    <span ng-bind="record.Created | date:'medium'"></span>
+    <span ng-bind="data.Created | date:'medium'"></span>
 </div>
-<div ng-bind-html="getSafeValue(record.Text)" class="cell-text">
+<div ng-bind-html="getSafeValue(data.Text)" class="cell-text">
 </div>

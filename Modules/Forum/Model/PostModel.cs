@@ -62,12 +62,11 @@ namespace LessMarkup.Forum.Model
                 {
                     Subject = p.Subject,
                     Text = p.Text,
-                    AuthorId = p.UserId,
-                    AuthorName = p.User.Name,
-                    AuthorImageId = p.User.AvatarImageId,
+                    UserName = p.User.Name,
                     PostId = p.PostId,
                     Removed = p.Removed,
-                    Created = p.Created
+                    Created = p.Created,
+                    UserId = p.UserId
                 });
             }
 
@@ -104,10 +103,13 @@ namespace LessMarkup.Forum.Model
                 var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && !p.Removed);
 
                 post.Removed = true;
+                UserId = post.UserId;
                 _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Removed, domainModel);
 
                 domainModel.SaveChanges();
             }
+
+            _changeTracker.Invalidate();
         }
 
         public void RestorePost(long threadId, long postId)
@@ -117,10 +119,13 @@ namespace LessMarkup.Forum.Model
                 var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && p.Removed);
 
                 post.Removed = false;
+                UserId = post.UserId;
                 _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
 
                 domainModel.SaveChanges();
             }
+
+            _changeTracker.Invalidate();
         }
 
         public void PurgePost(long threadId, long postId)
@@ -128,10 +133,13 @@ namespace LessMarkup.Forum.Model
             using (var domainModel = _domainModelProvider.Create())
             {
                 var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId);
+                UserId = post.UserId;
                 domainModel.GetSiteCollection<Post>().Remove(post);
                 _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Removed, domainModel);
                 domainModel.SaveChanges();
             }
+
+            _changeTracker.Invalidate();
         }
 
         public void EditPost(long threadId, long postId)
@@ -153,17 +161,6 @@ namespace LessMarkup.Forum.Model
 
         public void PostProcess(IDataCache dataCache)
         {
-            if (AuthorImageId.HasValue)
-            {
-                AuthorImage = ImageHelper.ThumbnailUrl(AuthorImageId.Value);
-            }
-
-            if (AuthorId.HasValue)
-            {
-                AuthorUrl = UserHelper.GetUserProfileLink(AuthorId.Value);
-                PostCount = dataCache.Get<PostStatisticsCache>().GetPostCount(AuthorId.Value);
-            }
-
             var pos = 0;
 
             const string quoteSearch = "<blockquote data-from=";
@@ -189,16 +186,7 @@ namespace LessMarkup.Forum.Model
 
                 var currentUser = dataCache.Get<IUserCache>(userId);
 
-                string userName;
-
-                if (currentUser.IsRemoved)
-                {
-                    userName = LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.UserRemoved);
-                }
-                else
-                {
-                    userName = currentUser.Name;
-                }
+                string userName = currentUser.IsRemoved ? LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.UserRemoved) : currentUser.Name;
 
                 userName = string.Format("<header><strong>{0} {1}</strong></header>", LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.MessageFrom), userName);
 
@@ -213,18 +201,10 @@ namespace LessMarkup.Forum.Model
         [InputField(InputFieldType.Text, ForumTextIds.Subject)]
         public string Subject { get; set; }
 
-        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html")]
-        public string AuthorName { get; set; }
+        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.UserId]")]
+        public string UserName { get; set; }
 
-        public int PostCount { get; set; }
-
-        public long? AuthorId { get; set; }
-
-        public string AuthorUrl { get; set; }
-
-        public long? AuthorImageId { get; set; }
-
-        public string AuthorImage { get; set; }
+        public long? UserId { get; set; }
 
         public bool CanManage { get; set; }
 

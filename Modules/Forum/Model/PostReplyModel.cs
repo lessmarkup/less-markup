@@ -81,7 +81,10 @@ namespace LessMarkup.Forum.Model
                 _changeTracker.AddChange(newPost.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
                 PostId = newPost.PostId;
+                UserId = newPost.UserId;
             }
+
+            _changeTracker.Invalidate();
         }
 
         [InputField(InputFieldType.RichText, ForumTextIds.ReplyTo, ReadOnly = true)]
@@ -94,5 +97,7 @@ namespace LessMarkup.Forum.Model
         public string Text { get; set; }
 
         public long PostId { get; set; }
+
+        public long? UserId { get; set; }
     }
 }

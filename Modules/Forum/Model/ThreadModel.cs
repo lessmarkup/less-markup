@@ -120,6 +120,8 @@ namespace LessMarkup.Forum.Model
                 _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Removed, domainModel);
                 domainModel.SaveChanges();
 
+                _changeTracker.Invalidate();
+
                 if (!isManager)
                 {
                     return new {removed = true};
@@ -142,6 +144,8 @@ namespace LessMarkup.Forum.Model
                 thread.Removed = false;
                 _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
+
+                _changeTracker.Invalidate();
 
                 var collection = DependencyResolver.Resolve<Collection>();
                 collection.Initialize(forumId, accessType);

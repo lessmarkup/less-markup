@@ -1,5 +1,5 @@
 ﻿<div>
-    <a href="{{getFullPath(record.Path)}}" ng-click="navigateToView(getFullPath(record.Path)); $event.stopPropagation();" ng-bind="record.Name"></a>
+    <a href="{{getFullPath(data.Path)}}" ng-click="navigateToView(getFullPath(data.Path)); $event.stopPropagation();" ng-bind="data.Name"></a>
 </div>
-<div ng-bind="record.Description">
+<div ng-bind="data.Description">
 </div>

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -52,7 +53,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             newObject.CreateReply(ObjectId.Value, recordId, HasWriteAccess);
 
-            return ReturnRecordResult(newObject.PostId, true);
+            var ret = ReturnRecordResult(newObject.PostId, true);
+
+            if (newObject.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, newObject.UserId.Value);
+            }
+
+            return ret;
         }
 
         [RecordAction(ForumTextIds.Edit, Visible = "!Removed", MinimumAccess = NodeAccessType.Manage, CreateType = typeof(PostModel), Initialize = true)]
@@ -74,7 +82,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             newObject.EditPost(ObjectId.Value, recordId);
 
-            return ReturnRecordResult(newObject);
+            var ret = ReturnRecordResult(newObject);
+
+            if (newObject.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, newObject.UserId.Value);
+            }
+
+            return ret;
         }
 
         [RecordAction(ForumTextIds.Delete, Visible = "CanManage && !Removed", MinimumAccess = NodeAccessType.Manage)]
@@ -88,7 +103,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             var postModel = DependencyResolver.Resolve<PostModel>();
             postModel.DeletePost(ObjectId.Value, recordId);
 
-            return ReturnRecordResult(recordId);
+            var ret = ReturnRecordResult(recordId);
+
+            if (postModel.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, postModel.UserId.Value);
+            }
+
+            return ret;
         }
 
         [RecordAction(ForumTextIds.Restore, Visible = "CanManage && Removed", MinimumAccess = NodeAccessType.Manage)]
@@ -102,7 +124,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             var postModel = DependencyResolver.Resolve<PostModel>();
             postModel.RestorePost(ObjectId.Value, recordId);
 
-            return ReturnRecordResult(recordId);
+            var ret = ReturnRecordResult(recordId);
+
+            if (postModel.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, postModel.UserId.Value);
+            }
+
+            return ret;
         }
 
         [RecordAction(ForumTextIds.Purge, MinimumAccess = NodeAccessType.Manage)]
@@ -116,7 +145,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             var postModel = DependencyResolver.Resolve<PostModel>();
             postModel.PurgePost(ObjectId.Value, recordId);
 
-            return ReturnRemovedResult();
+            var ret = ReturnRemovedResult();
+
+            if (postModel.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, postModel.UserId.Value);
+            }
+
+            return ret;
         }
 
         [ActionAccess(NodeAccessType.Write)]
@@ -127,9 +163,16 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 throw new NullReferenceException("ObjectId");
             }
 
-            var postId = newObject.CreatePost(ObjectId.Value);
+            newObject.CreatePost(ObjectId.Value);
 
-            return ReturnRecordResult(postId, true);
+            var ret = ReturnRecordResult(newObject.PostId, true);
+
+            if (newObject.UserId.HasValue)
+            {
+                UserModel.FillUsers(ret, _dataCache, newObject.UserId.Value);
+            }
+
+            return ret;
         }
 
         protected override void PostProcessRecord(PostModel record)
@@ -140,6 +183,17 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             record.CanManage = HasManageAccess;
             record.CanEdit = HasManageAccess;
+        }
+
+        protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
+        {
+            base.ReadRecords(values, ids, domainModel);
+            UserModel.FillUsersFromPosts(values, _dataCache, domainModel, ids);
+        }
+
+        protected override string ExtensionScript
+        {
+            get { return "extensions/postlist"; }
         }
     }
 }

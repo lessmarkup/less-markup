@@ -1,10 +1,13 @@
 ﻿<div>
-    <a ng-if="record.AuthorUrl && record.AuthorUrl.length" href="{{record.AuthorUrl}}" ng-click="navigateToView(record.AuthorUrl); $event.stopPropagation();" ng-bind="record.AuthorName"></a>
-    <span ng-if="!record.AuthorUrl || !record.AuthorUrl.length" ng-bind="record.AuthorName"></span>
+    <a ng-if="data.Profile && data.Profile.length" href="{{data.Profile}}" ng-click="navigateToView(data.Profile); $event.stopPropagation();" ng-bind="data.Name"></a>
+    <span ng-if="!data.Profile || !data.Profile.length" ng-bind="data.Name"></span>
 </div>
-<div ng-if="record.AuthorImage && record.AuthorImage.length">
-    <img ng-src="{{record.AuthorImage}}"/>
+<div ng-if="data.Avatar && data.Avatar.length">
+    <img ng-src="{{data.Avatar}}"/>
 </div>
 <div>
-    [[[translate Posts]]]: {{record.PostCount}}
+    [[[translate Posts]]]: {{data.Posts}}
+</div>
+<div ng-repeat="property in data.Properties">
+    {{property.Name}}: {{property.Value}}
 </div>

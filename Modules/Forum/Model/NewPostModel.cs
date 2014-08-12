@@ -21,6 +21,9 @@ namespace LessMarkup.Forum.Model
         [InputField(InputFieldType.RichText, ForumTextIds.PostText, Required = true)]
         public string Text { get; set; }
 
+        public long? UserId { get; set; }
+        public long PostId { get; set; }
+
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
@@ -36,7 +39,7 @@ namespace LessMarkup.Forum.Model
             _htmlSanitizer = htmlSanitizer;
         }
 
-        public long CreatePost(long threadId)
+        public void CreatePost(long threadId)
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition<NewPostModel>();
@@ -57,8 +60,11 @@ namespace LessMarkup.Forum.Model
                 _changeTracker.AddChange(post.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
-                return post.PostId;
+                PostId = post.PostId;
+                UserId = post.UserId;
             }
+
+            _changeTracker.Invalidate();
         }
     }
 }

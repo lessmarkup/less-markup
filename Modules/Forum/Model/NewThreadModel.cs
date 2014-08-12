@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
@@ -18,11 +19,13 @@ namespace LessMarkup.Forum.Model
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
+        private readonly IChangeTracker _changeTracker;
 
-        public NewThreadModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser)
+        public NewThreadModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _currentUser = currentUser;
+            _changeTracker = changeTracker;
         }
 
         [InputField(InputFieldType.Text, ForumTextIds.ThreadTitle, Required = true)]
@@ -78,7 +81,13 @@ namespace LessMarkup.Forum.Model
 
                 domainModel.SaveChanges();
 
+                _changeTracker.AddChange(thread.ThreadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange(post.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
+                domainModel.SaveChanges();
+
                 domainModel.CompleteTransaction();
+
+                _changeTracker.Invalidate();
 
                 return thread.Path;
             }
