@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.DataObjects;
+using LessMarkup.Framework.RecordModel;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -17,16 +18,19 @@ namespace LessMarkup.Forum.Model
     [RecordModel(CollectionType = typeof(Collection))]
     public class ThreadModel
     {
-        public class Collection : IModelCollection<ThreadModel>
+        public class Collection : AbstractModelCollection<ThreadModel>
         {
             private long _forumId;
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public Collection() : base(typeof(Thread))
+            { }
+
+            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId).Select(t => t.ThreadId);
+                return domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId).Select(t => t.Id);
             }
 
-            public IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
+            public override IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 return
                     domainModel.GetSiteCollection<Post>()
@@ -34,7 +38,7 @@ namespace LessMarkup.Forum.Model
                         .GroupBy(p => p.Thread)
                         .Select(p => new ThreadModel
                         {
-                            ThreadId = p.Key.ThreadId,
+                            ThreadId = p.Key.Id,
                             Name = p.Key.Name,
                             Description = p.Key.Description,
                             Created = p.Key.Created,
@@ -46,9 +50,9 @@ namespace LessMarkup.Forum.Model
                         });
             }
 
-            public bool Filtered { get { return false; } }
+            public override bool Filtered { get { return false; } }
 
-            public void Initialize(long? objectId, NodeAccessType accessType)
+            public override void Initialize(long? objectId, NodeAccessType accessType)
             {
                 if (!objectId.HasValue)
                 {
@@ -83,7 +87,7 @@ namespace LessMarkup.Forum.Model
                 }
                 return new ThreadModel
                 {
-                    ThreadId = thread.ThreadId,
+                    ThreadId = thread.Id,
                     Path = thread.Path,
                     Name = thread.Name,
                     Description = thread.Description
@@ -115,9 +119,9 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.ThreadId == threadId && t.ForumId == forumId);
+                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId && t.ForumId == forumId);
                 thread.Removed = true;
-                _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Removed, domainModel);
+                _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Removed, domainModel);
                 domainModel.SaveChanges();
 
                 _changeTracker.Invalidate();
@@ -140,9 +144,9 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.ThreadId == threadId);
+                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
                 thread.Removed = false;
-                _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
                 _changeTracker.Invalidate();
@@ -160,9 +164,9 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.ThreadId == threadId);
+                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
                 thread.Closed = true;
-                _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
                 var collection = DependencyResolver.Resolve<Collection>();
@@ -178,9 +182,9 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.ThreadId == threadId);
+                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
                 thread.Closed = false;
-                _changeTracker.AddChange(threadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
                 var collection = DependencyResolver.Resolve<Collection>();

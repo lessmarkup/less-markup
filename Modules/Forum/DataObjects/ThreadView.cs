@@ -8,6 +8,5 @@ namespace LessMarkup.Forum.DataObjects
 {
     public class ThreadView : SiteDataObject
     {
-        public long ThreadViewId { get; set; }
     }
 }

@@ -11,8 +11,6 @@ namespace LessMarkup.Forum.DataObjects
 {
     public class Post : SiteDataObject
     {
-        public long PostId { get; set; }
-
         public bool Removed { get; set; }
 
         [ForeignKey("Thread")]

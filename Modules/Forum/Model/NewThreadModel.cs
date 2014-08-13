@@ -81,8 +81,8 @@ namespace LessMarkup.Forum.Model
 
                 domainModel.SaveChanges();
 
-                _changeTracker.AddChange(thread.ThreadId, EntityType.ForumThread, EntityChangeType.Added, domainModel);
-                _changeTracker.AddChange(post.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange(thread, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
                 domainModel.CompleteTransaction();

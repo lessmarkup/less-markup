@@ -42,7 +42,7 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && !p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 ReplyTo = post.Text;
                 Subject = post.Subject;
@@ -63,7 +63,7 @@ namespace LessMarkup.Forum.Model
                     throw new Exception(LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.CannotCreatePost));
                 }
 
-                var sourcePost = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && !p.Removed);
+                var sourcePost = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 var newPost = new Post
                 {
@@ -78,9 +78,9 @@ namespace LessMarkup.Forum.Model
 
                 domainModel.GetSiteCollection<Post>().Add(newPost);
                 domainModel.SaveChanges();
-                _changeTracker.AddChange(newPost.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange(newPost, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
-                PostId = newPost.PostId;
+                PostId = newPost.Id;
                 UserId = newPost.UserId;
             }
 

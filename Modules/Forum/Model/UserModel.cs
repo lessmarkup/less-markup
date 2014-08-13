@@ -49,7 +49,7 @@ namespace LessMarkup.Forum.Model
 
         public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)
         {
-            FillUsers(values, dataCache, domainModel.GetSiteCollection<Post>().Where(p => p.UserId.HasValue && postIds.Contains(p.PostId)).GroupBy(p => p.UserId).Select(p => p.Key.Value).ToArray());
+            FillUsers(values, dataCache, domainModel.GetSiteCollection<Post>().Where(p => p.UserId.HasValue && postIds.Contains(p.Id)).GroupBy(p => p.UserId).Select(p => p.Key.Value).ToArray());
         }
 
         public static void FillUsers(Dictionary<string, object> values, IDataCache dataCache, params long[] userIds)

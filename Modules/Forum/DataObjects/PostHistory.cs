@@ -8,6 +8,5 @@ namespace LessMarkup.Forum.DataObjects
 {
     public class PostHistory : SiteDataObject
     {
-        public long PostHistoryId { get; set; }
     }
 }

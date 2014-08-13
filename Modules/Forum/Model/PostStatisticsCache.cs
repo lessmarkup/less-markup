@@ -34,7 +34,7 @@ namespace LessMarkup.Forum.Model
         private readonly Dictionary<long, UserStatistics> _userPosts = new Dictionary<long, UserStatistics>();
 
         public PostStatisticsCache(IDomainModelProvider domainModelProvider)
-            : base(new[] { EntityType.ForumPost })
+            : base(new[] { typeof(Post) })
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -55,7 +55,7 @@ namespace LessMarkup.Forum.Model
             {
                 foreach (var user in domainModel.GetSiteCollection<Post>().Where(p => !p.Removed).GroupBy(p => p.User).Select(p => new
                 {
-                    p.Key.UserId, 
+                    p.Key.Id, 
                     Posts = p.Count(),
                     AvatarId = p.Key.AvatarImageId,
                     p.Key.Name,
@@ -63,13 +63,13 @@ namespace LessMarkup.Forum.Model
                     Properties = p.Key.Properties.Select(up => new UserProperty { Name = up.Definition.Name, Value = up.Value, Type = up.Definition.Type })
                 }))
                 {
-                    _userPosts[user.UserId] = new UserStatistics
+                    _userPosts[user.Id] = new UserStatistics
                     {
                         AvatarId = user.AvatarId,
                         Name = user.Name,
                         Posts = user.Posts,
                         Removed = user.IsRemoved,
-                        UserId = user.UserId,
+                        UserId = user.Id,
                         Properties = user.Properties.ToList()
                     };
                 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Framework.RecordModel;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -24,16 +25,19 @@ namespace LessMarkup.Forum.Model
         private readonly IDataCache _dataCache;
         private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public class Collection : IModelCollection<PostModel>
+        public class Collection : AbstractModelCollection<PostModel>
         {
             private long _threadId;
             private NodeAccessType _accessType;
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public Collection() : base(typeof(Post))
+            { }
+
+            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
                 if (_accessType == NodeAccessType.Manage)
                 {
-                    return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId).Select(p => p.PostId);
+                    return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId).Select(p => p.Id);
                 }
 
                 if (_accessType == NodeAccessType.NoAccess)
@@ -41,17 +45,17 @@ namespace LessMarkup.Forum.Model
                     return new List<long>().AsQueryable();
                 }
 
-                return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId && !p.Removed).Select(p => p.PostId);
+                return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId && !p.Removed).Select(p => p.Id);
             }
 
-            public IQueryable<PostModel> Read(IDomainModel domainModel, List<long> ids)
+            public override IQueryable<PostModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 if (_accessType == NodeAccessType.NoAccess)
                 {
                     return new List<PostModel>().AsQueryable();
                 }
 
-                IQueryable<Post> collection = domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId && ids.Contains(p.PostId));
+                IQueryable<Post> collection = domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId && ids.Contains(p.Id));
 
                 if (_accessType != NodeAccessType.Manage)
                 {
@@ -63,14 +67,14 @@ namespace LessMarkup.Forum.Model
                     Subject = p.Subject,
                     Text = p.Text,
                     UserName = p.User.Name,
-                    PostId = p.PostId,
+                    PostId = p.Id,
                     Removed = p.Removed,
                     Created = p.Created,
                     UserId = p.UserId
                 });
             }
 
-            public void Initialize(long? objectId, NodeAccessType nodeAccessType)
+            public override void Initialize(long? objectId, NodeAccessType nodeAccessType)
             {
                 if (!objectId.HasValue)
                 {
@@ -81,7 +85,7 @@ namespace LessMarkup.Forum.Model
                 _accessType = nodeAccessType;
             }
 
-            public bool Filtered { get; private set; }
+            public override bool Filtered { get { return false; } }
         }
 
         PostModel()
@@ -100,11 +104,11 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && !p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 post.Removed = true;
                 UserId = post.UserId;
-                _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Removed, domainModel);
+                _changeTracker.AddChange<Post>(postId, EntityChangeType.Removed, domainModel);
 
                 domainModel.SaveChanges();
             }
@@ -116,11 +120,11 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && p.Removed);
 
                 post.Removed = false;
                 UserId = post.UserId;
-                _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Post>(postId, EntityChangeType.Added, domainModel);
 
                 domainModel.SaveChanges();
             }
@@ -132,10 +136,10 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId);
+                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId);
                 UserId = post.UserId;
                 domainModel.GetSiteCollection<Post>().Remove(post);
-                _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Removed, domainModel);
+                _changeTracker.AddChange<Post>(postId, EntityChangeType.Removed, domainModel);
                 domainModel.SaveChanges();
             }
 
@@ -150,11 +154,11 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.PostId == postId && !p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
                 post.Text = _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" });
                 post.Subject = Subject;
                 Text = post.Text;
-                _changeTracker.AddChange(postId, EntityType.ForumPost, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Post>(postId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
             }
         }

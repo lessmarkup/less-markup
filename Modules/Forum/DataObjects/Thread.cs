@@ -10,7 +10,6 @@ namespace LessMarkup.Forum.DataObjects
 {
     public class Thread : SiteDataObject
     {
-        public long ThreadId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public long ForumId { get; set; }

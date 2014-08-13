@@ -8,6 +8,5 @@ namespace LessMarkup.Forum.DataObjects
 {
     public class PostAttachment : SiteDataObject
     {
-        public long PostAttachmentId { get; set; }
     }
 }

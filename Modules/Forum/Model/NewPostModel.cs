@@ -57,10 +57,10 @@ namespace LessMarkup.Forum.Model
 
                 domainModel.GetSiteCollection<Post>().Add(post);
                 domainModel.SaveChanges();
-                _changeTracker.AddChange(post.PostId, EntityType.ForumPost, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
 
-                PostId = post.PostId;
+                PostId = post.Id;
                 UserId = post.UserId;
             }
 
