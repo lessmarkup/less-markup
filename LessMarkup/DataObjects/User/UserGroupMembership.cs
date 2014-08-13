@@ -9,9 +9,7 @@ namespace LessMarkup.DataObjects.User
 {
     public class UserGroupMembership : SiteDataObject
     {
-        public long UserGroupMembershipId { get; set; }
-
-        public LessMarkup.DataObjects.User.User User { get; set; }
+        public User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
 

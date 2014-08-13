@@ -20,7 +20,7 @@ namespace LessMarkup.Engine.Site
         private readonly IModuleProvider _moduleProvider;
 
         public SiteCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
-            : base(new[] { EntityType.Site })
+            : base(new[] { typeof(Interfaces.Data.Site) })
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
@@ -44,7 +44,7 @@ namespace LessMarkup.Engine.Site
             {
                 foreach (var site in domainModel.GetCollection<Interfaces.Data.Site>().Select(s => new
                 {
-                    s.SiteId,
+                    SiteId = s.Id,
                     s.Host,
                     s.Title,
                     s.Enabled,

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -17,7 +18,7 @@ namespace LessMarkup.Engine.Module
     class ModuleIntegration : IModuleIntegration
     {
         private readonly List<IBackgroundJobHandler>  _backgroundJobHandlers = new List<IBackgroundJobHandler>();
-        private readonly Dictionary<EntityType, ISearchResultValidator> _searchResultValidators = new Dictionary<EntityType, ISearchResultValidator>();
+        private readonly Dictionary<int, ISearchResultValidator> _searchResultValidators = new Dictionary<int, ISearchResultValidator>();
         private readonly Dictionary<string, Tuple<Type, string>> _nodeHandlers = new Dictionary<string, Tuple<Type, string>>();
         private readonly IEngineConfiguration _engineConfiguration;
 
@@ -63,15 +64,15 @@ namespace LessMarkup.Engine.Module
             return ret;
         }
 
-        public void RegisterSearchResultValidator(EntityType entityType, ISearchResultValidator validator)
+        public void RegisterSearchResultValidator<T>(ISearchResultValidator validator) where T : IDataObject
         {
-            _searchResultValidators[entityType] = validator;
+            _searchResultValidators[AbstractDomainModel.GetCollectionId<T>()] = validator;
         }
 
         public bool IsSearchResultValid(SearchResult searchResult)
         {
             ISearchResultValidator validator;
-            if (!_searchResultValidators.TryGetValue(searchResult.EntityType, out validator))
+            if (!_searchResultValidators.TryGetValue(searchResult.CollectionId, out validator))
             {
                 return true;
             }

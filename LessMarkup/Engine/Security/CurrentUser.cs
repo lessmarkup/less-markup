@@ -393,7 +393,7 @@ namespace LessMarkup.Engine.Security
                         user.BlockReason = null;
                         user.UnblockTime = null;
 
-                        DependencyResolver.Resolve<IChangeTracker>().AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, model);
+                        DependencyResolver.Resolve<IChangeTracker>().AddChange<User>(user.Id, EntityChangeType.Updated, model);
 
                         model.SaveChanges();
                     }
@@ -426,12 +426,12 @@ namespace LessMarkup.Engine.Security
                     }
                 }
 
-                if (!LoginUser(user.Email, user.UserId, savePassword))
+                if (!LoginUser(user.Email, user.Id, savePassword))
                 {
                     return false;
                 }
 
-                AddSuccessfulLoginHistory(address, model, user.UserId);
+                AddSuccessfulLoginHistory(address, model, user.Id);
 
                 model.SaveChanges();
             }
@@ -514,7 +514,7 @@ namespace LessMarkup.Engine.Security
                     user.BlockReason = null;
                     user.UnblockTime = null;
 
-                    DependencyResolver.Resolve<IChangeTracker>().AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, model);
+                    DependencyResolver.Resolve<IChangeTracker>().AddChange<User>(user.Id, EntityChangeType.Updated, model);
 
                     model.SaveChanges();
                 }
@@ -525,7 +525,7 @@ namespace LessMarkup.Engine.Security
                     return false;
                 }
 
-                if (!CheckPassword(user.UserId, user.Password, user.Salt, user.IsBlocked, user.IsRemoved, user.RegistrationExpires, password, encodedPassword, address))
+                if (!CheckPassword(user.Id, user.Password, user.Salt, user.IsBlocked, user.IsRemoved, user.RegistrationExpires, password, encodedPassword, address))
                 {
                     this.LogDebug("User '" + email + "' failed password check");
                     return false;
@@ -548,7 +548,7 @@ namespace LessMarkup.Engine.Security
                     }
                 }
 
-                if (!LoginUser(email, user.UserId, savePassword))
+                if (!LoginUser(email, user.Id, savePassword))
                 {
                     return false;
                 }
@@ -558,7 +558,7 @@ namespace LessMarkup.Engine.Security
                     user.IsValidated = true;
                 }
 
-                AddSuccessfulLoginHistory(address, model, user.UserId);
+                AddSuccessfulLoginHistory(address, model, user.Id);
 
                 model.SaveChanges();
             }
@@ -606,14 +606,14 @@ namespace LessMarkup.Engine.Security
 
             using (var model = _domainModelProvider.Create())
             {
-                var user = model.GetCollection<User>().SingleOrDefault(u => u.UserId == currentUser.UserId && !u.IsRemoved);
+                var user = model.GetCollection<User>().SingleOrDefault(u => u.Id == currentUser.UserId && !u.IsRemoved);
 
                 if (user == null)
                 {
                     throw new Exception("Cannot find user");
                 }
 
-                if (!CheckPassword(user.UserId, user.Password, user.Salt, false, false, null, password, null, HttpContext.Current.Request.UserHostAddress))
+                if (!CheckPassword(user.Id, user.Password, user.Salt, false, false, null, password, null, HttpContext.Current.Request.UserHostAddress))
                 {
                     throw new Exception(LanguageHelper.GetText(DataFramework.Constants.ModuleType.MainModule, MainModuleTextIds.WrongUserPassword));
                 }
@@ -633,14 +633,14 @@ namespace LessMarkup.Engine.Security
                 return false;
             }
 
-            var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.UserId == UserId.Value && u.SiteId == _siteMapper.SiteId && !u.IsRemoved);
+            var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.Id == UserId.Value && u.SiteId == _siteMapper.SiteId && !u.IsRemoved);
 
             if (user == null)
             {
                 return false;
             }
 
-            return CheckPassword(user.UserId, user.Password, user.Salt, user.IsBlocked, user.IsRemoved, user.RegistrationExpires, password, null, address);
+            return CheckPassword(user.Id, user.Password, user.Salt, user.IsBlocked, user.IsRemoved, user.RegistrationExpires, password, null, address);
         }
 
         public Tuple<string, string> LoginHash(string email)
@@ -744,7 +744,7 @@ namespace LessMarkup.Engine.Security
                 if (registrationExpires.HasValue && DateTime.UtcNow >= registrationExpires.Value)
                 {
                     this.LogDebug("User registration is expired, removing the user from users list");
-                    var u = model.GetCollection<User>().Single(u1 => u1.UserId == userId.Value);
+                    var u = model.GetCollection<User>().Single(u1 => u1.Id == userId.Value);
                     u.IsRemoved = true;
                     model.SaveChanges();
                     return false;
@@ -803,7 +803,7 @@ namespace LessMarkup.Engine.Security
 
                     if (registrationExpires.HasValue)
                     {
-                        var u = model.GetCollection<User>().Single(u1 => u1.UserId == userId.Value);
+                        var u = model.GetCollection<User>().Single(u1 => u1.Id == userId.Value);
                         u.RegistrationExpires = null;
                     }
 

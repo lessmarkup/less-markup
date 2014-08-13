@@ -13,7 +13,6 @@ namespace LessMarkup.DataObjects.User
 {
     public class User : NonSiteDataObject
     {
-        public long UserId { get; set; }
         public bool IsRemoved { get; set; }
         public bool IsBlocked { get; set; }
         public string BlockReason { get; set; }

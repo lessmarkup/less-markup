@@ -15,7 +15,7 @@ namespace LessMarkup.Interfaces.Module
     {
         void RegisterBackgroundJobHandler(IBackgroundJobHandler backgroundJobHandler);
         bool DoBackgroundJobs(UrlHelper urlHelper);
-        void RegisterSearchResultValidator(EntityType entityType, ISearchResultValidator validator);
+        void RegisterSearchResultValidator<T>(ISearchResultValidator validator) where T : IDataObject;
         bool IsSearchResultValid(SearchResult searchResult);
         void RegisterNodeHandler<T>(string id) where T : INodeHandler;
         Tuple<Type, string> GetNodeHandler(string id);

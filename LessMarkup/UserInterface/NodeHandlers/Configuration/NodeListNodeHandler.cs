@@ -90,7 +90,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     n.HandlerId,
                     n.Level,
                     n.Order,
-                    n.NodeId,
+                    n.Id,
                     n.Path,
                     n.Settings,
                     n.Title
@@ -103,7 +103,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     node.Level = source.Level;
                     node.Enabled = source.Enabled;
                     node.HandlerId = source.HandlerId;
-                    node.NodeId = source.NodeId;
+                    node.NodeId = source.Id;
                     node.Settings = string.IsNullOrWhiteSpace(source.Settings) ? null : JsonConvert.DeserializeObject(source.Settings);
                     node.Title = source.Title;
                     node.SettingsModelId = (handler != null && handler.SettingsModel != null) ? modelCache.GetDefinition(handler.SettingsModel).Id : null;
@@ -141,7 +141,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var nodes = GetNodeCollection(domainModel).ToDictionary(k => k.NodeId);
+                var nodes = GetNodeCollection(domainModel).ToDictionary(k => k.Id);
 
                 for (int i = 0; i < layout.Count; i++)
                 {
@@ -151,11 +151,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         node.Order = i;
                         node.Level = layout[i].Level;
-                        _changeTracker.AddChange(node.NodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange(node, EntityChangeType.Updated, domainModel);
                     }
                 }
 
-                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
@@ -184,12 +184,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
                 GetNodeCollection(domainModel).Add(target);
                 domainModel.SaveChanges();
-                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                _changeTracker.AddChange(target.NodeId, EntityType.Node, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange(target, EntityChangeType.Added, domainModel);
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
 
-                node.NodeId = target.NodeId;
+                node.NodeId = target.Id;
 
                 var handler = (INodeHandler)DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(node.HandlerId).Item1);
 
@@ -208,24 +208,24 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                foreach (var node in GetNodeCollection(domainModel).Where(p => ids.Contains(p.NodeId)))
+                foreach (var node in GetNodeCollection(domainModel).Where(p => ids.Contains(p.Id)))
                 {
                     GetNodeCollection(domainModel).Remove(node);
-                    _changeTracker.AddChange(node.NodeId, EntityType.Node, EntityChangeType.Removed, domainModel);
+                    _changeTracker.AddChange(node, EntityChangeType.Removed, domainModel);
                 }
 
-                var nodes = domainModel.GetSiteCollection<Node>(SiteId).Where(p => !ids.Contains(p.NodeId)).OrderBy(p => p.Order).ToList();
+                var nodes = domainModel.GetSiteCollection<Node>(SiteId).Where(p => !ids.Contains(p.Id)).OrderBy(p => p.Order).ToList();
 
                 for (int i = 0; i < nodes.Count; i++)
                 {
                     if (nodes[i].Order != i)
                     {
                         nodes[i].Order = i;
-                        _changeTracker.AddChange(nodes[i].NodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange(nodes[i], EntityChangeType.Updated, domainModel);
                     }
                 }
 
-                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
 
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
@@ -242,7 +242,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var record = GetNodeCollection(domainModel).Single(p => p.NodeId == node.NodeId);
+                var record = GetNodeCollection(domainModel).Single(p => p.Id == node.NodeId);
 
                 record.Title = node.Title;
                 record.Level = node.Level;
@@ -250,8 +250,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 record.Path = node.Path;
                 record.Enabled = node.Enabled;
 
-                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                _changeTracker.AddChange(node.NodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange(record, EntityChangeType.Updated, domainModel);
 
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
@@ -264,12 +264,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var node = GetNodeCollection(domainModel).Single(p => p.NodeId == nodeId);
+                var node = GetNodeCollection(domainModel).Single(p => p.Id == nodeId);
 
                 node.Settings = settings != null ? JsonConvert.SerializeObject(settings) : null;
 
-                _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                _changeTracker.AddChange(nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange(node, EntityChangeType.Updated, domainModel);
 
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();

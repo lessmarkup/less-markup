@@ -37,7 +37,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
 
         public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache)
-            : base(new[] { EntityType.Node, EntityType.Site })
+            : base(new[] { typeof(Node), typeof(Site) })
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
@@ -219,7 +219,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 {
                     cachedNodes = domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
                     {
-                        NodeId = p.NodeId,
+                        NodeId = p.Id,
                         Enabled = p.Enabled,
                         HandlerId = p.HandlerId,
                         Level = p.Level,

@@ -14,7 +14,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
         private readonly long? _siteId;
         private readonly object _syncLock = new object();
         private readonly Dictionary<string, TrackerRecordType> _recordChannels = new Dictionary<string, TrackerRecordType>();
-        private readonly Dictionary<EntityType, List<TrackerRecordType>> _entityToChannel = new Dictionary<EntityType, List<TrackerRecordType>>();
+        private readonly Dictionary<int, List<TrackerRecordType>> _entityToChannel = new Dictionary<int, List<TrackerRecordType>>();
 
         public TrackerSite(long? siteId)
         {
@@ -27,16 +27,13 @@ namespace LessMarkup.UserInterface.ChangeTracking
             {
                 var recordChannel = TrackerRecordType.Create(channelId, modelId, filter, dataCache);
                 _recordChannels[channelId] = recordChannel;
-                if (recordChannel.EntityType != EntityType.None)
+                List<TrackerRecordType> entityChannels;
+                if (!_entityToChannel.TryGetValue(recordChannel.CollectionId, out entityChannels))
                 {
-                    List<TrackerRecordType> entityChannels;
-                    if (!_entityToChannel.TryGetValue(recordChannel.EntityType, out entityChannels))
-                    {
-                        entityChannels = new List<TrackerRecordType>();
-                        _entityToChannel[recordChannel.EntityType] = entityChannels;
-                    }
-                    entityChannels.Add(recordChannel);
+                    entityChannels = new List<TrackerRecordType>();
+                    _entityToChannel[recordChannel.CollectionId] = entityChannels;
                 }
+                entityChannels.Add(recordChannel);
             }
         }
 
@@ -47,7 +44,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
                 var channel = _recordChannels[channelId];
                 _recordChannels.Remove(channelId);
                 List<TrackerRecordType> entityChannels;
-                if (_entityToChannel.TryGetValue(channel.EntityType, out entityChannels))
+                if (_entityToChannel.TryGetValue(channel.CollectionId, out entityChannels))
                 {
                     entityChannels.Remove(channel);
                 }
@@ -84,10 +81,10 @@ namespace LessMarkup.UserInterface.ChangeTracking
             channel.GetRecords(recordIds, domainModelProvider);
         }
 
-        public void OnRecordChanged(long recordId, long? userId, long entityId, EntityType entityType, EntityChangeType entityChange, IDomainModelProvider domainModelProvider)
+        public void OnRecordChanged(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange, IDomainModelProvider domainModelProvider)
         {
             List<TrackerRecordType> entityChannels;
-            if (_entityToChannel.TryGetValue(entityType, out entityChannels) && entityChannels.Count > 0)
+            if (_entityToChannel.TryGetValue(collectionId, out entityChannels) && entityChannels.Count > 0)
             {
                 using (var domainModel = domainModelProvider.Create())
                 {

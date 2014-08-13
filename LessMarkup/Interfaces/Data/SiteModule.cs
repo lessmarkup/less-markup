@@ -8,7 +8,6 @@ namespace LessMarkup.Interfaces.Data
 {
     public class SiteModule : NonSiteDataObject
     {
-        public long SiteModuleId { get; set; }
         [ForeignKey("Site")]
         public long SiteId { get; set; }
         public Site Site { get; set; }

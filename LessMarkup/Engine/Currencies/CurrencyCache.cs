@@ -21,7 +21,7 @@ namespace LessMarkup.Engine.Currencies
         private readonly IDomainModelProvider _domainModelProvider;
         private long? _baseCurrencyId;
 
-        public CurrencyCache(IDomainModelProvider domainModelProvider) : base(new[]{EntityType.Currency})
+        public CurrencyCache(IDomainModelProvider domainModelProvider) : base(new[]{typeof(Currency)})
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -106,7 +106,7 @@ namespace LessMarkup.Engine.Currencies
             {
                 foreach (var source in domainModel.GetSiteCollection<Currency>().Where(c => c.Enabled))
                 {
-                    var currency = new CurrencyCacheItem(source.CurrencyId, source.Name, source.Code, source.Rate, source.IsBase);
+                    var currency = new CurrencyCacheItem(source.Id, source.Name, source.Code, source.Rate, source.IsBase);
                     _currencies.Add(currency.CurrencyId, currency);
                     _currencyList.Add(currency);
 

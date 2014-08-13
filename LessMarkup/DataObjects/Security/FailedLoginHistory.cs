@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Security
 {
     public class FailedLoginHistory : NonSiteDataObject
     {
-        public long FailedLoginHistoryId { get; set; }
         public long? UserId { get; set; }
         public string Address { get; set; }
         public int AttemptCount { get; set; }

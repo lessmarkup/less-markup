@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Structure
 {
     public class Node : SiteDataObject
     {
-        public long NodeId { get; set; }
         public string Path { get; set; }
         public string Title { get; set; }
         public string HandlerId { get; set; }

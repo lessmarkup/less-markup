@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
@@ -84,7 +85,7 @@ namespace LessMarkup.Engine.DataChange
                     {
                         using (var model = _domainModelProvider.Create(null))
                         {
-                            var sql = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {Id = c.EntityChangeHistoryId}).ToString();
+                            var sql = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {c.Id}).ToString();
 
                             var connection = new SqlConnection(_engineConfiguration.Database);
                             connection.Open();
@@ -117,7 +118,7 @@ namespace LessMarkup.Engine.DataChange
                 {
                     using (var model = _domainModelProvider.Create(null))
                     {
-                        var lastChange = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {Id = c.EntityChangeHistoryId}).FirstOrDefault();
+                        var lastChange = model.GetCollection<EntityChangeHistory>().OrderByDescending(c => c.Created).Select(c => new {c.Id}).FirstOrDefault();
                         if (lastChange != null)
                         {
                             _lastUpdateId = lastChange.Id;
@@ -164,9 +165,9 @@ namespace LessMarkup.Engine.DataChange
 
             using (var model = _domainModelProvider.Create(null))
             {
-                foreach (var change in model.GetCollection<EntityChangeHistory>().Where(c => c.EntityChangeHistoryId > _lastUpdateId).OrderBy(c => c.EntityChangeHistoryId))
+                foreach (var change in model.GetCollection<EntityChangeHistory>().Where(c => c.Id > _lastUpdateId).OrderBy(c => c.Id))
                 {
-                    _lastUpdateId = change.EntityChangeHistoryId;
+                    _lastUpdateId = change.Id;
                     lock (_syncChangeQueue)
                     {
                         _changeQueue.Enqueue(change);
@@ -207,8 +208,8 @@ namespace LessMarkup.Engine.DataChange
                         change = _changeQueue.Dequeue();
                     }
 
-                    this.LogDebug(string.Format("ChangeTracker: detected {0}/{1}, change {2}", (EntityType)change.EntityType, change.EntityId, (EntityChangeType)change.ChangeType));
-                    recordChanged(change.EntityChangeHistoryId, change.UserId, change.EntityId, (EntityType)change.EntityType, (EntityChangeType)change.ChangeType, change.SiteId);
+                    this.LogDebug(string.Format("ChangeTracker: detected {0}/{1}, change {2}", change.CollectionId, change.EntityId, (EntityChangeType)change.ChangeType));
+                    recordChanged(change.Id, change.UserId, change.EntityId, change.CollectionId, (EntityChangeType)change.ChangeType, change.SiteId);
                 }
             }
             catch (Exception e)
@@ -219,9 +220,11 @@ namespace LessMarkup.Engine.DataChange
             _queueTimer.Change(200, Timeout.Infinite);
         }
 
-        public void AddChange(long entityId, EntityType entityType, EntityChangeType changeType, IDomainModel domainModel)
+        public void AddChange<T>(long objectId, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject
         {
-            this.LogDebug(string.Format("ChangeTracker: recorded {0}/{1}, change {2}", entityType, entityId, changeType));
+            var collectionId = AbstractDomainModel.GetCollectionId<T>();
+
+            this.LogDebug(string.Format("ChangeTracker: recorded {0}/{1}, change {2}", collectionId, objectId, changeType));
 
             var userId = _currentUser.UserId;
 
@@ -232,15 +235,20 @@ namespace LessMarkup.Engine.DataChange
 
             var history = new EntityChangeHistory
             {
-                ChangeType = (int) changeType,
+                ChangeType = (int)changeType,
                 Created = DateTime.UtcNow,
-                EntityId = entityId,
-                EntityType = (int) entityType,
+                EntityId = objectId,
+                CollectionId = collectionId,
                 SiteId = _siteMapper.SiteId,
                 UserId = userId
             };
 
             domainModel.GetCollection<EntityChangeHistory>().Add(history);
+        }
+
+        public void AddChange<T>(T dataObject, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject
+        {
+            AddChange<T>(dataObject.Id, changeType, domainModel);
         }
 
         private event RecordChangeHandler RecordChangedInternal;

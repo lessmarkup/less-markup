@@ -10,11 +10,10 @@ namespace LessMarkup.DataObjects.User
 {
     public class UserBlockHistory : NonSiteDataObject
     {
-        public long UserBlockHistoryId { get; set; }
-        public LessMarkup.DataObjects.User.User User { get; set; }
+        public User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
-        public LessMarkup.DataObjects.User.User BlockedByUser { get; set; }
+        public User BlockedByUser { get; set; }
         [ForeignKey("BlockedByUser")]
         public long BlockedByUserId { get; set; }
         public DateTime Created { get; set; }

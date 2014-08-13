@@ -64,7 +64,7 @@ app.directive("cellShowOptions", function($compile) {
     };
 });
 
-app.controller('newrecordlist', function ($scope, inputForm, $sce) {
+app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     var recordIdField = $scope.viewData.recordId;
 
@@ -79,6 +79,27 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
     $scope.actions = [];
     $scope.optionsTemplate = $scope.viewData.optionsTemplate;
     $scope.toolbarButtons = [];
+    var records = [];
+    var currentRecordId = null;
+    var currentRecord = null;
+    var filter = "";
+
+    var lastChange = $scope.viewData.lastChange;
+    var liveUpdates = $scope.viewData.liveUpdates;
+    var timeoutCancel = null;
+
+    function subscribeForUpdates() {
+        timeoutCancel = $timeout(getUpdates, 10 * 1000);
+    }
+
+    if (liveUpdates) {
+        subscribeForUpdates();
+        $scope.$on("onNodeLoaded", function () {
+            if (timeoutCancel != null) {
+                $timeout.cancel(timeoutCancel);
+            }
+        });
+    }
 
     $scope.getSafeValue = function(html) {
         return $sce.trustAsHtml(html);
@@ -89,6 +110,114 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
     }
 
     var createNewRecord;
+
+    function getUpdates() {
+        timeoutCancel = null;
+        $scope.sendAction("GetUpdates", {
+            lastChange: lastChange,
+            filter: filter
+        }, function (data) {
+            var hasChanges = false;
+            var hasNewRecords = false;
+            if (data.hasOwnProperty("removed")) {
+                var removedIds = data.removed;
+                for (var i = 0; i < removedIds.length; i++) {
+                    var recordId = removedIds[i];
+                    for (var j = 0; j < records.length; j++) {
+                        var record = records[j];
+                        if (record[recordIdField] == recordId) {
+                            records.splice(j, 1);
+                            if ($scope.hasOwnProperty("pageSize") && $scope.pageSize > 0) {
+                                hasChanges = j >= $scope.pageOffset && j < $scope.pageOffset + $scope.pageSize;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            var recordsToUpdate = [];
+            
+            if (data.hasOwnProperty("updated")) {
+                var updatedIds = data.updated;
+                for (var i = 0; i < updatedIds.length; i++) {
+                    var recordId = updatedIds[i];
+                    var found = false;
+                    for (var j = 0; j < records.length; j++) {
+                        var record = records[j];
+                        if (record[recordIdField] == recordId) {
+                            if ($scope.hasOwnProperty("pageSize") && $scope.pageSize > 0 && j >= $scope.pageOffset && j < $scope.pageOffset + $scope.pageSize) {
+                                recordsToUpdate.push(recordId);
+                            } else {
+                                records[j] = createNewRecord(recordId);
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        hasNewRecords = true;
+                    }
+                }
+            }
+
+            if (hasChanges) {
+                $scope.loadVisibleRecords();
+            }
+
+            if (recordsToUpdate.length > 0) {
+                updateVisibleRecords(recordsToUpdate);
+            }
+
+            if (!hasNewRecords) {
+                if (data.hasOwnProperty("lastChange")) {
+                    lastChange = data.lastChange;
+                }
+                subscribeForUpdates();
+                return;
+            }
+
+            $scope.sendAction("GetRecordIds", { filter: filter }, function(data2) {
+                if (data.hasOwnProperty("lastChange")) {
+                    lastChange = data.lastChange;
+                }
+
+                var savedRecords = {};
+
+                for (var i = 0; i < records.length; i++) {
+                    var record = records[i];
+                    if (record.loaded) {
+                        savedRecords[record[recordIdField]] = record;
+                    }
+                }
+
+                records = [];
+
+                for (var i = 0; i < data2.recordIds.length; i++) {
+                    var recordId = data2.recordIds[i];
+
+                    var record;
+
+                    if (savedRecords.hasOwnProperty(recordId)) {
+                        record = savedRecords[recordId];
+                    } else {
+                        record = createNewRecord(recordId);
+                    }
+                    records.push(record);
+                }
+
+                subscribeForUpdates();
+
+                $scope.loadVisibleRecords();
+
+            }, function() {
+                subscribeForUpdates();
+            });
+
+        }, function() {
+            subscribeForUpdates();
+        });
+    }
 
     function createNewRecord(recordId) {
         var record = { loaded: false }
@@ -103,11 +232,6 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         record.loaded = true;
         return record;
     }
-
-    var records = [];
-    var currentRecordId = null;
-    var currentRecord = null;
-    var filter = "";
 
     for (var i = 0; i < $scope.columns.length; i++) {
         var column = $scope.columns[i];
@@ -485,7 +609,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
     for (var i = 0; i < $scope.columns.length; i++) {
         var column = $scope.columns[i];
         if (!column.template || column.template.length == 0) {
-            var value = "record." + column.name;
+            var value = "data." + column.name;
             if (column.allowUnsafe) {
                 value = "getSafeValue(" + value + ")";
             }
@@ -516,6 +640,18 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
         }
         $scope.loadVisibleRecords();
     });
+
+    function updateVisibleRecords(recordIds) {
+        $scope.sendAction("Fetch", {
+            ids: recordIds
+        }, function (data) {
+            $scope.onDataReceived($scope, data);
+            $scope.updateRecords(data.records);
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        });
+    }
 
     $scope.showPage = function(page) {
         $scope.totalItems = records.length;
@@ -569,15 +705,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce) {
                 recordIds.push(recordId);
             }
 
-            $scope.sendAction("Fetch", {
-                ids: recordIds
-            }, function (data) {
-                $scope.onDataReceived($scope, data);
-                $scope.updateRecords(data.records);
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
-            });
+            updateVisibleRecords(recordIds);
         }
 
         $scope.showPagination = $scope.pageSize < $scope.totalItems;

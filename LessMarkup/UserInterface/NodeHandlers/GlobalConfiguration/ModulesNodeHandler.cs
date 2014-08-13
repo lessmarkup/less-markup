@@ -71,7 +71,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                             SiteId = siteId
                         };
                         domainModel.GetCollection<SiteModule>().Add(siteModule);
-                        _changeTracker.AddChange(siteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                     }
                 }
@@ -80,7 +80,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                     if (siteModule != null)
                     {
                         domainModel.GetCollection<SiteModule>().Remove(siteModule);
-                        _changeTracker.AddChange(siteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                     }
                 }

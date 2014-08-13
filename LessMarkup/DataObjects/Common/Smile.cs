@@ -11,12 +11,11 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Smile : SiteDataObject
     {
-        public long SmileId { get; set; }
         public ImageType ImageType { get; set; }
         public byte[] Data { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
-        public LessMarkup.DataObjects.User.User User { get; set; }
+        public User.User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
         public string Name { get; set; }

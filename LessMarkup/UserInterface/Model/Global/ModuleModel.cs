@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -42,18 +43,20 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetCollection<Module>().Where(m => !m.Removed && !m.System && m.Enabled).Select(m => m.ModuleId);
+                return domainModel.GetCollection<Module>().Where(m => !m.Removed && !m.System && m.Enabled).Select(m => m.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<Module>(); } }
 
             public IQueryable<ModuleModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 var modules =
                     domainModel.GetCollection<Module>()
-                        .Where(m => ids.Contains(m.ModuleId) && !m.Removed && !m.System && m.Enabled)
+                        .Where(m => ids.Contains(m.Id) && !m.Removed && !m.System && m.Enabled)
                         .Select(m => new ModuleModel
                         {
                             Name = m.Name,
-                            ModuleId = m.ModuleId,
+                            ModuleId = m.Id,
                         }).ToList();
 
                 foreach (var moduleId in domainModel.GetCollection<SiteModule>().Where(s => s.SiteId == SiteId && ids.Contains(s.ModuleId)).Select(s => s.ModuleId))

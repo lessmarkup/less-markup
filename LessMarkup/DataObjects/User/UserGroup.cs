@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.User
 {
     public class UserGroup : SiteDataObject
     {
-        public long UserGroupId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

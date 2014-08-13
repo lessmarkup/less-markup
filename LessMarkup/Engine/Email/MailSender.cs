@@ -108,11 +108,11 @@ namespace LessMarkup.Engine.Email
                 {
                     if (userIdTo.HasValue)
                     {
-                        userTo = domainModel.GetCollection<User>().Single(u => u.UserId == userIdTo);
+                        userTo = domainModel.GetCollection<User>().Single(u => u.Id == userIdTo);
                     }
                     if (userIdFrom.HasValue)
                     {
-                        userFrom = domainModel.GetCollection<User>().Single(u => u.UserId == userIdFrom.Value);
+                        userFrom = domainModel.GetCollection<User>().Single(u => u.Id == userIdFrom.Value);
                     }
                 }
 

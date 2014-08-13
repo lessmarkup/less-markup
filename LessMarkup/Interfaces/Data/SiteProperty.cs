@@ -8,7 +8,6 @@ namespace LessMarkup.Interfaces.Data
 {
     public class SiteProperty : NonSiteDataObject
     {
-        public long SitePropertyId { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
 

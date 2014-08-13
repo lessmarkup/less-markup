@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Translation : SiteDataObject
     {
-        public long TranslationId { get; set; }
         [ForeignKey("Language")]
         public long LanguageId { get; set; }
         public Language Language { get; set; }

@@ -8,7 +8,6 @@ namespace LessMarkup.DataObjects.Statistics
 {
     public class DaySummaryHistory : SiteDataObject
     {
-        public long DaySummaryHistoryId { get; set; }
         public long Day { get; set; }
         public int Requests { get; set; }
         public long Received { get; set; }

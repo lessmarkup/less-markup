@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Language : NonSiteDataObject
     {
-        public long LanguageId { get; set; }
         public string Name { get; set; }
         public long? IconId { get; set; }
         public string ShortName { get; set; }

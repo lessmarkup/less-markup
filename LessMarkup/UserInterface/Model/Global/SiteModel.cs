@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -12,7 +13,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(CollectionManager), TitleTextId = UserInterfaceTextIds.EditSite, EntityType = EntityType.Site)]
+    [RecordModel(CollectionType = typeof(CollectionManager), TitleTextId = UserInterfaceTextIds.EditSite, DataType = typeof(Site))]
     public class SiteModel
     {
         public class CollectionManager : IEditableModelCollection<SiteModel>
@@ -28,8 +29,10 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetCollection<Site>().Select(s => s.SiteId);
+                return domainModel.GetCollection<Site>().Select(s => s.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<Site>(); } }
 
             public IQueryable<SiteModel> Read(IDomainModel domainModel, List<long> ids)
             {
@@ -38,7 +41,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     Enabled = s.Enabled,
                     Host = s.Host,
                     Name = s.Name,
-                    SiteId = s.SiteId,
+                    SiteId = s.Id,
                     Title = s.Title
                 });
             }
@@ -64,11 +67,11 @@ namespace LessMarkup.UserInterface.Model.Global
 
                     domainModel.GetCollection<Site>().Add(site);
                     domainModel.SaveChanges();
-                    _changeTracker.AddChange(site.SiteId, EntityType.Site, EntityChangeType.Added, domainModel);
+                    _changeTracker.AddChange(site, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    record.SiteId = site.SiteId;
+                    record.SiteId = site.Id;
                 }
             }
 
@@ -76,12 +79,12 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var site = domainModel.GetCollection<Site>().Single(s => s.SiteId == record.SiteId);
+                    var site = domainModel.GetCollection<Site>().Single(s => s.Id == record.SiteId);
                     site.Enabled = record.Enabled;
                     site.Host = record.Host;
                     site.Name = record.Name;
                     site.Title = record.Title;
-                    _changeTracker.AddChange(record.SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange(site, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
@@ -93,9 +96,9 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     foreach (var recordId in recordIds)
                     {
-                        var site = domainModel.GetCollection<Site>().Single(s => s.SiteId == recordId);
+                        var site = domainModel.GetCollection<Site>().Single(s => s.Id == recordId);
                         domainModel.GetCollection<Site>().Remove(site);
-                        _changeTracker.AddChange(recordId, EntityType.Site, EntityChangeType.Removed, domainModel);
+                        _changeTracker.AddChange(site, EntityChangeType.Removed, domainModel);
                     }
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();

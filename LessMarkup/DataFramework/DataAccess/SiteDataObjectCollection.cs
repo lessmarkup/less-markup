@@ -17,7 +17,7 @@ namespace LessMarkup.DataFramework.DataAccess
         private readonly IQueryable<T> _restrictedSet;
         private readonly long? _siteId;
 
-        public SiteDataObjectCollection(DbSet<T> set, long? siteId) : base(set)
+        public SiteDataObjectCollection(DbSet<T> set, long? siteId, int collectionId) : base(set, collectionId)
         {
             _siteId = siteId;
 

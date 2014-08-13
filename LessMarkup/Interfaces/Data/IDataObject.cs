@@ -6,5 +6,6 @@ namespace LessMarkup.Interfaces.Data
 {
     public interface IDataObject
     {
+        long Id { get; set; }
     }
 }

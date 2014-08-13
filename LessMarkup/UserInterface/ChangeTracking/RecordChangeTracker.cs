@@ -7,7 +7,6 @@ using LessMarkup.Engine.Site;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
-using LessMarkup.UserInterface.Hubs;
 
 namespace LessMarkup.UserInterface.ChangeTracking
 {
@@ -145,7 +144,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
             }
         }
 
-        private void OnRecordChanged(long recordId, long? userId, long entityId, EntityType entityType, EntityChangeType entityChange, long? siteId)
+        private void OnRecordChanged(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange, long? siteId)
         {
             TrackerSite trackerSite;
             if (siteId.HasValue)
@@ -173,7 +172,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
                     return;
                 }
 
-                trackerSite.OnRecordChanged(recordId, userId, entityId, entityType, entityChange, _domainModelProvider);
+                trackerSite.OnRecordChanged(recordId, userId, entityId, collectionId, entityChange, _domainModelProvider);
             }
             finally
             {

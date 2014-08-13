@@ -35,7 +35,7 @@ namespace LessMarkup.Engine.Language
         private readonly Dictionary<string, string> _defaultTranslations = new Dictionary<string, string>();
 
         public LanguageCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
-            : base(new[] { EntityType.Language })
+            : base(new[] { typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
@@ -98,7 +98,7 @@ namespace LessMarkup.Engine.Language
                         Name = language.Name,
                         IconId = language.IconId,
                         IsDefault = language.IsDefault,
-                        LanguageId = language.LanguageId,
+                        LanguageId = language.Id,
                         ShortName = language.ShortName
                     };
 
@@ -108,7 +108,7 @@ namespace LessMarkup.Engine.Language
                         cachedLanguage.AddTranslation(translation.Reference, cachedTranslation);
                     }
 
-                    _languagesMap[language.LanguageId] = cachedLanguage;
+                    _languagesMap[language.Id] = cachedLanguage;
                 }
             }
 

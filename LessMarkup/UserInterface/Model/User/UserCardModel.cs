@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -31,8 +32,10 @@ namespace LessMarkup.UserInterface.Model.User
                 return
                     domainModel.GetCollection<DataObjects.User.User>()
                         .Where(u => !u.IsRemoved && u.SiteId == siteId.Value)
-                        .Select(u => u.UserId);
+                        .Select(u => u.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.User.User>(); } }
 
             public IQueryable<UserCardModel> Read(IDomainModel domainModel, List<long> ids)
             {
@@ -44,13 +47,13 @@ namespace LessMarkup.UserInterface.Model.User
                 }
 
                 return domainModel.GetCollection<DataObjects.User.User>()
-                    .Where(u => !u.IsRemoved && u.SiteId == siteId.Value && ids.Contains(u.UserId))
+                    .Where(u => !u.IsRemoved && u.SiteId == siteId.Value && ids.Contains(u.Id))
                     .Select(u => new UserCardModel
                     {
                         Name = u.Name,
                         Signature = u.Signature,
                         Title = u.Title, 
-                        UserId = u.UserId
+                        UserId = u.Id
                     });
             }
 

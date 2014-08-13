@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -49,17 +50,19 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.UserGroupId);
+                return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<UserGroup>(); } }
 
             public IQueryable<UserGroupModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 return
                     domainModel.GetSiteCollection<UserGroup>(SiteId)
-                        .Where(g => ids.Contains(g.UserGroupId))
+                        .Where(g => ids.Contains(g.Id))
                         .Select(g => new UserGroupModel
                         {
-                            GroupId = g.UserGroupId,
+                            GroupId = g.Id,
                             Name = g.Name,
                             Description = g.Description
                         });
@@ -83,11 +86,11 @@ namespace LessMarkup.UserInterface.Model.Global
 
                     domainModel.GetSiteCollection<UserGroup>(SiteId).Add(group);
                     domainModel.SaveChanges();
-                    _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Added, domainModel);
+                    _changeTracker.AddChange(group, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    record.GroupId = group.UserGroupId;
+                    record.GroupId = group.Id;
                 }
             }
 
@@ -95,12 +98,12 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var group = domainModel.GetSiteCollection<UserGroup>(SiteId).Single(g => g.UserGroupId == record.GroupId);
+                    var group = domainModel.GetSiteCollection<UserGroup>(SiteId).Single(g => g.Id == record.GroupId);
 
                     group.Name = record.Name;
                     group.Description = record.Description;
 
-                    _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange(group, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
@@ -110,10 +113,10 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    foreach (var group in domainModel.GetSiteCollection<UserGroup>(SiteId).Where(g => recordIds.Contains(g.UserGroupId)))
+                    foreach (var group in domainModel.GetSiteCollection<UserGroup>(SiteId).Where(g => recordIds.Contains(g.Id)))
                     {
                         domainModel.GetSiteCollection<UserGroup>(SiteId).Remove(group);
-                        _changeTracker.AddChange(group.UserGroupId, EntityType.UserGroup, EntityChangeType.Removed, domainModel);
+                        _changeTracker.AddChange(group, EntityChangeType.Removed, domainModel);
                     }
 
                     domainModel.SaveChanges();

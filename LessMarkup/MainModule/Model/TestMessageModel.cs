@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
 using LessMarkup.Interfaces.Data;
@@ -27,12 +28,14 @@ namespace LessMarkup.MainModule.Model
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<TestMail>().OrderByDescending(e => e.Sent).Select(e => e.TestMailId);
+                return domainModel.GetSiteCollection<TestMail>().OrderByDescending(e => e.Sent).Select(e => e.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<TestMail>(); } }
 
             public IQueryable<TestMessageModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                return domainModel.GetSiteCollection<TestMail>().Where(e => ids.Contains(e.TestMailId)).Select(e => new TestMessageModel
+                return domainModel.GetSiteCollection<TestMail>().Where(e => ids.Contains(e.Id)).Select(e => new TestMessageModel
                 {
                     Body = e.Body,
                     From = e.From,
@@ -40,7 +43,7 @@ namespace LessMarkup.MainModule.Model
                     Subject = e.Subject,
                     Template = e.Template,
                     To = e.To,
-                    TestMailId = e.TestMailId
+                    TestMailId = e.Id
                 });
             }
 
@@ -64,7 +67,7 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var record in domainModel.GetSiteCollection<TestMail>().Where(m => recordIds.Contains(m.TestMailId)))
+                    foreach (var record in domainModel.GetSiteCollection<TestMail>().Where(m => recordIds.Contains(m.Id)))
                     {
                         domainModel.GetSiteCollection<TestMail>().Remove(record);
                     }

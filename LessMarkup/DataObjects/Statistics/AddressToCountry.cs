@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Statistics
 {
     public class AddressToCountry : NonSiteDataObject
     {
-        public long AddressToCountryId { get; set; }
         public long From { get; set; }
         public long To { get; set; }
         [ForeignKey("Country")]

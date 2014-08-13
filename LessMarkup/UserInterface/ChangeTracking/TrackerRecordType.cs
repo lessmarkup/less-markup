@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -18,10 +19,10 @@ namespace LessMarkup.UserInterface.ChangeTracking
         {
             var modelDefinition = dataCache.Get<IRecordModelCache>().GetDefinition(modelId);
             var constructorInfo = typeof (TrackerRecordType<>).MakeGenericType(modelDefinition.DataType).GetConstructors().Single();
-            return (TrackerRecordType) constructorInfo.Invoke(new[] {connectionId, modelDefinition.EntityType, modelDefinition.CollectionType, filter});
+            return (TrackerRecordType) constructorInfo.Invoke(new[] {connectionId, modelDefinition.CollectionType, modelDefinition.CollectionType, filter});
         }
 
-        public abstract EntityType EntityType { get; }
+        public abstract int CollectionId { get; }
 
         public abstract void OnRecordChanged(long recordId, long entityId, EntityChangeType entityChange, IDomainModel domainModel);
         public abstract void GetAllIds(IDomainModelProvider domainModelProvider);
@@ -30,26 +31,26 @@ namespace LessMarkup.UserInterface.ChangeTracking
 
     class TrackerRecordType<T> : TrackerRecordType
     {
-        private readonly EntityType _entityType;
+        private readonly int _collectionId;
         private readonly IModelCollection<T> _collectionManager;
         private readonly string _connectionId;
         private int _changeNumber;
 
         public string Filter { get; set; }
 
-        public TrackerRecordType(string connectionId, EntityType entityType, Type collectionManagerType, string filter)
+        public TrackerRecordType(string connectionId, Type collectionType, Type collectionManagerType, string filter)
         {
             _connectionId = connectionId;
             Filter = filter;
-            _entityType = entityType;
+            _collectionId = AbstractDomainModel.GetCollectionId(collectionType);
 
             var managerInstance = DependencyResolver.Resolve(collectionManagerType);
             _collectionManager = (IModelCollection<T>) managerInstance;
         }
 
-        public override EntityType EntityType
+        public override int CollectionId
         {
-            get { return _entityType; }
+            get { return _collectionId; }
         }
 
         private dynamic GetClient()

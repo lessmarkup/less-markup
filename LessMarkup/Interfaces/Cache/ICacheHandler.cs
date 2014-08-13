@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.Interfaces.Data;
+using System;
 
 namespace LessMarkup.Interfaces.Cache
 {
@@ -20,18 +20,18 @@ namespace LessMarkup.Interfaces.Cache
         /// <summary>
         /// Expires the cache item.
         /// </summary>
-        /// <param name="entityType">Type of the entity.</param>
+        /// <param name="collectionId">Id of the collection.</param>
         /// <param name="entityId">The entity identifier.</param>
         /// <param name="changeType">Type of the change.</param>
         /// <returns></returns>
-        bool Expires(EntityType entityType, long entityId, EntityChangeType changeType);
+        bool Expires(int collectionId, long entityId, EntityChangeType changeType);
         /// <summary>
         /// Gets the list of types handled by this cache handler.
         /// </summary>
         /// <value>
-        /// The handled types.
+        /// The handled collection types.
         /// </value>
-        EntityType[] HandledTypes { get; }
+        Type[] HandledCollectionTypes { get; }
 
         bool Expired { get; }
     }

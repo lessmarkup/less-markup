@@ -31,7 +31,7 @@ namespace LessMarkup.Engine.Security
         public string Name { get; private set; }
 
         public UserCache(IDomainModelProvider domainModelProvider)
-            : base(new[] { EntityType.User })
+            : base(new[] { typeof(User) })
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -48,7 +48,7 @@ namespace LessMarkup.Engine.Security
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<User>().Where(u => u.UserId == _userId)
+                var user = domainModel.GetCollection<User>().Where(u => u.Id == _userId)
                     .Select(u => new
                     {
                         u.Name,
@@ -86,9 +86,9 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        protected override bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
+        protected override bool Expires(int collectionId, long entityId, EntityChangeType changeType)
         {
-            return entityType == EntityType.User && entityId == _userId;
+            return entityId == _userId;
         }
     }
 }

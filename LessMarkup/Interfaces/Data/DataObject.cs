@@ -8,5 +8,7 @@ namespace LessMarkup.Interfaces.Data
     {
         internal DataObject()
         {}
+
+        public long Id { get; set; }
     }
 }

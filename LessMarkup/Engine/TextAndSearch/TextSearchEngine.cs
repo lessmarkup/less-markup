@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -99,7 +100,7 @@ namespace LessMarkup.Engine.TextAndSearch
                                 FullTextEnabled = true, 
                                 Columns = properties, 
                                 IdColumn = idProperty.Name, 
-                                EntityType = entityAttribute.EntityType, 
+                                CollectionId = AbstractDomainModel.GetCollectionId(entityAttribute.CollectionType),
                                 UpdatedColumn = updatedProperty != null ? updatedProperty.Name : null,
                                 CreatedColumn = createdProperty != null ? createdProperty.Name : null
                             };
@@ -192,7 +193,7 @@ namespace LessMarkup.Engine.TextAndSearch
                     {
                         var result = new SearchResult
                         {
-                            EntityType = (EntityType) reader.GetInt32(2),
+                            CollectionId = reader.GetInt32(2),
                             EntityId = reader.GetInt64(0),
                             Text = ""
                         };

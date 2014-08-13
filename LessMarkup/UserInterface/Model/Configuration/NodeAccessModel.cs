@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
@@ -55,17 +56,19 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId).Select(a => a.NodeAccessId);
+                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId).Select(a => a.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<NodeAccess>(); } }
 
             public IQueryable<NodeAccessModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId && ids.Contains(a.NodeAccessId)).Select(a => new NodeAccessModel
+                return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId && ids.Contains(a.Id)).Select(a => new NodeAccessModel
                 {
                     AccessType = a.AccessType,
                     User = a.User.Email,
                     Group = a.Group.Name,
-                    AccessId = a.NodeAccessId
+                    AccessId = a.Id
                 });
             }
 
@@ -90,21 +93,21 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
+                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
                     }
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.Group))
                     {
-                        access.GroupId = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.Name == record.Group).UserGroupId;
+                        access.GroupId = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.Name == record.Group).Id;
                     }
 
                     domainModel.GetSiteCollection<NodeAccess>(_siteId).Add(access);
-                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                    _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange<Node>(_nodeId, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
-                    record.AccessId = access.NodeAccessId;
+                    record.AccessId = access.Id;
                 }
             }
 
@@ -112,14 +115,14 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var access = domainModel.GetSiteCollection<NodeAccess>(_siteId).Single(a => a.NodeAccessId == record.AccessId);
+                    var access = domainModel.GetSiteCollection<NodeAccess>(_siteId).Single(a => a.Id == record.AccessId);
                     access.AccessType = record.AccessType;
 
                     var siteId = _siteId ?? _siteMapper.SiteId;
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).UserId;
+                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
                     }
                     else
                     {
@@ -128,15 +131,15 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.Group))
                     {
-                        access.GroupId = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.Name == record.Group).UserGroupId;
+                        access.GroupId = domainModel.GetSiteCollection<UserGroup>(_siteId).Single(g => g.Name == record.Group).Id;
                     }
                     else
                     {
                         access.GroupId = null;
                     }
 
-                    _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                    _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange<Node>(_nodeId, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
@@ -148,7 +151,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 {
                     var hasChanges = false;
 
-                    foreach (var record in domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => recordIds.Contains(a.NodeAccessId)))
+                    foreach (var record in domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => recordIds.Contains(a.Id)))
                     {
                         domainModel.GetSiteCollection<NodeAccess>(_siteId).Remove(record);
                         hasChanges = true;
@@ -156,8 +159,8 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (hasChanges)
                     {
-                        _changeTracker.AddChange(SiteId, EntityType.Site, EntityChangeType.Updated, domainModel);
-                        _changeTracker.AddChange(_nodeId, EntityType.Node, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                        _changeTracker.AddChange<Node>(_nodeId, EntityChangeType.Updated, domainModel);
                         domainModel.SaveChanges();
                         domainModel.CompleteTransaction();
                     }

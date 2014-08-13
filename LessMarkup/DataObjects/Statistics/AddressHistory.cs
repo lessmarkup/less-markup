@@ -12,7 +12,6 @@ namespace LessMarkup.DataObjects.Statistics
     /// </summary>
     public class AddressHistory : SiteDataObject
     {
-        public long AddressHistoryId { get; set; }
         public long Date { get; set; }
         public long Ip { get; set; }
         public int Requests { get; set; }

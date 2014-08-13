@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Security
 {
     public class SuccessfulLoginHistory : NonSiteDataObject
     {
-        public long SuccessfulLoginHistoryId { get; set; }
         public long UserId { get; set; }
         public string Address { get; set; }
         public DateTime Time { get; set; }

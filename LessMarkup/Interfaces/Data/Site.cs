@@ -9,7 +9,6 @@ namespace LessMarkup.Interfaces.Data
 {
     public class Site : NonSiteDataObject
     {
-        public long SiteId { get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
         public string Host { get; set; }
@@ -17,6 +16,6 @@ namespace LessMarkup.Interfaces.Data
         public DateTime Created { get; set; }
 
         public List<SiteProperty> Properties { get; set; }
-        public List<SiteModule> Modules { get; set; } 
+        public List<SiteModule> Modules { get; set; }
     }
 }

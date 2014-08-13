@@ -10,10 +10,9 @@ namespace LessMarkup.DataObjects.User
 {
     public class UserLoginIpAddress : NonSiteDataObject
     {
-        public long UserLoginIpAddressId { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
-        public LessMarkup.DataObjects.User.User User { get; set; }
+        public User User { get; set; }
         public string IpAddress { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastLogin { get; set; }

@@ -5,17 +5,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Engine.Cache
 {
     class SiteDataCache : IDataCache
     {
         private readonly object _itemsLock = new object();
-        private readonly Dictionary<EntityType, List<CacheItem>> _handledEntities = new Dictionary<EntityType, List<CacheItem>>();
+        private readonly Dictionary<int, List<CacheItem>> _handledCollectionIds = new Dictionary<int, List<CacheItem>>();
         private readonly Dictionary<Tuple<Type, long?>, CacheItem> _items = new Dictionary<Tuple<Type, long?>, CacheItem>();
         private readonly long? _siteId;
 
@@ -42,17 +42,18 @@ namespace LessMarkup.Engine.Cache
                     return;
                 }
 
-                var handledTypes = cachedObject.HandledTypes;
+                var collectionTypes = cachedObject.HandledCollectionTypes;
 
-                if (handledTypes != null)
+                if (collectionTypes != null)
                 {
-                    foreach (var entityType in handledTypes)
+                    foreach (var type in collectionTypes)
                     {
+                        var collectionId = AbstractDomainModel.GetCollectionId(type);
                         List<CacheItem> items;
-                        if (!_handledEntities.TryGetValue(entityType, out items))
+                        if (!_handledCollectionIds.TryGetValue(collectionId, out items))
                         {
                             items = new List<CacheItem>();
-                            _handledEntities.Add(entityType, items);
+                            _handledCollectionIds.Add(collectionId, items);
                         }
                         items.Add(cacheItem);
                     }
@@ -155,10 +156,11 @@ namespace LessMarkup.Engine.Cache
                 return;
             }
 
-            foreach (var entityType in cacheItem.CachedObject.HandledTypes)
+            foreach (var type in cacheItem.CachedObject.HandledCollectionTypes)
             {
+                var collectionId = AbstractDomainModel.GetCollectionId(type);
                 List<CacheItem> items;
-                if (_handledEntities.TryGetValue(entityType, out items))
+                if (_handledCollectionIds.TryGetValue(collectionId, out items))
                 {
                     items.Remove(cacheItem);
                 }
@@ -167,18 +169,18 @@ namespace LessMarkup.Engine.Cache
             _items.Remove(key);
         }
 
-        public void UpdateCacheItem(long recordId, long? userId, long entityId, EntityType entityType, EntityChangeType entityChange)
+        public void UpdateCacheItem(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange)
         {
             List<CacheItem> items;
 
-            if (!_handledEntities.TryGetValue(entityType, out items))
+            if (!_handledCollectionIds.TryGetValue(collectionId, out items))
             {
                 return;
             }
 
             List<CacheItem> itemsToRemove = null;
 
-            foreach (var item in items.Where(item => item.CachedObject.Expires(entityType, entityId, entityChange)))
+            foreach (var item in items.Where(item => item.CachedObject.Expires(collectionId, entityId, entityChange)))
             {
                 if (itemsToRemove == null)
                 {

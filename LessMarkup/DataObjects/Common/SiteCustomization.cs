@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class SiteCustomization : SiteDataObject
     {
-        public long SiteCustomizationId { get; set; }
         public string Path { get; set; }
         public bool IsBinary { get; set; }
         public byte[] Body { get; set; }

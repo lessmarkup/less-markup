@@ -107,7 +107,7 @@ namespace LessMarkup.Engine.Helpers
                         Sent = h.Sum(v => v.Sent),
                         Errors = h.Sum(v => v.HasError),
                         MobileRequests = h.Sum(v => v.MobileRequests),
-                        Entries = h.Select(v => v.AddressHistoryId).ToList()
+                        Entries = h.Select(v => v.Id).ToList()
                     }).ToList();
                 }
 
@@ -130,7 +130,7 @@ namespace LessMarkup.Engine.Helpers
 
                         var entries = day.Entries;
 
-                        foreach (var history in domainModel.GetSiteCollection<AddressHistory>().Where(h => entries.Contains(h.AddressHistoryId)))
+                        foreach (var history in domainModel.GetSiteCollection<AddressHistory>().Where(h => entries.Contains(h.Id)))
                         {
                             domainModel.GetSiteCollection<AddressHistory>().Remove(history);
                         }

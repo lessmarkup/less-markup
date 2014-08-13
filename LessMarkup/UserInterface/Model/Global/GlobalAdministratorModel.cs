@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -13,7 +14,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(CollectionManager), TitleTextId = UserInterfaceTextIds.EditAdministrator, EntityType = EntityType.User)]
+    [RecordModel(CollectionType = typeof(CollectionManager), TitleTextId = UserInterfaceTextIds.EditAdministrator, DataType = typeof(DataObjects.User.User))]
     public class GlobalAdministratorModel
     {
         public class CollectionManager : IEditableModelCollection<GlobalAdministratorModel>
@@ -31,17 +32,19 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
-                return domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.SiteId.HasValue && !u.IsRemoved && !u.IsBlocked && u.IsAdministrator).Select(u => u.UserId);
+                return domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.SiteId.HasValue && !u.IsRemoved && !u.IsBlocked && u.IsAdministrator).Select(u => u.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.User.User>(); } }
 
             public IQueryable<GlobalAdministratorModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 return
                     domainModel.GetCollection<DataObjects.User.User>()
-                        .Where(u => ids.Contains(u.UserId))
+                        .Where(u => ids.Contains(u.Id))
                         .Select(u => new GlobalAdministratorModel
                         {
-                            UserId = u.UserId,
+                            UserId = u.Id,
                             Email = u.Email,
                             Name = u.Name
                         });
@@ -77,12 +80,12 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.GetCollection<DataObjects.User.User>().Add(user);
                     domainModel.SaveChanges();
 
-                    _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Added, domainModel);
+                    _changeTracker.AddChange(user, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
 
                     domainModel.CompleteTransaction();
 
-                    record.UserId = user.UserId;
+                    record.UserId = user.Id;
                     record.Password = null;
                 }
             }
@@ -91,7 +94,7 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var user = domainModel.GetCollection<DataObjects.User.User>().First(u => u.IsAdministrator && !u.IsRemoved && u.UserId == record.UserId && !u.SiteId.HasValue);
+                    var user = domainModel.GetCollection<DataObjects.User.User>().First(u => u.IsAdministrator && !u.IsRemoved && u.Id == record.UserId && !u.SiteId.HasValue);
 
                     user.Name = record.Name;
                     user.Email = record.Email;
@@ -107,7 +110,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         user.LastPasswordChanged = DateTime.UtcNow;
                     }
 
-                    _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange(user, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
@@ -121,9 +124,9 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     foreach (var userId in recordIds)
                     {
-                        var user = domainModel.GetCollection<DataObjects.User.User>().First(u => u.IsAdministrator && !u.IsRemoved && u.UserId == userId && !u.SiteId.HasValue);
+                        var user = domainModel.GetCollection<DataObjects.User.User>().First(u => u.IsAdministrator && !u.IsRemoved && u.Id == userId && !u.SiteId.HasValue);
                         domainModel.GetCollection<DataObjects.User.User>().Remove(user);
-                        _changeTracker.AddChange(userId, EntityType.User, EntityChangeType.Removed, domainModel);
+                        _changeTracker.AddChange(user, EntityChangeType.Removed, domainModel);
                     }
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();

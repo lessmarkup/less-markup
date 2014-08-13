@@ -4,13 +4,15 @@
 
 using System;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Security;
 using LessMarkup.DataFramework;
-using LessMarkup.DataObjects.Common;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.User;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Security.Models;
@@ -26,6 +28,8 @@ namespace LessMarkup.Engine.Security
         #region Private Fields
 
         private const int SaltLength = 16;
+        // ReSharper disable once InconsistentNaming
+        private static readonly int HashSize;
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
@@ -37,6 +41,14 @@ namespace LessMarkup.Engine.Security
         #endregion
 
         #region Initialization
+
+        static UserSecurity()
+        {
+            using (var hash = CreateHashAlgorithm())
+            {
+                HashSize = hash.HashSize / 8;
+            }
+        }
 
         public UserSecurity(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, ISiteMapper siteMapper, IChangeTracker changeTracker)
         {
@@ -54,7 +66,7 @@ namespace LessMarkup.Engine.Security
 
         public string CreatePasswordValidationToken(long? userId)
         {
-            return CreateAccessToken(EntityType.User, 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+            return CreateAccessToken(AbstractDomainModel.GetCollectionId<User>(), 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
         }
 
         public void ChangePassword(string password, out string salt, out string encodedPassword)
@@ -98,7 +110,7 @@ namespace LessMarkup.Engine.Security
                     throw;
                 }
 
-                _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<User>(user.Id, EntityChangeType.Added, domainModel);
 
                 if (_siteMapper.SiteId.HasValue)
                 {
@@ -127,13 +139,13 @@ namespace LessMarkup.Engine.Security
                 {
                     var model = new NewUserCreatedModel
                     {
-                        UserId = user.UserId,
+                        UserId = user.Id,
                         Name = user.Name,
                         Email = user.Email
                     };
 
                     var administrators = domainModel.GetCollection<User>().Where(u => u.IsAdministrator && u.SiteId == _siteMapper.SiteId && !u.IsRemoved && !u.IsBlocked);
-                    foreach (var admin in administrators.Select(a => a.UserId))
+                    foreach (var admin in administrators.Select(a => a.Id))
                     {
                         _mailSender.SendMail(null, admin, null, Constants.MailTemplates.Core.NewUserCreated, model);
                     }
@@ -142,91 +154,142 @@ namespace LessMarkup.Engine.Security
                 domainModel.CompleteTransaction();
             }
 
-            return user.UserId;
+            return user.Id;
         }
 
-        public string CreateAccessToken(EntityType entityType, long entityId, EntityAccessType accessType, long? userId, DateTime? expirationTime = null)
+        private static byte[] GetSaltBytes()
+        {
+            using (var cryptoProvider = new RNGCryptoServiceProvider())
+            {
+                var salt = new byte[SaltLength];
+                cryptoProvider.GetBytes(salt);
+                return salt;
+            }
+        }
+
+        private static HashAlgorithm CreateHashAlgorithm()
+        {
+            return HashAlgorithm.Create("SHA512");
+        }
+
+        private static byte[] CreateHash(byte[] data, int offset = 0, int? count = null)
+        {
+            using (var hashAlgorithm = CreateHashAlgorithm())
+            {
+                if (hashAlgorithm == null)
+                {
+                    return null;
+                }
+                return hashAlgorithm.ComputeHash(data, offset, count ?? data.Length);
+            }
+        }
+
+        public string EncryptObject(object obj)
+        {
+            var formatter = new BinaryFormatter();
+            byte[] bytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                formatter.Serialize(memoryStream, obj);
+                bytes = memoryStream.ToArray();
+            }
+            var salt = GetSaltBytes();
+            var hash = CreateHash(bytes);
+
+            if (hash == null)
+            {
+                return null;
+            }
+
+            var data = new byte[bytes.Length + salt.Length + hash.Length];
+
+            Buffer.BlockCopy(salt, 0, data, 0, salt.Length);
+            Buffer.BlockCopy(bytes, 0, data, salt.Length, bytes.Length);
+            Buffer.BlockCopy(hash, 0, data, salt.Length+bytes.Length, hash.Length);
+
+            data = MachineKey.Protect(data, null);
+
+            return Convert.ToBase64String(data);
+        }
+
+        public T DecryptObject<T>(string encrypted) where T : class
+        {
+            var decrypted = Convert.FromBase64String(encrypted);
+            decrypted = MachineKey.Unprotect(decrypted, null);
+            if (decrypted == null)
+            {
+                return null;
+            }
+
+            var hash = CreateHash(decrypted, SaltLength, decrypted.Length-HashSize-SaltLength);
+
+            var hashOffset = decrypted.Length - HashSize;
+
+            for (int i = 0; i < HashSize; i++)
+            {
+                if (hash[i] != decrypted[hashOffset + i])
+                {
+                    return null;
+                }
+            }
+
+            using (var memoryStream = new MemoryStream(decrypted, SaltLength, decrypted.Length - HashSize - SaltLength))
+            {
+                var formatter = new BinaryFormatter();
+                return (T) formatter.Deserialize(memoryStream);
+            }
+        }
+
+        class AccessToken
+        {
+            public long? UserId { get; set; }
+            public int CollectionId { get; set; }
+            public long EntityId { get; set; }
+            public EntityAccessType AccessType { get; set; }
+            public long? Ticks { get; set; }
+        }
+
+        public string CreateAccessToken(int collectionId, long entityId, EntityAccessType accessType, long? userId, DateTime? expirationTime = null)
         {
             if (accessType == EntityAccessType.Everyone)
             {
                 userId = null;
             }
 
-            var hashAlgorithm = HashAlgorithm.Create("SHA512");
-            if (hashAlgorithm == null)
+            return EncryptObject(new AccessToken
             {
-                return string.Empty;
-            }
-            var hashSize = hashAlgorithm.HashSize/8;
-            var values = new long[5];
-            var salt = new byte[SaltLength];
-            var data = new byte[sizeof(long) * values.Length + salt.Length + hashSize];
-            values[0] = userId ?? 0;
-            values[1] = (long) entityType;
-            values[2] = entityId;
-            values[3] = (long) accessType;
-            values[4] = expirationTime.HasValue ? expirationTime.Value.Ticks : 0;
-            for (var i = 0; i < values.Length; i++)
-            {
-                Buffer.BlockCopy(BitConverter.GetBytes(values[i]), 0, data, i * sizeof(long), sizeof (long));
-            }
-            new RNGCryptoServiceProvider().GetBytes(salt);
-            Buffer.BlockCopy(salt, 0, data, sizeof(long)*values.Length, salt.Length);
-            var hash = hashAlgorithm.ComputeHash(data, 0, sizeof (long)*values.Length + salt.Length);
-            Buffer.BlockCopy(hash, 0, data, sizeof(long)*values.Length+salt.Length, hashSize);
-            data = MachineKey.Protect(data, null);
-            return Convert.ToBase64String(data);
+                UserId = userId,
+                CollectionId = collectionId,
+                EntityId = entityId,
+                AccessType = accessType,
+                Ticks = expirationTime != null ? expirationTime.Value.Ticks : (long?)null
+            });
         }
 
-        public bool ValidateAccessToken(string token, EntityType entityType, long entityId, EntityAccessType accessType, long? userId)
+        public bool ValidateAccessToken(string token, int collectionId, long entityId, EntityAccessType accessType, long? userId)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
                 return false;
             }
 
-            var values = new long[5];
+            var accessToken = DecryptObject<AccessToken>(token);
 
-            using (var hashAlgorithm = HashAlgorithm.Create("SHA512"))
+            if (accessToken == null)
             {
-                if (hashAlgorithm == null)
-                {
-                    return false;
-                }
-                var hashSize = hashAlgorithm.HashSize/8;
-                var data = Convert.FromBase64String(token);
-                data = MachineKey.Unprotect(data, null);
-                if (data == null || data.Length != sizeof (long)*values.Length + SaltLength + hashSize)
-                {
-                    return false;
-                }
-                var hash = hashAlgorithm.ComputeHash(data, 0, sizeof (long)*values.Length + SaltLength);
-                for (var i = 0; i < hash.Length; i++)
-                {
-                    if (hash[i] != data[sizeof (long)*values.Length + SaltLength + i])
-                    {
-                        return false;
-                    }
-                }
-                for (var i = 0; i < values.Length; i++)
-                {
-                    values[i] = BitConverter.ToInt64(data, i * sizeof(long));
-                }
+                return false;
             }
 
-            var allowedAccessType = (EntityAccessType)values[3];
-            var allowedUserId = values[0];
-
-            switch (allowedAccessType)
+            switch (accessToken.AccessType)
             {
                 case EntityAccessType.Read:
-                    if ((accessType != EntityAccessType.Read && accessType != EntityAccessType.Everyone) || !userId.HasValue || allowedUserId != userId.Value)
+                    if ((accessType != EntityAccessType.Read && accessType != EntityAccessType.Everyone) || !userId.HasValue || accessToken.UserId != userId.Value)
                     {
                         return false;
                     }
                     break;
                 case EntityAccessType.ReadWrite:
-                    if ((accessType != EntityAccessType.Read && accessType != EntityAccessType.ReadWrite && accessType != EntityAccessType.Everyone) || !userId.HasValue || allowedUserId != userId.Value)
+                    if ((accessType != EntityAccessType.Read && accessType != EntityAccessType.ReadWrite && accessType != EntityAccessType.Everyone) || !userId.HasValue || accessToken.UserId != userId.Value)
                     {
                         return false;
                     }
@@ -237,18 +300,18 @@ namespace LessMarkup.Engine.Security
                     return false;
             }
 
-            if (values[1] != (long) entityType)
+            if (accessToken.CollectionId != collectionId)
             {
                 return false;
             }
-            if (values[2] != entityId)
+            if (accessToken.EntityId != entityId)
             {
                 return false;
             }
 
-            if (values[4] != 0)
+            if (accessToken.Ticks.HasValue)
             {
-                if (DateTime.UtcNow.Ticks > values[4])
+                if (DateTime.UtcNow.Ticks > accessToken.Ticks.Value)
                 {
                     return false;
                 }
@@ -260,8 +323,7 @@ namespace LessMarkup.Engine.Security
         public string GenerateUniqueId()
         {
             var currentTime = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
-            var data = new byte[16];
-            new RNGCryptoServiceProvider().GetBytes(data);
+            var data = GetSaltBytes();
             var ret = new StringBuilder();
             foreach (var b in data)
             {
@@ -285,7 +347,7 @@ namespace LessMarkup.Engine.Security
                 }
                 user.ValidateSecret = null;
                 user.IsValidated = true;
-                _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
                 return true;
@@ -298,7 +360,7 @@ namespace LessMarkup.Engine.Security
 
         public static string EncodePassword(string password, string salt)
         {
-            using (var hashAlgorithm = HashAlgorithm.Create("SHA512"))
+            using (var hashAlgorithm = CreateHashAlgorithm())
             {
                 if (hashAlgorithm == null)
                 {
@@ -338,14 +400,13 @@ namespace LessMarkup.Engine.Security
 
         private const string PasswordDictionary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-!?";
 
-        public string GeneratePassword()
+        public string GeneratePassword(int passwordLength = 8)
         {
-            var data = new byte[16];
-            new RNGCryptoServiceProvider().GetBytes(data);
+            var data = GetSaltBytes();
 
             string ret = "";
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < passwordLength; i++)
             {
                 ret += PasswordDictionary[data[i]%PasswordDictionary.Length];
             }
@@ -451,8 +512,8 @@ namespace LessMarkup.Engine.Security
                 }
 
                 var membership = domainModel.GetSiteCollection<UserGroupMembership>().Create();
-                membership.UserId = user.UserId;
-                membership.UserGroupId = group.UserGroupId;
+                membership.UserId = user.Id;
+                membership.UserGroupId = group.Id;
                 domainModel.GetSiteCollection<UserGroupMembership>().Add(membership);
             }
         }
@@ -462,7 +523,7 @@ namespace LessMarkup.Engine.Security
             var confirmationLink = confirmation(user.ValidateSecret);
             var confirmationModel = new UserConfirmationMailTemplateModel { Link = confirmationLink };
 
-            _mailSender.SendMail(null, user.UserId, null, Constants.MailTemplates.Core.ValidateUser, confirmationModel);
+            _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.Core.ValidateUser, confirmationModel);
         }
 
         private void SendGeneratedPassword(string email, string password, User user)
@@ -475,7 +536,7 @@ namespace LessMarkup.Engine.Security
                 SiteName = _dataCache.Get<SiteConfigurationCache>().SiteName
             };
 
-            _mailSender.SendMail(null, user.UserId, null,
+            _mailSender.SendMail(null, user.Id, null,
                 Constants.MailTemplates.Core.PasswordGeneratedNotification, notificationModel);
         }
 

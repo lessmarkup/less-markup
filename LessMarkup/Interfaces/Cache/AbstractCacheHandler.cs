@@ -1,15 +1,14 @@
-﻿using System.Linq;
-using LessMarkup.Interfaces.Data;
+﻿using System;
 
 namespace LessMarkup.Interfaces.Cache
 {
     public abstract class AbstractCacheHandler : ICacheHandler
     {
-        private readonly EntityType[] _handledTypes;
+        private readonly Type[] _handledCollectionTypes;
 
-        protected AbstractCacheHandler(EntityType[] handledTypes)
+        protected AbstractCacheHandler(Type [] handledCollectionTypes)
         {
-            _handledTypes = handledTypes;
+            _handledCollectionTypes = handledCollectionTypes;
         }
 
         void ICacheHandler.Initialize(long? siteId, long? objectId)
@@ -19,17 +18,17 @@ namespace LessMarkup.Interfaces.Cache
 
         protected abstract void Initialize(long? siteId, long? objectId);
 
-        bool ICacheHandler.Expires(EntityType entityType, long entityId, EntityChangeType changeType)
+        bool ICacheHandler.Expires(int collectionId, long entityId, EntityChangeType changeType)
         {
-            return Expires(entityType, entityId, changeType);
+            return Expires(collectionId, entityId, changeType);
         }
 
-        protected virtual bool Expires(EntityType entityType, long entityId, EntityChangeType changeType)
+        protected virtual bool Expires(int collectionId, long entityId, EntityChangeType changeType)
         {
-            return _handledTypes != null && _handledTypes.Contains(entityType);
+            return true;
         }
 
-        EntityType[] ICacheHandler.HandledTypes { get { return _handledTypes; } }
+        Type[] ICacheHandler.HandledCollectionTypes { get { return _handledCollectionTypes; } }
 
         protected bool Expired { get; set; }
 

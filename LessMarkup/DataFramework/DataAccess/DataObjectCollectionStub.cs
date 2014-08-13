@@ -69,5 +69,7 @@ namespace LessMarkup.DataFramework.DataAccess
 
         public bool ContainsListCollection { get { return false; } }
         public DbSet<T> InnerCollection { get { return null; } }
+        public int CollectionId { get; private set; }
+        public long Id { get; private set; }
     }
 }

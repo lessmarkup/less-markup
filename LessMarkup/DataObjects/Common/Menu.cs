@@ -10,7 +10,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Menu : SiteDataObject
     {
-        public long MenuId { get; set; }
         public string Text { get; set; }
         public string Description { get; set; }
         public string Controller { get; set; }

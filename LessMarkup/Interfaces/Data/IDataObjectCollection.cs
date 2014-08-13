@@ -8,8 +8,9 @@ using System.Linq;
 
 namespace LessMarkup.Interfaces.Data
 {
-    public interface IDataObjectCollection<T> : IDbSet<T>, IDataObject, IListSource, IOrderedQueryable<T> where T : class
+    public interface IDataObjectCollection<T> : IDbSet<T>, IListSource, IOrderedQueryable<T> where T : class
     {
         DbSet<T> InnerCollection { get; }
+        int CollectionId { get; }
     }
 }

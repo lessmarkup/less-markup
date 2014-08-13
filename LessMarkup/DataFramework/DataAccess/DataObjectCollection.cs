@@ -17,10 +17,12 @@ namespace LessMarkup.DataFramework.DataAccess
     public class DataObjectCollection<T> : IDataObjectCollection<T> where T : class, IDataObject
     {
         private readonly DbSet<T> _set;
+        private readonly int _collectionId;
 
-        public DataObjectCollection(DbSet<T> set)
+        public DataObjectCollection(DbSet<T> set, int collectionId)
         {
             _set = set;
+            _collectionId = collectionId;
         }
 
         protected DbSet<T> Set { get { return _set; }}
@@ -84,5 +86,6 @@ namespace LessMarkup.DataFramework.DataAccess
         public bool ContainsListCollection { get { return ((IListSource) _set).ContainsListCollection; } }
 
         public DbSet<T> InnerCollection { get { return _set; } }
+        public int CollectionId { get { return _collectionId; } }
     }
 }

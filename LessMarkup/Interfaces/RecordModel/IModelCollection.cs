@@ -12,6 +12,7 @@ namespace LessMarkup.Interfaces.RecordModel
     public interface IModelCollection<out TR>
     {
         IQueryable<long> ReadIds(IDomainModel domainModel, string filter);
+        int CollectionId { get; }
         IQueryable<TR> Read(IDomainModel domainModel, List<long> ids);
         bool Filtered { get; }
         void Initialize(long? objectId, NodeAccessType nodeAccessType);

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Engine.TextAndSearch
 {
@@ -16,7 +15,7 @@ namespace LessMarkup.Engine.TextAndSearch
         public string IdColumn { get; set; }
         public string UpdatedColumn { get; set; }
         public string CreatedColumn { get; set; }
-        public EntityType EntityType { get; set; }
+        public int CollectionId { get; set; }
 
         public void InitializeQuery(int fieldCount)
         {
@@ -44,7 +43,7 @@ namespace LessMarkup.Engine.TextAndSearch
 
             if (FullTextEnabled)
             {
-                Query = string.Format("select s.[key], s.[rank], {0} as [type]" + updatedQuery, (int) EntityType);
+                Query = string.Format("select s.[key], s.[rank], {0} as [type]" + updatedQuery, CollectionId);
                 for (int i = 0; i < fieldCount; i++)
                 {
                     var fieldName = string.Format("text{0}", i + 1);
@@ -63,7 +62,7 @@ namespace LessMarkup.Engine.TextAndSearch
             }
             else
             {
-                Query = string.Format("select t.[{0}] as [key], 50 as [rank], {1} as [type]" + updatedQuery, IdColumn, (int) EntityType);
+                Query = string.Format("select t.[{0}] as [key], 50 as [rank], {1} as [type]" + updatedQuery, IdColumn, CollectionId);
                 
                 for (int i = 0; i < fieldCount; i++)
                 {

@@ -18,7 +18,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.ImageId == imageId);
+                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.Id == imageId);
 
                 if (image == null)
                 {
@@ -50,7 +50,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.ImageId == imageId);
+                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.Id == imageId);
 
                 if (image == null)
                 {

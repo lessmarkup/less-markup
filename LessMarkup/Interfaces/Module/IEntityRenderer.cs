@@ -3,12 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Web.Mvc;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.Module
 {
     public interface IEntityRenderer
     {
-        bool Render(EntityType entityType, long entityId, string highlightText, HtmlHelper htmlHelper, UrlHelper urlHelper);
+        bool Render(int collectionId, long entityId, string highlightText, HtmlHelper htmlHelper, UrlHelper urlHelper);
     }
 }

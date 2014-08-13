@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.RecordModel
 {
@@ -11,7 +10,7 @@ namespace LessMarkup.Interfaces.RecordModel
     public class RecordModelAttribute : Attribute
     {
         public Type CollectionType { get; set; }
+        public Type DataType { get; set; }
         public object TitleTextId { get; set; }
-        public EntityType EntityType { get; set; }
     }
 }

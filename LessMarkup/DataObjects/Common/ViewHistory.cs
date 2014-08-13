@@ -9,8 +9,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class ViewHistory : NonSiteDataObject
     {
-        public long ViewHistoryId { get; set; }
-
         public long UserId { get; set; }
 
         public string Path { get; set; }

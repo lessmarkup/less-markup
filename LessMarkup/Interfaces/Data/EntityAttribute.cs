@@ -9,13 +9,13 @@ namespace LessMarkup.Interfaces.Data
     [AttributeUsage(AttributeTargets.Class)]
     public class EntityAttribute : Attribute
     {
-        private readonly EntityType _entityType;
+        private readonly Type _collectionType;
 
-        public EntityAttribute(EntityType entityType)
+        public EntityAttribute(Type collectionType)
         {
-            _entityType = entityType;
+            _collectionType = collectionType;
         }
 
-        public EntityType EntityType { get { return _entityType; } }
+        public Type CollectionType { get { return _collectionType; } }
     }
 }

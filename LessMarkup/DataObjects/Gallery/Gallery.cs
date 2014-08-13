@@ -9,7 +9,6 @@ namespace LessMarkup.DataObjects.Gallery
 {
     public class Gallery : SiteDataObject
     {
-        public long GalleryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

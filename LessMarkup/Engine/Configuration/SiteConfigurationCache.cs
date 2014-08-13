@@ -29,7 +29,7 @@ namespace LessMarkup.Engine.Configuration
         #region Initialization
 
         public SiteConfigurationCache(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
-            : base(new[] { EntityType.Site })
+            : base(new[] { typeof(Interfaces.Data.Site) })
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
@@ -166,7 +166,7 @@ namespace LessMarkup.Engine.Configuration
                     }
                 }
 
-                _changeTracker.AddChange(siteId.Value, EntityType.Site, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<Interfaces.Data.Site>(siteId.Value, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
             }
         }

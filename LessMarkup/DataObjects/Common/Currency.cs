@@ -9,8 +9,6 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Currency : SiteDataObject
     {
-        public long CurrencyId { get; set; }
-
         public string Name { get; set; }
 
         public string Code { get; set; }

@@ -10,8 +10,6 @@ namespace LessMarkup.DataObjects.Gallery
 {
     public class GalleryImage : SiteDataObject
     {
-        public long GalleryImageId { get; set; }
-
         [ForeignKey("Gallery")]
         public long GalleryId { get; set; }
         public Gallery Gallery { get; set; }

@@ -8,7 +8,6 @@ namespace LessMarkup.DataObjects.Statistics
 {
     public class AddressCountry : NonSiteDataObject
     {
-        public long AddressCountryId { get; set; }
         public string FullName { get; set; }
         public string ShortName { get; set; }
     }

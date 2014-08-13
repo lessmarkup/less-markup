@@ -9,11 +9,10 @@ namespace LessMarkup.DataObjects.User
 {
     public class UserProperty : SiteDataObject
     {
-        public long UserPropertyId { get; set; }
         public UserPropertyDefinition Definition { get; set; }
         [ForeignKey("Definition")]
         public long DefinitionId { get; set; }
-        public LessMarkup.DataObjects.User.User User { get; set; }
+        public User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
         public string Value { get; set; }

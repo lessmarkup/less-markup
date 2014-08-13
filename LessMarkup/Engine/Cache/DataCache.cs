@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -137,12 +138,12 @@ namespace LessMarkup.Engine.Cache
             return GlobalCache.Get<T>(objectId, create);
         }
 
-        private void UpdateCacheItem(long recordId, long? userId, long entityId, EntityType entityType, EntityChangeType entityChange, long? siteId)
+        private void UpdateCacheItem(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange, long? siteId)
         {
             if (_globalCache != null)
             {
                 this.LogDebug(string.Format("Handling data change item for global site, id={0}", recordId));
-                _globalCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
+                _globalCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
             }
 
             if (!siteId.HasValue)
@@ -151,13 +152,13 @@ namespace LessMarkup.Engine.Cache
 
                 if (_nullCache != null)
                 {
-                    _nullCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
+                    _nullCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
                 }
 
                 return;
             }
 
-            if (entityType == EntityType.Site)
+            if (collectionId == AbstractDomainModel.GetCollectionId<Interfaces.Data.Site>())
             {
                 this.LogDebug(string.Format("Detected site change, removing complete site configuration for site {0}", entityId));
                 lock (_siteCachesLock)
@@ -171,7 +172,7 @@ namespace LessMarkup.Engine.Cache
             SiteDataCache siteDataCache;
             if (_siteCaches.TryGetValue(siteId.Value, out siteDataCache))
             {
-                siteDataCache.UpdateCacheItem(recordId, userId, entityId, entityType, entityChange);
+                siteDataCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
             }
         }
     }

@@ -11,7 +11,6 @@ namespace LessMarkup.DataObjects.Structure
 {
     public class NodeAccess : SiteDataObject
     {
-        public long NodeAccessId { get; set; }
         [ForeignKey("Node")]
         public long NodeId { get; set; }
         public Node Node { get; set; }

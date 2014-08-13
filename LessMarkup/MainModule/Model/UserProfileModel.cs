@@ -53,7 +53,7 @@ namespace LessMarkup.MainModule.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<User>().Single(u => u.UserId == _currentUser.UserId.Value);
+                var user = domainModel.GetCollection<User>().Single(u => u.Id == _currentUser.UserId.Value);
 
                 Name = user.Name;
                 Avatar = user.AvatarImageId;
@@ -69,7 +69,7 @@ namespace LessMarkup.MainModule.Model
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var user = domainModel.GetCollection<User>().Single(u => u.UserId == _currentUser.UserId.Value);
+                var user = domainModel.GetCollection<User>().Single(u => u.Id == _currentUser.UserId.Value);
 
                 user.Name = Name;
 
@@ -86,7 +86,7 @@ namespace LessMarkup.MainModule.Model
                     user.Password = encodedPassword;
                 }
 
-                _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, domainModel);
+                _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);
 
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();

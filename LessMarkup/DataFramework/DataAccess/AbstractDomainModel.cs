@@ -16,6 +16,9 @@ namespace LessMarkup.DataFramework.DataAccess
     public abstract class AbstractDomainModel : DbContext, IDomainModel
     {
         private readonly List<Type> _modelCreateTypes = new List<Type>();
+        private static int _collectionId;
+        private readonly static Dictionary<Type, int> _collectionTypeToId = new Dictionary<Type, int>(); 
+        private readonly static Dictionary<int, Type> _collectionIdToType = new Dictionary<int, Type>(); 
         private readonly static Dictionary<Type, PropertyInfo> _collectionProperties = new Dictionary<Type, PropertyInfo>();
         private readonly static Dictionary<Type, PropertyInfo> _siteCollectionProperties = new Dictionary<Type, PropertyInfo>();
 
@@ -112,11 +115,31 @@ namespace LessMarkup.DataFramework.DataAccess
             {
                 _collectionProperties[propertyType] = property;
             }
+
+            var collectionId = ++_collectionId;
+
+            _collectionTypeToId[propertyType] = collectionId;
+            _collectionIdToType[collectionId] = propertyType;
         }
 
         public void AddObject<T>(T newObject) where T : class, INonSiteDataObject
         {
             GetCollection<T>().Add(newObject);
+        }
+
+        public static int GetCollectionId<T>() where T : IDataObject
+        {
+            return _collectionTypeToId[typeof (T)];
+        }
+
+        public static int GetCollectionId(Type type)
+        {
+            return _collectionTypeToId[type];
+        }
+
+        public static Type GetCollectionType(int collectionId)
+        {
+            return _collectionIdToType[collectionId];
         }
 
         public void AddSiteObject<T>(T newObject) where T : class, ISiteDataObject
@@ -139,7 +162,7 @@ namespace LessMarkup.DataFramework.DataAccess
 
             var innerCollection = (DbSet<T>)_siteCollectionProperties[typeof(T)].GetValue(this);
 
-            var collection = new SiteDataObjectCollection<T>(innerCollection, _siteId.Value);
+            var collection = new SiteDataObjectCollection<T>(innerCollection, _siteId.Value, _collectionTypeToId[typeof(T)]);
             _siteCollections[typeof(T)] = collection;
 
             return collection;
@@ -155,7 +178,7 @@ namespace LessMarkup.DataFramework.DataAccess
 
             var innerCollection = (DbSet<T>) _collectionProperties[typeof (T)].GetValue(this);
 
-            var collection = new DataObjectCollection<T>(innerCollection);
+            var collection = new DataObjectCollection<T>(innerCollection, _collectionTypeToId[typeof(T)]);
             _collections[typeof (T)] = collection;
 
             return collection;
@@ -167,10 +190,10 @@ namespace LessMarkup.DataFramework.DataAccess
 
             if (rawCollection)
             {
-                return new DataObjectCollection<T>(innerCollection);
+                return new DataObjectCollection<T>(innerCollection, _collectionTypeToId[typeof(T)]);
             }
 
-            return new SiteDataObjectCollection<T>(innerCollection, siteId);
+            return new SiteDataObjectCollection<T>(innerCollection, siteId, _collectionTypeToId[typeof(T)]);
         }
 
         public void CreateTransaction()

@@ -5,10 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Engine.HtmlTemplate
 {
@@ -18,7 +18,7 @@ namespace LessMarkup.Engine.HtmlTemplate
         private readonly Dictionary<string, CacheItem> _cacheItems = new Dictionary<string, CacheItem>();
         private readonly object _syncLock = new object();
 
-        public HtmlTemplateCache(IDataCache dataCache) : base(new[] { EntityType.SiteCustomization })
+        public HtmlTemplateCache(IDataCache dataCache) : base(new[] { typeof(SiteCustomization) })
         {
             _dataCache = dataCache;
         }

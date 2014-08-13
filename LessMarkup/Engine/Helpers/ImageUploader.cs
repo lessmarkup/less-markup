@@ -109,7 +109,7 @@ namespace LessMarkup.Engine.Helpers
 
         public static void DeleteImage(IDomainModel domainModel, long imageId)
         {
-            var image = domainModel.GetSiteCollection<Image>().Single(i => i.ImageId == imageId);
+            var image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId);
             domainModel.GetSiteCollection<Image>().Remove(image);
         }
 
@@ -154,7 +154,7 @@ namespace LessMarkup.Engine.Helpers
 
             if (imageId.HasValue)
             {
-                image = domainModel.GetSiteCollection<Image>().Single(i => i.ImageId == imageId.Value);
+                image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId.Value);
             }
 
             if (image == null)
@@ -178,7 +178,7 @@ namespace LessMarkup.Engine.Helpers
 
             domainModel.SaveChanges();
  
-            return image.ImageId;
+            return image.Id;
         }
 
         public static void LimitImageSize(long imageId, IDomainModel domainModel, int width, int height)
@@ -193,7 +193,7 @@ namespace LessMarkup.Engine.Helpers
                 throw new ArgumentOutOfRangeException("height");
             }
 
-            var image = domainModel.GetSiteCollection<Image>().Single(i => i.ImageId == imageId);
+            var image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId);
 
             if (image.Width <= width && image.Height <= height)
             {

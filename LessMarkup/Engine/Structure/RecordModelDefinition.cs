@@ -6,14 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.HtmlTemplate;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Scripting;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 
 namespace LessMarkup.Engine.Structure
@@ -28,7 +26,6 @@ namespace LessMarkup.Engine.Structure
         public string ModuleType { get; set; }
         public Type DataType { get; set; }
         public string Id { get; set; }
-        public EntityType EntityType { get; set; }
 
         public IReadOnlyList<InputFieldDefinition> Fields { get { return _fields; } }
 
@@ -47,7 +44,7 @@ namespace LessMarkup.Engine.Structure
             ModuleType = moduleType;
             DataType = type;
             CollectionType = formType.CollectionType;
-            EntityType = formType.EntityType;
+            CollectionType = formType.CollectionType;
 
             foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {

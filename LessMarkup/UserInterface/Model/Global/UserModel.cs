@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -50,15 +51,17 @@ namespace LessMarkup.UserInterface.Model.Global
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
             {
                 return
-                    domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId).Select(u => u.UserId);
+                    domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId).Select(u => u.Id);
             }
+
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.User.User>(); } }
 
             public IQueryable<UserModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                return domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId && ids.Contains(u.UserId)).Select(u => new UserModel
+                return domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId && ids.Contains(u.Id)).Select(u => new UserModel
                     {
                         Email = u.Email,
-                        Id = u.UserId,
+                        Id = u.Id,
                         Name = u.Name,
                         IsAdministrator = u.IsAdministrator,
                         Password = ""
@@ -97,7 +100,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     domainModel.GetCollection<DataObjects.User.User>().Add(user);
                     domainModel.SaveChanges();
 
-                    _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Added, domainModel);
+                    _changeTracker.AddChange(user, EntityChangeType.Added, domainModel);
                     domainModel.SaveChanges();
 
                     domainModel.CompleteTransaction();
@@ -105,7 +108,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     user.Password = null;
 
                     record.Password = null;
-                    record.Id = user.UserId;
+                    record.Id = user.Id;
                 }
             }
 
@@ -113,7 +116,7 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var user = domainModel.GetCollection<DataObjects.User.User>().First(u => !u.IsRemoved && u.SiteId.Value == SiteId && u.UserId == record.Id);
+                    var user = domainModel.GetCollection<DataObjects.User.User>().First(u => !u.IsRemoved && u.SiteId.Value == SiteId && u.Id == record.Id);
 
                     user.Name = record.Name;
                     user.Email = record.Email;
@@ -130,7 +133,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         user.LastPasswordChanged = DateTime.UtcNow;
                     }
 
-                    _changeTracker.AddChange(user.UserId, EntityType.User, EntityChangeType.Updated, domainModel);
+                    _changeTracker.AddChange(user, EntityChangeType.Updated, domainModel);
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
@@ -144,9 +147,9 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     foreach (var userId in recordIds)
                     {
-                        var user = domainModel.GetCollection<DataObjects.User.User>().First(u => !u.IsRemoved && u.SiteId == SiteId && u.UserId == userId);
+                        var user = domainModel.GetCollection<DataObjects.User.User>().First(u => !u.IsRemoved && u.SiteId == SiteId && u.Id == userId);
                         domainModel.GetCollection<DataObjects.User.User>().Remove(user);
-                        _changeTracker.AddChange(userId, EntityType.User, EntityChangeType.Removed, domainModel);
+                        _changeTracker.AddChange(user, EntityChangeType.Removed, domainModel);
                     }
                     domainModel.SaveChanges();
                     domainModel.CompleteTransaction();

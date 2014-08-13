@@ -35,7 +35,7 @@ namespace LessMarkup.Engine.FileSystem
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
         public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
-            : base(new[] { EntityType.SiteCustomization, EntityType.Site })
+            : base(new[] { typeof(SiteCustomization), typeof(Interfaces.Data.Site) })
         {
             _domainModelProvider = domainModelProvider;
             _specialFolder = specialFolder;
@@ -284,7 +284,7 @@ namespace LessMarkup.Engine.FileSystem
 
                     resourceReference = new ResourceReference
                     {
-                        RecordId = record.SiteCustomizationId,
+                        RecordId = record.Id,
                         Binary = record.Body,
                     };
 

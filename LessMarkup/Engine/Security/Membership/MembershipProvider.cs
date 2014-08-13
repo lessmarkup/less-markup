@@ -22,7 +22,7 @@ namespace LessMarkup.Engine.Security.Membership
             using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
             {
                 var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.AuthProvider == provider && u.AuthProviderUserId == providerUserId);
-                return user != null ? (int)user.UserId : -1;
+                return user != null ? (int)user.Id : -1;
             }
         }
 
@@ -40,7 +40,7 @@ namespace LessMarkup.Engine.Security.Membership
         {
             using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
             {
-                var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.UserId == userId);
+                var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.Id == userId);
                 return user != null ? user.Name : null;
             }
         }
