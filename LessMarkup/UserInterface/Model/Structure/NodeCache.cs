@@ -35,6 +35,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private CachedNodeInformation _rootNode;
 
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
+        public IReadOnlyList<ICachedNodeInformation> Nodes { get { return _cachedNodes; } }
 
         public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache)
             : base(new[] { typeof(Node), typeof(Site) })
@@ -307,8 +308,6 @@ namespace LessMarkup.UserInterface.Model.Structure
                         Constants.ModuleType.UserInterface, NodeAccessType.Read);
                 }
             }
-
-            _cachedNodes.Clear();
         }
     }
 }

@@ -135,7 +135,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             {
                 foreach (var node in _flatNodeList)
                 {
-                    var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(node.HandlerType);
+                    var handler = CreateChildHandler(node.HandlerType);
                     object nodeSettings = null;
 
                     if (handler.SettingsModel != null && !string.IsNullOrEmpty(node.Settings))

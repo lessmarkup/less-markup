@@ -9,6 +9,7 @@ namespace LessMarkup.Interfaces.System
         string Name { get; }
         bool IsRemoved { get; }
         bool IsAdministrator { get; }
+        bool IsApproved { get; set; }
         bool IsGlobalAdministrator { get; }
         IReadOnlyList<long> Groups { get; }
         bool IsValidated { get; }

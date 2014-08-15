@@ -71,7 +71,7 @@ namespace LessMarkup.Engine.Email
             return string.Format("\"{0}\" <{1}>", name, email);
         }
 
-        public void SendMail<T>(string smtpServer, string smtpUser, string smtpPassword, bool smtpSsl, string emailFrom, string userEmailTo, string templateId, T parameters) where T : MailTemplateModel
+        public void SendMail<T>(string smtpServer, string smtpUser, string smtpPassword, bool smtpSsl, string emailFrom, string userEmailTo, string viewPath, T parameters) where T : MailTemplateModel
         {
             string body;
             string subject;
@@ -79,7 +79,7 @@ namespace LessMarkup.Engine.Email
             {
                 parameters.UserEmail = userEmailTo;
 
-                body = _mailTemplateProvider.ExecuteTemplate(templateId, parameters);
+                body = _mailTemplateProvider.ExecuteTemplate(viewPath, parameters);
                 subject = parameters.Subject;
             }
             catch (Exception e)
@@ -88,16 +88,16 @@ namespace LessMarkup.Engine.Email
                 throw new Exception("Cannot send mail");
             }
 
-            SendMail("", emailFrom, parameters.UserName, userEmailTo, subject, body, templateId, smtpServer, smtpUser, smtpPassword, smtpSsl);
+            SendMail("", emailFrom, parameters.UserName, userEmailTo, subject, body, viewPath, smtpServer, smtpUser, smtpPassword, smtpSsl);
         }
 
-        public void SendMail<T>(string emailFrom, string emailTo, string templateId, T parameters) where T : MailTemplateModel
+        public void SendMail<T>(string emailFrom, string emailTo, string viewPath, T parameters) where T : MailTemplateModel
         {
             SendMail(_engineConfiguration.SmtpServer, _engineConfiguration.SmtpUsername,
-                _engineConfiguration.SmtpPassword, _engineConfiguration.SmtpSsl, emailFrom, emailTo, templateId, parameters);
+                _engineConfiguration.SmtpPassword, _engineConfiguration.SmtpSsl, emailFrom, emailTo, viewPath, parameters);
         }
 
-        public void SendMail<T>(long? userIdFrom, long? userIdTo, string userEmailTo, string templateId, T parameters) where T : MailTemplateModel
+        public void SendMail<T>(long? userIdFrom, long? userIdTo, string userEmailTo, string viewPath, T parameters) where T : MailTemplateModel
         {
             try
             {
@@ -143,15 +143,15 @@ namespace LessMarkup.Engine.Email
                     throw new Exception("UserIdTo is not specified");
                 }
 
-                var body = _mailTemplateProvider.ExecuteTemplate(templateId, parameters);
+                var body = _mailTemplateProvider.ExecuteTemplate(viewPath, parameters);
                 var subject = parameters.Subject;
 
                 if (string.IsNullOrWhiteSpace(fromEmail))
                 {
-                    throw new Exception("From email is not specified, cannot send email for template '" + templateId + "'");
+                    throw new Exception("From email is not specified, cannot send email for template '" + viewPath + "'");
                 }
 
-                SendMail(fromName, fromEmail, parameters.UserName, parameters.UserEmail, subject, body, templateId,
+                SendMail(fromName, fromEmail, parameters.UserName, parameters.UserEmail, subject, body, viewPath,
                     _engineConfiguration.SmtpServer, _engineConfiguration.SmtpUsername, _engineConfiguration.SmtpPassword, _engineConfiguration.SmtpSsl);
             }
             catch (Exception e)
@@ -217,7 +217,7 @@ namespace LessMarkup.Engine.Email
         private const string SendUsernamePropertyName = "http://schemas.microsoft.com/cdo/configuration/sendusername";
         private const string SendPasswordPropertyName = "http://schemas.microsoft.com/cdo/configuration/sendpassword";
 
-        private void SendMail(string fromName, string fromAddress, string toName, string toAddress, string subject, string body, string templateId,
+        private void SendMail(string fromName, string fromAddress, string toName, string toAddress, string subject, string body, string viewPath,
             string server, string username, string password, bool useSsl)
         {
             if (_engineConfiguration.UseTestMail)
@@ -227,7 +227,7 @@ namespace LessMarkup.Engine.Email
                     var testEmail = domainModel.GetSiteCollection<TestMail>().Create();
                     testEmail.Body = body;
                     testEmail.From = ComposeAddress(fromAddress, fromName);
-                    testEmail.Template = templateId;
+                    testEmail.Template = viewPath;
                     testEmail.Sent = DateTime.UtcNow;
                     testEmail.Subject = subject;
                     testEmail.To = ComposeAddress(toAddress, toName);

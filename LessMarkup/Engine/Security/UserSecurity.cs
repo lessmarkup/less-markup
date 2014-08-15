@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+using System.Web.Mvc;
 using System.Web.Security;
 using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
@@ -75,8 +76,13 @@ namespace LessMarkup.Engine.Security
             encodedPassword = EncodePassword(password, salt);
         }
 
-        public long CreateUser(string username, string password, string email, string address, Func<string, string> confirmation, bool generatePassword = false)
+        public long CreateUser(string username, string password, string email, string address, UrlHelper urlHelper, bool preApproved, bool generatePassword)
         {
+            if (!_siteMapper.SiteId.HasValue && !preApproved)
+            {
+                throw new Exception("Cannot create user for global site");
+            }
+
             ValidateNewUserProperties(username, password, email, generatePassword);
 
             User user;
@@ -123,32 +129,29 @@ namespace LessMarkup.Engine.Security
                 {
                     SendGeneratedPassword(email, password, user);
                 }
-                else if (confirmation != null)
-                {
-                    SendConfirmationLink(confirmation, user);
-                }
-                
-                if (confirmation == null)
+
+                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+
+                if (preApproved)
                 {
                     // means the user is created manually by the administrator
                     user.IsValidated = true;
+                    user.IsApproved = true;
                     domainModel.SaveChanges();
+                    UserNotifyCreated(user, password);
+                }
+                else
+                {
+                    if (!siteConfiguration.AdminApproveNewUsers)
+                    {
+                        user.IsApproved = true;
+                    }
+                    SendConfirmationLink(urlHelper, user);
                 }
 
-                if (_siteMapper.SiteId.HasValue && _dataCache.Get<SiteConfigurationCache>().AdminNotifyNewUsers)
+                if (_siteMapper.SiteId.HasValue && siteConfiguration.AdminNotifyNewUsers)
                 {
-                    var model = new NewUserCreatedModel
-                    {
-                        UserId = user.Id,
-                        Name = user.Name,
-                        Email = user.Email
-                    };
-
-                    var administrators = domainModel.GetCollection<User>().Where(u => u.IsAdministrator && u.SiteId == _siteMapper.SiteId && !u.IsRemoved && !u.IsBlocked);
-                    foreach (var admin in administrators.Select(a => a.Id))
-                    {
-                        _mailSender.SendMail(null, admin, null, Constants.MailTemplates.Core.NewUserCreated, model);
-                    }
+                    AdminNotifyNewUsers(user, domainModel);
                 }
 
                 domainModel.CompleteTransaction();
@@ -336,20 +339,28 @@ namespace LessMarkup.Engine.Security
             return ret.ToString();
         }
 
-        public bool ConfirmUser(string validateSecret)
+        public bool ConfirmUser(string validateSecret, out long userId)
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var user = domainModel.GetCollection<User>().FirstOrDefault(u => u.ValidateSecret == validateSecret);
+                var user = domainModel.GetCollection<User>().FirstOrDefault(u => u.ValidateSecret == validateSecret && !u.IsValidated && u.SiteId.HasValue && u.SiteId.Value == _siteMapper.SiteId);
                 if (user == null)
                 {
+                    userId = 0;
                     return false;
                 }
                 user.ValidateSecret = null;
                 user.IsValidated = true;
+
+                if (!_dataCache.Get<SiteConfigurationCache>().AdminApproveNewUsers)
+                {
+                    user.IsApproved = true;
+                }
+
                 _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
+                userId = user.Id;
                 return true;
             }
         }
@@ -518,12 +529,12 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        private void SendConfirmationLink(Func<string, string> confirmation, User user)
+        private void SendConfirmationLink(UrlHelper urlHelper, User user)
         {
-            var confirmationLink = confirmation(user.ValidateSecret);
+            var confirmationLink = urlHelper.Action("Validate", "Account", new {secret = user.ValidateSecret});
             var confirmationModel = new UserConfirmationMailTemplateModel { Link = confirmationLink };
 
-            _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.Core.ValidateUser, confirmationModel);
+            _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.ValidateUser, confirmationModel);
         }
 
         private void SendGeneratedPassword(string email, string password, User user)
@@ -537,7 +548,35 @@ namespace LessMarkup.Engine.Security
             };
 
             _mailSender.SendMail(null, user.Id, null,
-                Constants.MailTemplates.Core.PasswordGeneratedNotification, notificationModel);
+                Constants.MailTemplates.PasswordGeneratedNotification, notificationModel);
+        }
+
+        private void AdminNotifyNewUsers(User user, IDomainModel domainModel)
+        {
+            var model = new NewUserCreatedModel
+            {
+                UserId = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            };
+
+            var administrators = domainModel.GetCollection<User>().Where(u => u.IsAdministrator && u.SiteId == _siteMapper.SiteId && !u.IsRemoved && !u.IsBlocked);
+            foreach (var admin in administrators.Select(a => a.Id))
+            {
+                _mailSender.SendMail(null, admin, null, Constants.MailTemplates.AdminNewUserCreated, model);
+            }
+        }
+
+        private void UserNotifyCreated(User user, string password)
+        {
+            var model = new NewUserCreatedModel
+            {
+                Email = user.Email,
+                Password = password,
+                SiteName = _dataCache.Get<SiteConfigurationCache>().SiteName
+            };
+
+            _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.UserNewUserCreated, model);
         }
 
         #endregion

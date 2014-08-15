@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Build.View;
 using LessMarkup.Engine.Minify;
@@ -242,12 +241,6 @@ namespace LessMarkup.Engine.FileSystem
             }
         }
 
-        private void ImportMailTemplate(string key, ViewTemplate viewTemplate)
-        {
-            var className = Constants.MailTemplates.Namespace + "." + key;
-            ImportTemplateRecord(className, key, Encoding.UTF8.GetBytes(viewTemplate.Body), true, viewTemplate.ModuleType);
-        }
-
         private void ImportViewTemplate(ViewTemplate viewTemplate)
         {
             string pageNamespace, pageClassName;
@@ -310,14 +303,7 @@ namespace LessMarkup.Engine.FileSystem
 
             foreach (var template in viewImport.ViewTemplates)
             {
-                if (template.Key.StartsWith("EmailTemplates."))
-                {
-                    ImportMailTemplate(template.Key.Substring("EmailTemplates.".Length), template.Value);
-                }
-                else
-                {
-                    ImportViewTemplate(template.Value);
-                }
+                ImportViewTemplate(template.Value);
             }
 
             foreach (var resource in viewImport.ContentTemplates)

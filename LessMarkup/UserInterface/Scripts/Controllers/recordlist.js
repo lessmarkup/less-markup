@@ -86,7 +86,7 @@ define([
             if (index >= $scope.records.length) {
                 return;
             }
-            inputForm.editObject(currentObject, $scope.data.Type, function (object, success, failure) {
+            inputForm.editObject($scope, currentObject, $scope.data.Type, function (object, success, failure) {
                 $scope.sendAction("ModifyRecord", {
                     objectToModify: object,
                     filter: $scope.filter
@@ -116,7 +116,7 @@ define([
         }
 
         $scope.addRecord = function () {
-            inputForm.editObject(null, $scope.data.Type, function (object, success, failure) {
+            inputForm.editObject($scope, null, $scope.data.Type, function (object, success, failure) {
 
                 $scope.sendAction("AddRecord", {
                     objectToAdd: object,

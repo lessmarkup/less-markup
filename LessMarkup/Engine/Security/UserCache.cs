@@ -20,6 +20,7 @@ namespace LessMarkup.Engine.Security
 
         public bool IsRemoved { get; private set; }
         public bool IsAdministrator { get; private set; }
+        public bool IsApproved { get; set; }
         public bool IsGlobalAdministrator { get; private set; }
         public IReadOnlyList<long> Groups { get { return _groups; } }
         public bool IsValidated { get; private set; }
@@ -59,6 +60,7 @@ namespace LessMarkup.Engine.Security
                         u.IsValidated,
                         u.IsBlocked,
                         u.UnblockTime,
+                        u.IsApproved,
                         Groups = u.Groups.Select(g => g.UserGroupId)
 
                     }).FirstOrDefault();
@@ -69,6 +71,14 @@ namespace LessMarkup.Engine.Security
                     return;
                 }
 
+                if (siteId.HasValue)
+                {
+                    if (user.SiteId.HasValue && user.SiteId.Value != siteId.Value)
+                    {
+                        return;
+                    }
+                }
+
                 IsAdministrator = user.IsAdministrator;
                 IsGlobalAdministrator = IsAdministrator && !user.SiteId.HasValue;
                 _groups = user.Groups.ToList();
@@ -76,6 +86,7 @@ namespace LessMarkup.Engine.Security
                 Title = user.Title;
                 IsValidated = user.IsValidated;
                 IsBlocked = user.IsBlocked;
+                IsApproved = user.IsApproved;
                 UnblockTime = user.UnblockTime;
                 Name = user.Name;
 

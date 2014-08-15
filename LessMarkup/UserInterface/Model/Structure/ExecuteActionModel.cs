@@ -108,19 +108,40 @@ namespace LessMarkup.UserInterface.Model.Structure
             for (var i = 0; i < parameters.Length; i++)
             {
                 var parameterName = parameters[i].Name.ToLower();
+                var parameterType = parameters[i].ParameterType;
 
                 string parameterText;
+
                 if (!dataLowered.TryGetValue(parameterName, out parameterText))
                 {
                     if (parameterName == "settings")
                     {
-                        arguments[i] = settings != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(settings) : null;
+                        if (settings == null)
+                        {
+                            arguments[i] = null;
+                        }
+                        else
+                        {
+                            if (parameterType == typeof (string))
+                            {
+                                arguments[i] = settings;
+                            }
+                            else
+                            {
+                                arguments[i] = JsonConvert.DeserializeObject(settings, parameterType);
+                            }
+                        }
+
+                    }
+                    else if (parameterName.StartsWith("raw") && parameterType == typeof(string) && dataLowered.TryGetValue(parameterName.Remove(0, 3), out parameterText))
+                    {
+                        arguments[i] = parameterText;
                     }
 
                     continue;
                 }
 
-                arguments[i] = JsonHelper.ResolveAndDeserializeObject(parameterText, parameters[i].ParameterType);
+                arguments[i] = JsonHelper.ResolveAndDeserializeObject(parameterText, parameterType);
             }
 
             return method.Invoke(handler, arguments);

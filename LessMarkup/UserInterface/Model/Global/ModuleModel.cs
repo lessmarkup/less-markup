@@ -41,7 +41,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 }
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetCollection<Module>().Where(m => !m.Removed && !m.System && m.Enabled).Select(m => m.Id);
             }

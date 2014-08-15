@@ -26,7 +26,7 @@ app.provider('inputForm', function () {
     this.$get = ['$modal', '$http', 'lazyLoad',
         function ($modal, $http, lazyLoad) {
             return {
-                editObject: function (object, type, success, getTypeahead) {
+                editObject: function (scope, object, type, success, getTypeahead) {
                     getDefinition(type, $http, function (definition) {
 
                         var hasTinymce = false;
@@ -90,6 +90,7 @@ app.provider('inputForm', function () {
                                 template: $('#inputform-template').html(),
                                 controller: InputFormController,
                                 size: 'lg',
+                                scope: scope,
                                 resolve: {
                                     definition: function () { return definition; },
                                     object: function () { return object; },

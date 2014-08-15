@@ -27,7 +27,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 _changeTracker = changeTracker;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetCollection<Site>().Select(s => s.Id);
             }

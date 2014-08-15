@@ -64,7 +64,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
 
             using (var domainModel = domainModelProvider.Create())
             {
-                recordIds = _collectionManager.ReadIds(domainModel, Filter).ToList();
+                recordIds = _collectionManager.ReadIds(domainModel, Filter, false).ToList();
             }
 
             var client = GetClient();
@@ -100,7 +100,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
                 return;
             }
 
-            var newIds = _collectionManager.ReadIds(domainModel, Filter).ToList();
+            var newIds = _collectionManager.ReadIds(domainModel, Filter, false).ToList();
             var indexOf = newIds.IndexOf(entityId);
             if (indexOf < 0)
             {

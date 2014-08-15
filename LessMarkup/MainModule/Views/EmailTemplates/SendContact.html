@@ -1,4 +1,5 @@
-﻿@model LessMarkup.MainModule.Model.SendContactModel
+﻿Subject: Contact Form Message
+
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -7,7 +8,7 @@
     </head>
     <body>
         <h2>Contact Form Message</h2>
-        <p><b>Sender E-Mail:</b> @Model.Email</p>
-        <p><b>Sender Message:</b> @Model.Message</p>
+        <p><b>Sender E-Mail:</b> {Email}</p>
+        <p><b>Sender Message:</b> {!Message}</p>
     </body>
 </html>

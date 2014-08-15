@@ -70,6 +70,11 @@ namespace LessMarkup.Framework.NodeHandlers
             return Initialize(controller);
         }
 
+        protected virtual INodeHandler CreateChildHandler(Type handlerType)
+        {
+            return (INodeHandler) Interfaces.DependencyResolver.Resolve(handlerType);
+        }
+
         bool INodeHandler.HasChildren { get { return HasChildren; } }
 
         ChildHandlerSettings INodeHandler.GetChildHandler(string path)

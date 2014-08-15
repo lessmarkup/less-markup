@@ -32,8 +32,11 @@
 
 .grid-control .grid-data {
     padding: 5px;
-    cursor: pointer;
     vertical-align: top;
+}
+
+.grid-control.has-options .grid-data {
+    cursor: pointer;
 }
 
 .grid-control tr.odd .grid-data {
@@ -74,4 +77,12 @@
     text-align: center;
     cursor: pointer;
     width: 1.7em;
+}
+
+.recordlist-refresh-panel {
+    text-align: center;
+}
+
+.recordlist-refresh-panel button {
+    margin: 1em;
 }

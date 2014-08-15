@@ -32,21 +32,13 @@ namespace LessMarkup.UserInterface.Model.Structure
             _currentUser = currentUser;
         }
 
-        public const string ValidateUserPath = "validateuser";
-
         public static bool AppliesToRequest(HttpRequestBase request, string path)
         {
-            return path == ValidateUserPath || (request.HttpMethod == "POST" && request.ContentType.StartsWith("application/json;"));
+            return request.HttpMethod == "POST" && request.ContentType.StartsWith("application/json;");
         }
 
         public ActionResult HandleRequest(System.Web.Mvc.Controller controller, string path)
         {
-            if (path == ValidateUserPath)
-            {
-                var registerModel = DependencyResolver.Resolve<RegisterModel>();
-                return registerModel.ValidateSecret();
-            }
-
             HttpContext.Current.Request.InputStream.Seek(0, SeekOrigin.Begin);
             using (var reader = new StreamReader(HttpContext.Current.Request.InputStream, HttpContext.Current.Request.ContentEncoding))
             {
@@ -61,7 +53,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                     {
                         Success = true,
                         Data = resultData,
-                        UserLoggedIn = _currentUser.UserId.HasValue
+                        UserLoggedIn = _currentUser.UserId.HasValue,
+                        UserNotVerified = !_currentUser.IsValidated || !_currentUser.IsApproved
                     };
                 }
                 catch (Exception e)
@@ -75,7 +68,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                     {
                         Success = false,
                         e.Message,
-                        UserLoggedIn = _currentUser.UserId.HasValue
+                        UserLoggedIn = _currentUser.UserId.HasValue,
+                        UserNotVerified = !_currentUser.IsValidated || !_currentUser.IsApproved
                     };
                 }
 
@@ -162,7 +156,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "Register":
                 {
                     var registerModel = (RegisterModel) JsonHelper.ResolveAndDeserializeObject(data["user"], typeof (RegisterModel));
-                    return registerModel.Register(controller);
+                    return registerModel.Register(controller, data["user"]);
+                }
+
+                case "GetNotifications":
+                {
+                    var notificationsModel = DependencyResolver.Resolve<NotificationsModel>();
+                    return notificationsModel.Handle(data["notifications"], controller);
                 }
 
                 default:

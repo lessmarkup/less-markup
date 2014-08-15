@@ -6,6 +6,6 @@ namespace LessMarkup.Interfaces.System
 {
     public interface IMailTemplateProvider
     {
-        string ExecuteTemplate<T>(string templateId, T model);
+        string ExecuteTemplate<T>(string viewPath, T model) where T : MailTemplateModel;
     }
 }

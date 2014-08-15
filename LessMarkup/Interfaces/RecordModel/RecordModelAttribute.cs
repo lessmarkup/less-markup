@@ -12,5 +12,6 @@ namespace LessMarkup.Interfaces.RecordModel
         public Type CollectionType { get; set; }
         public Type DataType { get; set; }
         public object TitleTextId { get; set; }
+        public bool SubmitWithCaptcha { get; set; }
     }
 }

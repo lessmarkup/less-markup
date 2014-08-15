@@ -34,7 +34,7 @@ namespace LessMarkup.MainModule.Model
         [InputField(InputFieldType.Text, MainModuleTextIds.Name)]
         public string Name { get; set; }
 
-        [InputField(InputFieldType.Password, MainModuleTextIds.Password)]
+        [InputField(InputFieldType.PasswordRepeat, MainModuleTextIds.Password)]
         public string Password { get; set; }
 
         [InputField(InputFieldType.Image, MainModuleTextIds.ProfileAvatar)]

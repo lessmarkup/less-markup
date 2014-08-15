@@ -54,7 +54,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 _siteId = siteId;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId).Select(a => a.Id);
             }
@@ -76,7 +76,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
             {
-                _siteId = objectId;
+                if (!_siteId.HasValue)
+                {
+                    _siteId = objectId;
+                }
             }
 
             public void AddRecord(NodeAccessModel record)

@@ -32,7 +32,7 @@ using LessMarkup.UserInterface;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 using IControllerFactory = LessMarkup.Interfaces.System.IControllerFactory;
 
-namespace LessMarkup.MainModule
+namespace LessMarkup.MainModule.Initialization
 {
     public class CoreApplication : HttpApplication
     {

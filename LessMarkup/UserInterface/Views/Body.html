@@ -11,6 +11,19 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a class="navbar-brand visible-xs" href="{{rootPath}}" ng-click="navigateToView(rootPath)" ng-bind="rootTitle"></a>
+                        
+                        <div class="visible-xs navbar-notifications">
+                            <a ng-repeat="notification in notifications" href="{{notification.Path}}" ng-click="gotoNotification(notification)">
+                                <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
+                                <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
+                            </a>
+                            <a href="#" ng-if="userNotVerified">
+                                <span>
+                                    <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
+                                </span>
+                            </a>
+                        </div>
+
                     </div>
 
                     <nav class="hidden-xs">
@@ -56,6 +69,15 @@
                         </form>
 
                         <ul class="nav navbar-nav navbar-right">
+                            
+                            <li ng-repeat="notification in notifications" class="navbar-notification">
+                                <a href="{{notification.Path}}" ng-click="gotoNotification(notification)">
+                                    <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
+                                    <span ng-bind="notification.Title"></span>
+                                    <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
+                                </a>
+                            </li>
+
                             <li class="dropdown" ng-show="!userLoggedIn && hasLogin">
                                 <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]] <b class="caret"></b></a>
                                 <div class="dropdown-menu">
@@ -66,7 +88,13 @@
                             </li>
 
                             <li class="dropdown" ng-show="userLoggedIn">
-                                <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> {{userName}} <b class="caret"></b></a>
+                                <a role="button" class="dropdown-toggle">
+                                    <span ng-if="userNotVerified">
+                                        <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
+                                        <span>&nbsp;</span>
+                                    </span>
+                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> {{userName}} <b class="caret"></b>
+                                </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{profilePath}}" ng-click="navigateToView(profilePath)">[[[translate Profile]]]</a></li>
                                     <li><a href="#" ng-click="doLogout()">[[[translate Logout]]]</a></li>
@@ -79,6 +107,22 @@
                     
                     <nav class="visible-xs" collapse="!showXsMenu">
                         <ul class="nav navbar-nav" id="navbar-menu-small">
+                            <li ng-show="!userLoggedIn && hasLogin">
+                                <a ng-click="showLogin()">
+                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]] <b class="caret"></b>
+                                </a>
+                            </li>
+
+                            <li ng-show="userLoggedIn">
+                                <a href="{{profilePath}}" ng-click="navigateToView(profilePath)">
+                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> <span>{{userName}}</span>
+                                </a>
+                            </li>
+
+                            <li ng-show="userLoggedIn">
+                                <a href="#" ng-click="doLogout()">[[[translate Logout]]]</a>
+                            </li>
+
                             <li>
                                 <a href="{{rootPath}}" ng-click="navigateToView(rootPath)">
                                     <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>

@@ -2,6 +2,7 @@
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.User;
@@ -13,7 +14,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
     {
         private readonly IDataCache _dataCache;
 
-        public UserCardsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public UserCardsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
             _dataCache = dataCache;
         }
@@ -37,9 +38,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 return null;
             }
 
-            var handler = (INodeHandler) DependencyResolver.Resolve<UserCardNodeHandler>();
+            var handler = DependencyResolver.Resolve<UserCardNodeHandler>();
 
-            handler.Initialize(userId, null, null, parts[0], AccessType);
+            handler.Initialize(userId);
+
+            ((INodeHandler)handler).Initialize(null, null, null, parts[0], AccessType);
 
             var userCache = _dataCache.Get<IUserCache>(userId);
 

@@ -10,15 +10,23 @@ using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
+using LessMarkup.Interfaces.RecordModel;
 
 namespace LessMarkup.UserInterface.Model.User
 {
+    [RecordModel(TitleTextId = UserInterfaceTextIds.Login)]
     public class LoginModel
     {
         private readonly ICurrentUser _currentUser;
         private readonly ISiteMapper _siteMapper;
         private readonly IDataCache _dataCache;
         private readonly IEngineConfiguration _engineConfiguration;
+
+        [InputField(InputFieldType.Email, UserInterfaceTextIds.Email, Required = true)]
+        public string Email { get; set; }
+
+        [InputField(InputFieldType.Password, UserInterfaceTextIds.Password, Required = true)]
+        public string Password { get; set; }
 
         public LoginModel(ICurrentUser currentUser, ISiteMapper siteMapper, IDataCache dataCache, IEngineConfiguration engineConfiguration)
         {

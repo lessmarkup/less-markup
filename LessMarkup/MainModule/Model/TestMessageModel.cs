@@ -26,9 +26,16 @@ namespace LessMarkup.MainModule.Model
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
-                return domainModel.GetSiteCollection<TestMail>().OrderByDescending(e => e.Sent).Select(e => e.Id);
+                var query = (IQueryable<TestMail>) domainModel.GetSiteCollection<TestMail>();
+
+                if (!ignoreOrder)
+                {
+                    query = query.OrderByDescending(e => e.Sent);
+                }
+
+                return query.Select(e => e.Id);
             }
 
             public int CollectionId { get { return AbstractDomainModel.GetCollectionId<TestMail>(); } }

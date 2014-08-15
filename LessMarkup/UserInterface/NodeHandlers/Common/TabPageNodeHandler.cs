@@ -40,9 +40,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _pages.Add(new TabPage { HandlerType = typeof(T), Title = title});
         }
 
-        protected void AddPage(Type type, string title, string path = null)
+        protected void AddPage(Type type, string title, string path = null, long? pageId = null)
         {
-            _pages.Add(new TabPage { HandlerType = type, Title = title });
+            _pages.Add(new TabPage { HandlerType = type, Title = title, PageId = pageId });
         }
 
         public TabPageNodeHandler(IDataCache dataCache, ICurrentUser currentUser)
@@ -100,7 +100,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             foreach (var page in _pages)
             {
-                var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(page.HandlerType);
+                var handler = CreateChildHandler(page.HandlerType);
+
                 object nodeSettings = null;
 
                 if (handler.SettingsModel != null && !string.IsNullOrEmpty(page.Settings))

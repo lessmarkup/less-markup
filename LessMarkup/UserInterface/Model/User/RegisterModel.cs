@@ -4,16 +4,14 @@
 
 using System;
 using System.Web;
-using System.Web.Mvc;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
-using LessMarkup.UserInterface.Model.Structure;
 
 namespace LessMarkup.UserInterface.Model.User
 {
-    [RecordModel(TitleTextId = UserInterfaceTextIds.Register)]
+    [RecordModel(TitleTextId = UserInterfaceTextIds.Register, SubmitWithCaptcha = true)]
     public class RegisterModel
     {
         private readonly IDataCache _dataCache;
@@ -33,7 +31,10 @@ namespace LessMarkup.UserInterface.Model.User
         [InputField(InputFieldType.Text, UserInterfaceTextIds.Name)]
         public string Name { get; set; }
 
-        [InputField(InputFieldType.Password, UserInterfaceTextIds.Password, Required = true)]
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.GeneratePassword)]
+        public bool GeneratePassword { get; set; }
+
+        [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true, VisibleCondition = "!GeneratePassword")]
         public string Password { get; set; }
 
         public bool ShowUserAgreement { get; set; }
@@ -65,7 +66,7 @@ namespace LessMarkup.UserInterface.Model.User
             };
         }
 
-        public object Register(System.Web.Mvc.Controller controller)
+        public object Register(System.Web.Mvc.Controller controller, string properties)
         {
             var siteProperties = _dataCache.Get<SiteConfigurationCache>();
 
@@ -76,11 +77,11 @@ namespace LessMarkup.UserInterface.Model.User
 
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof (RegisterModel));
-            definition.ValidateInput(this, true);
+            definition.ValidateInput(this, true, properties);
 
             var address = HttpContext.Current.Request.UserHostAddress;
 
-            _userSecurity.CreateUser(Name, Password, Email, address, x => controller.Url.Action("NodeEntryPoint", "Node", new { path = string.Format("{0}?validate={1}", JsonEntryPointModel.ValidateUserPath, x)}));
+            _userSecurity.CreateUser(Name, Password, Email, address, controller.Url, false, false);
 
             var loggedIn = _currentUser.LoginUserWithPassword(Email, Password, false, false, true, address, null);
 
@@ -89,19 +90,6 @@ namespace LessMarkup.UserInterface.Model.User
                 UserName = Name,
                 ShowConfiguration = false,
                 UserLoggedIn = loggedIn
-            };
-        }
-
-        public ActionResult ValidateSecret()
-        {
-            var secret = HttpContext.Current.Request.QueryString["validate"];
-
-            var success = !string.IsNullOrWhiteSpace(secret) && _userSecurity.ConfirmUser(secret);
-
-            return new ContentResult
-            {
-                Content = success ? "You have successfully validated user e-mail." : "Wrong request",
-                ContentType = "text/plain"
             };
         }
     }

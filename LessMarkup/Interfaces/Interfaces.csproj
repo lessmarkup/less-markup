@@ -112,6 +112,8 @@
     <Compile Include="Structure\CachedNodeAccess.cs" />
     <Compile Include="Structure\ICachedNodeInformation.cs" />
     <Compile Include="Structure\INodeCache.cs" />
+    <Compile Include="Structure\INotificationProvider.cs" />
+    <Compile Include="Structure\IUserCardNodeHandler.cs" />
     <Compile Include="Structure\NodeAccessType.cs" />
     <Compile Include="Structure\PropertyAttribute.cs" />
     <Compile Include="Structure\UserCardHandlerAttribute.cs" />

@@ -38,7 +38,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             _children.Add(node);
         }
 
-        private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, IReadOnlyList<long> groupIds)
+        private static bool AppliesTo(CachedNodeAccess nodeAccess, long? userId, IEnumerable<long> groupIds)
         {
             if (!userId.HasValue)
             {
@@ -87,6 +87,12 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             NodeAccessType? accessType = null;
             CheckRights(currentUser.UserId, currentUser.Groups, ref accessType);
+
+            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!currentUser.IsApproved || !currentUser.IsValidated))
+            {
+                accessType = NodeAccessType.Read;
+            }
+
             return accessType;
         }
     }

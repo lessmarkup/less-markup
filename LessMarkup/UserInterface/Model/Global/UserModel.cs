@@ -48,7 +48,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 }
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return
                     domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId).Select(u => u.Id);
@@ -85,6 +85,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         Registered = DateTime.UtcNow,
                         IsBlocked = false,
                         IsValidated = true,
+                        IsApproved = true,
                         LastPasswordChanged = DateTime.UtcNow,
                         IsAdministrator = record.IsAdministrator,
                         SiteId = SiteId
@@ -170,7 +171,7 @@ namespace LessMarkup.UserInterface.Model.Global
         [InputField(InputFieldType.Email, UserInterfaceTextIds.UserEmail, Required = true)]
         public string Email { get; set; }
 
-        [InputField(InputFieldType.Password, UserInterfaceTextIds.Password, Required = true)]
+        [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true)]
         public string Password { get; set; }
 
         [Column(UserInterfaceTextIds.IsAdministrator)]

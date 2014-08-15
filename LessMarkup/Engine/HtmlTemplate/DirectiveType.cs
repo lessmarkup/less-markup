@@ -7,6 +7,8 @@ namespace LessMarkup.Engine.HtmlTemplate
     enum DirectiveType
     {
         Include,
-        Translate
+        Translate,
+        IncludeIf,
+        Parameter,
     }
 }

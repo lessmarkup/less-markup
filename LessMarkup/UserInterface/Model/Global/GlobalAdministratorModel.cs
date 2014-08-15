@@ -30,7 +30,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 _changeTracker = changeTracker;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetCollection<DataObjects.User.User>().Where(u => !u.SiteId.HasValue && !u.IsRemoved && !u.IsBlocked && u.IsAdministrator).Select(u => u.Id);
             }
@@ -66,6 +66,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         Registered = DateTime.UtcNow,
                         IsBlocked = false,
                         IsValidated = true,
+                        IsApproved = true,
                         LastPasswordChanged = DateTime.UtcNow,
                         IsAdministrator = true
                     };
@@ -147,7 +148,7 @@ namespace LessMarkup.UserInterface.Model.Global
         [InputField(InputFieldType.Email, UserInterfaceTextIds.UserEmail, Required = true)]
         public string Email { get; set; }
 
-        [InputField(InputFieldType.Password, UserInterfaceTextIds.Password, Required = true)]
+        [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true)]
         public string Password { get; set; }
     }
 }

@@ -255,7 +255,7 @@ define([], function() {
                 return;
             }
 
-            inputForm.editObject(null, $scope.viewData.NodeSettingsModelId, function (node, success, error) {
+            inputForm.editObject($scope, null, $scope.viewData.NodeSettingsModelId, function (node, success, error) {
                 var index;
                 if (parentNode == null) {
                     // create root node
@@ -325,7 +325,7 @@ define([], function() {
             if (!node.data.Customizable) {
                 return;
             }
-            inputForm.editObject(node.data.Settings, node.data.SettingsModelId, function (settings, success, fail) {
+            inputForm.editObject($scope, node.data.Settings, node.data.SettingsModelId, function (settings, success, fail) {
                 $scope.sendAction("ChangeSettings", {
                     nodeId: node.data.NodeId,
                     settings: settings
@@ -340,7 +340,7 @@ define([], function() {
 
         $scope.changeProperties = function (node) {
             var index = nodeIndex(node);
-            inputForm.editObject(node.data, $scope.viewData.NodeSettingsModelId, function (updatedNode, success, fail) {
+            inputForm.editObject($scope, node.data, $scope.viewData.NodeSettingsModelId, function (updatedNode, success, fail) {
                 $scope.sendAction("UpdateNode", {
                     node: updatedNode
                 }, function (returnedNode) {

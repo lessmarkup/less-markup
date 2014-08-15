@@ -1,4 +1,4 @@
-﻿using LessMarkup.MainModule;
+﻿using LessMarkup.MainModule.Initialization;
 
 namespace LessMarkup.Web
 {

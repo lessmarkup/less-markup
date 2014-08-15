@@ -8,6 +8,7 @@ using System.Linq;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Global;
@@ -22,7 +23,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly ISiteMapper _siteMapper;
 
-        public ModulesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker, ISiteMapper siteMapper) : base(domainModelProvider, dataCache)
+        public ModulesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker, ISiteMapper siteMapper, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;

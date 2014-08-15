@@ -233,5 +233,6 @@ namespace LessMarkup.Engine.Language
         PropertyMustBeSpecified,
         ThumbnailWidth,
         ThumbnailHeight,
+        ApproveUsers,
     }
 }

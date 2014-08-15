@@ -8,7 +8,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.MainModule.NodeHandlers
 {
     [UserCardHandler(MainModuleTextIds.UserCommon)]
-    public class UserCardCommonNodeHandler : PropertiesNodeHandler
+    public class UserCardCommonNodeHandler : PropertiesNodeHandler, IUserCardNodeHandler
     {
         private readonly IDataCache _dataCache;
 
@@ -20,18 +20,10 @@ namespace LessMarkup.MainModule.NodeHandlers
         [Property(MainModuleTextIds.UserName)]
         public string Name { get; set; }
 
-        protected override object Initialize(object controller)
+        public void Initialize(long userId)
         {
-            if (!ObjectId.HasValue)
-            {
-                return null;
-            }
-
-            var userCache = _dataCache.Get<IUserCache>(ObjectId.Value);
-
+            var userCache = _dataCache.Get<IUserCache>(userId);
             Name = userCache.Name;
-
-            return base.Initialize(controller);
         }
     }
 }

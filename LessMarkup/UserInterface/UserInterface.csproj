@@ -64,6 +64,10 @@
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Recaptcha, Version=1.0.5.0, Culture=neutral, PublicKeyToken=9afc4d65b28c38c2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Recaptcha.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -117,7 +121,6 @@
     <Compile Include="ChangeTracking\TrackerSite.cs" />
     <Compile Include="Exceptions\ActionAccessException.cs" />
     <Compile Include="Exceptions\UnknownActionException.cs" />
-    <Compile Include="Hubs\RecordListHub.cs" />
     <Compile Include="Model\Common\FlatPageSettingsModel.cs" />
     <Compile Include="Model\Common\FlatPagePosition.cs" />
     <Compile Include="Model\Configuration\NodeAccessModel.cs" />
@@ -132,6 +135,7 @@
     <Compile Include="Model\Global\SiteModel.cs" />
     <Compile Include="Model\Structure\ExecuteActionModel.cs" />
     <Compile Include="Model\Structure\LoadNodeViewModel.cs" />
+    <Compile Include="Model\Structure\NotificationsModel.cs" />
     <Compile Include="Model\Structure\WebSocketEntryPointModel.cs" />
     <Compile Include="Model\User\LoginModel.cs" />
     <Compile Include="Model\Structure\NavigationBarModel.cs" />
@@ -154,6 +158,7 @@
     <Compile Include="NodeHandlers\Common\NewRecordListNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\PropertiesNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
+    <Compile Include="NodeHandlers\Common\RecordListWithNotifyNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\TabPageNodeHandler.cs" />
     <Compile Include="NodeHandlers\Configuration\ConfigurationRootNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\DialogNodeHandler.cs" />

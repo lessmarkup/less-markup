@@ -6,7 +6,7 @@
         [[[include InputFormTemplateBody.html]]]
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="submit()" ng-disabled="isApplying">
+        <button class="btn btn-primary" ng-click="submit()" ng-disabled="okDisabled()">
             <span>OK</span>
             <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0,position:'relative'}" ng-show="isApplying"></span>
         </button>

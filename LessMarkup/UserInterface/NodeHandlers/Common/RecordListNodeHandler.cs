@@ -162,7 +162,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var recordIds = GetCollection().ReadIds(domainModel, null);
+                var recordIds = GetCollection().ReadIds(domainModel, null, false);
 
                 var data = new
                 {
@@ -221,7 +221,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var recordIds = GetCollection().ReadIds(domainModel, filter).ToList();
+                var recordIds = GetCollection().ReadIds(domainModel, filter, false).ToList();
                 var recordId = (long)_idProperty.GetValue(modifiedObject);
                 index = recordIds.IndexOf(recordId);
             }
@@ -233,7 +233,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var typedObjectToAdd = JsonConvert.DeserializeObject<T>(objectToModify);
 
-            _recordModel.ValidateInput(typedObjectToAdd, false);
+            _recordModel.ValidateInput(typedObjectToAdd, false, objectToModify);
 
             GetEditableCollection().UpdateRecord(typedObjectToAdd);
 
@@ -248,7 +248,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var typedObjectToAdd = JsonConvert.DeserializeObject<T>(objectToAdd);
 
-            _recordModel.ValidateInput(typedObjectToAdd, true);
+            _recordModel.ValidateInput(typedObjectToAdd, true, objectToAdd);
 
             GetEditableCollection().AddRecord(typedObjectToAdd);
 

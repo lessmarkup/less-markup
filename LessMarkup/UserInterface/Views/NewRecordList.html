@@ -2,6 +2,10 @@
     <div class="grid-control-panel-top" ng-if="toolbarButtons.length > 0">
         <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>
     </div>
+    
+    <div ng-if="manualRefresh" class="recordlist-refresh-panel">
+        <button class="btn btn-primary" ng-click="refreshNewRecords()" ng-show="hasNewRecords">[[[translate GetNewRecords]]]</button>
+    </div>
 
     <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
 

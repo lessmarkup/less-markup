@@ -24,6 +24,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _properties.Add(Tuple.Create(name, textId));
         }
 
+        protected override string ViewType
+        {
+            get { return "Properties"; }
+        }
+
         protected override object GetViewData()
         {
             var moduleConfiguration = _moduleProvider.Modules.First(m => m.Assembly == GetType().Assembly);

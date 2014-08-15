@@ -9,16 +9,19 @@ using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.RecordModel
 {
     public class InputFormDefinitionModel
     {
         private readonly IDataCache _dataCache;
+        private readonly IEngineConfiguration _engineConfiguration;
 
-        public InputFormDefinitionModel(IDataCache dataCache)
+        public InputFormDefinitionModel(IDataCache dataCache, IEngineConfiguration engineConfiguration)
         {
             _dataCache = dataCache;
+            _engineConfiguration = engineConfiguration;
         }
 
         public class SelectValue
@@ -45,6 +48,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
         public List<FieldModel> Fields { get; set; }
         public string Title { get; set; }
+        public bool SubmitWithCaptcha { get; set; }
 
         public void Initialize(Type modelType)
         {
@@ -72,6 +76,15 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             if (definition.TitleTextId != null)
             {
                 Title = LanguageHelper.GetText(definition.ModuleType, definition.TitleTextId);
+            }
+
+            if (definition.SubmitWithCaptcha)
+            {
+                if (!string.IsNullOrWhiteSpace(_engineConfiguration.RecaptchaPrivateKey) &&
+                    !string.IsNullOrWhiteSpace(_engineConfiguration.RecaptchaPublicKey))
+                {
+                    SubmitWithCaptcha = true;
+                }
             }
 
             IInputSource inputSource = null;

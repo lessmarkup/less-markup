@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.MainModule;
+using LessMarkup.MainModule.Initialization;
 using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartup(typeof(Startup))]
-namespace LessMarkup.MainModule
+namespace LessMarkup.MainModule.Initialization
 {
     public class Startup
     {

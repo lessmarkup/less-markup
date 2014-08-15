@@ -48,7 +48,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 _siteMapper = siteMapper;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.Id);
             }

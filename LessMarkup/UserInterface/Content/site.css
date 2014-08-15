@@ -55,7 +55,7 @@ html, body {
 }
 
 .breadcrumb li:first-child {
-    padding: 0 5px 0 0;
+    padding: 0;
 }
 
 .navbar-brand {
@@ -270,6 +270,9 @@ button:not(.btn)[disabled=disabled] {
     .contents {
         padding: 5px;
     }
+    .breadcrumb li:first-child {
+        padding: 0 0 0 15px;
+    }
 }
 
 .visible-xs.collapse:not(.in) {
@@ -284,4 +287,47 @@ button:not(.btn)[disabled=disabled] {
 
 .file-comment {
     margin-left: 1em;
+}
+
+div.navbar-notifications {
+    float: right;
+    margin-top: 12px;
+    margin-right: 3px;
+}
+
+div.navbar-notifications a {
+    margin-right: 5px;
+    color: #999;
+    font-size: 10pt;
+    text-decoration: none;
+}
+
+div.navbar-notifications a:hover {
+    color: #428bca;
+}
+
+div.navbar-notifications span.badge {
+    font-size: 8pt; 
+}
+
+div.navbar-notifications a:hover span.badge {
+    background: #428bca;
+    color: white;
+}
+
+li.navbar-notification .glyphicon {
+    padding-top: 0;
+}
+
+li.navbar-notification span.badge {
+    font-size: 8pt;
+    background: #777;
+}
+
+li.navbar-notification a:hover span.badge {
+    background: #000;
+}
+
+.active-notification {
+    background: #428bca;
 }

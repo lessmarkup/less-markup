@@ -37,7 +37,7 @@ namespace LessMarkup.MainModule.Model
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetSiteCollection<File>().Select(f => f.Id);
             }

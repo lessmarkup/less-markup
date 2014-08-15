@@ -176,6 +176,15 @@ namespace LessMarkup.Engine.Security
             }
         }
 
+        public bool IsApproved
+        {
+            get
+            {
+                var user = GetCurrentUser();
+                return user != null && user.IsApproved;
+            }
+        }
+
         public bool IsValidated
         {
             get
@@ -253,6 +262,7 @@ namespace LessMarkup.Engine.Security
                             IsGlobalAdministrator = true,
                             IsFakeUser = true,
                             IsValidated = true,
+                            IsApproved = true,
                             UserId = -1,
                         };
                     }
@@ -327,6 +337,7 @@ namespace LessMarkup.Engine.Security
                 IsAdministrator = currentUser.IsAdministrator,
                 IsGlobalAdministrator = currentUser.IsGlobalAdministrator,
                 IsValidated = currentUser.IsValidated,
+                IsApproved = currentUser.IsApproved,
                 UserId = userId,
             };
         }

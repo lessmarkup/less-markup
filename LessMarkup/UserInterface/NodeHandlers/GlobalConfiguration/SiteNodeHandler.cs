@@ -4,6 +4,7 @@
 
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -14,7 +15,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Sites, IsGlobal = true)]
     public class SiteNodeHandler : NewRecordListLinkNodeHandler<SiteModel>
     {
-        public SiteNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SiteNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+            : base(domainModelProvider, dataCache, currentUser)
         {
             AddCellLink<SiteCustomizeNodeHandler>(UserInterfaceTextIds.Customize, "customize");
             AddCellLink<SiteUsersNodeHandler>(UserInterfaceTextIds.Users, "users");

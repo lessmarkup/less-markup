@@ -20,6 +20,7 @@
         @Html.RenderTemplate("~/Views/InputFormTemplate.html")
         @Html.RenderTemplate("~/Views/Body.html")
         @Html.Raw(Model.ScriptInitialData)
-        <script src="/minify.js" data-main="/scripts/main"></script>
+        <script src="/minify.js" data-main="/scripts/main" async></script>
+        <script src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js" async></script>
     </body>
 </html>

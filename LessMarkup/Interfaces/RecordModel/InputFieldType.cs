@@ -29,5 +29,6 @@ namespace LessMarkup.Interfaces.RecordModel
         CodeText,
         Hidden,
         Typeahead,
+        PasswordRepeat,
     }
 }

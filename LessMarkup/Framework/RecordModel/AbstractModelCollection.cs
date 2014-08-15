@@ -15,7 +15,7 @@ namespace LessMarkup.Framework.RecordModel
             CollectionId = AbstractDomainModel.GetCollectionId(dataType);
         } 
 
-        public abstract IQueryable<long> ReadIds(IDomainModel domainModel, string filter);
+        public abstract IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder);
         public int CollectionId { get; private set; }
         public abstract IQueryable<T> Read(IDomainModel domainModel, List<long> ids);
         public abstract bool Filtered { get; }

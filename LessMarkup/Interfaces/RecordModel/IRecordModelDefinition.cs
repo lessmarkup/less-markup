@@ -12,6 +12,7 @@ namespace LessMarkup.Interfaces.RecordModel
         string Id { get; }
         IReadOnlyList<InputFieldDefinition> Fields { get; }
         IReadOnlyList<ColumnDefinition> Columns { get; }
-        void ValidateInput(object objectToValidate, bool isNew);
+        void ValidateInput(object objectToValidate, bool isNew, string properties);
+        bool SubmitWithCaptcha { get; }
     }
 }

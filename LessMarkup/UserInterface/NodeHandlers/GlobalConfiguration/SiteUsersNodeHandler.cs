@@ -4,6 +4,7 @@
 
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -13,7 +14,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Users)]
     public class SiteUsersNodeHandler : NewRecordListNodeHandler<UserModel>
     {
-        public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
         }
     }

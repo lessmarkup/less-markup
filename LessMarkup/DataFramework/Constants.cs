@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System.Runtime.InteropServices.ComTypes;
+
 namespace LessMarkup.DataFramework
 {
     public static class Constants
@@ -35,13 +37,14 @@ namespace LessMarkup.DataFramework
 
         public static class MailTemplates
         {
-            public const string Namespace = "LessMarkup.MailTemplate";
-            public static class Core
-            {
-                public const string ValidateUser = "ConfirmUserRegistration";
-                public const string PasswordGeneratedNotification = "PasswordGeneratedNotification";
-                public const string NewUserCreated = "NewUserCreated";
-            }
+            public const string ValidateUser = "~/Views/EmailTemplates/ConfirmUserRegistration.html";
+            public const string PasswordGeneratedNotification = "~/Views/EmailTemplates/PasswordGeneratedNotification.html";
+            public const string AdminNewUserCreated = "~/Views/EmailTemplates/AdminNewUserCreated.html";
+            public const string UserNewUserCreated = "~/Views/EmailTemplates/UserNewUserCreated.html";
+            public const string ConfirmUserRegistration = "~/Views/EmailTemplates/ConfirmUserRegistration.html";
+            public const string SendContact = "~/Views/EmailTemplates/SendContact.html";
+            public const string ApproveUserRegistration = "~/Views/EmailTemplates/ApproveUserRegistration.html";
+            public const string ConfirmUserApproval = "~/Views/EmailTemplates/ConfirmUserApproval.html";
         }
 
         public static class RequestItemKeys

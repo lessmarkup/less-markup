@@ -11,7 +11,7 @@ using LessMarkup.DataFramework;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.MainModule
+namespace LessMarkup.MainModule.Initialization
 {
     public class RouteConfig
     {

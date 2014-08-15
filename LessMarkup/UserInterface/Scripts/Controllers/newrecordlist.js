@@ -79,6 +79,8 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     $scope.actions = [];
     $scope.optionsTemplate = $scope.viewData.optionsTemplate;
     $scope.toolbarButtons = [];
+    $scope.manualRefresh = $scope.viewData.manualRefresh;
+    $scope.hasNewRecords = false;
     var records = [];
     var currentRecordId = null;
     var currentRecord = null;
@@ -89,10 +91,12 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     var timeoutCancel = null;
 
     function subscribeForUpdates() {
-        timeoutCancel = $timeout(getUpdates, 10 * 1000);
+        if (timeoutCancel == null) {
+            timeoutCancel = $timeout(getUpdates, 10 * 1000);
+        }
     }
 
-    if (liveUpdates) {
+    if (liveUpdates || $scope.manualRefresh) {
         subscribeForUpdates();
         $scope.$on("onNodeLoaded", function () {
             if (timeoutCancel != null) {
@@ -110,6 +114,48 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     }
 
     var createNewRecord;
+
+    $scope.refreshNewRecords = function(data) {
+
+        $scope.sendAction("GetRecordIds", { filter: filter }, function (data2) {
+            if (data && data.hasOwnProperty("lastChange")) {
+                lastChange = data.lastChange;
+            }
+
+            $scope.hasNewRecords = false;
+
+            var savedRecords = {};
+
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (record.loaded) {
+                    savedRecords[record[recordIdField]] = record;
+                }
+            }
+
+            records = [];
+
+            for (var i = 0; i < data2.recordIds.length; i++) {
+                var recordId = data2.recordIds[i];
+
+                var record;
+
+                if (savedRecords.hasOwnProperty(recordId)) {
+                    record = savedRecords[recordId];
+                } else {
+                    record = createNewRecord(recordId);
+                }
+                records.push(record);
+            }
+
+            subscribeForUpdates();
+
+            $scope.loadVisibleRecords();
+
+        }, function () {
+            subscribeForUpdates();
+        });
+    }
 
     function getUpdates() {
         timeoutCancel = null;
@@ -177,43 +223,15 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
                 return;
             }
 
-            $scope.sendAction("GetRecordIds", { filter: filter }, function(data2) {
-                if (data.hasOwnProperty("lastChange")) {
-                    lastChange = data.lastChange;
+            if ($scope.manualRefresh) {
+                $scope.hasNewRecords = true;
+                if (!$scope.$$phase) {
+                    $scope.$apply();
                 }
+                return;
+            }
 
-                var savedRecords = {};
-
-                for (var i = 0; i < records.length; i++) {
-                    var record = records[i];
-                    if (record.loaded) {
-                        savedRecords[record[recordIdField]] = record;
-                    }
-                }
-
-                records = [];
-
-                for (var i = 0; i < data2.recordIds.length; i++) {
-                    var recordId = data2.recordIds[i];
-
-                    var record;
-
-                    if (savedRecords.hasOwnProperty(recordId)) {
-                        record = savedRecords[recordId];
-                    } else {
-                        record = createNewRecord(recordId);
-                    }
-                    records.push(record);
-                }
-
-                subscribeForUpdates();
-
-                $scope.loadVisibleRecords();
-
-            }, function() {
-                subscribeForUpdates();
-            });
-
+            $scope.refreshNewRecords(data);
         }, function() {
             subscribeForUpdates();
         });
@@ -290,7 +308,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     }
 
     $scope.onToolbarButtonClick = function(action) {
-        inputForm.editObject(null, action.type, function (object, success, failure) {
+        inputForm.editObject($scope, null, action.type, function (object, success, failure) {
             $scope.sendAction(action.name, {
                 newObject: object,
                 filter: filter
@@ -411,7 +429,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     function editCurrentRecord(index) {
 
-        inputForm.editObject(records[index], $scope.viewData.type, function (object, success, failure) {
+        inputForm.editObject($scope, records[index], $scope.viewData.type, function (object, success, failure) {
             $scope.sendAction("ModifyRecord", {
                 modifiedObject: object,
                 filter: filter
@@ -539,7 +557,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
                 if (data.message && data.message.length > 0) {
                     inputForm.message(data.message, "Information");
                 } else {
-                    inputForm.editObject(data.record, action.parameter, function (object, success, failure) {
+                    inputForm.editObject($scope, data.record, action.parameter, function (object, success, failure) {
                         actionData.newObject = object;
                         sendAction(success, failure);
                     }, $scope.getTypeahead);
@@ -552,7 +570,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
             if (action.parameter === $scope.viewData.type) {
                 record = currentRecord;
             }
-            inputForm.editObject(record, action.parameter, function (object, success, failure) {
+            inputForm.editObject($scope, record, action.parameter, function (object, success, failure) {
                 actionData.newObject = object;
                 sendAction(success, failure);
             }, $scope.getTypeahead);
@@ -610,14 +628,16 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
         var column = $scope.columns[i];
         if (!column.template || column.template.length == 0) {
             var value = "data." + column.name;
+            var bind = "ng-bind";
             if (column.allowUnsafe) {
                 value = "getSafeValue(" + value + ")";
+                bind = "ng-bind-html";
             }
 
             if (column.url && column.url.length > 0) {
-                column.template = "<a href=\"{{getColumnLink(column, row)}}\" ng-click=\"navigateToView(getColumnLink(column, row))\" ng-bind=\"" + value + "\"></a>";
+                column.template = "<a href=\"{{getColumnLink(column, row)}}\" ng-click=\"navigateToView(getColumnLink(column, row))\" " + bind + "=\"" + value + "\"></a>";
             } else {
-                column.template = "<span ng-bind=\"" + value + "\"></span>";
+                column.template = "<span " + bind + "=\"" + value + "\"></span>";
             }
         }
     }

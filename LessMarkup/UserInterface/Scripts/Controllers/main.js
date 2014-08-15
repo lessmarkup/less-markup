@@ -29,6 +29,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.loginUserPassword = "";
     $scope.loginUserRemember = false;
     $scope.userLoggedIn = initialData.UserLoggedIn;
+    $scope.userNotVerified = initialData.UserNotVerified;
     $scope.userName = initialData.UserName;
     $scope.userLoginError = "";
     $scope.userLoginProgress = false;
@@ -45,6 +46,75 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.profilePath = initialData.ProfilePath;
     $scope.getViewScope = function () { return $scope; }
     $scope.showXsMenu = false;
+    $scope.notifications = initialData.Notifications;
+    $scope.recaptchaPublicKey = initialData.RecaptchaPublicKey;
+
+    if ($scope.notifications.length) {
+
+        $scope.gotoNotification = function(notification) {
+            notification.Version = notification.NewVersion;
+            $scope.navigateToView(notification.Path);
+        }
+
+        $scope.notificationClass = function(notification) {
+            if (notification.Count > 0) {
+                return "active-notification";
+            }
+            return "";
+        }
+
+        for (var i = 0; i < $scope.notifications.length; i++) {
+            $scope.notifications[i].NewVersion = $scope.notifications[i].Version;
+        }
+
+        var timeoutCancel = null;
+
+        function subscribeForUpdates() {
+            if (timeoutCancel == null) {
+                timeoutCancel = $timeout(getUpdates, 10 * 1000);
+            }
+        }
+
+        function getUpdates() {
+            timeoutCancel = null;
+
+            var data = {};
+
+            var current = [];
+
+            for (var i = 0; i < $scope.notifications.length; i++) {
+                var notification = $scope.notifications[i];
+                current.push({
+                    Id: notification.Id,
+                    Version: notification.Version,
+                });
+            }
+
+            data.notifications = current;
+
+            $scope.sendCommand("GetNotifications", data, function(data) {
+                subscribeForUpdates();
+                for (var i = 0; i < data.notifications.length; i++) {
+                    var source = data.notifications[i];
+                    for (var j = 0; j < $scope.notifications.length; j++) {
+                        var target = $scope.notifications[j];
+                        if (source.Id == target.Id) {
+                            target.Count = source.Count;
+                            target.NewVersion = source.Version;
+                            break;
+                        }
+                    }
+                }
+                if (!$scope.$$phase) {
+                    $scope.$apply();
+                }
+            }, function(message) {
+                subscribeForUpdates();
+            });
+        }
+
+        subscribeForUpdates();
+    }
 
     var browserUrl = $browser.url();
     // dirty hack to prevent AngularJS from reloading the page on pushState and fix $location.$$parse bug
@@ -75,6 +145,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
             $scope.showConfiguration = false;
             $scope.userLoggedIn = false;
+            $scope.userNotVerified = false;
             $scope.userName = "";
             $scope.staticNodes = {};
             $scope.navigateToView("/");
@@ -109,9 +180,10 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         $scope.sendCommand("GetRegisterObject", {}, function (data) {
             var registerObject = data.RegisterObject;
             var modelId = data.ModelId;
-            inputForm.editObject(registerObject, modelId, function (object, success, failure) {
+            inputForm.editObject($scope, registerObject, modelId, function (object, success, failure) {
                 $scope.sendCommand("Register", { user: object }, function (data) {
                     $scope.userLoggedIn = true;
+                    $scope.userNotVerified = data.UserNotVerified;
                     $scope.userName = data.UserName;
                     $scope.showConfiguration = data.ShowConfiguration;
                     $scope.loginUserPassword = "";
@@ -125,19 +197,39 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }, $scope.showError);
     }
 
-    $scope.doLogin = function (administratorKey) {
+    $scope.showLogin = function () {
+        inputForm.editObject($scope, null, $scope.viewData.LoginModelId, function(object, success, failure) {
+            $scope.doLogin(null, object, success, failure);
+        });
+    }
+
+    $scope.doLogin = function (administratorKey, object, success, failure) {
         $scope.userLoginError = "";
 
-        var userEmail = $scope.loginUserEmail.trim();
-        var userPassword = $scope.loginUserPassword.trim();
+        var userEmail;
+        var userPassword;
+
+        if (object) {
+            userEmail = object.Email;
+            userPassword = object.Password;
+        } else {
+            userEmail = $scope.loginUserEmail.trim();
+            userPassword = $scope.loginUserPassword.trim();
+        }
 
         if (userEmail.length == 0 || userPassword.length == 0) {
             $scope.userLoginError = "Please fill all required fields";
+            if (failure) {
+                failure($scope.userLoginError);
+            }
             return;
         }
 
         if (!/\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/ig.test(userEmail)) {
             $scope.userLoginError = "Invalid e-mail";
+            if (failure) {
+                failure($scope.userLoginError);
+            }
             return;
         }
 
@@ -150,6 +242,9 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                 $scope.userLoginError = "Request failed, status: " + status.toString();
             }
             $scope.userLoginProgress = false;
+            if (failure) {
+                failure($scope.userLoginError);
+            }
         }
 
         var stage1Data = {
@@ -166,6 +261,9 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                 $scope.userLoggedIn = false;
                 $scope.userLoginProgress = false;
                 $scope.userLoginError = data.Message;
+                if (failure) {
+                    failure($scope.userLoginError);
+                }
                 return;
             }
 
@@ -189,9 +287,13 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                     if (!data.Success) {
                         $scope.userLoginError = data.Message;
                         $scope.userLoggedIn = false;
+                        if (failure) {
+                            failure($scope.userLoginError);
+                        }
                         return;
                     }
                     $scope.userLoggedIn = true;
+                    $scope.userNotVerified = data.Data.UserNotVerified;
                     $scope.userName = data.Data.UserName;
                     $scope.showConfiguration = data.Data.ShowConfiguration;
                     $scope.loginUserPassword = "";
@@ -203,6 +305,10 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
                     if (!path || path.length == 0) {
                         path = $scope.path;
+                    }
+
+                    if (success) {
+                        success();
                     }
 
                     $scope.navigateToView(path);
@@ -242,6 +348,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         $scope.alerts = [];
         $http.post("", data).success(function (data) {
             validateLoggedIn(data.UserLoggedIn);
+            $scope.userNotVerified = data.UserNotVerified;
             if (!data.Success) {
                 if (failure) {
                     failure(data.Message);
@@ -299,6 +406,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         return $http.post("", data).then(function (result) {
             data = result.data;
             validateLoggedIn(data.UserLoggedIn);
+            $scope.userNotVerified = data.UserNotVerified;
             if (!data.Success) {
                 if (failure) {
                     failure(data.Message);
@@ -418,6 +526,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             "-cached-": cachedItems,
             "-path-": url
         }).success(function (data) {
+            validateLoggedIn(data.UserLoggedIn);
+            $scope.userNotVerified = data.UserNotVerified;
             if (!data.Success) {
                 $scope.showError(data.Message);
                 return;

@@ -9,7 +9,7 @@ using LessMarkup.Engine;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.MainModule.NodeHandlers;
 
-namespace LessMarkup.MainModule
+namespace LessMarkup.MainModule.Initialization
 {
     public class MainModuleInitializer : BaseModuleInitializer
     {
@@ -43,6 +43,11 @@ namespace LessMarkup.MainModule
 
             _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>("article");
             _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>("contact");
+        }
+
+        public override string DefaultNamespace
+        {
+            get { return "LessMarkup.MainModule"; }
         }
     }
 }

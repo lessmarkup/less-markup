@@ -2,6 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+app.directive("captcha", function() {
+    return {
+        restrict: 'A',
+        scope: {
+            parameter: '=captcha'
+        },
+        link: function(scope, element) {
+            Recaptcha.create(scope.parameter, element[0], {
+                theme: "clean"
+            });
+        }
+    }
+});
+
 function InputFormController($scope, $modalInstance, definition, object, success, getTypeahead, $sce) {
 
     $scope.definition = definition;
@@ -9,6 +23,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
     $scope.isModal = $modalInstance != null;
     $scope.submitError = "";
     $scope.isApplying = false;
+    $scope.submitWithCaptcha = definition.SubmitWithCaptcha;
 
     $scope.codeMirrorDefaultOptions = {
         mode: 'text/html',
@@ -25,6 +40,10 @@ function InputFormController($scope, $modalInstance, definition, object, success
             }
         }
     };
+
+    $scope.okDisabled = function() {
+        return $scope.isApplying;
+    }
 
     $scope.isNewObject = object == null;
 
@@ -125,7 +144,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
                         valid = false;
                     }
                     break;
-                case 'Password':
+                case 'PasswordRepeat':
                     var repeatPassword = $scope.object[field.Property + "-Repeat"];
                     if (typeof (repeatPassword) == 'undefined' || repeatPassword == null || repeatPassword != value) {
                         $scope.validationErrors[field.Property] = 'Passwords must be equal';
@@ -136,6 +155,11 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
         if (!valid) {
             return;
+        }
+
+        if ($scope.submitWithCaptcha) {
+            $scope.object["-RecaptchaChallenge-"] = Recaptcha.get_challenge();
+            $scope.object["-RecaptchaResponse-"] = Recaptcha.get_response();
         }
 
         $scope.submitError = "";
@@ -149,6 +173,9 @@ function InputFormController($scope, $modalInstance, definition, object, success
                 }, function (message) {
                     $scope.isApplying = false;
                     $scope.submitError = message;
+                    if ($scope.submitWithCaptcha) {
+                        Recaptcha.reload();
+                    }
                 });
             } catch (err) {
                 $scope.isApplying = false;
@@ -173,7 +200,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
             }
         }
 
-        if (field.Type == 'Password') {
+        if (field.Type == 'PasswordRepeat') {
             $scope.object[field.Property] = "";
             $scope.object[field.Property + "-Repeat"] = "";
         } else if (field.Type == 'Image') {

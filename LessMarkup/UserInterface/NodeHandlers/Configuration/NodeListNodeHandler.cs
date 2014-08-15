@@ -167,7 +167,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof (NodeSettingsModel));
-            definition.ValidateInput(node, true);
+            definition.ValidateInput(node, true, null);
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
@@ -238,7 +238,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof(NodeSettingsModel));
-            definition.ValidateInput(node, false);
+            definition.ValidateInput(node, false, null);
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
@@ -294,9 +294,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             var handler = DependencyResolver.Resolve<NodeAccessNodeHandler>();
 
-            ((INodeHandler) handler).Initialize(nodeId, null, null, path, AccessType);
-
             handler.Initialize(SiteId, nodeId);
+
+            ((INodeHandler) handler).Initialize(nodeId, null, null, path, AccessType);
 
             return new ChildHandlerSettings
             {

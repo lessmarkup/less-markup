@@ -9,6 +9,7 @@ using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
@@ -23,7 +24,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         private readonly Dictionary<string, CellLinkHandler> _cellLinkHandlers = new Dictionary<string, CellLinkHandler>();
 
-        public NewRecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public NewRecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+            : base(domainModelProvider, dataCache, currentUser)
         {
         }
 

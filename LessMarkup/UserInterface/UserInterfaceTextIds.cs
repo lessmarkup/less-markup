@@ -86,5 +86,8 @@ namespace LessMarkup.UserInterface
         ActionAccessException,
         Signature,
         UserCards,
+        GetNewRecords,
+        GeneratePassword,
+        Login,
     }
 }

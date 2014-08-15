@@ -1,4 +1,6 @@
-﻿using LessMarkup.Interfaces.Cache;
+﻿using System;
+using System.Collections.Generic;
+using LessMarkup.Interfaces.Cache;
 
 namespace LessMarkup.Interfaces.Structure
 {
@@ -7,5 +9,6 @@ namespace LessMarkup.Interfaces.Structure
         ICachedNodeInformation GetNode(long nodeId);
         void GetNode(string path, out ICachedNodeInformation node, out string rest);
         ICachedNodeInformation RootNode { get; }
+        IReadOnlyList<ICachedNodeInformation> Nodes { get; }
     }
 }

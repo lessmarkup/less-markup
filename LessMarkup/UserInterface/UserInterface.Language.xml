@@ -88,6 +88,10 @@
     <Translation Id="ToggleNavigation" Text="Toggle Navigation"/>
     <Translation Id="Signature" Text="Signature"/>
     <Translation Id="UserCards" Text="Users"/>
+    <Translation Id="GetNewRecords" Text="Get New Records"/>
+    <Translation Id="GeneratePassword" Text="Generate Password"/>
+    <Translation Id="EmailNotVerified" Text="E-mail is not verified or not approved. Please check your inbox."/>
+    <Translation Id="Login" Text="Login"/>
     <!--
     <Translation Id="" Text=""/>
     -->

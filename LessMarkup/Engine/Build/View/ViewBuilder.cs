@@ -12,14 +12,12 @@ using System.Text;
 using System.Web.Configuration;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
-using LessMarkup.Engine.Build.Mail;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 using Microsoft.CSharp;
-using Constants = LessMarkup.DataFramework.Constants;
 
 namespace LessMarkup.Engine.Build.View
 {
@@ -50,88 +48,6 @@ namespace LessMarkup.Engine.Build.View
 
             _specialFolder = specialFolder;
             _moduleProvider = moduleProvider;
-        }
-
-        string CompileMailTemplate(string className, string template, string modelType, ViewTemplate viewTemplate)
-        {
-            var razorHost = new RazorEngineHost(new CSharpRazorCodeLanguage())
-            {
-                DefaultBaseClass = typeof(TemplateInstance).FullName + "<" + modelType + ">"
-            };
-
-            foreach (var ns in _defaultNamespaces)
-            {
-                razorHost.NamespaceImports.Add(ns);
-            }
-
-            if (!string.IsNullOrWhiteSpace(viewTemplate.Namespace))
-            {
-                razorHost.NamespaceImports.Add(viewTemplate.Namespace);
-            }
-
-            var templateEngine = new RazorTemplateEngine(razorHost);
-            GeneratorResults results;
-
-            var templatePath = "~/Views/EmailTemplates/" + className + ".cshtml";
-
-            using (var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(template))))
-            {
-                results = templateEngine.GenerateCode(reader, className, Constants.MailTemplates.Namespace, templatePath);
-            }
-
-            if (!results.Success)
-            {
-                _compileErrors.AddRange(results.ParserErrors);
-                return null;
-            }
-
-            var codeProvider = new CSharpCodeProvider();
-
-            var builder = new StringBuilder();
-            using (var writer = new StringWriter(builder))
-            {
-                codeProvider.GenerateCodeFromCompileUnit(results.GeneratedCode, writer, new CodeGeneratorOptions());
-            }
-
-            return builder.ToString();
-        }
-
-        void CompileMailTemplate(string templateName, ViewTemplate viewTemplate)
-        {
-            var bodyBuilder = new StringBuilder();
-            string templateModel = null;
-
-            using (var reader = new StringReader(viewTemplate.Body))
-            using (var writer = new StringWriter(bodyBuilder))
-            {
-                for (;;)
-                {
-                    var line = reader.ReadLine();
-                    if (line == null)
-                    {
-                        break;
-                    }
-                    if (line.Contains("@model "))
-                    {
-                        var directive = line.Trim();
-                        if (directive.StartsWith("@model "))
-                        {
-                            templateModel = directive.Substring("@model ".Length);
-                            continue;
-                        }
-                    }
-                    writer.WriteLine(line);
-                }
-            }
-
-            var modelType = !string.IsNullOrEmpty(templateModel) ? templateModel : "object";
-            var body = CompileMailTemplate(templateName, bodyBuilder.ToString(), modelType, viewTemplate);
-            if (!string.IsNullOrEmpty(body))
-            {
-                var filePath = Path.Combine(_compileDirectory, "MailTemplate." + templateName + ".cshtml");
-                File.WriteAllText(filePath, body);
-                _compiledCode.Add(filePath);
-            }
         }
 
         public static void ExtractPageClassName(ViewTemplate template, out string pageNamespace, out string pageClassName)
@@ -236,14 +152,7 @@ namespace LessMarkup.Engine.Build.View
 
             foreach (var template in viewImport.ViewTemplates)
             {
-                if (template.Key.StartsWith("EmailTemplates."))
-                {
-                    CompileMailTemplate(template.Key.Substring("EmailTemplates.".Length), template.Value);
-                }
-                else
-                {
-                    CompileViewTemplate(template.Value);
-                }
+                CompileViewTemplate(template.Value);
             }
 
             if (_compileErrors.Any())
@@ -280,16 +189,7 @@ namespace LessMarkup.Engine.Build.View
                 {
                     var assemblyPath = Path.Combine(path, assemblyName.Name + ".dll");
 
-                    Assembly assembly;
-
-                    if (File.Exists(assemblyPath))
-                    {
-                        assembly = Assembly.LoadFile(assemblyPath);
-                    }
-                    else
-                    {
-                        assembly = Assembly.Load(assemblyName);
-                    }
+                    var assembly = File.Exists(assemblyPath) ? Assembly.LoadFile(assemblyPath) : Assembly.Load(assemblyName);
 
                     locations[Path.GetFileName(assembly.Location)] = assembly.Location;
                 }
@@ -417,29 +317,6 @@ namespace LessMarkup.Engine.Build.View
 
                 BuildViews(viewImport, _specialFolder.GeneratedViewAssemblyNew);
             }
-        }
-
-        private bool CompareResources(byte[] resource1, byte[] resource2)
-        {
-            if (resource1 == null || resource2 == null)
-            {
-                return resource1 == null && resource2 == null;
-            }
-
-            if (resource1.Length != resource2.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < resource1.Length; i++)
-            {
-                if (resource2[i] != resource1[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         public void ImportTemplates(IDomainModelProvider domainModelProvider)

@@ -15,6 +15,7 @@ namespace LessMarkup.Interfaces.Security
         bool IsAdministrator { get; }
         bool IsGlobalAdministrator { get; }
         bool IsValidated { get; }
+        bool IsApproved { get; }
         bool IsFakeUser { get; }
         void MapCurrentUser();
         string Email { get; }

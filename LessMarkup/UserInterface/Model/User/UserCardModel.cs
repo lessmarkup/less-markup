@@ -8,7 +8,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.User
 {
-    [RecordModel]
+    [RecordModel(CollectionType = typeof(Collection), DataType = typeof(DataObjects.User.User))]
     public class UserCardModel
     {
         public class Collection : IModelCollection<UserCardModel>
@@ -20,7 +20,7 @@ namespace LessMarkup.UserInterface.Model.User
                 _siteMapper = siteMapper;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 var siteId = _siteMapper.SiteId;
 
