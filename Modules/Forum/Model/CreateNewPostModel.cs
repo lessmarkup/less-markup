@@ -13,11 +13,8 @@ using LessMarkup.Interfaces.Security;
 namespace LessMarkup.Forum.Model
 {
     [RecordModel(TitleTextId = ForumTextIds.NewPost)]
-    public class NewPostModel
+    public class CreateNewPostModel
     {
-        [InputField(InputFieldType.Text, ForumTextIds.Subject)]
-        public string Subject { get; set; }
-
         [InputField(InputFieldType.RichText, ForumTextIds.PostText, Required = true)]
         public string Text { get; set; }
 
@@ -30,7 +27,7 @@ namespace LessMarkup.Forum.Model
         private readonly ICurrentUser _currentUser;
         private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public NewPostModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer)
+        public CreateNewPostModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
@@ -42,16 +39,19 @@ namespace LessMarkup.Forum.Model
         public void CreatePost(long threadId)
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
-            var definition = modelCache.GetDefinition<NewPostModel>();
-            definition.ValidateInput(this, true);
+            var definition = modelCache.GetDefinition<CreateNewPostModel>();
+
+            definition.ValidateInput(this, true, null);
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = new Post();
-                post.ThreadId = threadId;
-                post.Created = DateTime.UtcNow;
-                post.Subject = Subject;
-                post.Text = _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" });
+                var post = new Post
+                {
+                    ThreadId = threadId,
+                    Created = DateTime.UtcNow,
+                    Text = _htmlSanitizer.Sanitize(Text, new List<string> {"blockquote>header"})
+                };
+
                 post.Updated = post.Created;
                 post.UserId = _currentUser.UserId;
 

@@ -24,6 +24,8 @@
     <Translation Id="UserRemoved" Text="(removed)"/>
     <Translation Id="MessageFrom" Text="Message from "/>
     <Translation Id="Created" Text="Created"/>
+    <Translation Id="PostUpdatesTooltip" Text="Shows Latest Posts"/>
+    <Translation Id="PostUpdatesTitle" Text="Latest Posts"/>
     <!--
     <Translation Id="" Text=""/>
     -->

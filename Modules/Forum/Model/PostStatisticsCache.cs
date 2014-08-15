@@ -44,7 +44,7 @@ namespace LessMarkup.Forum.Model
             UserStatistics ret;
             if (!_userPosts.TryGetValue(userId, out ret))
             {
-                return new UserStatistics();
+                return null;
             }
             return ret;
         }

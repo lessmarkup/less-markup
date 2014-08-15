@@ -37,6 +37,7 @@ namespace LessMarkup.Forum.Module
         {
             base.InitializeDatabase();
             _moduleIntegration.RegisterNodeHandler<ForumNodeHandler>("Forum");
+            _moduleIntegration.RegisterNodeHandler<PostUpdatesNodeHandler>("PostUpdates");
         }
     }
 }

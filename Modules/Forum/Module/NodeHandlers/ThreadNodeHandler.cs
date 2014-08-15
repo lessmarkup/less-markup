@@ -9,6 +9,7 @@ using LessMarkup.Forum.Model;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -19,7 +20,8 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
 
-        public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+            : base(domainModelProvider, dataCache, currentUser)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
@@ -31,7 +33,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             if (HasWriteAccess)
             {
-                AddCreateAction<NewPostModel>("NewPost", Constants.ModuleType.Forum, ForumTextIds.NewPost);
+                AddCreateAction<CreateNewPostModel>("NewPost", Constants.ModuleType.Forum, ForumTextIds.NewPost);
             }
         }
 
@@ -155,7 +157,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         }
 
         [ActionAccess(NodeAccessType.Write)]
-        public object NewPost(NewPostModel newObject, string filter)
+        public object NewPost(CreateNewPostModel newObject, string filter)
         {
             if (!ObjectId.HasValue)
             {

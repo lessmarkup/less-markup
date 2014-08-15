@@ -25,8 +25,6 @@ namespace LessMarkup.Forum.DataObjects
         public long? UserId { get; set; }
         public User User { get; set; }
 
-        public string Subject { get; set; }
-
         public string Text { get; set; }
     }
 }

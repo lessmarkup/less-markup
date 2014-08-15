@@ -28,5 +28,7 @@ namespace LessMarkup.Forum.Model
         Purge,
         UserRemoved,
         MessageFrom,
+        PostUpdatesTooltip,
+        PostUpdatesTitle
     }
 }

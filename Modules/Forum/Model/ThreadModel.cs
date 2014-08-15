@@ -25,7 +25,7 @@ namespace LessMarkup.Forum.Model
             public Collection() : base(typeof(Thread))
             { }
 
-            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 return domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId).Select(t => t.Id);
             }

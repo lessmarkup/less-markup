@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ForumModuleInitializer.cs" />
     <Compile Include="NodeHandlers\ForumNodeHandler.cs" />
+    <Compile Include="NodeHandlers\PostUpdatesNodeHandler.cs" />
     <Compile Include="NodeHandlers\ThreadNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

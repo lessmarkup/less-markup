@@ -37,14 +37,21 @@ namespace LessMarkup.Forum.Model
 
             Posts = user.Posts;
 
-            Properties =
-                user.Properties.Where(p => p.Type == UserPropertyType.Text || p.Type == UserPropertyType.Date)
-                    .Select(p => new UserPropertyModel
-                    {
-                        Name = p.Name,
-                        Value = p.Value
-                    })
-                    .ToList();
+            if (user.Properties != null)
+            {
+                Properties =
+                    user.Properties.Where(p => p.Type == UserPropertyType.Text || p.Type == UserPropertyType.Date)
+                        .Select(p => new UserPropertyModel
+                        {
+                            Name = p.Name,
+                            Value = p.Value
+                        })
+                        .ToList();
+            }
+            else
+            {
+                Properties = new List<UserPropertyModel>();
+            }
         }
 
         public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)

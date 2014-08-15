@@ -45,7 +45,6 @@ namespace LessMarkup.Forum.Model
                 var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 ReplyTo = post.Text;
-                Subject = post.Subject;
             }
 
             return new
@@ -69,7 +68,6 @@ namespace LessMarkup.Forum.Model
                 {
                     Text = string.Format("<blockquote data-from=\"{0}\">{1}</blockquote>\r\n{2}", sourcePost.UserId, sourcePost.Text,  _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" })),
                     Created = DateTime.UtcNow,
-                    Subject = Subject,
                     ThreadId = threadId,
                     UserId = _currentUser.UserId
                 };
@@ -89,9 +87,6 @@ namespace LessMarkup.Forum.Model
 
         [InputField(InputFieldType.RichText, ForumTextIds.ReplyTo, ReadOnly = true)]
         public string ReplyTo { get; set; }
-
-        [InputField(InputFieldType.Text, ForumTextIds.Subject)]
-        public string Subject { get; set; }
 
         [InputField(InputFieldType.RichText, ForumTextIds.PostText, Required = true)]
         public string Text { get; set; }

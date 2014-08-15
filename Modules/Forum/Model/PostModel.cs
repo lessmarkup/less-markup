@@ -33,7 +33,7 @@ namespace LessMarkup.Forum.Model
             public Collection() : base(typeof(Post))
             { }
 
-            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter)
+            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 if (_accessType == NodeAccessType.Manage)
                 {
@@ -64,7 +64,6 @@ namespace LessMarkup.Forum.Model
 
                 return collection.Select(p => new PostModel
                 {
-                    Subject = p.Subject,
                     Text = p.Text,
                     UserName = p.User.Name,
                     PostId = p.Id,
@@ -150,13 +149,12 @@ namespace LessMarkup.Forum.Model
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var model = modelCache.GetDefinition<PostModel>();
-            model.ValidateInput(this, false);
+            model.ValidateInput(this, false, null);
 
             using (var domainModel = _domainModelProvider.Create())
             {
                 var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
                 post.Text = _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" });
-                post.Subject = Subject;
                 Text = post.Text;
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
@@ -201,9 +199,6 @@ namespace LessMarkup.Forum.Model
         }
 
         public long PostId { get; set; }
-
-        [InputField(InputFieldType.Text, ForumTextIds.Subject)]
-        public string Subject { get; set; }
 
         [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.UserId]")]
         public string UserName { get; set; }

@@ -72,7 +72,6 @@ namespace LessMarkup.Forum.Model
                 post.Text = Post;
                 post.Removed = false;
                 post.UserId = _currentUser.UserId;
-                post.Subject = thread.Name;
                 post.Updated = thread.Created;
 
                 thread.Posts.Add(post);
