@@ -1,0 +1,31 @@
+﻿<div ng-controller="allforums" class="allforums">
+    <table class="allforums-control" ng-if="groups.length > 0">
+        <tbody ng-repeat="group in groups">
+            <tr ng-if="groups.indexOf(group) > 0" class="delimiter">
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <th width="60%"><span ng-if="isSubForum">[[[translate ChildForums]]]</span><span ng-if="!isSubForum">[[[translate Forums]]]</span></th>
+                <th>[[[translate Statistics]]]</th>
+            </tr>
+            <tr ng-repeat="forum in group track by $index">
+                <td ng-class="{'header-forum' : forum.IsHeader}">
+                    <a href="{{forum.Path}}" ng-click="navigateToView(forum.Path)">{{forum.Title}}</a>
+                    <ul ng-if="forum.Children.length > 0">
+                        <li ng-repeat="child in forum.Children">
+                            <a href="{{child.Path}}" ng-click="navigateToView(child.Path)">{{child.Title}}</a>
+                        </li>
+                    </ul>
+                </td>
+                <td ng-class="{'header-forum' : forum.IsHeader}">
+                    <div ng-if="forum.Posts > 0">[[[translate Posts]]]: {{forum.Posts}}</div>
+                    <div ng-if="forum.Posts == 0">[[[translate ForumIsEmpty]]]</div>
+                    <div ng-if="forum.LastAuthorId">
+                        [[[translate LastPost]]]: [[[translate LastPostCreated]]] {{forum.LastCreated | date:'medium'}} [[[translate LastPostBy]]]
+                        <a href="{{forum.LastAuthorUrl}}" ng-click="navigateToView(forum.LastAuthorUrl)">{{forum.LastAuthorName}}</a> [[[translate LastPostIn]]] {{forum.LastThreadTitle}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

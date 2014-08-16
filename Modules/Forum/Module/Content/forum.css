@@ -11,3 +11,74 @@ blockquote[data-from] {
     border-left: solid 3px #ddd;
     padding: 0 0 0 1em;
 }
+
+.allforums-control {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+.allforums-control tr.delimiter {
+    height: 2em;
+}
+
+.allforums-control td, .allforums-control th {
+    padding: 7px;
+    padding-left: 10px;
+}
+
+.allforums-control tr:not(.delimiter) td {
+    border-bottom: solid 1px #ddd;
+}
+
+.allforums-control tr:last-child td {
+    border-bottom: solid 1px #aaa;
+}
+
+.allforums-control th {
+    font-weight: normal;
+    font-size: smaller;
+    border-bottom: solid 1px #aaa;
+}
+
+.allforums-control td:not(.header-forum):first-child {
+    padding-left: 25px;
+}
+
+.allforums-control .header-forum {
+    background: #f2f2f2;
+}
+
+.allforums-control .header-forum:first-child {
+    font-size: larger;
+}
+
+.allforums-control ul {
+    margin-left: 1.5em;
+    margin-bottom:0;
+    padding: 0;
+    display: block;
+}
+
+.allforums-control li {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    list-style-type: none;
+    font-size:x-small;
+}
+
+.allforums-control li:not(:last-child):after {
+    content: ";";
+    margin-left: 0;
+    margin-right: 0.6em;
+}
+
+.allforums-control td:last-child {
+    font-size: smaller;
+    color: #888;
+}
+
+.allforums + div {
+    margin-top: 2.5em;
+}

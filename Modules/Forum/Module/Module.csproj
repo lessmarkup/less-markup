@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ForumModuleInitializer.cs" />
+    <Compile Include="NodeHandlers\AllForumsNodeHandler.cs" />
     <Compile Include="NodeHandlers\ForumNodeHandler.cs" />
     <Compile Include="NodeHandlers\PostUpdatesNodeHandler.cs" />
     <Compile Include="NodeHandlers\ThreadNodeHandler.cs" />
@@ -91,6 +92,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Extensions\postlist.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\AllForums.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Controllers\allforums.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Forum.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

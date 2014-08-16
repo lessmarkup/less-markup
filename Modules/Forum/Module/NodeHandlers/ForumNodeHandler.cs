@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.Model;
 using LessMarkup.Interfaces;
@@ -17,11 +18,18 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     public class ForumNodeHandler : NewRecordListNodeHandler<ThreadModel>
     {
         private readonly IDomainModelProvider _domainModelProvider;
+        private readonly IDataCache _dataCache;
 
         public ForumNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)
         {
             _domainModelProvider = domainModelProvider;
+            _dataCache = dataCache;
+        }
+
+        protected override string ViewType
+        {
+            get { return "Forum"; }
         }
 
         protected override void AddEditActions()
@@ -43,6 +51,24 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         protected override bool HasChildren
         {
             get { return true; }
+        }
+
+        protected override Dictionary<string, object> GetViewData()
+        {
+            var ret = base.GetViewData();
+
+            var statistics = DependencyResolver.Resolve<AllForumsStatistics>();
+
+            if (ObjectId.HasValue)
+            {
+                statistics.CollectStatistics(ObjectId.Value, typeof(ForumNodeHandler));
+                statistics.OrganizeGroups();
+            }
+
+            ret["Groups"] = statistics.Groups;
+            ret["IsSubForum"] = true;
+
+            return ret;
         }
 
         protected override ChildHandlerSettings GetChildHandler(string path)
@@ -89,9 +115,12 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 throw new UnauthorizedAccessException();
             }
 
-            var threadPath = newObject.CreateThread(ObjectId.Value, Path);
+            var threadPath = newObject.CreateThread(ObjectId.Value);
 
-            var url = string.Format("{0}/{1}", Path, threadPath);
+            var nodeCache = _dataCache.Get<INodeCache>();
+            var node = nodeCache.GetNode(ObjectId.Value);
+
+            var url = string.Format("{0}/{1}", node.FullPath, threadPath);
 
             return ReturnRedirectResult(url);
         }

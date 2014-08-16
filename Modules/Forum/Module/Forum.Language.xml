@@ -26,6 +26,14 @@
     <Translation Id="Created" Text="Created"/>
     <Translation Id="PostUpdatesTooltip" Text="Shows Latest Posts"/>
     <Translation Id="PostUpdatesTitle" Text="Latest Posts"/>
+    <Translation Id="ChildForums" Text="Child forums"/>
+    <Translation Id="Forums" Text="Forums"/>
+    <Translation Id="Statistics" Text="Statistics"/>
+    <Translation Id="ForumIsEmpty" Text="Forum is empty"/>
+    <Translation Id="LastPost" Text="Last Post"/>
+    <Translation Id="LastPostCreated" Text="created"/>
+    <Translation Id="LastPostBy" Text="by"/>
+    <Translation Id="LastPostIn" Text="in"/>
     <!--
     <Translation Id="" Text=""/>
     -->
