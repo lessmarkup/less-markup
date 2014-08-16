@@ -18,11 +18,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _elements.Add(element);
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
-            return new
+            return new Dictionary<string, object>()
             {
-                Elements = _elements
+                { "Elements", _elements }
             };
         }
 

@@ -14,8 +14,8 @@ namespace LessMarkup.Framework.NodeHandlers
         private string _path;
         private object _settings;
         private NodeAccessType _accessType;
-        private List<string> _scripts = new List<string>(); 
-        private List<string> _stylesheets = new List<string>();
+        private readonly List<string> _scripts = new List<string>(); 
+        private readonly List<string> _stylesheets = new List<string>();
 
         public string Path { get { return _path; } }
 
@@ -95,7 +95,7 @@ namespace LessMarkup.Framework.NodeHandlers
 
         #endregion
 
-        protected virtual object GetViewData()
+        protected virtual Dictionary<string, object> GetViewData()
         {
             return null;
         }

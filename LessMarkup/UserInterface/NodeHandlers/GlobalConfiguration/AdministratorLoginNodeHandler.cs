@@ -1,4 +1,5 @@
-﻿using LessMarkup.Engine.Configuration;
+﻿using System.Collections.Generic;
+using LessMarkup.Engine.Configuration;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.System;
@@ -18,7 +19,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             _siteMapper = siteMapper;
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             string adminLoginPage;
 
@@ -32,9 +33,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
                 adminLoginPage = _engineConfiguration.AdminLoginPage;
             }
 
-            return new
+            return new Dictionary<string, object>
             {
-                AdministratorKey = adminLoginPage
+                {
+                    "AdministratorKey",
+                    adminLoginPage
+                }
             };
         }
     }

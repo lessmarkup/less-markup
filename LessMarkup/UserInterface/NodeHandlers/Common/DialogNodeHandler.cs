@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System.Collections.Generic;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
@@ -75,13 +76,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected virtual string ApplyCaption { get { return LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ApplyButton); } }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
-            return new
+            return new Dictionary<string, object>
             {
-                Definition = _definitionModel,
-                Object = LoadObject(),
-                ApplyCaption
+                { "Definition", _definitionModel },
+                { "Object", LoadObject() },
+                { "ApplyCaption", ApplyCaption }
             };
         }
 

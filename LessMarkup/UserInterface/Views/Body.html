@@ -13,7 +13,7 @@
                         <a class="navbar-brand visible-xs" href="{{rootPath}}" ng-click="navigateToView(rootPath)" ng-bind="rootTitle"></a>
                         
                         <div class="visible-xs navbar-notifications">
-                            <a ng-repeat="notification in notifications" href="{{notification.Path}}" ng-click="gotoNotification(notification)">
+                            <a ng-repeat="notification in notifications" href="{{notification.Path}}" ng-click="gotoNotification(notification)" ng-show="notification.Count > 0">
                                 <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
                                 <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
                             </a>
@@ -70,7 +70,7 @@
 
                         <ul class="nav navbar-nav navbar-right">
                             
-                            <li ng-repeat="notification in notifications" class="navbar-notification">
+                            <li ng-repeat="notification in notifications" class="navbar-notification" ng-show="notification.Count > 0">
                                 <a href="{{notification.Path}}" ng-click="gotoNotification(notification)">
                                     <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
                                     <span ng-bind="notification.Title"></span>

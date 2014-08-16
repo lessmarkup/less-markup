@@ -65,7 +65,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 // root
                 node.Path = "";
-                node.FullPath = "";
+                node.FullPath = "/";
             }
             else
             {
@@ -76,7 +76,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                     return;
                 }
 
-                node.FullPath = string.IsNullOrEmpty(node.Parent.FullPath) ? node.Path : node.Parent.FullPath + "/" + node.Path;
+                node.FullPath = node.Parent == RootNode ? ("/" + node.Path) : (node.Parent.FullPath + "/" + node.Path);
             }
 
             _cachedNodes.Add(node);
@@ -184,7 +184,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 {
                     new CachedNodeAccess {AccessType = accessType },
                 },
-                FullPath = path.ToLower(),
+                FullPath = "/" + path.ToLower(),
                 Path = path.ToLower(),
                 HandlerModuleType = moduleType,
                 ParentNodeId = _rootNode.NodeId,

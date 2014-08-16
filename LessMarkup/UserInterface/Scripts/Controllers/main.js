@@ -471,9 +471,6 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             if (!$scope.bindBody) {
                 $timeout(function() {
                     $scope.bindBody(template);
-                    if (!$scope.$$phase) {
-                        $scope.$apply();
-                    }
                 });
             } else {
                 $scope.bindBody(template);

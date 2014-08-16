@@ -96,7 +96,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 FillBreadcrumbs(node.Parent);
             }
 
-            Breadcrumbs.Insert(0, new NodeBreadcrumbModel { Text = node.Title, Url = node.FullPath });
+            Breadcrumbs.Add(new NodeBreadcrumbModel { Text = node.Title, Url = node.FullPath });
         }
 
         public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements)

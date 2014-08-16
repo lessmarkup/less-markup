@@ -146,13 +146,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             get { return true; }
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             var path = ObjectId.HasValue ? _dataCache.Get<INodeCache>().GetNode(ObjectId.Value).FullPath : null;
 
-            return new
+            return new Dictionary<string, object>
             {
-                Groups = _configurationGroups.Select(g => new
+                { "Groups", _configurationGroups.Select(g => new
                 {
                     g.Title,
 
@@ -161,7 +161,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                         Path = path != null ? (path + "/" + h.TypeName) : h.TypeName,
                         Title = LanguageHelper.GetText(h.ModuleType, h.TitleTextId)
                     }).ToList()
-                }).ToList()
+                }).ToList() }
             };
         }
 

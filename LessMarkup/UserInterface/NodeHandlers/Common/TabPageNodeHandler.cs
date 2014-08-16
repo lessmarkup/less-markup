@@ -139,20 +139,20 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return null;
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
-            return new
+            return new Dictionary<string, object>
             {
-                Pages = _pages.Select(p => new
-                {
-                    p.PageId,
-                    Path = p.FullPath,
-                    p.Title,
-                    p.ViewBody,
-                    p.ViewData,
-                    p.UniqueId
-                }),
-                Requires = _scripts
+                { "Pages", _pages.Select(p => new
+                    {
+                        p.PageId,
+                        Path = p.FullPath,
+                        p.Title,
+                        p.ViewBody,
+                        p.ViewData,
+                        p.UniqueId
+                    }) },
+                { "Requires", _scripts }
             };
         }
 

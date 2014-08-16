@@ -169,14 +169,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return null;
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             var settingsModel = GetSettings<FlatPageSettingsModel>();
 
-            return new
+            return new Dictionary<string, object>
             {
-                Tree = _treeRoot.Children,
-                Flat = _flatNodeList.Select(f => new
+                { "Tree", _treeRoot.Children },
+                { "Flat", _flatNodeList.Select(f => new
                 {
                     f.Anchor, 
                     //f.HandlerType, 
@@ -188,9 +188,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     f.UniqueId, 
                     f.ViewBody, 
                     f.ViewData
-                }).ToList(),
-                Position = settingsModel != null ? settingsModel.Position : FlatPagePosition.Right,
-                Scripts = _scripts
+                }).ToList() },
+                { "Position", settingsModel != null ? settingsModel.Position : FlatPagePosition.Right },
+                { "Scripts", _scripts }
             };
         }
 

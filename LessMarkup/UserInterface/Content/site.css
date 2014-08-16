@@ -58,6 +58,15 @@ html, body {
     padding: 0;
 }
 
+.breadcrumb > li + li:before {
+  padding: 0;
+  padding-left: 7px;
+}
+
+.breadcrumb > li + li:last-child:before {
+  padding: 0 3px;
+}
+
 .navbar-brand {
     margin-left: 0;
     padding-left: 0;
@@ -328,6 +337,6 @@ li.navbar-notification a:hover span.badge {
     background: #000;
 }
 
-.active-notification {
-    background: #428bca;
+span.badge.active-notification {
+    background: #428bca !important;
 }

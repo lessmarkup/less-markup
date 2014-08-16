@@ -74,7 +74,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 : domainModel.GetSiteCollection<Node>();
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
 
@@ -125,15 +125,15 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 }
             }
 
-            return new
+            return new Dictionary<string, object>
             {
-                Nodes = nodes,
-                NodeSettingsModelId = modelCache.GetDefinition(typeof(NodeSettingsModel)).Id,
-                NodeHandlers = _moduleIntegration.GetNodeHandlers().Select(id => new { Id = id, Handler = _moduleIntegration.GetNodeHandler(id )}).Select(h => new
+                { "Nodes", nodes },
+                { "NodeSettingsModelId", modelCache.GetDefinition(typeof(NodeSettingsModel)).Id },
+                { "NodeHandlers", _moduleIntegration.GetNodeHandlers().Select(id => new { Id = id, Handler = _moduleIntegration.GetNodeHandler(id )}).Select(h => new
                 {
                     h.Id,
                     Name = GetHandlerName(h.Handler.Item1, h.Handler.Item2),
-                })
+                })}
             };
         }
 

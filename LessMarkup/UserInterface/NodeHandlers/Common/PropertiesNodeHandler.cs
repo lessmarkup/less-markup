@@ -29,7 +29,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             get { return "Properties"; }
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             var moduleConfiguration = _moduleProvider.Modules.First(m => m.Assembly == GetType().Assembly);
 
@@ -54,7 +54,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 properties.Add(Tuple.Create(LanguageHelper.GetText(moduleConfiguration.ModuleType, item.Item2), property.GetValue(this).ToString()));
             }
 
-            return properties.Select(p => new { name = p.Item1, value = p.Item2 }).ToList();
+            return new Dictionary<string, object>()
+            {
+                {"Properties", properties.Select(p => new {name = p.Item1, value = p.Item2}).ToList()}
+            };
         }
     }
 }

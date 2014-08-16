@@ -133,7 +133,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             _cellLinks.Add(new CellLink { Text = text, Link = link });
         }
 
-        protected override object GetViewData()
+        protected override Dictionary<string, object> GetViewData()
         {
             var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;
@@ -164,18 +164,18 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             {
                 var recordIds = GetCollection().ReadIds(domainModel, null, false);
 
-                var data = new
+                var data = new Dictionary<string, object>
                 {
-                    Editable = _editableCollection != null,
-                    DeleteOnly = _editableCollection != null && _editableCollection.DeleteOnly,
-                    PerPage = recordsPerPage,
-                    Type = definition.Id,
-                    RecordIds = recordIds.ToList(),
-                    Live = true,
-                    RecordId = _idProperty.Name,
-                    RefreshOnAllActions,
-                    Actions = recordsActions.Select(a => new { Name = a.Item1, Action = a.Item2}).ToList(),
-                    Columns = _recordModel.Columns.Select(c => new
+                    { "Editable", _editableCollection != null },
+                    { "DeleteOnly", _editableCollection != null && _editableCollection.DeleteOnly },
+                    { "PerPage", recordsPerPage },
+                    { "Type", definition.Id },
+                    { "RecordIds", recordIds.ToList() },
+                    { "Live", true },
+                    { "RecordId", _idProperty.Name },
+                    { "RefreshOnAllActions", RefreshOnAllActions },
+                    { "Actions", recordsActions.Select(a => new { Name = a.Item1, Action = a.Item2}).ToList() },
+                    { "Columns", _recordModel.Columns.Select(c => new
                     {
                         width = GetColumnWidth(c),
                         field = c.Property.Name,
@@ -191,10 +191,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         cellTemplate = c.CellTemplate,
                         cellFilter = GetCellFilter(c),
                         scope = c.Scope
-                    }).ToList(),
-                    CellCommands = _cellButtons,
-                    CellLinks = _cellLinks,
-                    ColumnsResizable = true
+                    }).ToList() },
+                    { "CellCommands", _cellButtons },
+                    { "CellLinks", _cellLinks },
+                    { "ColumnsResizable", true }
                 };
 
                 return data;
