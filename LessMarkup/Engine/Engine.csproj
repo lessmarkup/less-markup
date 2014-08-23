@@ -289,8 +289,8 @@
     <Compile Include="Email\MailTemplateProvider.cs" />
     <Compile Include="Structure\RecordModelCache.cs" />
     <Compile Include="Structure\RecordModelDefinition.cs" />
+    <Compile Include="Structure\SitePropertiesModel.cs" />
     <Compile Include="TextAndSearch\FormattedText.cs" />
-    <Compile Include="Helpers\ImageUploader.cs" />
     <Compile Include="TextAndSearch\ITextTagHandler.cs" />
     <Compile Include="Language\CachedLanguage.cs" />
     <Compile Include="Language\CachedTranslation.cs" />

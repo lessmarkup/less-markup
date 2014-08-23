@@ -54,7 +54,7 @@
                                 </ul>
                             </li>
 
-                            <li ng-repeat="menu in topMenu">
+                            <li ng-repeat="menu in topMenu" ng-style="{ active: path === menu.Url }">
                                 <a href="{{menu.Url}}" ng-click="navigateToView(menu.Url)" ng-bind="menu.Title"></a>
                             </li>
                         </ul>

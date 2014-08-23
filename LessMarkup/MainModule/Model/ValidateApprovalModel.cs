@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using LessMarkup.DataFramework;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -71,7 +71,7 @@ namespace LessMarkup.MainModule.Model
                 {
                     _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.ConfirmUserApproval, new SuccessfulApprovalModel
                     {
-                        SiteName = _dataCache.Get<SiteConfigurationCache>().SiteName
+                        SiteName = _dataCache.Get<ISiteConfiguration>().SiteName
                     });
                 }
             }

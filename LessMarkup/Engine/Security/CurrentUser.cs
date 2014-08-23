@@ -13,7 +13,6 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.DataObjects.User;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Logging;
@@ -23,6 +22,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
+using Newtonsoft.Json;
 
 namespace LessMarkup.Engine.Security
 {
@@ -120,7 +120,7 @@ namespace LessMarkup.Engine.Security
             {
                 var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-                if (!contextUser.IsAdministrator && (!_siteMapper.SiteId.HasValue || !dataCache.Get<SiteConfigurationCache>().HasUsers))
+                if (!contextUser.IsAdministrator && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
                 {
                     this.LogDebug("Users functionality is disabled");
                     contextUser = null;
@@ -155,6 +155,19 @@ namespace LessMarkup.Engine.Security
             {
                 var user = GetCurrentUser();
                 return user == null ? null : user.Groups;
+            }
+        }
+
+        public IReadOnlyDictionary<string, string> Properties
+        {
+            get
+            {
+                var user = GetCurrentUser();
+                if (user == null || string.IsNullOrWhiteSpace(user.Properties))
+                {
+                    return null;
+                }
+                return JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties).ToDictionary(v => v.Key, v => v.Value != null ? v.Value.ToString() : "");
             }
         }
 
@@ -294,7 +307,7 @@ namespace LessMarkup.Engine.Security
                 return null;
             }
 
-            if (!currentUser.IsAdministrator && !dataCache.Get<SiteConfigurationCache>().HasUsers)
+            if (!currentUser.IsAdministrator && !dataCache.Get<ISiteConfiguration>().HasUsers)
             {
                 this.LogDebug("Users functionality is disabled");
                 return null;
@@ -339,6 +352,7 @@ namespace LessMarkup.Engine.Security
                 IsValidated = currentUser.IsValidated,
                 IsApproved = currentUser.IsApproved,
                 UserId = userId,
+                Properties = currentUser.Properties,
             };
         }
 
@@ -372,13 +386,13 @@ namespace LessMarkup.Engine.Security
             return true;
         }
 
-        public bool LoginUserWithOAuth(string provider, string providerUserId, bool savePassword, bool allowAdmin, bool allowRegular, string address)
+        public bool LoginWithOAuth(string provider, string providerUserId, bool savePassword, bool allowAdmin, bool allowRegular, string address)
         {
             this.LogDebug("Validating OAuth user");
 
             var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<SiteConfigurationCache>().HasUsers))
+            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
             {
                 this.LogDebug("Users functionality is disabled");
                 return false;
@@ -450,13 +464,13 @@ namespace LessMarkup.Engine.Security
             return true;
         }
 
-        public bool LoginUserWithPassword(string email, string password, bool savePassword, bool allowAdmin, bool allowRegular, string address, string encodedPassword)
+        public bool LoginWithPassword(string email, string password, bool savePassword, bool allowAdmin, bool allowRegular, string address, string encodedPassword)
         {
             this.LogDebug("Validating user '" + email + "'");
 
             var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<SiteConfigurationCache>().HasUsers))
+            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
             {
                 this.LogDebug("Users functionality is disabled");
                 return false;

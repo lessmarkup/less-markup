@@ -10,6 +10,7 @@ namespace LessMarkup.Engine.Security
     {
         public long UserId { get; set; }
         public string Email { get; set; }
+        public string Properties { get; set; }
         public IReadOnlyList<long> Groups { get; set; }
         public bool IsAdministrator { get; set; }
         public bool IsApproved { get; set; }

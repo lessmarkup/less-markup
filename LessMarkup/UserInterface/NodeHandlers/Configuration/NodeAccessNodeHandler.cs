@@ -5,7 +5,7 @@
 using System;
 using System.Data.Entity.SqlServer;
 using System.Linq;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -59,7 +59,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     {
                         throw new NullReferenceException();
                     }
-                    return domainModel.GetCollection<DataObjects.User.User>().Where(u => u.SiteId == siteId.Value && (SqlFunctions.PatIndex(searchText, u.Name) > 0 || SqlFunctions.PatIndex(searchText, u.Email) > 0)).Select(u => u.Email);
+                    return domainModel.GetCollection<DataObjects.Security.User>().Where(u => u.SiteId == siteId.Value && (SqlFunctions.PatIndex(searchText, u.Name) > 0 || SqlFunctions.PatIndex(searchText, u.Email) > 0)).Select(u => u.Email);
                 case "Group":
                     return domainModel.GetSiteCollection<UserGroup>(_siteId).Where(g => SqlFunctions.PatIndex(searchText, g.Name) > 0).Select(g => g.Name);
                 default:

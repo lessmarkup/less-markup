@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
@@ -113,9 +112,15 @@ namespace LessMarkup.UserInterface.Model.Structure
             bool hasSearch = false;
             bool hasTree = false;
 
+            var menuNodes = nodeCache.Nodes.Where(n => n.AddToMenu && n.Visible).Select(n => new MenuItemModel
+            {
+                Title = n.Title,
+                Url = n.FullPath
+            }).ToList();
+
             if (_siteMapper.SiteId.HasValue)
             {
-                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
                 var adminLoginPage = siteConfiguration.AdminLoginPage;
                 if (string.IsNullOrWhiteSpace(adminLoginPage))
                 {
@@ -202,13 +207,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 HasLogin = hasLogin,
                 HasSearch = hasSearch,
                 ShowConfiguration = _currentUser.IsAdministrator,
-                ConfigurationPath = Constants.NodePath.Configuration,
-                ProfilePath = Constants.NodePath.Profile,
+                ConfigurationPath = "/" + Constants.NodePath.Configuration,
+                ProfilePath = "/" + Constants.NodePath.Profile,
                 UserLoggedIn = _currentUser.UserId.HasValue,
                 UserNotVerified = !_currentUser.IsValidated || !_currentUser.IsApproved,
                 UserName = _currentUser.Email ?? "",
                 NavigationTree = navigationTree,
-                TopMenu = new List<MenuItemModel>(),
+                TopMenu = menuNodes,
                 ViewData = viewData,
                 NodeLoadError = nodeLoadError,
                 Notifications = notifications,

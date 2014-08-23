@@ -74,60 +74,93 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 : domainModel.GetSiteCollection<Node>();
         }
 
-        protected override Dictionary<string, object> GetViewData()
+        private NodeSettingsModel GetRootNode()
         {
+            NodeSettingsModel rootNode;
             var modelCache = _dataCache.Get<IRecordModelCache>();
-
             var nodes = new List<NodeSettingsModel>();
+            var nodeIds = new Dictionary<long, NodeSettingsModel>();
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var previousLevel = -1;
-
                 foreach (var source in GetNodeCollection(domainModel).Select(n => new
                 {
                     n.Enabled,
                     n.HandlerId,
-                    n.Level,
-                    n.Order,
+                    n.ParentId,
                     n.Id,
                     n.Path,
                     n.Settings,
-                    n.Title
+                    n.Title,
+                    n.Order
                 }).OrderBy(n => n.Order))
                 {
                     var node = DependencyResolver.Resolve<NodeSettingsModel>();
 
-                    var handler = source.HandlerId != null ? (INodeHandler) DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(source.HandlerId).Item1) : null;
+                    var handler = source.HandlerId != null ? (INodeHandler)DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(source.HandlerId).Item1) : null;
 
-                    node.Level = source.Level;
+                    node.ParentId = source.ParentId;
                     node.Enabled = source.Enabled;
                     node.HandlerId = source.HandlerId;
                     node.NodeId = source.Id;
+                    node.Order = source.Order;
                     node.Settings = string.IsNullOrWhiteSpace(source.Settings) ? null : JsonConvert.DeserializeObject(source.Settings);
                     node.Title = source.Title;
                     node.SettingsModelId = (handler != null && handler.SettingsModel != null) ? modelCache.GetDefinition(handler.SettingsModel).Id : null;
                     node.Path = source.Path;
                     node.Customizable = !string.IsNullOrWhiteSpace(node.SettingsModelId);
 
-                    if (previousLevel > node.Level)
+                    nodes.Add(node);
+                    nodeIds[node.NodeId] = node;
+                }
+
+                var changedNodes = new HashSet<long>();
+
+                foreach (var node in nodes)
+                {
+                    if (!node.ParentId.HasValue)
                     {
-                        previousLevel--;
-                        node.Level = previousLevel;
-                    }
-                    else if (previousLevel < node.Level)
-                    {
-                        previousLevel++;
-                        node.Level = previousLevel;
+                        continue;
                     }
 
-                    nodes.Add(node);
+                    NodeSettingsModel parent;
+                    if (!nodeIds.TryGetValue(node.ParentId.Value, out parent))
+                    {
+                        node.ParentId = null;
+                        var record = GetNodeCollection(domainModel).First(n => n.Id == node.NodeId);
+                        record.ParentId = null;
+                        changedNodes.Add(node.NodeId);
+                    }
+                    else
+                    {
+                        parent.Children.Add(node);
+                    }
+                }
+
+                rootNode = nodes.FirstOrDefault(n => !n.ParentId.HasValue);
+
+                NormalizeTree(nodes, rootNode, domainModel, changedNodes);
+
+                if (changedNodes.Count > 0)
+                {
+                    foreach (var nodeId in changedNodes)
+                    {
+                        _changeTracker.AddChange<Node>(nodeId, EntityChangeType.Updated, domainModel);
+                    }
+                    domainModel.SaveChanges();
                 }
             }
 
+            return rootNode;
+        }
+
+        protected override Dictionary<string, object> GetViewData()
+        {
+            var modelCache = _dataCache.Get<IRecordModelCache>();
+
             return new Dictionary<string, object>
             {
-                { "Nodes", nodes },
+                { "Root", GetRootNode() },
                 { "NodeSettingsModelId", modelCache.GetDefinition(typeof(NodeSettingsModel)).Id },
                 { "NodeHandlers", _moduleIntegration.GetNodeHandlers().Select(id => new { Id = id, Handler = _moduleIntegration.GetNodeHandler(id )}).Select(h => new
                 {
@@ -137,22 +170,135 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             };
         }
 
-        public object UpdateLayout(List<LayoutInfo> layout)
+        private void NormalizeTree(List<NodeSettingsModel> nodes, NodeSettingsModel rootNode, IDomainModel domainModel, HashSet<long> changedNodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.Children.Sort((n1, n2) => n1.Order.CompareTo(n2.Order));
+            }
+
+            if (rootNode != null)
+            {
+                foreach (var node in nodes.Where(n => n.NodeId != rootNode.NodeId && !n.ParentId.HasValue))
+                {
+                    rootNode.Children.Add(node);
+                    node.ParentId = rootNode.NodeId;
+                    var record = GetNodeCollection(domainModel).First(n => n.Id == node.NodeId);
+                    record.ParentId = node.ParentId;
+                    changedNodes.Add(node.NodeId);
+                }
+            }
+
+            foreach (var node in nodes)
+            {
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    var child = node.Children[i];
+
+                    if (child.Order != i)
+                    {
+                        child.Order = i;
+                        var record = GetNodeCollection(domainModel).First(n => n.Id == child.NodeId);
+                        record.Order = i;
+                        changedNodes.Add(record.Id);
+                    }
+                }
+            }
+        }
+
+        public object UpdateParent(long nodeId, long? parentId, int order)
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var nodes = GetNodeCollection(domainModel).ToDictionary(k => k.Id);
+                var node = GetNodeCollection(domainModel).First(n => n.Id == nodeId);
 
-                for (int i = 0; i < layout.Count; i++)
+                var changedNodes = new HashSet<long>();
+
+                if (node.ParentId.HasValue != parentId.HasValue) // we exchange root node and specified node
                 {
-                    var node = nodes[layout[i].NodeId];
+                    Node newRootNode;
+                    Node oldRootNode;
 
-                    if (node.Order != i || node.Level != layout[i].Level)
+                    if (node.ParentId.HasValue)
                     {
-                        node.Order = i;
-                        node.Level = layout[i].Level;
-                        _changeTracker.AddChange(node, EntityChangeType.Updated, domainModel);
+                        newRootNode = node;
+                        oldRootNode = GetNodeCollection(domainModel).First(n => !n.ParentId.HasValue);
                     }
+                    else
+                    {
+                        oldRootNode = node;
+                        newRootNode = GetNodeCollection(domainModel).First(n => n.Id == parentId.Value);
+                    }
+
+                    if (!newRootNode.ParentId.HasValue)
+                    {
+                        throw new Exception("Cannot have two root nodes");
+                    }
+
+                    foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == newRootNode.ParentId.Value && n.Order > newRootNode.Order))
+                    {
+                        neighbor.Order--;
+                        changedNodes.Add(neighbor.Id);
+                    }
+
+                    newRootNode.Order = 0;
+                    newRootNode.ParentId = null;
+                    changedNodes.Add(newRootNode.Id);
+
+                    foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == newRootNode.Id && n.Order >= 0 && n.Id != nodeId))
+                    {
+                        neighbor.Order++;
+                        changedNodes.Add(neighbor.Id);
+                    }
+
+                    oldRootNode.Order = 0;
+                    oldRootNode.ParentId = newRootNode.Id;
+                    changedNodes.Add(oldRootNode.Id);
+                }
+                else if (node.ParentId.HasValue)
+                {
+                    if (node.ParentId == parentId)
+                    {
+                        if (order > node.Order)
+                        {
+                            foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == parentId && n.Id != nodeId && n.Order > node.Order && n.Order <= order))
+                            {
+                                neighbor.Order--;
+                                changedNodes.Add(neighbor.Id);
+                            }
+                        }
+                        else if (order < node.Order)
+                        {
+                            foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == parentId && n.Id != nodeId && n.Order >= order && n.Order < node.Order))
+                            {
+                                neighbor.Order++;
+                                changedNodes.Add(neighbor.Id);
+                            }
+                        }
+                    }
+                    else
+                    { 
+                        foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == node.ParentId && n.Order > node.Order && n.Id != nodeId))
+                        {
+                            neighbor.Order--;
+                            changedNodes.Add(neighbor.Id);
+                        }
+
+                        foreach (var neighbor in GetNodeCollection(domainModel).Where(n => n.ParentId == parentId && n.Order >= order && n.Id != nodeId))
+                        {
+                            neighbor.Order++;
+                            changedNodes.Add(neighbor.Id);
+                        }
+                    }
+                }
+
+                node.ParentId = parentId;
+                node.Order = order;
+                changedNodes.Add(nodeId);
+
+                foreach (var id in changedNodes)
+                {
+                    _changeTracker.AddChange<Node>(id, EntityChangeType.Updated, domainModel);
                 }
 
                 _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
@@ -160,7 +306,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 domainModel.CompleteTransaction();
             }
 
-            return null;
+            return new
+            {
+                Root = GetRootNode()
+            };
         }
 
         public object CreateNode(NodeSettingsModel node)
@@ -175,7 +324,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 {
                     Enabled = node.Enabled,
                     HandlerId = node.HandlerId,
-                    Level = node.Level,
+                    ParentId = node.ParentId,
                     Order = node.Order,
                     Path = node.Path,
                     Settings = node.Settings != null ? JsonConvert.SerializeObject(node.Settings) : null,
@@ -204,17 +353,17 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             }
         }
 
-        public object DeleteNodes(List<long> ids)
+        public object DeleteNode(long id)
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                foreach (var node in GetNodeCollection(domainModel).Where(p => ids.Contains(p.Id)))
-                {
-                    GetNodeCollection(domainModel).Remove(node);
-                    _changeTracker.AddChange(node, EntityChangeType.Removed, domainModel);
-                }
+                var node = GetNodeCollection(domainModel).First(n => n.Id == id);
+                var parentId = node.ParentId;
+                GetNodeCollection(domainModel).Remove(node);
+                _changeTracker.AddChange(node, EntityChangeType.Removed, domainModel);
+                domainModel.SaveChanges();
 
-                var nodes = domainModel.GetSiteCollection<Node>(SiteId).Where(p => !ids.Contains(p.Id)).OrderBy(p => p.Order).ToList();
+                var nodes = GetNodeCollection(domainModel).Where(p => p.ParentId == parentId).OrderBy(p => p.Order).ToList();
 
                 for (int i = 0; i < nodes.Count; i++)
                 {
@@ -245,8 +394,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 var record = GetNodeCollection(domainModel).Single(p => p.Id == node.NodeId);
 
                 record.Title = node.Title;
-                record.Level = node.Level;
-                record.Order = node.Order;
+                record.ParentId = node.ParentId;
                 record.Path = node.Path;
                 record.Enabled = node.Enabled;
 

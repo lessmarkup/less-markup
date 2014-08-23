@@ -27,9 +27,9 @@ namespace LessMarkup.UserInterface.Model.Structure
             _currentUser = currentUser;
         }
 
-        public object HandleRequest(Dictionary<string, string> data, System.Web.Mvc.Controller controller)
+        public object HandleRequest(Dictionary<string, object> data, System.Web.Mvc.Controller controller)
         {
-            var path = data["-path-"];
+            var path = data["-path-"].ToString();
 
             var nodeCache = _dataCache.Get<INodeCache>();
 
@@ -79,7 +79,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var handlerType = handler.GetType();
 
-            var actionName = data["-action-"];
+            var actionName = data["-action-"].ToString();
 
             var method = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
@@ -110,9 +110,9 @@ namespace LessMarkup.UserInterface.Model.Structure
                 var parameterName = parameters[i].Name.ToLower();
                 var parameterType = parameters[i].ParameterType;
 
-                string parameterText;
+                object parameter;
 
-                if (!dataLowered.TryGetValue(parameterName, out parameterText))
+                if (!dataLowered.TryGetValue(parameterName, out parameter))
                 {
                     if (parameterName == "settings")
                     {
@@ -133,15 +133,15 @@ namespace LessMarkup.UserInterface.Model.Structure
                         }
 
                     }
-                    else if (parameterName.StartsWith("raw") && parameterType == typeof(string) && dataLowered.TryGetValue(parameterName.Remove(0, 3), out parameterText))
+                    else if (parameterName.StartsWith("raw") && parameterType == typeof(string) && dataLowered.TryGetValue(parameterName.Remove(0, 3), out parameter))
                     {
-                        arguments[i] = parameterText;
+                        arguments[i] = parameter != null ? JsonConvert.SerializeObject(parameter) : null;
                     }
 
                     continue;
                 }
 
-                arguments[i] = JsonHelper.ResolveAndDeserializeObject(parameterText, parameterType);
+                arguments[i] = JsonHelper.ResolveAndDeserializeObject(JsonConvert.SerializeObject(parameter), parameterType);
             }
 
             return method.Invoke(handler, arguments);

@@ -8,8 +8,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web.Mail;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.DataObjects.User;
-using LessMarkup.Engine.Configuration;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -40,7 +39,7 @@ namespace LessMarkup.Engine.Email
         {
             get
             {
-                var ret = _dataCache.Get<SiteConfigurationCache>().NoReplyEmail;
+                var ret = _dataCache.Get<ISiteConfiguration>().NoReplyEmail;
                 if (string.IsNullOrWhiteSpace(ret))
                 {
                     ret = _engineConfiguration.NoReplyEmail;
@@ -57,7 +56,7 @@ namespace LessMarkup.Engine.Email
         {
             get
             {
-                var ret = _dataCache.Get<SiteConfigurationCache>().NoReplyName;
+                var ret = _dataCache.Get<ISiteConfiguration>().NoReplyName;
                 if (string.IsNullOrWhiteSpace(ret))
                 {
                     ret = _engineConfiguration.NoReplyName;

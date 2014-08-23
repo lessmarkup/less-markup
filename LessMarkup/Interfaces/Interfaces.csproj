@@ -98,7 +98,6 @@
     <Compile Include="Data\Site.cs" />
     <Compile Include="Data\SiteDataObject.cs" />
     <Compile Include="Data\SiteModule.cs" />
-    <Compile Include="Data\SiteProperty.cs" />
     <Compile Include="DependencyResolver.cs" />
     <Compile Include="Exceptions\CompileException.cs" />
     <Compile Include="Exceptions\ExtendedMessageException.cs" />
@@ -143,6 +142,7 @@
     <Compile Include="Structure\ConfigurationHandlerAttribute.cs" />
     <Compile Include="Structure\INodeHandler.cs" />
     <Compile Include="Structure\RecordActionAttribute.cs" />
+    <Compile Include="System\ISiteConfiguration.cs" />
     <Compile Include="System\IUserCache.cs" />
     <Compile Include="Text\TranslationAttribute.cs" />
     <Compile Include="Module\IActionUrlHelper.cs" />

@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
@@ -29,6 +29,7 @@ namespace LessMarkup.Engine.Security
         public bool IsBlocked { get; private set; }
         public DateTime? UnblockTime { get; private set; }
         public long? SiteId { get; private set; }
+        public string Properties { get; private set; }
         public string Name { get; private set; }
 
         public UserCache(IDomainModelProvider domainModelProvider)
@@ -61,6 +62,7 @@ namespace LessMarkup.Engine.Security
                         u.IsBlocked,
                         u.UnblockTime,
                         u.IsApproved,
+                        u.Properties,
                         Groups = u.Groups.Select(g => g.UserGroupId)
 
                     }).FirstOrDefault();
@@ -88,6 +90,7 @@ namespace LessMarkup.Engine.Security
                 IsBlocked = user.IsBlocked;
                 IsApproved = user.IsApproved;
                 UnblockTime = user.UnblockTime;
+                Properties = user.Properties;
                 Name = user.Name;
 
                 if (IsBlocked && UnblockTime.HasValue && UnblockTime.Value < DateTime.UtcNow)

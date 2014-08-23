@@ -16,16 +16,18 @@ namespace LessMarkup.Interfaces.Structure
         int Order { get; }
         int Level { get; }
         string Title { get; }
+        string Description { get; set; }
         string HandlerId { get; }
         ICachedNodeInformation Parent { get; }
         List<CachedNodeAccess> AccessList { get; }
-        IEnumerable<ICachedNodeInformation> Children { get; }
+        IReadOnlyList<ICachedNodeInformation> Children { get; }
         string FullPath { get; }
         Type HandlerType { get; }
         string HandlerModuleType { get; }
         string Settings { get; }
         ICachedNodeInformation Root { get; }
         bool Visible { get; }
+        bool AddToMenu { get; }
         bool LoggedIn { get; }
         NodeAccessType? CheckRights(ICurrentUser currentUser);
     }

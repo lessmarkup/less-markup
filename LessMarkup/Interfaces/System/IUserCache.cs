@@ -18,5 +18,6 @@ namespace LessMarkup.Interfaces.System
         bool IsBlocked { get; }
         DateTime? UnblockTime { get; }
         long? SiteId { get; }
+        string Properties { get; }
     }
 }

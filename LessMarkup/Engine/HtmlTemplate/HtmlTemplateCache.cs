@@ -98,12 +98,12 @@ namespace LessMarkup.Engine.HtmlTemplate
 
         private string GetPropertyValue(string name)
         {
-            var property = typeof(SiteConfigurationCache).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var property = typeof(ISiteConfiguration).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .FirstOrDefault(p => string.Compare(p.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             if (property != null)
             {
-                return property.GetValue(_dataCache.Get<SiteConfigurationCache>()).ToString();
+                return property.GetValue(_dataCache.Get<ISiteConfiguration>()).ToString();
             }
 
             property = typeof(EngineConfiguration).GetProperties(BindingFlags.Public | BindingFlags.Instance)

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace LessMarkup.Interfaces.RecordModel
@@ -34,6 +35,15 @@ namespace LessMarkup.Interfaces.RecordModel
             Width = configuration.Width;
             Property = property.Name;
             DefaultValue = configuration.DefaultValue;
+
+            if (DefaultValue == null)
+            {
+                var defaultAttribute = property.GetCustomAttribute<DefaultValueAttribute>();
+                if (defaultAttribute != null)
+                {
+                    DefaultValue = defaultAttribute.Value;
+                }
+            }
 
             if (Type == InputFieldType.Select || Type == InputFieldType.SelectText || Type == InputFieldType.MultiSelect)
             {

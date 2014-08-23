@@ -36,10 +36,10 @@ namespace LessMarkup.UserInterface.Model.User
             _engineConfiguration = engineConfiguration;
         }
 
-        public object HandleStage1Request(Dictionary<string, string> data)
+        public object HandleStage1Request(Dictionary<string, object> data)
         {
             Thread.Sleep(new Random(Environment.TickCount).Next(30));
-            var loginHash = _currentUser.LoginHash(data["user"]);
+            var loginHash = _currentUser.LoginHash(data["user"].ToString());
 
             return new
             {
@@ -48,24 +48,30 @@ namespace LessMarkup.UserInterface.Model.User
             };
         }
 
-        public object HandleStage2Request(Dictionary<string, string> data)
+        public object HandleStage2Request(Dictionary<string, object> data)
         {
-            var userName = data["user"];
-            var passwordHash = data["hash"];
-            var savePassword = data["remember"];
+            var email = data["user"].ToString();
+            var passwordHash = data["hash"].ToString();
+            var savePassword = data["remember"].ToString();
 
             string administratorKey;
 
-            if (!data.TryGetValue("administratorKey", out administratorKey))
+            object temp;
+
+            if (!data.TryGetValue("administratorKey", out temp))
             {
                 administratorKey = "";
+            }
+            else
+            {
+                administratorKey = temp != null ? temp.ToString() : null;
             }
 
             string adminLoginPage;
 
             if (_siteMapper.SiteId.HasValue)
             {
-                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
                 adminLoginPage = siteConfiguration.AdminLoginPage;
             }
             else
@@ -73,11 +79,11 @@ namespace LessMarkup.UserInterface.Model.User
                 adminLoginPage = _engineConfiguration.AdminLoginPage;
             }
 
-            bool allowAdministrator = string.IsNullOrWhiteSpace(adminLoginPage) || administratorKey == adminLoginPage;
+            var allowAdministrator = string.IsNullOrWhiteSpace(adminLoginPage) || administratorKey == adminLoginPage;
 
-            bool allowUser = string.IsNullOrWhiteSpace(adminLoginPage);
+            var allowUser = string.IsNullOrWhiteSpace(adminLoginPage);
 
-            if (!_currentUser.LoginUserWithPassword(userName, "", savePassword != null && savePassword == true.ToString(), allowAdministrator, allowUser,
+            if (!_currentUser.LoginWithPassword(email, "", savePassword != null && savePassword == true.ToString(), allowAdministrator, allowUser,
                 HttpContext.Current.Request.UserHostAddress, passwordHash))
             {
                 throw new UnauthorizedAccessException("User not found or wrong password");

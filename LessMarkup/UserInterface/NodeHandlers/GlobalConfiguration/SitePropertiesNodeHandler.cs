@@ -1,20 +1,21 @@
-﻿using LessMarkup.Engine.Configuration;
+﻿using LessMarkup.Engine.Structure;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.SiteProperties)]
-    public class SitePropertiesNodeHandler : DialogNodeHandler<SiteConfigurationCache>
+    public class SitePropertiesNodeHandler : DialogNodeHandler<SitePropertiesModel>
     {
-        protected override SiteConfigurationCache LoadObject()
+        protected override SitePropertiesModel LoadObject()
         {
-            var cache = Interfaces.DependencyResolver.Resolve<SiteConfigurationCache>();
-            cache.Initialize(ObjectId);
-            return cache;
+            var model = DependencyResolver.Resolve<SitePropertiesModel>();
+            model.Initialize(ObjectId);
+            return model;
         }
 
-        protected override string SaveObject(SiteConfigurationCache changedObject)
+        protected override string SaveObject(SitePropertiesModel changedObject)
         {
             changedObject.Save(ObjectId);
             return null;

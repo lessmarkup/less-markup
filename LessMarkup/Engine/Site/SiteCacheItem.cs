@@ -13,6 +13,6 @@ namespace LessMarkup.Engine.Site
         public string Title { get; set; }
         public bool Enabled { get; set; }
         public HashSet<string> ModuleTypes { get; set; }
-        public Dictionary<string, string> Properties { get; set; }
+        public string Properties { get; set; }
     }
 }

@@ -211,6 +211,10 @@ button:not(.btn)[disabled=disabled] {
     height: auto;
 }
 
+#navbar-menu > li.active {
+    background: #ddd;
+}
+
 .dropdown-menu > li > ul > li {
     list-style-type: none;
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -31,7 +31,7 @@ namespace LessMarkup.MainModule.Model
 
         public void ValidateSecret(string secret, UrlHelper urlHelper)
         {
-            ApproveRequired = _dataCache.Get<SiteConfigurationCache>().AdminApproveNewUsers;
+            ApproveRequired = _dataCache.Get<ISiteConfiguration>().AdminApproveNewUsers;
 
             if (string.IsNullOrWhiteSpace(secret))
             {

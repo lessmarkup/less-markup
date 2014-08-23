@@ -7,13 +7,11 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.Engine.Configuration;
-using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
-using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Engine.Helpers
+namespace LessMarkup.Framework.Helpers
 {
     public static class ImageUploader
     {
@@ -113,13 +111,11 @@ namespace LessMarkup.Engine.Helpers
             domainModel.GetSiteCollection<Image>().Remove(image);
         }
 
-        public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, ICurrentUser currentUser, IDataCache dataCache)
+        public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
         {
-            var configurationCache = dataCache.Get<SiteConfigurationCache>();
-
-            if (file.File.Length > configurationCache.MaximumImageSize)
+            if (file.File.Length > siteConfiguration.MaximumImageSize)
             {
-                throw new Exception(string.Format("Image size is bigger than allowed ({0})", configurationCache.MaximumImageSize));
+                throw new Exception(string.Format("Image size is bigger than allowed ({0})", siteConfiguration.MaximumImageSize));
             }
 
             byte[] imageBytes;
@@ -138,7 +134,7 @@ namespace LessMarkup.Engine.Helpers
                         imageHeight = imageData.Height;
                     }
 
-                    using (var thumbnail = imageData.GetThumbnailImage(configurationCache.ThumbnailWidth, configurationCache.ThumbnailHeight, () => false, IntPtr.Zero))
+                    using (var thumbnail = imageData.GetThumbnailImage(siteConfiguration.ThumbnailWidth, siteConfiguration.ThumbnailHeight, () => false, IntPtr.Zero))
                     {
                         using (var stream = new MemoryStream())
                         {
@@ -172,7 +168,7 @@ namespace LessMarkup.Engine.Helpers
             image.Height = imageHeight;
             image.FileName = file.Name;
             image.ImageType = ImageType.Png;
-            image.UserId = currentUser.UserId;
+            image.UserId = userId;
             image.Data = imageBytes;
             image.Thumbnail = thumbnailBytes;
 

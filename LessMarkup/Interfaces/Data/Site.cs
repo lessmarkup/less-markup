@@ -14,8 +14,8 @@ namespace LessMarkup.Interfaces.Data
         public string Host { get; set; }
         public bool Enabled { get; set; }
         public DateTime Created { get; set; }
+        public string Properties { get; set; }
 
-        public List<SiteProperty> Properties { get; set; }
         public List<SiteModule> Modules { get; set; }
     }
 }

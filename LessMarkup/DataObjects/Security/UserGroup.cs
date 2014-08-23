@@ -2,17 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System.Collections.Generic;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.DataObjects.User
+namespace LessMarkup.DataObjects.Security
 {
-    public class UserPropertyDefinition : SiteDataObject
+    public class UserGroup : SiteDataObject
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public UserPropertyType Type { get; set; }
-        public bool IsRequired { get; set; }
-        public bool VisibleInPosts { get; set; }
-        public int Order { get; set; }
+
+        public List<UserGroupMembership> Memberships { get; set; }
     }
 }

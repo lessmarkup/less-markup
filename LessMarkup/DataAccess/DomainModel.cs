@@ -8,7 +8,6 @@ using LessMarkup.DataObjects.Gallery;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Statistics;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataAccess
@@ -30,9 +29,6 @@ namespace LessMarkup.DataAccess
         public DbSet<EntityChangeHistory> EntityChangeHistories { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<UserGroupMembership> UserGroupMemberships { get; set; }
-        public DbSet<UserProperty> UserProperties { get; set; }
-        public DbSet<UserPropertyDefinition> UserPropertyDefinitions { get; set; }
-        public DbSet<SiteProperty> SiteProperties { get; set; }
         public DbSet<FailedLoginHistory> FailedLoginHistories { get; set; }
         public DbSet<SuccessfulLoginHistory> SuccessfulLoginHistories { get; set; }
         public DbSet<Image> Images { get; set; }

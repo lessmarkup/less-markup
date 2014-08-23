@@ -6,14 +6,14 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.DataObjects.User
+namespace LessMarkup.DataObjects.Security
 {
     public class UserBlockHistory : NonSiteDataObject
     {
-        public User User { get; set; }
+        public Security.User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
-        public User BlockedByUser { get; set; }
+        public Security.User BlockedByUser { get; set; }
         [ForeignKey("BlockedByUser")]
         public long BlockedByUserId { get; set; }
         public DateTime Created { get; set; }

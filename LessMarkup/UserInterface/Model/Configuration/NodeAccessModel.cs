@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.DataObjects.User;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -96,7 +96,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
+                        access.UserId = domainModel.GetCollection<DataObjects.Security.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
                     }
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.Group))
@@ -125,7 +125,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (siteId.HasValue && !string.IsNullOrWhiteSpace(record.User))
                     {
-                        access.UserId = domainModel.GetCollection<DataObjects.User.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
+                        access.UserId = domainModel.GetCollection<DataObjects.Security.User>().Single(u => u.SiteId == _siteId.Value && u.Email == record.User).Id;
                     }
                     else
                     {

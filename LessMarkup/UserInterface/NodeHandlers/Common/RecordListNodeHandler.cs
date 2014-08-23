@@ -16,6 +16,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Exceptions;
 using Newtonsoft.Json;
 
@@ -135,7 +136,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected override Dictionary<string, object> GetViewData()
         {
-            var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+            var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;
 
             var definition = _dataCache.Get<IRecordModelCache>().GetDefinition(typeof(T));

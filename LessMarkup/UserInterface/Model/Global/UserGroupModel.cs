@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;

@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Configuration;
 using System.Web.Security;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Data;
 using WebMatrix.WebData;

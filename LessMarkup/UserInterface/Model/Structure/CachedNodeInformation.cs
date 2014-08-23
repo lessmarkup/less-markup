@@ -24,14 +24,16 @@ namespace LessMarkup.UserInterface.Model.Structure
         public long? ParentNodeId { get; set; }
         public ICachedNodeInformation Parent { get; set; }
         public List<CachedNodeAccess> AccessList { get; set; }
-        public IEnumerable<ICachedNodeInformation> Children { get { return _children; } }
+        public IReadOnlyList<ICachedNodeInformation> Children { get { return _children; } }
         public string FullPath { get; set; }
         public Type HandlerType { get; set; }
         public string HandlerModuleType { get; set; }
         public string Settings { get; set; }
         public ICachedNodeInformation Root { get; set; }
         public bool Visible { get; set; }
+        public bool AddToMenu { get; set; }
         public bool LoggedIn { get; set; }
+        public string Description { get; set; }
 
         public void AddChild(ICachedNodeInformation node)
         {
@@ -58,6 +60,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return false;
         }
 
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
         private void CheckRights(long? userId, IReadOnlyList<long> groupIds, ref NodeAccessType? accessType)
         {
             if (Parent != null)

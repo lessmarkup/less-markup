@@ -10,11 +10,15 @@ angular.module('ui.tinymce', [])
 
     uiTinymceConfig.theme_url = window.tinyMceThemePath;
     uiTinymceConfig.skin_url = window.tinyMceSkinPath;
-    uiTinymceConfig.toolbar = "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image";
-    uiTinymceConfig.selector = "textarea";
-    uiTinymceConfig.plugins = ["advlist autolink lists link image charmap print preview anchor",
+    uiTinymceConfig.toolbar = (uiTinymceConfig.toolbar || "") + "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image";
+    uiTinymceConfig.selector = uiTinymceConfig.selector || "textarea";
+    uiTinymceConfig.valid_elements = uiTinymceConfig.valid_elements || "*";
+    uiTinymceConfig.plugins = [
+        "advlist autolink lists link image charmap print preview anchor",
         "searchreplace visualblocks code fullscreen",
-        "insertdatetime table contextmenu paste"];
+        "insertdatetime table contextmenu paste",
+        uiTinymceConfig.plugins || ""
+    ];
 
     var generatedIds = 0;
     return {

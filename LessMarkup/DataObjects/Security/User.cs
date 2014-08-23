@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
 
-namespace LessMarkup.DataObjects.User
+namespace LessMarkup.DataObjects.Security
 {
     public class User : NonSiteDataObject
     {
@@ -54,12 +54,12 @@ namespace LessMarkup.DataObjects.User
         [ForeignKey("Site")]
         public long? SiteId { get; set; }
         public Site Site { get; set; }
-
+        public string Settings { get; set; }
         public bool SaveViewHistory { get; set; }
+        public string Properties { get; set; }
 
         public List<UserAddress> Addresses { get; set; }
         public List<UserGroupMembership> Groups { get; set; }
-        public List<UserProperty> Properties { get; set; }
         public List<UserLoginIpAddress> IpAddresses { get; set; } 
     }
 }

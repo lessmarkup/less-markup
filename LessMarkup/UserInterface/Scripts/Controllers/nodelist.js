@@ -8,10 +8,35 @@ define([], function() {
         $scope.nodes = [];
         $scope.updateProgress = false;
         $scope.updateError = "";
+        $scope.rootNode = $scope.viewData.Root;
+
+        function addNodeToFlatList(node, level, parent, parentIndex) {
+            var target = {
+                data: node,
+                level: level,
+                parent: parent,
+                index: $scope.nodes.length,
+                parentIndex: parentIndex
+            }
+
+            $scope.nodes.push(target);
+
+            for (var i = 0; i < node.Children.length; i++) {
+                addNodeToFlatList(node.Children[i], level + 1, target, i);
+            }
+        }
+
+        function refreshFlatList() {
+            $scope.nodes = [];
+
+            if ($scope.rootNode != null) {
+                addNodeToFlatList($scope.rootNode, 0, null, 0);
+            }
+        }
 
         $scope.getLevelStyle = function (node) {
             return {
-                "padding-left": (node.data.Level * 35).toString() + "px"
+                "padding-left": (node.level * 35).toString() + "px"
             };
         }
 
@@ -20,233 +45,107 @@ define([], function() {
         }
 
         $scope.nodeEnabled = function (node) {
-            if (!node.data.Enabled) {
-                return false;
-            }
-
-            var index = nodeIndex(node);
-            var level = node.data.Level;
-
-            for (index--; index >= 0; index--) {
-                var previousNode = $scope.nodes[index];
-                if (previousNode.data.Level >= level) {
-                    continue;
-                }
-                if (!previousNode.data.Enabled) {
+            for (; node != null; node = node.parent) {
+                if (!node.data.Enabled) {
                     return false;
                 }
-                level = previousNode.data.Level;
             }
-
             return true;
         }
 
-        function nodeIndex(node) {
-            for (var i = 0; i < $scope.nodes.length; i++) {
-                if ($scope.nodes[i].data.NodeId == node.data.NodeId) {
-                    return i;
-                }
-            }
-            return null;
-        }
-
         $scope.upDisabled = function (node) {
-            return nodeIndex(node) <= 1;
+            return node.index == 0;
         }
 
         $scope.downDisabled = function (node) {
-            var from = nodeIndex(node);
-            var count = nodeScope(from);
-            return from + count >= $scope.nodes.length;
+            if (node.parent == null) {
+                return true;
+            }
+            return node.parentIndex == node.parent.data.Children.length - 1 && node.parent.parent == null;
         }
 
         $scope.leftDisabled = function (node) {
-            var index = nodeIndex(node);
-            if (index <= 1) {
-                return true;
-            }
-            var previousNode = $scope.nodes[index - 1];
-            return previousNode.data.Level >= node.data.Level;
+            return node.parent == null || node.index == 0;
         }
 
         $scope.rightDisabled = function (node) {
-            var index = nodeIndex(node);
-            if (index <= 1) {
-                return true;
-            }
-            var previousNode = $scope.nodes[index - 1];
-            return previousNode.data.Level < node.data.Level;
+            return node.parentIndex == 0;
         }
 
-        function createLayout() {
-            var layout = [];
-
-            for (var i = 0; i < $scope.nodes.length; i++) {
-                var node = $scope.nodes[i].data;
-                layout.push({
-                    NodeId: node.NodeId,
-                    Level: node.Level
-                });
+        function changeParent(node, parent, order) {
+            if (parent != null && order > parent.data.Children.length) {
+                order = parent.data.Children.length;
             }
 
-            return layout;
-        }
-
-        function nodeScope(from) {
-            var node = $scope.nodes[from];
-            var count;
-            for (count = 1; from + count < $scope.nodes.length; count++) {
-                var nextNode = $scope.nodes[from + count];
-                if (nextNode.data.Level <= node.data.Level) {
-                    break;
-                }
-            }
-            return count;
+            $scope.sendAction("UpdateParent", {
+                nodeId: node.data.NodeId,
+                parentId: parent != null ? parent.data.NodeId : null,
+                order: order
+            }, function (data) {
+                $scope.rootNode = data.Root;
+                refreshFlatList();
+            }, function (message) {
+                inputForm.message(message);
+            });
         }
 
         $scope.moveUp = function (node) {
-
-            var from = nodeIndex(node);
-
-            if (from <= 1) {
+            if (node.index <= 0) {
                 return;
             }
-            var count = nodeScope(from);
 
-            from -= 1;
-
-            var previousNode = $scope.nodes[from];
-            var decreaseLevel = previousNode.data.Level < node.data.Level;
-
-            var layout = createLayout();
-
-            var previousLayout = layout[from];
-
-            layout.splice(from, 1);
-            layout.splice(from + count, 0, previousLayout);
-
-            if (decreaseLevel) {
-                for (var i = 0; i < count; i++) {
-                    layout[from + i].Level--;
-                }
+            if (node.index == 1) {
+                changeParent(node, null, 0);
+                return;
             }
 
-            updateLayout(layout, function () {
-                $scope.nodes.splice(from, 1);
-                $scope.nodes.splice(from + count, 0, previousNode);
-                if (decreaseLevel) {
-                    for (var i = 0; i < count; i++) {
-                        $scope.nodes[from + i].data.Level--;
-                    }
-                }
-                updateOrder();
-            });
+            if (node.parent == null) {
+                return;
+            }
+
+            if (node.parentIndex > 0) {
+                changeParent(node, node.parent, node.parentIndex - 1);
+                return;
+            }
+
+            if (node.parent.parent == null) {
+                return;
+            }
+
+            changeParent(node, node.parent.parent, node.parent.parentIndex);
         }
 
         $scope.moveDown = function (node) {
-            var from = nodeIndex(node);
-            if (from >= $scope.nodes.length - 1) {
+            if (node.parent == null) {
                 return;
             }
-            var count = nodeScope(from);
 
-            var nextNode = $scope.nodes[from + count];
-
-            var increaseLevel = nextNode.data.Level > node.data.Level;
-
-            var layout = createLayout();
-
-            var nextLayout = layout[from + count];
-
-            layout.splice(from + count, 1);
-            layout.splice(from, 0, nextLayout);
-
-            if (increaseLevel) {
-                for (var i = 0; i < count; i++) {
-                    layout[i + from + 1].Level++;
-                }
+            if (node.parentIndex + 1 < node.parent.data.Children.length) {
+                changeParent(node, node.parent, node.parentIndex + 1);
+                return;
             }
 
-            updateLayout(layout, function () {
-                $scope.nodes.splice(from + count, 1);
-                $scope.nodes.splice(from, 0, nextNode);
-                if (increaseLevel) {
-                    for (var i = 0; i < count; i++) {
-                        $scope.nodes[i + from + 1].data.Level++;
-                    }
-                }
-                updateOrder();
-            });
+            if (node.parent.parent == null) {
+                return;
+            }
+
+            changeParent(node, node.parent.parent, node.parent.parentIndex + 1);
         }
 
         $scope.moveLeft = function (node) {
-            var from = nodeIndex(node);
-            if (from <= 1) {
-                return;
-            }
-            var count = nodeScope(from);
-            var previousNode = $scope.nodes[from - 1];
-            if (previousNode.data.Level >= node.data.Level) {
+            if (node.parent == null) {
                 return;
             }
 
-            var layout = createLayout();
-
-            for (var i = 0; i < count; i++) {
-                layout[i + from].Level--;
-            }
-
-            updateLayout(layout, function () {
-                for (var i = 0; i < count; i++) {
-                    $scope.nodes[i + from].data.Level--;
-                }
-                updateOrder();
-            });
+            changeParent(node, node.parent.parent, node.parent.parentIndex);
         }
 
         $scope.moveRight = function (node) {
-            var from = nodeIndex(node);
-            if (from <= 1) {
-                return;
-            }
-            var count = nodeScope(node);
-            var previousNode = $scope.nodes[from - 1];
-            if (previousNode.data.Level < node.data.Level) {
+            if (node.parentIndex == 0) {
                 return;
             }
 
-            var layout = createLayout();
-
-            for (var i = 0; i < count; i++) {
-                layout[i + from].Level++;
-            }
-
-            updateLayout(layout, function () {
-                for (var i = 0; i < count; i++) {
-                    $scope.nodes[i + from].data.Level++;
-                }
-                updateOrder();
-            });
-        }
-
-        function updateOrder() {
-            for (var i = 0; i < $scope.nodes.length; i++) {
-                $scope.nodes[i].data.Order = i;
-            }
-        }
-
-        function updateLayout(layout, success) {
-            $scope.updateProgress = true;
-            $scope.updateError = "";
-            $scope.sendAction("UpdateLayout", {
-                layout: layout
-            }, function () {
-                $scope.updateProgress = false;
-                success();
-            }, function (message) {
-                $scope.updateError = message;
-                $scope.updateProgress = false;
-            });
+            changeParent(node, $scope.nodes[node.index - 1], 0);
         }
 
         $scope.createNode = function (parentNode) {
@@ -256,26 +155,23 @@ define([], function() {
             }
 
             inputForm.editObject($scope, null, $scope.viewData.NodeSettingsModelId, function (node, success, error) {
-                var index;
                 if (parentNode == null) {
                     // create root node
+                    node.ParentId = null;
                     node.Order = 0;
-                    node.Level = 0;
-                    index = 0;
                 } else {
-                    index = nodeIndex(parentNode) + 1;
-                    // create child node
-                    node.Order = index;
-                    node.Level = parentNode.data.Level + 1;
+                    node.ParentId = parentNode.data.NodeId;
+                    node.Order = parentNode.data.Children.length;
                 }
                 $scope.sendAction("CreateNode", {
                     node: node
                 }, function (data) {
-                    var newNode = {
-                        data: data
-                    };
-                    $scope.nodes.splice(index, 0, newNode);
-                    updateOrder();
+                    if (parentNode == null) {
+                        $scope.rootNode = data;
+                    } else {
+                        parentNode.data.Children.push(data);
+                    }
+                    refreshFlatList();
                     success();
                 }, function (message) {
                     error(message);
@@ -284,32 +180,22 @@ define([], function() {
         }
 
         $scope.canBeDeleted = function (node) {
-            var index = nodeIndex(node);
-            // we can remove only nodes with empty child list
-            return index + 1 >= $scope.nodes.length || $scope.nodes[index + 1].data.Level <= node.data.Level;
+            return node.data.Children.length == 0;
         }
 
         $scope.deleteNode = function (node) {
-            var from = nodeIndex(node);
-            var count = nodeScope(from);
-
-            var message = "Do you want to delete " + count.toString() + " nodes: ";
-
-            var ids = [];
-            for (var i = 0; i < count; i++) {
-                if (i > 0) {
-                    message += "; ";
-                }
-                message += $scope.nodes[i + from].data.Title;
-                ids.push($scope.nodes[i + from].data.NodeId);
+            if (node.data.Children.length != 0) {
+                return;
             }
 
-            inputForm.question(message, "Delete Nodes", function (success, fail) {
-                $scope.sendAction("DeleteNodes", { ids: ids }, function () {
-                    for (var i = 0; i < count; i++) {
-                        $scope.nodes.splice(from, 1);
+            inputForm.question("Do you want to delete node?", "Delete Nodes", function (success, fail) {
+                $scope.sendAction("DeleteNode", { id: node.data.NodeId }, function () {
+                    if (node.parent == null) {
+                        $scope.rootNode = null;
+                    } else {
+                        node.parent.data.Children.splice(node.parentIndex, 1);
                     }
-                    updateOrder();
+                    refreshFlatList();
                     success();
                 }, function (message) {
                     fail(message);
@@ -353,11 +239,6 @@ define([], function() {
             }, $scope.getTypeahead);
         }
 
-        for (var i = 0; i < $scope.viewData.Nodes.length; i++) {
-            var node = {
-                data: $scope.viewData.Nodes[i]
-            }
-            $scope.nodes.push(node);
-        }
+        refreshFlatList();
     });
 });

@@ -5,6 +5,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
@@ -15,7 +16,7 @@ namespace LessMarkup.DataObjects.Common
         public byte[] Data { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
-        public User.User User { get; set; }
+        public User User { get; set; }
         [ForeignKey("User")]
         public long UserId { get; set; }
         public string Name { get; set; }

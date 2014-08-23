@@ -49,7 +49,7 @@ namespace LessMarkup.Engine.Site
                     s.Title,
                     s.Enabled,
                     ModuleTypes = s.Modules.Select(m => m.Module.ModuleType),
-                    Properties = s.Properties.Select(p => new {p.Name, p.Value})
+                    s.Properties
                 }))
                 {
                     var cacheItem = new SiteCacheItem
@@ -58,7 +58,7 @@ namespace LessMarkup.Engine.Site
                         Hosts = new HashSet<string>((site.Host ?? "").ToLower().Split(new []{' '})),
                         SiteId = site.SiteId,
                         Title = site.Title,
-                        Properties = site.Properties.ToDictionary(p => p.Name, p => p.Value),
+                        Properties = site.Properties,
                         ModuleTypes = new HashSet<string>(site.ModuleTypes)
                     };
 

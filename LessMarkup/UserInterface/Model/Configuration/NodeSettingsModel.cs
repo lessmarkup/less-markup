@@ -16,6 +16,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
     {
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IModuleProvider _moduleProvider;
+        private readonly List<NodeSettingsModel> _children = new List<NodeSettingsModel>();
 
         public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider)
         {
@@ -34,8 +35,6 @@ namespace LessMarkup.UserInterface.Model.Configuration
         public string SettingsModelId { get; set; }
         public long NodeId { get; set; }
 
-        public int Level { get; set; }
-
         public bool Customizable { get; set; }
 
         [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Enabled, DefaultValue = true)]
@@ -47,6 +46,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
         public int Order { get; set; }
 
         public string RoleText { get; set; }
+
+        public List<NodeSettingsModel> Children { get { return _children; } }
+
+        public long? ParentId { get; set; }
 
         public List<EnumSource> GetEnumValues(string fieldName)
         {

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.System;
@@ -25,7 +24,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 
             if (_siteMapper.SiteId.HasValue)
             {
-                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
                 adminLoginPage = siteConfiguration.AdminLoginPage;
             }
             else

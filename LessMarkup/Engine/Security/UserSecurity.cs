@@ -14,7 +14,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Security.Models;
 using LessMarkup.Interfaces.Cache;
@@ -130,7 +130,7 @@ namespace LessMarkup.Engine.Security
                     SendGeneratedPassword(email, password, user);
                 }
 
-                var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
 
                 if (preApproved)
                 {
@@ -352,7 +352,7 @@ namespace LessMarkup.Engine.Security
                 user.ValidateSecret = null;
                 user.IsValidated = true;
 
-                if (!_dataCache.Get<SiteConfigurationCache>().AdminApproveNewUsers)
+                if (!_dataCache.Get<ISiteConfiguration>().AdminApproveNewUsers)
                 {
                     user.IsApproved = true;
                 }
@@ -508,7 +508,7 @@ namespace LessMarkup.Engine.Security
 
         private void AddToDefaultGroup(IDomainModel domainModel, User user)
         {
-            var defaultGroup = _dataCache.Get<SiteConfigurationCache>().DefaultUserGroup;
+            var defaultGroup = _dataCache.Get<ISiteConfiguration>().DefaultUserGroup;
 
             if (!string.IsNullOrEmpty(defaultGroup))
             {
@@ -544,7 +544,7 @@ namespace LessMarkup.Engine.Security
                 Login = email,
                 Password = password,
                 SiteLink = HttpContext.Current.Request.Url.Host,
-                SiteName = _dataCache.Get<SiteConfigurationCache>().SiteName
+                SiteName = _dataCache.Get<ISiteConfiguration>().SiteName
             };
 
             _mailSender.SendMail(null, user.Id, null,
@@ -573,7 +573,7 @@ namespace LessMarkup.Engine.Security
             {
                 Email = user.Email,
                 Password = password,
-                SiteName = _dataCache.Get<SiteConfigurationCache>().SiteName
+                SiteName = _dataCache.Get<ISiteConfiguration>().SiteName
             };
 
             _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.UserNewUserCreated, model);

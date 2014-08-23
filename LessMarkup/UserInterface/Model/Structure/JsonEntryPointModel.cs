@@ -43,7 +43,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             using (var reader = new StreamReader(HttpContext.Current.Request.InputStream, HttpContext.Current.Request.ContentEncoding))
             {
                 var requestText = reader.ReadToEnd();
-                var data = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(requestText).ToDictionary(k => k.Key, v => (string) v.Value.ToString());
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(requestText).ToDictionary(k => k.Key, v => v.Value);
                 object result;
                 try
                 {
@@ -81,9 +81,9 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
         }
 
-        private object HandleDataRequest(Dictionary<string, string> data, System.Web.Mvc.Controller controller)
+        private object HandleDataRequest(Dictionary<string, object> data, System.Web.Mvc.Controller controller)
         {
-            var command = data["-command-"];
+            var command = data["-command-"].ToString();
 
             if (string.IsNullOrEmpty(command))
             {
@@ -102,14 +102,14 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "InputFormDefinition":
                 {
                     var model = DependencyResolver.Resolve<InputFormDefinitionModel>();
-                    model.Initialize(data["-id-"]);
+                    model.Initialize(data["-id-"].ToString());
                     return model;
                 }
 
                 case "View":
                 {
                     var model = DependencyResolver.Resolve<LoadNodeViewModel>();
-                    if (!model.Initialize(data["-path-"], JsonConvert.DeserializeObject<List<string>>(data["-cached-"]), controller, true))
+                    if (!model.Initialize(data["-path-"].ToString(), JsonConvert.DeserializeObject<List<string>>(data["-cached-"].ToString()), controller, true))
                     {
                         throw new ObjectNotFoundException("Unknown path");
                     }
@@ -143,7 +143,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "Typeahead":
                 {
                     var model = DependencyResolver.Resolve<TypeaheadModel>();
-                    model.Initialize(data["-path-"], data["property"], data["searchText"]);
+                    model.Initialize(data["-path-"].ToString(), data["property"].ToString(), data["searchText"].ToString());
                     return model;
                 }
 
@@ -155,14 +155,14 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                 case "Register":
                 {
-                    var registerModel = (RegisterModel) JsonHelper.ResolveAndDeserializeObject(data["user"], typeof (RegisterModel));
-                    return registerModel.Register(controller, data["user"]);
+                    var registerModel = (RegisterModel) JsonHelper.ResolveAndDeserializeObject(data["user"].ToString(), typeof (RegisterModel));
+                    return registerModel.Register(controller, data["user"].ToString());
                 }
 
                 case "GetNotifications":
                 {
                     var notificationsModel = DependencyResolver.Resolve<NotificationsModel>();
-                    return notificationsModel.Handle(data["notifications"], controller);
+                    return notificationsModel.Handle(data["notifications"].ToString(), controller);
                 }
 
                 default:

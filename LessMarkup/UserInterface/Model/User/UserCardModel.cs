@@ -8,7 +8,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.User
 {
-    [RecordModel(CollectionType = typeof(Collection), DataType = typeof(DataObjects.User.User))]
+    [RecordModel(CollectionType = typeof(Collection), DataType = typeof(DataObjects.Security.User))]
     public class UserCardModel
     {
         public class Collection : IModelCollection<UserCardModel>
@@ -30,12 +30,12 @@ namespace LessMarkup.UserInterface.Model.User
                 }
 
                 return
-                    domainModel.GetCollection<DataObjects.User.User>()
+                    domainModel.GetCollection<DataObjects.Security.User>()
                         .Where(u => !u.IsRemoved && u.SiteId == siteId.Value)
                         .Select(u => u.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.User.User>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.Security.User>(); } }
 
             public IQueryable<UserCardModel> Read(IDomainModel domainModel, List<long> ids)
             {
@@ -46,7 +46,7 @@ namespace LessMarkup.UserInterface.Model.User
                     return new EnumerableQuery<UserCardModel>(new UserCardModel[0]);
                 }
 
-                return domainModel.GetCollection<DataObjects.User.User>()
+                return domainModel.GetCollection<DataObjects.Security.User>()
                     .Where(u => !u.IsRemoved && u.SiteId == siteId.Value && ids.Contains(u.Id))
                     .Select(u => new UserCardModel
                     {

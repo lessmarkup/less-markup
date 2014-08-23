@@ -3,13 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Linq;
-using LessMarkup.DataObjects.User;
-using LessMarkup.Engine.Helpers;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.MainModule.Model
 {
@@ -75,7 +76,7 @@ namespace LessMarkup.MainModule.Model
 
                 if (AvatarFile != null)
                 {
-                    user.AvatarImageId = ImageUploader.SaveImage(domainModel, user.AvatarImageId, AvatarFile, _currentUser, _dataCache);
+                    user.AvatarImageId = ImageUploader.SaveImage(domainModel, user.AvatarImageId, AvatarFile, _currentUser.UserId, _dataCache.Get<ISiteConfiguration>());
                 }
 
                 if (!string.IsNullOrWhiteSpace(Password))

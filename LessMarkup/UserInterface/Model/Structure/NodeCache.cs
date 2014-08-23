@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -46,7 +45,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             _dataCache = dataCache;
         }
 
-        private void InitializeTree(CachedNodeInformation node)
+        private void InitializeTree(CachedNodeInformation node, List<CachedNodeInformation> allNodes)
         {
             if (!string.IsNullOrWhiteSpace(node.HandlerId))
             {
@@ -82,52 +81,11 @@ namespace LessMarkup.UserInterface.Model.Structure
             _cachedNodes.Add(node);
             _idToNode[node.NodeId] = node;
 
-            if (node.Children != null)
+            foreach (var child in allNodes.Where(n => n.ParentNodeId == node.NodeId && n.Enabled))
             {
-                foreach (var cachedNodeInformation in node.Children.Where(c => c.Enabled))
-                {
-                    var child = (CachedNodeInformation) cachedNodeInformation;
-                    child.Parent = node;
-                    InitializeTree(child);
-                }
-            }
-        }
-
-        private void InitializeNode(CachedNodeInformation node, List<CachedNodeInformation> nodes, int from, int count)
-        {
-            if (count == 0)
-            {
-                return;
-            }
-
-            var lowLevel = nodes[from].Level;
-            var to = from + count;
-
-            var firstNode = nodes[from];
-            node.AddChild(firstNode);
-
-            from++;
-
-            for (int i = from; i < to;)
-            {
-                var nextNode = nodes[i];
-                if (nextNode.Level <= lowLevel)
-                {
-                    node.AddChild(nextNode);
-                    i++;
-                    continue;
-                }
-                var parent = (CachedNodeInformation) node.Children.Last();
-                var childFrom = i;
-                for (i++; i < to; i++)
-                {
-                    if (nodes[i].Level <= lowLevel)
-                    {
-                        break;
-                    }
-                }
-
-                InitializeNode(parent, nodes, childFrom, i - childFrom);
+                node.AddChild(child);
+                child.Parent = node;
+                InitializeTree(child, allNodes);
             }
         }
 
@@ -212,41 +170,40 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             _siteId = siteId;
 
-            List<CachedNodeInformation> cachedNodes = null;
+            var cachedNodes = new List<CachedNodeInformation>();
 
             if (_siteId.HasValue)
             { 
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    cachedNodes = domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
+                    cachedNodes.AddRange(domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
                     {
                         NodeId = p.Id,
                         Enabled = p.Enabled,
                         HandlerId = p.HandlerId,
-                        Level = p.Level,
+                        ParentNodeId = p.ParentId,
                         Order = p.Order,
                         Path = p.Path,
                         Title = p.Title,
+                        Description = p.Description,
                         Settings = p.Settings,
                         Visible = true,
+                        AddToMenu = p.AddToMenu,
                         AccessList = p.NodeAccess.Select(a => new CachedNodeAccess
                         {
                             AccessType = a.AccessType,
                             GroupId = a.GroupId,
                             UserId = a.UserId
                         }).ToList()
-                    }).ToList();
+                    }).ToList());
                 }
             }
 
-            if (cachedNodes == null || cachedNodes.Count == 0)
-            {
-                if (cachedNodes == null)
-                {
-                    cachedNodes = new List<CachedNodeInformation>();
-                }
+            _rootNode = cachedNodes.First(n => !n.ParentNodeId.HasValue);
 
-                cachedNodes.Add(new CachedNodeInformation
+            if (_rootNode == null)
+            {
+                _rootNode = new CachedNodeInformation
                 {
                     AccessList = new List<CachedNodeAccess> {new CachedNodeAccess {AccessType = NodeAccessType.Read}},
                     HandlerModuleType = Constants.ModuleType.MainModule,
@@ -255,14 +212,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                     NodeId = 1,
                     HandlerId = "home",
                     Visible = true
-                });
+                };
+                cachedNodes.Add(_rootNode);
             }
 
-            _rootNode = cachedNodes[0];
-
-            InitializeNode(_rootNode, cachedNodes, 1, cachedNodes.Count-1);
-
-            InitializeTree(_rootNode);
+            InitializeTree(_rootNode, cachedNodes);
 
             _rootNode.Root = _rootNode;
 
@@ -272,7 +226,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             string adminLoginPage;
 
-            var siteConfiguration = _dataCache.Get<SiteConfigurationCache>();
+            var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
 
             if (_siteId.HasValue)
             {

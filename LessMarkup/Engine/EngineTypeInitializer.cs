@@ -7,6 +7,7 @@ using System.Linq;
 using Autofac;
 using LessMarkup.Engine.Build;
 using LessMarkup.Engine.Cache;
+using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.DataChange;
 using LessMarkup.Engine.Email;
 using LessMarkup.Engine.Language;
@@ -44,6 +45,7 @@ namespace LessMarkup.Engine
             builder.RegisterType<LanguageCache>().As<ILanguageCache>();
             builder.RegisterType<RecordModelCache>().As<IRecordModelCache>();
             builder.RegisterType<UserCache>().As<IUserCache>();
+            builder.RegisterType<SiteConfigurationCache>().As<ISiteConfiguration>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

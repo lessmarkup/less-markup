@@ -59,16 +59,14 @@
     <Compile Include="Statistics\DaySummaryHistory.cs" />
     <Compile Include="Structure\NodeAccess.cs" />
     <Compile Include="Structure\Node.cs" />
-    <Compile Include="User\MultiFactorAuthorization.cs" />
-    <Compile Include="User\User.cs" />
-    <Compile Include="User\UserAddress.cs" />
-    <Compile Include="User\UserGroup.cs" />
-    <Compile Include="User\UserGroupMembership.cs" />
-    <Compile Include="User\UserBlockHistory.cs" />
-    <Compile Include="User\UserLoginIpAddress.cs" />
-    <Compile Include="User\UserProperty.cs" />
-    <Compile Include="User\UserPropertyDefinition.cs" />
-    <Compile Include="User\UserPropertyType.cs" />
+    <Compile Include="Security\MultiFactorAuthorization.cs" />
+    <Compile Include="Security\User.cs" />
+    <Compile Include="Security\UserAddress.cs" />
+    <Compile Include="Security\UserGroup.cs" />
+    <Compile Include="Security\UserGroupMembership.cs" />
+    <Compile Include="Security\UserBlockHistory.cs" />
+    <Compile Include="Security\UserLoginIpAddress.cs" />
+    <Compile Include="Security\UserPropertyType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFramework\DataFramework.csproj">

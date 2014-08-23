@@ -4,10 +4,10 @@
 
 using System;
 using System.Web;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.User
 {
@@ -47,7 +47,7 @@ namespace LessMarkup.UserInterface.Model.User
 
         public object GetRegisterObject()
         {
-            var siteProperties = _dataCache.Get<SiteConfigurationCache>();
+            var siteProperties = _dataCache.Get<ISiteConfiguration>();
 
             if (!siteProperties.HasUsers)
             {
@@ -68,7 +68,7 @@ namespace LessMarkup.UserInterface.Model.User
 
         public object Register(System.Web.Mvc.Controller controller, string properties)
         {
-            var siteProperties = _dataCache.Get<SiteConfigurationCache>();
+            var siteProperties = _dataCache.Get<ISiteConfiguration>();
 
             if (!siteProperties.HasUsers)
             {
@@ -83,7 +83,7 @@ namespace LessMarkup.UserInterface.Model.User
 
             _userSecurity.CreateUser(Name, Password, Email, address, controller.Url, false, false);
 
-            var loggedIn = _currentUser.LoginUserWithPassword(Email, Password, false, false, true, address, null);
+            var loggedIn = _currentUser.LoginWithPassword(Email, Password, false, false, true, address, null);
 
             return new
             {
