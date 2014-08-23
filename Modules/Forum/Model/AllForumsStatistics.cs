@@ -96,14 +96,28 @@ namespace LessMarkup.Forum.Model
             }
         }
 
-        public void OrganizeGroups()
+        public void OrganizeGroups(bool rootNode)
         {
+            if (_forumsFlat.Count == 0)
+            {
+                return;
+            }
+
+            if (!rootNode)
+            {
+                var forums = _forumsFlat.Where(f => f.Level == 0).ToList();
+
+                if (forums.Count > 0)
+                {
+                    _groups.Add(forums);
+                }
+
+                return;
+            }
+
             if (!_forumsFlat.Any(f => f.Level > 0))
             {
-                if (_forumsFlat.Count > 0)
-                {
-                    _groups.Add(_forumsFlat);
-                }
+                _groups.Add(_forumsFlat);
                 return;
             }
 

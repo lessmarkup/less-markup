@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -20,7 +20,7 @@ namespace LessMarkup.Forum.Model
             public long? AvatarId { get; set; }
             public long UserId { get; set; }
             public bool Removed { get; set; }
-            public List<UserProperty> Properties { get; set; } 
+            public string Properties { get; set; } 
         }
 
         public class UserProperty
@@ -60,7 +60,7 @@ namespace LessMarkup.Forum.Model
                     AvatarId = p.Key.AvatarImageId,
                     p.Key.Name,
                     p.Key.IsRemoved,
-                    Properties = p.Key.Properties.Select(up => new UserProperty { Name = up.Definition.Name, Value = up.Value, Type = up.Definition.Type })
+                    Properties = p.Key.Properties
                 }))
                 {
                     _userPosts[user.Id] = new UserStatistics
@@ -70,7 +70,7 @@ namespace LessMarkup.Forum.Model
                         Posts = user.Posts,
                         Removed = user.IsRemoved,
                         UserId = user.Id,
-                        Properties = user.Properties.ToList()
+                        Properties = user.Properties
                     };
                 }
             }

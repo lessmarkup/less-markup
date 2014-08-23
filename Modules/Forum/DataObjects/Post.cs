@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataObjects.User;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Forum.DataObjects
@@ -26,5 +27,8 @@ namespace LessMarkup.Forum.DataObjects
         public User User { get; set; }
 
         public string Text { get; set; }
+
+        public List<PostAttachment> Attachments { get; set; }
+        public List<PostHistory> Histories { get; set; } 
     }
 }

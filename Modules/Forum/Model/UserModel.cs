@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataObjects.User;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -15,7 +14,7 @@ namespace LessMarkup.Forum.Model
         public string Profile { get; set; }
         public string Avatar { get; set; }
         public int Posts { get; set; }
-        public List<UserPropertyModel> Properties { get; set; }
+        public string Properties { get; set; }
 
         public void Initialize(PostStatisticsCache cache, long userId)
         {
@@ -36,22 +35,7 @@ namespace LessMarkup.Forum.Model
             }
 
             Posts = user.Posts;
-
-            if (user.Properties != null)
-            {
-                Properties =
-                    user.Properties.Where(p => p.Type == UserPropertyType.Text || p.Type == UserPropertyType.Date)
-                        .Select(p => new UserPropertyModel
-                        {
-                            Name = p.Name,
-                            Value = p.Value
-                        })
-                        .ToList();
-            }
-            else
-            {
-                Properties = new List<UserPropertyModel>();
-            }
+            Properties = user.Properties;
         }
 
         public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)

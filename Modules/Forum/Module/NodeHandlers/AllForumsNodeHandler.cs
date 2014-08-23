@@ -16,7 +16,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             if (ObjectId.HasValue)
             {
                 statistics.CollectStatistics(ObjectId.Value, typeof(ForumNodeHandler));
-                statistics.OrganizeGroups();
+                statistics.OrganizeGroups(true);
             }
 
             return new Dictionary<string, object>
