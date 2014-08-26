@@ -9,10 +9,12 @@ namespace LessMarkup.Forum.Model
         public List<ForumStatisticsModel> Children { get; set; }
 
         public string Title { get; set; }
+        public string Description { get; set; }
         public long Id { get; set; }
         public int Level { get; set; }
         public string Path { get; set; }
         public int Posts { get; set; }
+        public int Threads { get; set; }
         public long? LastAuthorId { get; set; }
         public string LastAuthorName { get; set; }
         public string LastAuthorUrl { get; set; }

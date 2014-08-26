@@ -29,6 +29,9 @@ namespace LessMarkup.Forum.Model
         UserRemoved,
         MessageFrom,
         PostUpdatesTooltip,
-        PostUpdatesTitle
+        PostUpdatesTitle,
+        Threads,
+        ForumConfiguration,
+        HasThreads,
     }
 }

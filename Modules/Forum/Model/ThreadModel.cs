@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.DataObjects;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.RecordModel;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -21,32 +22,55 @@ namespace LessMarkup.Forum.Model
         public class Collection : AbstractModelCollection<ThreadModel>
         {
             private long _forumId;
+            private NodeAccessType _accessType;
 
             public Collection() : base(typeof(Thread))
             { }
 
             public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
-                return domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId).Select(t => t.Id);
+                var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId);
+
+                if (_accessType != NodeAccessType.Manage)
+                {
+                    query = query.Where(t => !t.Removed && t.Posts.Any(p => !p.Removed));
+                }
+
+                if (!ignoreOrder)
+                {
+                    query = query.OrderByDescending(t => t.Updated);
+                }
+
+                return query.Select(t => t.Id);
             }
 
             public override IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<Post>()
-                        .Where(p => p.Thread.ForumId == _forumId && ids.Contains(p.ThreadId))
-                        .GroupBy(p => p.Thread)
-                        .Select(p => new ThreadModel
+                var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId && ids.Contains(t.Id));
+
+                if (_accessType != NodeAccessType.Manage)
+                {
+                    query = query.Where(t => !t.Removed && t.Posts.Any(p => !p.Removed));
+                }
+
+                return query
+                    .Select(t => new { Thread = t, Last = t.Posts.Where(p => !p.Removed).OrderByDescending(p => p.Created).FirstOrDefault()})
+                    .Select(t => new ThreadModel
                         {
-                            ThreadId = p.Key.Id,
-                            Name = p.Key.Name,
-                            Description = p.Key.Description,
-                            Created = p.Key.Created,
-                            Updated = p.Key.Updated,
-                            Path = p.Key.Path,
-                            Removed = p.Key.Removed,
-                            Closed = p.Key.Closed,
-                            Posts = p.Count()
+                            ThreadId = t.Thread.Id,
+                            Name = t.Thread.Name,
+                            Description = t.Thread.Description,
+                            Created = t.Thread.Created,
+                            Updated = t.Thread.Updated,
+                            Path = t.Thread.Path,
+                            Removed = t.Thread.Removed,
+                            Closed = t.Thread.Closed,
+                            Author = t.Thread.Author.Name,
+                            AuthorId = t.Thread.AuthorId,
+                            LastUser = t.Last.User.Name,
+                            LastUserId = t.Last.UserId,
+                            LastCreated = t.Last.Created,
+                            Posts = t.Thread.Posts.Count(p => !p.Removed)
                         });
             }
 
@@ -60,6 +84,7 @@ namespace LessMarkup.Forum.Model
                 }
 
                 _forumId = objectId.Value;
+                _accessType = accessType;
             }
         }
 
@@ -97,7 +122,7 @@ namespace LessMarkup.Forum.Model
 
         public long ThreadId { get; set; }
 
-        [Column(ForumTextIds.Name, CellTemplate = "~/Views/ThreadNameCell.html")]
+        [Column(ForumTextIds.Name, CellTemplate = "~/Views/ThreadNameCell.html", CellClass = "forum-cell")]
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -112,7 +137,21 @@ namespace LessMarkup.Forum.Model
 
         public DateTime Updated { get; set; }
 
-        [Column(ForumTextIds.Posts)]
+        public string Author { get; set; }
+
+        public long? AuthorId { get; set; }
+
+        public string AuthorUrl { get; set; }
+
+        public string LastUser { get; set; }
+
+        public long? LastUserId { get; set; }
+
+        public string LastUserUrl { get; set; }
+
+        public DateTime? LastCreated { get; set; }
+
+        [Column(ForumTextIds.Posts, CellTemplate = "~/Views/ThreadPostsCell.html", Width = "40%", CellClass = "forum-cell")]
         public int Posts { get; set; }
 
         public object Delete(NodeAccessType accessType, long forumId, long threadId, bool isManager)
@@ -193,6 +232,19 @@ namespace LessMarkup.Forum.Model
                 var model = collection.Read(domainModel, new List<long> { threadId }).First();
 
                 return new { record = model };
+            }
+        }
+
+        public void PostProcess()
+        {
+            if (AuthorId.HasValue)
+            {
+                AuthorUrl = UserHelper.GetUserProfileLink(AuthorId.Value);
+            }
+
+            if (LastUserId.HasValue)
+            {
+                LastUserUrl = UserHelper.GetUserProfileLink(LastUserId.Value);
             }
         }
     }

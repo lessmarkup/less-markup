@@ -68,6 +68,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             ret["Groups"] = statistics.Groups;
             ret["IsSubForum"] = true;
 
+            var settings = GetSettings<ForumConfigurationModel>();
+
+            ret["HasThreads"] = settings == null || settings.HasThreads;
+
             return ret;
         }
 
@@ -91,7 +95,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             var handler = (INodeHandler) DependencyResolver.Resolve<ThreadNodeHandler>();
 
-            handler.Initialize(thread.ThreadId, null, null, path, AccessType);
+            handler.Initialize(thread.ThreadId, null, null, path, FullPath + "/" + path, AccessType);
 
             return new ChildHandlerSettings
             {
@@ -167,6 +171,16 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             }
             var thread = DependencyResolver.Resolve<ThreadModel>();
             return thread.Restore(AccessType, ObjectId.Value, recordId, HasManageAccess);
+        }
+
+        protected override void PostProcessRecord(ThreadModel record)
+        {
+            record.PostProcess();
+        }
+
+        protected override Type SettingsModel
+        {
+            get { return typeof(ForumConfigurationModel); }
         }
     }
 }

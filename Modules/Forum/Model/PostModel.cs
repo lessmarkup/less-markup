@@ -69,7 +69,12 @@ namespace LessMarkup.Forum.Model
                     PostId = p.Id,
                     Removed = p.Removed,
                     Created = p.Created,
-                    UserId = p.UserId
+                    UserId = p.UserId,
+                    Attachments = p.Attachments.Select(a => new PostAttachmentModel
+                    {
+                        Id = a.Id,
+                        FileName = a.FileName
+                    }).ToList()
                 });
             }
 
@@ -99,6 +104,43 @@ namespace LessMarkup.Forum.Model
             _htmlSanitizer = htmlSanitizer;
         }
 
+        private void OnDeletePost(long threadId, IDomainModel domainModel)
+        {
+            var lastPost = domainModel.GetSiteCollection<Thread>()
+                .Where(t => t.Id == threadId)
+                .Select(t => t.Posts.OrderByDescending(p => p.Updated).FirstOrDefault(p => !p.Removed))
+                .FirstOrDefault();
+
+            var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
+
+            if (lastPost == null)
+            {
+                thread.Removed = true;
+            }
+            else
+            {
+                thread.Updated = lastPost.Updated;
+            }
+
+            _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
+            domainModel.SaveChanges();
+        }
+
+        private void OnAddPost(long threadId, IDomainModel domainModel)
+        {
+            var lastPost = domainModel.GetSiteCollection<Thread>()
+                .Where(t => t.Id == threadId)
+                .Select(t => t.Posts.OrderByDescending(p => p.Updated).FirstOrDefault(p => !p.Removed))
+                .First();
+
+            var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
+
+            thread.Updated = lastPost.Updated;
+
+            _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
+            domainModel.SaveChanges();
+        }
+
         public void DeletePost(long threadId, long postId)
         {
             using (var domainModel = _domainModelProvider.Create())
@@ -110,6 +152,8 @@ namespace LessMarkup.Forum.Model
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Removed, domainModel);
 
                 domainModel.SaveChanges();
+
+                OnDeletePost(threadId, domainModel);
             }
 
             _changeTracker.Invalidate();
@@ -126,6 +170,8 @@ namespace LessMarkup.Forum.Model
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Added, domainModel);
 
                 domainModel.SaveChanges();
+
+                OnAddPost(threadId, domainModel);
             }
 
             _changeTracker.Invalidate();
@@ -140,6 +186,8 @@ namespace LessMarkup.Forum.Model
                 domainModel.GetSiteCollection<Post>().Remove(post);
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Removed, domainModel);
                 domainModel.SaveChanges();
+
+                OnDeletePost(threadId, domainModel);
             }
 
             _changeTracker.Invalidate();
@@ -158,10 +206,12 @@ namespace LessMarkup.Forum.Model
                 Text = post.Text;
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
+
+                OnAddPost(threadId, domainModel);
             }
         }
 
-        public void PostProcess(IDataCache dataCache)
+        public void PostProcess(IDataCache dataCache, string fullPath)
         {
             var pos = 0;
 
@@ -196,11 +246,16 @@ namespace LessMarkup.Forum.Model
 
                 pos = end + 1 + userName.Length;
             }
+
+            foreach (var attachment in Attachments)
+            {
+                attachment.Url = fullPath + "/attachments/" + PostId + "/" + attachment.Id;
+            }
         }
 
         public long PostId { get; set; }
 
-        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.UserId]")]
+        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.UserId]", Width = "15%", Align = Align.Center)]
         public string UserName { get; set; }
 
         public long? UserId { get; set; }
@@ -213,7 +268,9 @@ namespace LessMarkup.Forum.Model
 
         public DateTime Created { get; set; }
 
-        [Column(ForumTextIds.PostText, CellTemplate = "~/Views/PostTextCell.html", AllowUnsafe = true, Width = "80%")]
+        public List<PostAttachmentModel> Attachments { get; set; }
+            
+        [Column(ForumTextIds.PostText, CellTemplate = "~/Views/PostTextCell.html", AllowUnsafe = true, Width = "*")]
         [InputField(InputFieldType.RichText, ForumTextIds.PostText, Required = true)]
         public string Text { get; set; }
     }

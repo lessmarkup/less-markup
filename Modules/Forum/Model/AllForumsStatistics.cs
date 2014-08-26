@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 
@@ -17,15 +15,13 @@ namespace LessMarkup.Forum.Model
         private readonly List<ForumStatisticsModel> _forumsFlat = new List<ForumStatisticsModel>();
 
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
         private readonly List<List<ForumStatisticsModel>> _groups = new List<List<ForumStatisticsModel>>();
 
         public List<List<ForumStatisticsModel>> Groups { get { return _groups; } }
 
-        public AllForumsStatistics(IDataCache dataCache, IDomainModelProvider domainModelProvider, ICurrentUser currentUser)
+        public AllForumsStatistics(IDataCache dataCache, ICurrentUser currentUser)
         {
-            _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
             _currentUser = currentUser;
         }
@@ -45,6 +41,7 @@ namespace LessMarkup.Forum.Model
                 {
                     Id = node.NodeId,
                     Title = node.Title,
+                    Description = node.Description,
                     Parent = parent,
                     Path = node.FullPath,
                     Children = new List<ForumStatisticsModel>(),
@@ -176,43 +173,18 @@ namespace LessMarkup.Forum.Model
                 InitializeNode(null, child, forumHandlerType);
             }
 
-            var forumIds = _idToForum.Keys.ToList();
-
-            using (var domainModel = _domainModelProvider.Create())
+            foreach (var forum in _idToForum.Values)
             {
-                var statistics = domainModel.GetSiteCollection<Post>()
-                    .Where(p => forumIds.Contains(p.Thread.ForumId))
-                    .GroupBy(p => p.Thread.ForumId)
-                    .Select(g => new
-                    {
-                        ForumId = g.Key,
-                        Posts = g.Count(p => !p.Removed),
-                        LastPost = g.OrderByDescending(p => p.Created).FirstOrDefault()
-                    })
-                    .Select(f => new
-                    {
-                        f.ForumId,
-                        f.Posts,
-                        LastAuthor = f.LastPost != null ? f.LastPost.User.Name : null,
-                        LastAuthorId = f.LastPost != null ? f.LastPost.UserId : null,
-                        LastCreated = f.LastPost != null ? f.LastPost.Created : (DateTime?)null,
-                        LastPostId = f.LastPost != null ? f.LastPost.Id : (long?)null,
-                        LastThreadId = f.LastPost != null ? f.LastPost.ThreadId : (long?)null,
-                        LastThreadTitle = f.LastPost != null ? f.LastPost.Thread.Name : null
-                    });
+                var forumCache = _dataCache.Get<ForumStatisticsCache>(forum.Id);
 
-                foreach (var forum in statistics)
-                {
-                    var model = _idToForum[forum.ForumId];
-
-                    model.Posts = forum.Posts;
-                    model.LastAuthorId = forum.LastAuthorId;
-                    model.LastAuthorName = forum.LastAuthor;
-                    model.LastCreated = forum.LastCreated;
-                    model.LastPostId = forum.LastPostId;
-                    model.LastThreadId = forum.LastThreadId;
-                    model.LastThreadTitle = forum.LastThreadTitle;
-                }
+                forum.Posts = forumCache.Posts;
+                forum.Threads = forumCache.Threads;
+                forum.LastAuthorId = forumCache.LastAuthorId;
+                forum.LastAuthorName = forumCache.LastAuthor;
+                forum.LastCreated = forumCache.LastCreated;
+                forum.LastPostId = forumCache.LastPostId;
+                forum.LastThreadId = forumCache.LastThreadId;
+                forum.LastThreadTitle = forumCache.LastThreadTitle;
             }
 
             foreach (var forum in _idToForum.Values)

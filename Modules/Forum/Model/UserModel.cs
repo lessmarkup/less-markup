@@ -54,6 +54,8 @@ namespace LessMarkup.Forum.Model
 
             var cache = dataCache.Get<PostStatisticsCache>();
 
+            cache.ReadUsers(userIds);
+
             foreach (var userId in userIds)
             {
                 var user = new UserModel();

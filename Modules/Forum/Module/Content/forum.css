@@ -82,3 +82,45 @@ blockquote[data-from] {
 .allforums + div {
     margin-top: 2.5em;
 }
+
+.allforums-control .forum-description {
+    font-size: smaller;
+}
+
+.post-avatar {
+    margin: 0.5em 0;
+}
+
+.post-avatar img {
+    border: solid 1px #ccc;
+    padding: 1px;
+}
+
+.thread-title {
+    font-size: larger;
+}
+
+.thread-statistics {
+    font-size: smaller;
+}
+
+.forum-cell {
+    padding: 12px 5px !important;
+}
+
+.post-attachments {
+    border-top: solid 1px #eee;
+    margin-top: 5px;
+    padding: 5px 0;
+}
+
+.post-attachments ul, .post-attachments li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: inline-block;
+}
+
+.post-attachments li {
+    margin-right: 2em;
+}

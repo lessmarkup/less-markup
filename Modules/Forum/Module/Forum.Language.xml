@@ -34,6 +34,10 @@
     <Translation Id="LastPostCreated" Text="created"/>
     <Translation Id="LastPostBy" Text="by"/>
     <Translation Id="LastPostIn" Text="in"/>
+    <Translation Id="Threads" Text="Threads"/>
+    <Translation Id="ThreadIsEmpty" Text="Thread is empty"/>
+    <Translation Id="ForumConfiguration" Text="Forum configuration"/>
+    <Translation Id="HasThreads" Text="Has Threads"/>
     <!--
     <Translation Id="" Text=""/>
     -->

@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Forum.DataObjects
@@ -18,7 +20,11 @@ namespace LessMarkup.Forum.DataObjects
         public DateTime Updated { get; set; }
         public bool Removed { get; set; }
         public bool Closed { get; set; }
+        [ForeignKey("Author")]
+        public long? AuthorId { get; set; }
+        public User Author { get; set; }
 
-        public List<Post> Posts { get; set; } 
+        public List<Post> Posts { get; set; }
+        public List<ThreadView> Views { get; set; } 
     }
 }

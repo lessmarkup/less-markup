@@ -58,6 +58,7 @@ namespace LessMarkup.Forum.Model
                 domainModel.GetSiteCollection<Post>().Add(post);
                 domainModel.SaveChanges();
                 _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
+                _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
 
                 PostId = post.Id;

@@ -1,12 +1,16 @@
 ﻿<div>
-    <a ng-if="data.Profile && data.Profile.length" href="{{data.Profile}}" ng-click="navigateToView(data.Profile); $event.stopPropagation();" ng-bind="data.Name"></a>
-    <span ng-if="!data.Profile || !data.Profile.length" ng-bind="data.Name"></span>
+    <div ng-if="data.Profile && data.Profile.length">
+        <a href="{{data.Profile}}" ng-click="navigateToView(data.Profile); $event.stopPropagation();"><span ng-bind="data.Name"></span></a>
+    </div>
+    <div ng-if="!data.Profile || !data.Profile.length">
+        <span>[[[translate UserRemoved]]]</span>
+    </div>
 </div>
-<div ng-if="data.Avatar && data.Avatar.length">
+<div ng-if="data.Avatar && data.Avatar.length" class="post-avatar">
     <img ng-src="{{data.Avatar}}"/>
 </div>
-<div>
-    [[[translate Posts]]]: {{data.Posts}}
+<div ng-if="data.Posts">
+    <span>[[[translate Posts]]]: {{data.Posts}}</span>
 </div>
 <div ng-repeat="property in data.Properties">
     {{property.Name}}: {{property.Value}}

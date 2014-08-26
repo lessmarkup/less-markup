@@ -1,5 +1,8 @@
-﻿<div>
+﻿<div class="thread-title">
     <a href="{{getFullPath(data.Path)}}" ng-click="navigateToView(getFullPath(data.Path)); $event.stopPropagation();" ng-bind="data.Name"></a>
 </div>
-<div ng-bind="data.Description">
+<div ng-bind="data.Description" class="thread-statistics">
+</div>
+<div ng-if="data.Author" class="thread-statistics">
+    Created on {{data.Created | date:'medium'}} by <a href="{{data.AuthorUrl}}" ng-click="navigateToView(data.AuthorUrl); $event.stopPropagation();">{{data.Author}}</a>
 </div>

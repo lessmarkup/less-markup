@@ -4,3 +4,8 @@
 </div>
 <div ng-bind-html="getSafeValue(data.Text)" class="cell-text">
 </div>
+<div ng-if="data.Attachments && data.Attachments.length" class="post-attachments">
+    <ul>
+        <li ng-repeat="attachment in data.Attachments"><a href="{{attachment.Url}}" ng-click="window.open(attachment.url, '_attachment'); $event.stopPropagation();" target="_attachment">{{attachment.FileName}}</a></li>
+    </ul>
+</div>

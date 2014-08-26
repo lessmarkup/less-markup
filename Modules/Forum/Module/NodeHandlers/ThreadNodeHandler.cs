@@ -180,7 +180,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         {
             base.PostProcessRecord(record);
 
-            record.PostProcess(_dataCache);
+            record.PostProcess(_dataCache, FullPath);
 
             record.CanManage = HasManageAccess;
             record.CanEdit = HasManageAccess;
@@ -195,6 +195,41 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         protected override string ExtensionScript
         {
             get { return "extensions/postlist"; }
+        }
+
+        protected override ChildHandlerSettings GetChildHandler(string path)
+        {
+            if (!ObjectId.HasValue)
+            {
+                return null;
+            }
+
+            var parts = path.Split(new[] {'/'});
+
+            if (parts.Length != 3 || parts[0] != "attachments")
+            {
+                return null;
+            }
+
+            long postId;
+            long attachmentId;
+
+            if (!long.TryParse(parts[1], out postId) || !long.TryParse(parts[2], out attachmentId))
+            {
+                return null;
+            }
+
+            var handler = DependencyResolver.Resolve<PostAttachmentsNodeHandler>();
+
+            ((INodeHandler) handler).Initialize(null, null, null, null, null, AccessType);
+
+            handler.Initialize(ObjectId.Value, postId, attachmentId);
+
+            return new ChildHandlerSettings
+            {
+                Handler = handler,
+                Path = path,
+            };
         }
     }
 }

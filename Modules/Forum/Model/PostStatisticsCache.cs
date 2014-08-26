@@ -32,6 +32,7 @@ namespace LessMarkup.Forum.Model
 
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly Dictionary<long, UserStatistics> _userPosts = new Dictionary<long, UserStatistics>();
+        private readonly object _readLock = new object();
 
         public PostStatisticsCache(IDomainModelProvider domainModelProvider)
             : base(new[] { typeof(Post) })
@@ -39,41 +40,60 @@ namespace LessMarkup.Forum.Model
             _domainModelProvider = domainModelProvider;
         }
 
+        public void ReadUsers(IEnumerable<long> userIds)
+        {
+            lock (_readLock)
+            {
+                var usersToFetch = userIds.Where(id => !_userPosts.ContainsKey(id)).ToList();
+
+                if (usersToFetch.Count == 0)
+                {
+                    return;
+                }
+
+                using (var domainModel = _domainModelProvider.Create())
+                {
+                    foreach (var user in domainModel.GetSiteCollection<Post>()
+                        .Where(p => !p.Removed && p.UserId.HasValue && usersToFetch.Contains(p.UserId.Value))
+                        .GroupBy(p => p.User).Select(p => new
+                    {
+                        p.Key.Id,
+                        Posts = p.Count(),
+                        AvatarId = p.Key.AvatarImageId,
+                        p.Key.Name,
+                        p.Key.IsRemoved,
+                        p.Key.Properties
+                    }))
+                    {
+                        _userPosts[user.Id] = new UserStatistics
+                        {
+                            AvatarId = user.AvatarId,
+                            Name = user.Name,
+                            Posts = user.Posts,
+                            Removed = user.IsRemoved,
+                            UserId = user.Id,
+                            Properties = user.Properties
+                        };
+                    }
+                }
+            }
+        }
+
         public UserStatistics Get(long userId)
         {
-            UserStatistics ret;
-            if (!_userPosts.TryGetValue(userId, out ret))
+            lock (_readLock)
             {
-                return null;
+                UserStatistics ret;
+                if (!_userPosts.TryGetValue(userId, out ret))
+                {
+                    return null;
+                }
+                return ret;
             }
-            return ret;
         }
 
         protected override void Initialize(long? siteId, long? objectId)
         {
-            using (var domainModel = _domainModelProvider.Create())
-            {
-                foreach (var user in domainModel.GetSiteCollection<Post>().Where(p => !p.Removed).GroupBy(p => p.User).Select(p => new
-                {
-                    p.Key.Id, 
-                    Posts = p.Count(),
-                    AvatarId = p.Key.AvatarImageId,
-                    p.Key.Name,
-                    p.Key.IsRemoved,
-                    Properties = p.Key.Properties
-                }))
-                {
-                    _userPosts[user.Id] = new UserStatistics
-                    {
-                        AvatarId = user.AvatarId,
-                        Name = user.Name,
-                        Posts = user.Posts,
-                        Removed = user.IsRemoved,
-                        UserId = user.Id,
-                        Properties = user.Properties
-                    };
-                }
-            }
         }
     }
 }

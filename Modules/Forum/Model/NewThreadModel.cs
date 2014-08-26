@@ -48,10 +48,11 @@ namespace LessMarkup.Forum.Model
                     Created = DateTime.UtcNow,
                     Description = Description,
                     Name = Title,
+                    AuthorId = _currentUser.UserId,
+                    ForumId = forumId
                 };
 
                 thread.Updated = thread.Created;
-                thread.ForumId = forumId;
 
                 var basePathName = TextToUrl.Generate(thread.Name);
 
