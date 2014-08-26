@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using LessMarkup.Interfaces;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -12,6 +13,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.EmailConfiguration, IsGlobal = true)]
     public class EmailNodeHandler : DialogNodeHandler<EmailConfigurationModel>
     {
+        public EmailNodeHandler(IDataCache dataCache) : base(dataCache)
+        {
+        }
+
         protected override EmailConfigurationModel LoadObject()
         {
             var model = DependencyResolver.Resolve<EmailConfigurationModel>();

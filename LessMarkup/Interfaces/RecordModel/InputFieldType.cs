@@ -30,5 +30,6 @@ namespace LessMarkup.Interfaces.RecordModel
         Hidden,
         Typeahead,
         PasswordRepeat,
+        Label,
     }
 }

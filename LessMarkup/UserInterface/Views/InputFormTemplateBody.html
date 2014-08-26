@@ -7,8 +7,9 @@
             </label>
         </span>
         <span ng-if="field.Type != 'CheckBox'">
-            <label class="control-label" for="{{field.Id}}" ng-bind="field.Text"></label>
+            <label ng-if="field.Text" class="control-label" for="{{field.Id}}" ng-bind="field.Text"></label>
             <span ng-switch="field.Type">
+                <span ng-switch-when="Label" ng-bind="object[field.Property]"></span>
                 <input type="text" ng-switch-when="Text" class="form-control" ng-model="object[field.Property]" ng-readonly="readOnly(field)" />
                 <input type="email" ng-switch-when="Email" class="form-control" ng-model="object[field.Property]" ng-readonly="readOnly(field)" />
                 <input type="number" ng-switch-when="Number" class="form-control" ng-model="object[field.Property]" ng-readonly="readOnly(field)" />

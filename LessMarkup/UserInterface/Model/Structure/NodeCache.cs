@@ -260,6 +260,9 @@ namespace LessMarkup.UserInterface.Model.Structure
                     AddVirtualNode<UserCardsNodeHandler>(Constants.NodePath.UserCards,
                         LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserCards),
                         Constants.ModuleType.UserInterface, NodeAccessType.Read);
+                    AddVirtualNode<ForgotPasswordPageHandler>(Constants.NodePath.ForgotPassword,
+                        LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.ForgotPassword),
+                        Constants.ModuleType.UserInterface, NodeAccessType.Read);
                 }
             }
         }

@@ -14,7 +14,7 @@
                         
                         <div class="visible-xs navbar-notifications">
                             <a ng-repeat="notification in notifications" href="{{notification.Path}}" ng-click="gotoNotification(notification)" ng-show="notification.Count > 0">
-                                <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
+                                <span ng-if="notification.Icon" class="glyphicon" ng-class="notification.Icon"></span>
                                 <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
                             </a>
                             <a href="#" ng-if="userNotVerified">
@@ -43,13 +43,8 @@
                                             <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
                                         </a>
                                     </li>
-                                    <li ng-repeat="item in navigationTree">
+                                    <li ng-repeat="item in navigationTree" style="{{item.style}}">
                                         <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
-                                        <ul ng-if="item.Children.length > 0">
-                                            <li ng-repeat="child in item.Children">
-                                                <a href="{{child.Url}}" ng-click="navigateToView(child.Url)" ng-bind="child.Title"></a>
-                                            </li>
-                                        </ul>
                                     </li>
                                 </ul>
                             </li>
@@ -72,7 +67,7 @@
                             
                             <li ng-repeat="notification in notifications" class="navbar-notification" ng-show="notification.Count > 0">
                                 <a href="{{notification.Path}}" ng-click="gotoNotification(notification)">
-                                    <span ng-if="notification.Icon" class="glyphicon {{notification.Icon}}"></span>
+                                    <span ng-if="notification.Icon" class="glyphicon" ng-class="notification.Icon"></span>
                                     <span ng-bind="notification.Title"></span>
                                     <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
                                 </a>
@@ -128,7 +123,7 @@
                                     <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
                                 </a>
                             </li>
-                            <li ng-repeat="item in navigationTree">
+                            <li ng-repeat="item in navigationTree" style="{{item.style}}">
                                 <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
                             </li>
                         </ul>

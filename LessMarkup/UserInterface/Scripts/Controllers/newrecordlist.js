@@ -71,7 +71,8 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     $scope.showOptions = false;
     $scope.columns = $scope.viewData.columns;
     $scope.links = $scope.viewData.links;
-    $scope.currentPage = 0;
+    $scope.currentPage = 1;
+    $scope.currentPageNumeric = 1;
     $scope.showPagination = false;
     $scope.paginationItems = 7;
     $scope.rows = [];
@@ -81,6 +82,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     $scope.toolbarButtons = [];
     $scope.manualRefresh = $scope.viewData.manualRefresh;
     $scope.hasNewRecords = false;
+    $scope.updating = false;
     var records = [];
     var currentRecordId = null;
     var currentRecord = null;
@@ -90,18 +92,31 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     var liveUpdates = $scope.viewData.liveUpdates;
     var timeoutCancel = null;
 
-    function subscribeForUpdates() {
-        if (timeoutCancel == null) {
-            timeoutCancel = $timeout(getUpdates, 10 * 1000);
+    function cancelUpdates() {
+        if (timeoutCancel != null) {
+            $timeout.cancel(timeoutCancel);
+            timeoutCancel = null;
         }
+    }
+
+    function subscribeForUpdates() {
+        cancelUpdates();
+        var delay = $scope.getDynamicDelay();
+        if (delay > 0) {
+            timeoutCancel = $timeout(getUpdates, delay * 1000);
+        }
+    }
+
+    function onRecordListActivity() {
+        cancelUpdates();
+        $scope.onUserActivity();
+        timeoutCancel = $timeout(getUpdates, 500);
     }
 
     if (liveUpdates || $scope.manualRefresh) {
         subscribeForUpdates();
         $scope.$on("onNodeLoaded", function () {
-            if (timeoutCancel != null) {
-                $timeout.cancel(timeoutCancel);
-            }
+            cancelUpdates();
         });
     }
 
@@ -174,7 +189,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
                         if (record[recordIdField] == recordId) {
                             records.splice(j, 1);
                             if ($scope.hasOwnProperty("pageSize") && $scope.pageSize > 0) {
-                                hasChanges = j >= $scope.pageOffset && j < $scope.pageOffset + $scope.pageSize;
+                                hasChanges = j < $scope.pageOffset + $scope.pageSize;
                             }
                             break;
                         }
@@ -207,12 +222,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
                 }
             }
 
-            if (hasChanges) {
-                $scope.loadVisibleRecords();
-            }
-
             if (recordsToUpdate.length > 0) {
-                updateVisibleRecords(recordsToUpdate);
+                updateVisibleRecords(recordsToUpdate, $scope.currentPage);
+            } else if (hasChanges) {
+                $scope.loadVisibleRecords();
             }
 
             if (!hasNewRecords) {
@@ -307,7 +320,14 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
         $scope.columns[0].colSpan = 2;
     }
 
-    $scope.onToolbarButtonClick = function(action) {
+    $scope.onToolbarButtonClick = function (action) {
+
+        if ($scope.updating) {
+            return;
+        }
+
+        onRecordListActivity();
+
         inputForm.editObject($scope, null, action.type, function (object, success, failure) {
             $scope.sendAction(action.name, {
                 newObject: object,
@@ -341,9 +361,15 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     $scope.onClickOptions = function(record) {
 
+        if ($scope.updating) {
+            return;
+        }
+
         if (!$scope.hasOptionsBar) {
             return;
         }
+
+        onRecordListActivity();
 
         var recordId = record[recordIdField];
 
@@ -371,6 +397,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     $scope.sortColumn = function (column) {
 
         if (!column.sortable) {
+            return;
+        }
+
+        if ($scope.updating) {
             return;
         }
 
@@ -523,6 +553,8 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
             return;
         }
 
+        $scope.onUserActivity();
+
         var index;
 
         for (index = 0; index < records.length; index++) {
@@ -626,6 +658,28 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     for (var i = 0; i < $scope.columns.length; i++) {
         var column = $scope.columns[i];
+        if (!column.headerClass) {
+            column.headerClass = "";
+        }
+        if (!column.cellClass) {
+            column.cellClass = "grid-data";
+        } else {
+            column.cellClass += " grid-data";
+        }
+        switch (column.align) {
+            case "Left":
+                column.cellClass += " grid-left";
+                column.headerClass += " grid-left";
+                break;
+            case "Center":
+                column.cellClass += " grid-center";
+                column.headerClass += " grid-center";
+                break;
+            case "Right":
+                column.cellClass += " grid-right";
+                column.headerClass += " grid-right";
+                break;
+        }
         if (!column.template || column.template.length == 0) {
             var value = "data." + column.name;
             var bind = "ng-bind";
@@ -646,95 +700,143 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     for (var i = 0; i < $scope.viewData.records.length; i++) {
         var source = $scope.viewData.records[i];
-        var target = records[i];
-        for (var property in source) {
-            target[property] = source[property];
-        }
+        var recordId = source[recordIdField];
 
-        target.loaded = true;
+        for (var j = 0; j < $scope.viewData.records.length; j++) {
+            if (records[j][recordIdField] != recordId) {
+                continue;
+            }
+            var target = records[j];
+            for (var property in source) {
+                target[property] = source[property];
+            }
+
+            target.loaded = true;
+            break;
+        }
     }
 
-    $scope.$watch("currentPage", function () {
+    $scope.$watch("currentPageNumeric", function () {
         if (!$scope.pageLoaded) {
             return;
         }
+
+        var itemsPerPage = $scope.viewData.recordsPerPage;
+        var pageCount = (($scope.totalItems + itemsPerPage - 1) / itemsPerPage) | 0;
+
+        if ($scope.currentPage != "last" || $scope.currentPageNumeric != pageCount) {
+            $scope.currentPage = $scope.currentPageNumeric;
+        }
+
         $scope.loadVisibleRecords();
     });
 
-    function updateVisibleRecords(recordIds) {
+    function updateVisibleRecords(recordIds, page) {
         $scope.sendAction("Fetch", {
             ids: recordIds
         }, function (data) {
+            $scope.updating = false;
             $scope.onDataReceived($scope, data);
             $scope.updateRecords(data.records);
+            $scope.showPage(page);
+        }, function(message) {
+            inputForm.message(message);
+            $scope.updating = false;
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
         });
     }
 
-    $scope.showPage = function(page) {
+    $scope.showPage = function (page, first) {
+
+        if ($scope.updating) {
+            return;
+        }
+
         $scope.totalItems = records.length;
         var itemsPerPage = $scope.viewData.recordsPerPage;
         var pageCount = (($scope.totalItems + itemsPerPage - 1) / itemsPerPage) | 0;
 
-        if (page < 1) {
-            page = 1;
-        } else if (page > pageCount) {
-            page = pageCount > 0 ? pageCount : 1;
+        var localPage = page;
+
+        if (localPage == "last") {
+            localPage = pageCount;
+        }
+
+        if (localPage < 1) {
+            localPage = 1;
+        } else if (localPage > pageCount) {
+            localPage = pageCount > 0 ? pageCount : 1;
+        }
+
+        var pageOffset = (localPage - 1) * itemsPerPage;
+        var pageSize = itemsPerPage;
+
+        if (pageCount == 0) {
+            pageSize = 0;
+        } else if (pageOffset + pageSize > records.length) {
+            pageSize = records.length - pageOffset;
+        }
+
+        var rows = [];
+
+        for (var i = 0; i < pageSize; i++) {
+            var record = records[i + pageOffset];
+            if (!record.loaded) {
+                rows.push(record[recordIdField]);
+            }
+        }
+
+        if (rows.length > 0) {
+            $scope.updating = true;
+            updateVisibleRecords(rows, page);
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+            return;
+        }
+
+        if (!first) {
+            onRecordListActivity();
         }
 
         $scope.currentPage = page;
-        $scope.pageOffset = (page - 1) * itemsPerPage;
-        $scope.pageSize = itemsPerPage;
+        $scope.currentPageNumeric = localPage;
+        $scope.pageOffset = pageOffset;
+        $scope.pageSize = pageSize;
         $scope.itemsPerPage = itemsPerPage;
-
-        if (pageCount == 0) {
-            $scope.pageSize = 0;
-        } else if ($scope.pageOffset + $scope.pageSize > $scope.totalItems) {
-            $scope.pageSize = $scope.totalItems - $scope.pageOffset;
-        }
-
-        $scope.rows = [];
 
         currentRecordId = null;
         currentRecord = null;
         $scope.showOptions = false;
 
-        var firstEmptyRecord = -1;
-        var lastEmptyRecord = -1;
         for (var i = 0; i < $scope.pageSize; i++) {
             var record = records[i + $scope.pageOffset];
 
-            $scope.rows.push(record);
+            rows.push(record);
 
             record.isOdd = (i % 2) != 0;
 
-            if (!record.loaded) {
-                if (firstEmptyRecord == -1) {
-                    firstEmptyRecord = i;
-                }
-                lastEmptyRecord = i;
-            }
-        }
-
-        if (firstEmptyRecord != -1) {
-            var recordIds = [];
-            for (var i = firstEmptyRecord; i <= lastEmptyRecord; i++) {
-                var recordId = records[i + $scope.pageOffset][recordIdField];
-                recordIds.push(recordId);
-            }
-
-            updateVisibleRecords(recordIds);
         }
 
         $scope.showPagination = $scope.pageSize < $scope.totalItems;
+
+        $scope.rows = rows;
 
         if (!$scope.$$phase) {
             $scope.$apply();
         }
 
         $scope.pageLoaded = true;
+
+        var pageProperty = page.toString();
+
+        if (pageProperty == "1") {
+            pageProperty = "";
+        }
+
+        $scope.setPageProperty("p", pageProperty);
     }
 
     $scope.updateRecords = function (updated) {
@@ -774,10 +876,10 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
         require([$scope.viewData.extensionScript], function(extensionScript) {
             extensionScript($scope);
             $scope.onDataReceived($scope, $scope.viewData);
-            $scope.showPage(1);
+            $scope.showPage($scope.getPageProperty("p", 1), true);
         });
     } else {
         $scope.onDataReceived($scope, $scope.viewData);
-        $scope.showPage(1);
+        $scope.showPage($scope.getPageProperty("p", 1), true);
     }
 });

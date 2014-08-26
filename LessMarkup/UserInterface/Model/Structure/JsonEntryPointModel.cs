@@ -109,7 +109,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 case "View":
                 {
                     var model = DependencyResolver.Resolve<LoadNodeViewModel>();
-                    if (!model.Initialize(data["-path-"].ToString(), JsonConvert.DeserializeObject<List<string>>(data["-cached-"].ToString()), controller, true))
+                    if (!model.Initialize(data["-path-"].ToString(), JsonConvert.DeserializeObject<List<string>>(data["-cached-"].ToString()), controller, true, false))
                     {
                         throw new ObjectNotFoundException("Unknown path");
                     }

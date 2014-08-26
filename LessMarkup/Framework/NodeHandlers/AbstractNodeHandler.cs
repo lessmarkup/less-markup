@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Framework.NodeHandlers
@@ -11,13 +12,14 @@ namespace LessMarkup.Framework.NodeHandlers
     public abstract class AbstractNodeHandler : INodeHandler
     {
         private long? _objectId;
-        private string _path;
         private object _settings;
         private NodeAccessType _accessType;
         private readonly List<string> _scripts = new List<string>(); 
         private readonly List<string> _stylesheets = new List<string>();
 
-        public string Path { get { return _path; } }
+        public string Path { get; private set; }
+
+        public string FullPath { get; private set; }
 
         public long? ObjectId { get { return _objectId; } }
 
@@ -60,12 +62,13 @@ namespace LessMarkup.Framework.NodeHandlers
             return GetViewData();
         }
 
-        object INodeHandler.Initialize(long? objectId, object settings, object controller, string path, NodeAccessType accessType)
+        object INodeHandler.Initialize(long? objectId, object settings, object controller, string path, string fullPath, NodeAccessType accessType)
         {
             _objectId = objectId;
-            _path = path;
+            Path = path;
             _settings = settings;
             _accessType = accessType;
+            FullPath = fullPath;
 
             return Initialize(controller);
         }
@@ -92,6 +95,18 @@ namespace LessMarkup.Framework.NodeHandlers
         string INodeHandler.TemplateId { get { return TemplateId; } }
 
         string INodeHandler.ViewType { get { return ViewType; } }
+
+        ActionResult INodeHandler.CreateResult()
+        {
+            return CreateResult();
+        }
+
+        public object Context { get; set; }
+
+        protected virtual ActionResult CreateResult()
+        {
+            return null;
+        }
 
         #endregion
 

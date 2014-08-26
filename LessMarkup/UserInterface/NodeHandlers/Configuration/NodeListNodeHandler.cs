@@ -444,7 +444,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             handler.Initialize(SiteId, nodeId);
 
-            ((INodeHandler) handler).Initialize(nodeId, null, null, path, AccessType);
+            ((INodeHandler) handler).Initialize(nodeId, null, null, path, FullPath + "/" + path, AccessType);
 
             return new ChildHandlerSettings
             {

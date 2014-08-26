@@ -104,6 +104,7 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\TextNotFoundException.cs" />
+    <Compile Include="RecordModel\Align.cs" />
     <Compile Include="RecordModel\InputFile.cs" />
     <Compile Include="RecordModel\IRecordModelCache.cs" />
     <Compile Include="RecordModel\IRecordModelDefinition.cs" />

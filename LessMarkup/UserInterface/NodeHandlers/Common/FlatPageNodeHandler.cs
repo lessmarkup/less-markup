@@ -32,6 +32,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             public string UniqueId { get; set; }
             public int Level { get; set; }
             public string Path { get; set; }
+            public string FullPath { get; set; }
             public NodeAccessType AccessType { get; set; }
             public ICachedNodeInformation Source { get; set; }
         }
@@ -95,6 +96,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     Anchor = childAnchor + child.Path,
                     Level = level,
                     Path = child.FullPath,
+                    FullPath = child.FullPath,
                     Source = child,
                     AccessType = accessType.Value
                 };
@@ -143,7 +145,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
                     }
 
-                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path, node.AccessType);
+                    handler.Initialize(node.NodeId, nodeSettings, controller, node.Path, node.FullPath, node.AccessType);
 
                     node.ViewData = handler.GetViewData();
                     node.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller) controller);
@@ -233,7 +235,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
             }
 
-            handler.Initialize(node.NodeId, nodeSettings, null, node.Path, accessType.Value);
+            handler.Initialize(node.NodeId, nodeSettings, null, node.Path, node.FullPath, accessType.Value);
 
             return new ChildHandlerSettings
             {

@@ -10,5 +10,6 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string Title { get; set; }
         public string ImageUrl { get; set; }
         public bool Selected { get; set; }
+        public int Level { get; set; }
     }
 }

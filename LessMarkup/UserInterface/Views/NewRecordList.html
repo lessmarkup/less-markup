@@ -7,21 +7,21 @@
         <button class="btn btn-primary" ng-click="refreshNewRecords()" ng-show="hasNewRecords">[[[translate GetNewRecords]]]</button>
     </div>
 
-    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
+    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPageNumeric" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems" ng-class="{ 'grid-refreshing' : updating }"></pagination>
 
-    <table class="grid-control" ng-class="{ 'show-options' : showOptions, 'has-options' : hasOptionsBar }">
+    <table class="grid-control" ng-class="{ 'show-options' : showOptions, 'has-options' : hasOptionsBar, 'grid-refreshing' : updating }">
         <tr>
-            <th ng-repeat="column in columns" width="{{column.width}}" colspan="{{column.colSpan}}">
+            <th ng-repeat="column in columns" width="{{column.width}}" colspan="{{column.colSpan}}" class="{{column.headerClass}}">
                 <span ng-click="sortColumn(column)" ng-bind="column.text" ng-class="{ 'sort-up' : column.sort == 'up', 'sort-down' : column.sort == 'down' }"></span>
             </th>
         </tr>
         <tr ng-repeat="row in rows" ng-class="{ 'odd': row.isOdd }">
-            <td ng-if="hasOptionsBar" class="grid-cell-options grid-data" cell-show-options ng-click="onClickOptions(row)"><span></span></td>
-            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope }" class="grid-data" cell-show-options ng-click="onClickOptions(row)"></td>
+            <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row)"><span></span></td>
+            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope }" class="{{column.cellClass}}" cell-show-options ng-click="onClickOptions(row)"></td>
         </tr>
     </table>
 
-    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems"></pagination>
+    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPageNumeric" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems" ng-class="{ 'grid-refreshing' : updating }"></pagination>
 
     <div class="grid-control-panel-bottom" ng-if="toolbarButtons.length > 0">
         <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>

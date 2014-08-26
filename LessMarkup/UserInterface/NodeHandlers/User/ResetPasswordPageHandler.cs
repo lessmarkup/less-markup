@@ -1,0 +1,106 @@
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
+using LessMarkup.UserInterface.Model.User;
+using LessMarkup.UserInterface.NodeHandlers.Common;
+
+namespace LessMarkup.UserInterface.NodeHandlers.User
+{
+    public class ResetPasswordPageHandler : DialogNodeHandler<ChangePasswordModel>
+    {
+        private string _ticket;
+
+        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly IUserSecurity _userSecurity;
+        private readonly ISiteMapper _siteMapper;
+
+        public ResetPasswordPageHandler(IDomainModelProvider domainModelProvider, IUserSecurity userSecurity, IDataCache dataCache, ISiteMapper siteMapper) : base(dataCache)
+        {
+            _domainModelProvider = domainModelProvider;
+            _userSecurity = userSecurity;
+            _siteMapper = siteMapper;
+        }
+
+        public void Initialize(string ticket)
+        {
+            _ticket = ticket;
+        }
+
+        protected override ActionResult CreateResult()
+        {
+            var siteId = _siteMapper.SiteId;
+
+            if (!siteId.HasValue)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
+
+            if (!userId.HasValue)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                if (!domainModel.GetCollection<DataObjects.Security.User>().Any(u => u.Id == userId && u.SiteId == siteId))
+                {
+                    return new HttpNotFoundResult();
+                }
+            }
+
+            return null;
+        }
+
+        protected override ChangePasswordModel LoadObject()
+        {
+            return Interfaces.DependencyResolver.Resolve<ChangePasswordModel>();
+        }
+
+        protected override string SaveObject(ChangePasswordModel changedObject)
+        {
+            var siteId = _siteMapper.SiteId;
+
+            if (!siteId.HasValue)
+            {
+                return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
+            }
+
+            var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
+
+            if (!userId.HasValue)
+            {
+                return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
+            }
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                var user = domainModel.GetCollection<DataObjects.Security.User>().FirstOrDefault(u => u.Id == userId && u.SiteId == siteId);
+
+                if (user == null)
+                {
+                    return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
+                }
+
+                string salt;
+                string encodedPassword;
+                _userSecurity.ChangePassword(changedObject.Password, out salt, out encodedPassword);
+
+                user.Password = encodedPassword;
+                user.Salt = salt;
+                user.LastPasswordChanged = DateTime.UtcNow;
+
+                domainModel.SaveChanges();
+
+                return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChanged);
+            }
+        }
+    }
+}

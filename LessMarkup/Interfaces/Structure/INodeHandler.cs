@@ -4,12 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace LessMarkup.Interfaces.Structure
 {
     public interface INodeHandler
     {
-        object Initialize(long? objectId, object settings, object controller, string path, NodeAccessType accessType);
+        object Initialize(long? objectId, object settings, object controller, string path, string fullPath, NodeAccessType accessType);
         object GetViewData();
         bool HasChildren { get; }
         bool IsStatic { get; }
@@ -20,5 +21,7 @@ namespace LessMarkup.Interfaces.Structure
         string ViewType { get; }
         List<string> Scripts { get; }
         NodeAccessType AccessType { get; }
+        ActionResult CreateResult();
+        object Context { get; set; }
     }
 }

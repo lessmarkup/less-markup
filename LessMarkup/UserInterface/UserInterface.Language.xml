@@ -92,6 +92,13 @@
     <Translation Id="GeneratePassword" Text="Generate Password"/>
     <Translation Id="EmailNotVerified" Text="E-mail is not verified or not approved. Please check your inbox."/>
     <Translation Id="Login" Text="Login"/>
+    <Translation Id="ForgotPassword" Text="Forgot Password"/>
+    <Translation Id="ForgotPasswordMessage" Text="Enter your e-mail address. You will receive e-mail with instructions on how to restore your account. Please ensure that you have entered valid password for this account as if there is no user with specified e-mail then no hint will be given for security purposes."/>
+    <Translation Id="RestorePassword" Text="Restore Password"/>
+    <Translation Id="RestorePasswordRequestSent" Text="Password restore request was sent to the specified e-mail address."/>
+    <Translation Id="PasswordChanged" Text="Password was successfully changed. Now you can login using your new password and your e-mail."/>
+    <Translation Id="PasswordChangeError" Text="Cannot change password"/>
+    <Translation Id="ChangePassword" Text="Change Password"/>
     <!--
     <Translation Id="" Text=""/>
     -->

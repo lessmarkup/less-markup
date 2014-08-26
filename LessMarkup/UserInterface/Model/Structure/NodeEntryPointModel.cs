@@ -14,7 +14,6 @@ using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.User;
-using LessMarkup.UserInterface.NodeHandlers.Common;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -42,6 +41,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string LogoImageUrl { get; set; }
         public string InitialData { get; set; }
         public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
+        public ActionResult Result { get; set; }
 
         public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ISiteMapper siteMapper)
         {
@@ -51,38 +51,33 @@ namespace LessMarkup.UserInterface.Model.Structure
             _engineConfiguration = engineConfiguration;
         }
 
-        private NavigationBarModel CreateNavigationBarChild(ICachedNodeInformation node)
+        private void FillNavigationBarItems(IEnumerable<ICachedNodeInformation> nodes, int level, List<MenuItemModel> menuItems)
         {
-            var model = new NavigationBarModel
+            foreach (var node in nodes)
             {
-                Children = new List<NavigationBarModel>(),
-                Title = node.Title,
-                Url = node.FullPath
-            };
-
-            if (node.Children == null || node.HandlerType == typeof(FlatPageNodeHandler))
-            {
-                return model;
-            }
-
-            foreach (var child in node.Children)
-            {
-                if (!child.Visible || child.HandlerType == typeof(FlatPageNodeHandler))
+                if (!node.Visible)
                 {
                     continue;
                 }
 
-                var accessType = child.CheckRights(_currentUser);
+                var accessType = node.CheckRights(_currentUser);
 
-                if (!accessType.HasValue || accessType.Value == NodeAccessType.NoAccess)
+                if (accessType.HasValue && accessType.Value == NodeAccessType.NoAccess)
                 {
                     continue;
                 }
 
-                model.Children.Add(CreateNavigationBarChild(child));
-            }
+                var model = new MenuItemModel
+                {
+                    Title = node.Title,
+                    Url = node.FullPath,
+                    Level = level,
+                };
 
-            return model;
+                menuItems.Add(model);
+
+                FillNavigationBarItems(node.Children, level+1, menuItems);
+            }
         }
 
         public bool Initialize(string path, System.Web.Mvc.Controller controller)
@@ -91,7 +86,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             string nodeLoadError = null;
             try
             {
-                if (!viewData.Initialize(path, null, controller, true))
+                if (!viewData.Initialize(path, null, controller, true, true))
                 {
                     return false;
                 }
@@ -100,6 +95,12 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 this.LogException(e);
                 nodeLoadError = e.Message;
+            }
+
+            if (viewData.Result != null)
+            {
+                Result = viewData.Result;
+                return true;
             }
 
             var nodeCache = _dataCache.Get<INodeCache>();
@@ -157,46 +158,34 @@ namespace LessMarkup.UserInterface.Model.Structure
                     settings = JsonConvert.DeserializeObject(nodeInfo.Settings);
                 }
 
-                node.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, accessType.Value);
+                node.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType.Value);
 
                 var notificationProvider = node as INotificationProvider;
 
-                var notificationInfo = new NotificationInfo
+                if (notificationProvider != null)
                 {
-                    Id = nodeInfo.NodeId,
-                    Title = notificationProvider.Title,
-                    Tooltip = notificationProvider.Tooltip,
-                    Icon = notificationProvider.Icon,
-                    Version = notificationProvider.Version,
-                    Path = nodeInfo.FullPath,
-                    Count = 0
-                };
+                    var notificationInfo = new NotificationInfo
+                    {
+                        Id = nodeInfo.NodeId,
+                        Title = notificationProvider.Title,
+                        Tooltip = notificationProvider.Tooltip,
+                        Icon = notificationProvider.Icon,
+                        Version = notificationProvider.Version,
+                        Path = nodeInfo.FullPath,
+                        Count = 0
+                    };
 
-                notifications.Add(notificationInfo);
+                    notifications.Add(notificationInfo);
+                }
             }
 
-            List<NavigationBarModel> navigationTree = null;
+            List<MenuItemModel> navigationTree = null;
 
             if (hasTree)
             {
-                navigationTree = new List<NavigationBarModel>();
+                navigationTree = new List<MenuItemModel>();
 
-                foreach (var childNode in rootNode.Children)
-                {
-                    if (!childNode.Visible)
-                    {
-                        continue;
-                    }
-
-                    var accessType = childNode.CheckRights(_currentUser);
-
-                    if (accessType.HasValue && accessType.Value == NodeAccessType.NoAccess)
-                    {
-                        continue;
-                    }
-
-                    navigationTree.Add(CreateNavigationBarChild(childNode));
-                }
+                FillNavigationBarItems(rootNode.Children, 0, navigationTree);
             }
 
             InitialData = JsonConvert.SerializeObject(new
@@ -209,6 +198,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 ShowConfiguration = _currentUser.IsAdministrator,
                 ConfigurationPath = "/" + Constants.NodePath.Configuration,
                 ProfilePath = "/" + Constants.NodePath.Profile,
+                ForgotPasswordPath = "/" + Constants.NodePath.ForgotPassword,
                 UserLoggedIn = _currentUser.UserId.HasValue,
                 UserNotVerified = !_currentUser.IsValidated || !_currentUser.IsApproved,
                 UserName = _currentUser.Email ?? "",
@@ -226,6 +216,11 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public ActionResult CreateResult(System.Web.Mvc.Controller controller)
         {
+            if (Result != null)
+            {
+                return Result;
+            }
+
             var result = new ViewResult();
             controller.ViewData.Model = this;
             result.ViewData = controller.ViewData;

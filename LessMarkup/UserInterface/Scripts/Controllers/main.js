@@ -44,10 +44,116 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.hasNavigationTree = $scope.navigationTree != null && $scope.navigationTree.length > 0;
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
+    $scope.forgotPasswordPath = initialData.ForgotPasswordPath;
     $scope.getViewScope = function () { return $scope; }
     $scope.showXsMenu = false;
     $scope.notifications = initialData.Notifications;
     $scope.recaptchaPublicKey = initialData.RecaptchaPublicKey;
+    $scope.lastActivity = new Date().getDate() / 1000;
+    $scope.title = $scope.rootTitle;
+    var pageProperties = {};
+
+    function resetPageProperties(currentLink) {
+        pageProperties = {};
+
+        if (!currentLink) {
+            currentLink = window.location.href;
+        }
+
+        var queryPos = currentLink.indexOf('?');
+
+        if (queryPos > 0) {
+            var query = currentLink.substring(queryPos + 1, currentLink.length);
+            var parameters = query.split('&');
+            for (var i = 0; i < parameters.length; i++) {
+                if (parameters[i].length == 0) {
+                    continue;
+                }
+                var t = parameters[i].split('=');
+                var name = t[0];
+                var value = t.length > 0 ? t[1] : '';
+                pageProperties[name] = value;
+            }
+        }
+    }
+
+    resetPageProperties();
+
+    if ($scope.hasNavigationTree) {
+        for (var i = 0; i < $scope.navigationTree.length; i++) {
+            var item = $scope.navigationTree[i];
+            item.style = 'margin-left:' + (item.Level).toString() + 'em;';
+        }
+    }
+
+    $scope.onUserActivity = function () {
+        $scope.lastActivity = new Date().getDate() / 1000;
+        $scope.$broadcast("UserActivity", {});
+    }
+
+    $scope.getDynamicDelay = function() {
+        var activityDelayMin = (new Date().getDate() / 1000 - $scope.lastActivity) / 60;
+
+        if (activityDelayMin < 2) {
+            return 30;
+        }
+
+        if (activityDelayMin < 5) {
+            return 60;
+        }
+
+        if (activityDelayMin < 10) {
+            return 60 * 2;
+        }
+
+        return -1;
+    }
+
+    $scope.getPageProperty = function(name, defaultValue) {
+        if (pageProperties.hasOwnProperty(name)) {
+            return pageProperties[name];
+        }
+        return defaultValue;
+    }
+
+    function updatePageHistory() {
+        var query = "";
+
+        for (var property in pageProperties) {
+
+            var value = pageProperties[property];
+
+            if (value == null || value.length == 0) {
+                continue;
+            }
+
+            if (query.length > 0) {
+                query += "&";
+            }
+            query += property + "=" + value;
+        }
+
+        var newFullPath = window.location.protocol + "//" + window.location.host + $scope.path;
+
+        if (query.length > 0) {
+            newFullPath += "?" + query;
+        }
+
+        if (window.location.href != newFullPath) {
+            history.pushState(newFullPath, $scope.title, newFullPath);
+        }
+    }
+
+    $scope.setPageProperty = function (name, value) {
+
+        if ($scope.getPageProperty(name, null) == value) {
+            return;
+        }
+
+        pageProperties[name] = value;
+
+        updatePageHistory();
+    }
 
     if ($scope.notifications.length) {
 
@@ -68,12 +174,30 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
 
         var timeoutCancel = null;
+        var lastDelay = 0;
 
-        function subscribeForUpdates() {
-            if (timeoutCancel == null) {
-                timeoutCancel = $timeout(getUpdates, 10 * 1000);
+        function cancelUpdates() {
+            if (timeoutCancel != null) {
+                $timeout.cancel(timeoutCancel);
+                timeoutCancel = null;
             }
         }
+
+        function subscribeForUpdates() {
+            cancelUpdates();
+            lastDelay = $scope.getDynamicDelay();
+            if (lastDelay > 0) {
+                timeoutCancel = $timeout(getUpdates, lastDelay * 1000);
+            }
+        }
+
+        $scope.$on('UserActivity', function() {
+            var delay = $scope.getDynamicDelay();
+            if (delay != lastDelay) {
+                cancelUpdates();
+                $timeout(getUpdates, 1000);
+            }
+        });
 
         function getUpdates() {
             timeoutCancel = null;
@@ -123,7 +247,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $(window).on('popstate', function () {
-        $scope.navigateToView(location.pathname);
+        resetPageProperties();
+        $scope.navigateToView(location.pathname, true);
     });
 
     $scope.isToolbarButtonEnabled = function (id) {
@@ -131,6 +256,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.onToolbarButtonClick = function (id) {
+        $scope.onUserActivity();
         commandHandler.invoke(id, this);
     }
 
@@ -198,13 +324,15 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.showLogin = function () {
-        inputForm.editObject($scope, null, $scope.viewData.LoginModelId, function(object, success, failure) {
+        $scope.onUserActivity();
+        inputForm.editObject($scope, null, $scope.viewData.LoginModelId, function (object, success, failure) {
             $scope.doLogin(null, object, success, failure);
         });
     }
 
     $scope.doLogin = function (administratorKey, object, success, failure) {
         $scope.userLoginError = "";
+        $scope.onUserActivity();
 
         var userEmail;
         var userPassword;
@@ -440,12 +568,9 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         $scope.path = url;
         $scope.resetAlerts();
+        $scope.title = data.Title;
 
-        var newFullPath = window.location.protocol + "//" + window.location.host + url;
-
-        if (window.location.href != newFullPath) {
-            history.pushState(newFullPath, data.Title, newFullPath);
-        }
+        updatePageHistory();
 
         var template;
         if (data.Template != null && data.Template.length > 0) {
@@ -502,8 +627,13 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         return $scope.path + "/" + path;
     }
 
-    $scope.navigateToView = function (url) {
+    $scope.navigateToView = function (url, leaveProperties) {
         $scope.hideXsMenu();
+        $scope.onUserActivity();
+
+        if (!leaveProperties) {
+            resetPageProperties(url);
+        }
 
         if ($scope.staticNodes.hasOwnProperty(url)) {
             onNodeLoaded($scope.staticNodes[url], url);
@@ -544,4 +674,3 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     lazyLoad.initialize();
     onNodeLoaded(initialData.ViewData, initialData.Path);
 });
-

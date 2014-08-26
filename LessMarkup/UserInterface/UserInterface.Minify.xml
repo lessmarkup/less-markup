@@ -2,7 +2,6 @@
 <Minify>
   <Resources>
     <Resource Plain="scripts/lib/jquery/jquery-2.1.1.js" Minified="scripts/lib/jquery/jquery-2.1.1.min.js" />
-    <!--<Resource>scripts/lib/jquery/jquery-ui</Resource>-->
     <Resource Plain="scripts/lib/angular/angular.js" Minified="scripts/lib/angular/angular.min.js" />
     <Resource Plain="scripts/lib/bootstrap/bootstrap.js" Minified="scripts/lib/bootstrap/bootstrap.min.js" />
     <Resource Plain="scripts/lib/bootstrap/ui-bootstrap.js" Minified="scripts/lib/bootstrap/ui-bootstrap.min.js" />

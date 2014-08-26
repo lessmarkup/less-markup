@@ -64,11 +64,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 return null;
             }
 
-            handler.Initialize(recordId, null, null, split[0], AccessType);
+            var localPath = string.Join("/", split.Take(2));
+
+            handler.Initialize(recordId, null, null, split[0], FullPath + "/" + localPath, AccessType);
 
             return new ChildHandlerSettings
             {
-                Path = string.Join("/", split.Take(2)),
+                Path = localPath,
                 Title = cellLinkHandler.Text,
                 Handler = handler,
                 Id = recordId,

@@ -68,7 +68,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                         settings = JsonConvert.DeserializeObject(nodeInfo.Settings);
                     }
 
-                    handler.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, accessType ?? NodeAccessType.Read);
+                    handler.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType ?? NodeAccessType.Read);
 
                     var countAndVersion = ((INotificationProvider) handler).GetCountAndVersion(request.Version, domainModel);
 

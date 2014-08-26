@@ -11,7 +11,8 @@ namespace LessMarkup.Interfaces.Security
     {
         void ChangePassword(string password, out string salt, out string encodedPassword);
         long CreateUser(string username, string password, string email, string address, UrlHelper urlHelper, bool preApproved, bool generatePassword);
-        string CreatePasswordValidationToken(long? userId);
+        string CreatePasswordChangeToken(long? userId);
+        long? ValidatePasswordChangeToken(string token);
         string CreateAccessToken(int collectionId, long entityId, EntityAccessType accessType, long? userId, DateTime? expirationTime = null);
         bool ValidateAccessToken(string token, int collectionId, long entityId, EntityAccessType accessType, long? userId);
         string GenerateUniqueId();

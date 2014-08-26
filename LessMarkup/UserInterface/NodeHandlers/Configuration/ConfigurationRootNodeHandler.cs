@@ -184,7 +184,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             path = parts[0];
             parts.RemoveAt(0);
 
-            handler.Initialize(null, null, null, path, NodeAccessType.Read);
+            handler.Initialize(null, null, null, path, FullPath + "/" + path, NodeAccessType.Read);
 
             return new ChildHandlerSettings
             {

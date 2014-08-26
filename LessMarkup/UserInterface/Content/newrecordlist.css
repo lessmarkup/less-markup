@@ -79,10 +79,27 @@
     width: 1.7em;
 }
 
+.grid-control .grid-left {
+    text-align: left;
+}
+
+.grid-control .grid-right {
+    text-align: right;
+}
+
+.grid-control .grid-center {
+    text-align: center;
+}
+
 .recordlist-refresh-panel {
     text-align: center;
 }
 
 .recordlist-refresh-panel button {
     margin: 1em;
+}
+
+.grid-refreshing {
+    opacity: 0.4;
+    cursor: wait;
 }

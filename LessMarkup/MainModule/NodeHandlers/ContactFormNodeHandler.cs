@@ -6,6 +6,7 @@ using System;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -13,6 +14,10 @@ namespace LessMarkup.MainModule.NodeHandlers
 {
     public class ContactFormNodeHandler : DialogNodeHandler<SendContactModel>
     {
+        public ContactFormNodeHandler(IDataCache dataCache) : base(dataCache)
+        {
+        }
+
         protected override SendContactModel LoadObject()
         {
             var contactFormSettings = GetSettings<ContactFormModel>();

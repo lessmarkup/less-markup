@@ -15,7 +15,6 @@ using System.Web.Security;
 using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Security.Models;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -65,9 +64,34 @@ namespace LessMarkup.Engine.Security
 
         #region IUserSecurity Implementation
 
-        public string CreatePasswordValidationToken(long? userId)
+        public string CreatePasswordChangeToken(long? userId)
         {
             return CreateAccessToken(AbstractDomainModel.GetCollectionId<User>(), 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+        }
+
+        public long? ValidatePasswordChangeToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return null;
+            }
+
+            var validation = DecryptObject<AccessToken>(token);
+
+            if (validation == null)
+            {
+                return null;
+            }
+
+            if (validation.Ticks.HasValue)
+            {
+                if (DateTime.UtcNow.Ticks > validation.Ticks.Value)
+                {
+                    return null;
+                }
+            }
+
+            return validation.UserId;
         }
 
         public void ChangePassword(string password, out string salt, out string encodedPassword)

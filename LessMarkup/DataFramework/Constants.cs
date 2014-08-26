@@ -120,6 +120,7 @@ namespace LessMarkup.DataFramework
             public const string Configuration = "configuration";
             public const string Profile = "profile";
             public const string UserCards = "users";
+            public const string ForgotPassword = "forgot_password";
         }
     }
 }

@@ -42,7 +42,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             handler.Initialize(userId);
 
-            ((INodeHandler)handler).Initialize(null, null, null, parts[0], AccessType);
+            ((INodeHandler)handler).Initialize(null, null, null, parts[0], "", AccessType);
 
             var userCache = _dataCache.Get<IUserCache>(userId);
 

@@ -134,7 +134,22 @@ namespace LessMarkup.Framework.Helpers
                         imageHeight = imageData.Height;
                     }
 
-                    using (var thumbnail = imageData.GetThumbnailImage(siteConfiguration.ThumbnailWidth, siteConfiguration.ThumbnailHeight, () => false, IntPtr.Zero))
+                    var thumbnailWidth = (double) imageData.Width;
+                    var thumbnailHeight = (double) imageData.Height;
+
+                    if (thumbnailWidth > siteConfiguration.ThumbnailWidth)
+                    {
+                        thumbnailHeight *= siteConfiguration.ThumbnailWidth/thumbnailWidth;
+                        thumbnailWidth = siteConfiguration.ThumbnailWidth;
+                    }
+
+                    if (thumbnailHeight > siteConfiguration.ThumbnailHeight)
+                    {
+                        thumbnailWidth *= siteConfiguration.ThumbnailHeight/thumbnailHeight;
+                        thumbnailHeight = siteConfiguration.ThumbnailHeight;
+                    }
+
+                    using (var thumbnail = imageData.GetThumbnailImage((int)thumbnailWidth, (int)thumbnailHeight, () => false, IntPtr.Zero))
                     {
                         using (var stream = new MemoryStream())
                         {

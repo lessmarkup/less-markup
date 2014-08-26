@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.HtmlTemplate;
@@ -30,6 +31,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public bool IsStatic { get; set; }
         public string Path { get; set; }
         public List<string> Require { get; set; }
+        public ActionResult Result { get; set; }
 
         internal INodeHandler NodeHandler { get { return _nodeHandler; } }
 
@@ -99,8 +101,10 @@ namespace LessMarkup.UserInterface.Model.Structure
             Breadcrumbs.Add(new NodeBreadcrumbModel { Text = node.Title, Url = node.FullPath });
         }
 
-        public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements)
+        public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements, bool tryCreateResult)
         {
+            path = HttpUtility.UrlDecode(path);
+
             var nodeCache = _dataCache.Get<INodeCache>();
 
             ICachedNodeInformation node;
@@ -159,7 +163,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, _nodeHandler.SettingsModel);
             }
 
-            _nodeHandler.Initialize(node.NodeId, settingsObject, controller, path, accessType.Value);
+            _nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType.Value);
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
@@ -188,6 +192,15 @@ namespace LessMarkup.UserInterface.Model.Structure
                 }
 
                 rest = childSettings.Rest;
+            }
+
+            if (tryCreateResult)
+            {
+                Result = _nodeHandler.CreateResult();
+                if (Result != null)
+                {
+                    return true;
+                }
             }
 
             TemplateId = _nodeHandler.TemplateId;

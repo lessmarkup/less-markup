@@ -8,6 +8,7 @@ using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.UserInterface.Model.RecordModel;
 
@@ -19,9 +20,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected abstract string SaveObject(T changedObject);
 
         private readonly InputFormDefinitionModel _definitionModel;
+        private readonly IDataCache _dataCache;
 
-        protected DialogNodeHandler()
+        protected DialogNodeHandler(IDataCache dataCache)
         {
+            _dataCache = dataCache;
+
             _definitionModel = DependencyResolver.Resolve<InputFormDefinitionModel>();
             _definitionModel.Initialize(typeof(T));
 
@@ -86,8 +90,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             };
         }
 
-        public string Save(T changedObject)
+        public string Save(T changedObject, string rawChangedObject)
         {
+            var model = _dataCache.Get<IRecordModelCache>().GetDefinition<T>();
+            model.ValidateInput(changedObject, false, rawChangedObject);
             return SaveObject(changedObject) ?? LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.SuccessfullySaved);
         }
 

@@ -89,5 +89,12 @@ namespace LessMarkup.UserInterface
         GetNewRecords,
         GeneratePassword,
         Login,
+        ForgotPassword,
+        ForgotPasswordMessage,
+        RestorePassword,
+        RestorePasswordRequestSent,
+        PasswordChanged,
+        PasswordChangeError,
+        ChangePassword,
     }
 }

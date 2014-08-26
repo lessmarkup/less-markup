@@ -17,6 +17,7 @@ namespace LessMarkup.Interfaces.RecordModel
             Resizable = true;
             Pinnable = true;
             TextId = textId;
+            Align = Align.Left;
         }
 
         public string Width { get; set; }
@@ -34,5 +35,6 @@ namespace LessMarkup.Interfaces.RecordModel
         public string CellUrl { get; set; }
         public bool AllowUnsafe { get; set; }
         public string Scope { get; set; }
+        public Align Align { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, handler.SettingsModel);
             }
 
-            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, accessType.Value);
+            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType.Value);
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
@@ -143,6 +143,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                 arguments[i] = JsonHelper.ResolveAndDeserializeObject(JsonConvert.SerializeObject(parameter), parameterType);
             }
+
+            handler.Context = dataLowered;
 
             return method.Invoke(handler, arguments);
         }

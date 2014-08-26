@@ -120,7 +120,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     }
                 }
 
-                handler.Initialize(page.PageId, nodeSettings, controller, page.Path, page.AccessType ?? AccessType);
+                handler.Initialize(page.PageId, nodeSettings, controller, page.Path, page.FullPath, page.AccessType ?? AccessType);
 
                 page.ViewData = handler.GetViewData();
                 page.ViewBody = LoadNodeViewModel.GetViewTemplate(handler, _dataCache, (System.Web.Mvc.Controller)controller);
@@ -183,7 +183,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 nodeSettings = JsonConvert.DeserializeObject(page.Settings, handler.SettingsModel);
             }
 
-            handler.Initialize(page.PageId, nodeSettings, null, page.Path, page.AccessType ?? AccessType);
+            handler.Initialize(page.PageId, nodeSettings, null, page.Path, page.FullPath, page.AccessType ?? AccessType);
 
             return new ChildHandlerSettings
             {

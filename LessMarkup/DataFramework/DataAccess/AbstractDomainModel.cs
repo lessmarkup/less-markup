@@ -37,6 +37,8 @@ namespace LessMarkup.DataFramework.DataAccess
         protected AbstractDomainModel() : base(GetDatabase())
         {
             Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
+            Configuration.ValidateOnSaveEnabled = false;
         }
 
         protected AbstractDomainModel(long? siteId) : base(GetDatabase())
@@ -44,6 +46,8 @@ namespace LessMarkup.DataFramework.DataAccess
             _siteId = siteId;
             _siteIdSet = true;
             Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
+            Configuration.ValidateOnSaveEnabled = false;
         }
 
         internal void SetSiteId(ISiteMapper siteMapper)
@@ -232,9 +236,14 @@ namespace LessMarkup.DataFramework.DataAccess
 
         public void ImprovePerformance()
         {
-            Configuration.AutoDetectChangesEnabled = false;
             Configuration.ValidateOnSaveEnabled = false;
             Configuration.ProxyCreationEnabled = false;
+        }
+
+        public bool AutoDetectChangesEnabled
+        {
+            get { return Configuration.AutoDetectChangesEnabled; }
+            set { Configuration.AutoDetectChangesEnabled = value; }
         }
     }
 }
