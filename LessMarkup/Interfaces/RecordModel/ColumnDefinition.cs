@@ -25,6 +25,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public bool AllowUnsafe { get; set; }
         public string Scope { get; set; }
         public Align Align { get; set; }
+        public bool IgnoreOptions { get; set; }
 
         public void Initialize(ColumnAttribute configuration, PropertyInfo property)
         {
@@ -45,6 +46,7 @@ namespace LessMarkup.Interfaces.RecordModel
             AllowUnsafe = configuration.AllowUnsafe;
             Scope = configuration.Scope;
             Align = configuration.Align;
+            IgnoreOptions = configuration.IgnoreOptions;
         }
     }
 }

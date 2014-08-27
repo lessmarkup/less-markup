@@ -44,17 +44,17 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             if (!userId.HasValue)
             {
-                return !nodeAccess.UserId.HasValue;
+                return !nodeAccess.UserId.HasValue && !nodeAccess.GroupId.HasValue;
             }
 
-            if (nodeAccess.UserId.HasValue && nodeAccess.UserId.Value == userId.Value)
+            if (nodeAccess.UserId.HasValue)
             {
-                return true;
+                return nodeAccess.UserId.Value == userId.Value;
             }
 
             if (nodeAccess.GroupId.HasValue)
             {
-                return groupIds.Contains(nodeAccess.GroupId.Value);
+                return groupIds != null && groupIds.Contains(nodeAccess.GroupId.Value);
             }
 
             return false;

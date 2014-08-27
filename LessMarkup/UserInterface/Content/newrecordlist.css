@@ -35,7 +35,7 @@
     vertical-align: top;
 }
 
-.grid-control.has-options .grid-data {
+.grid-control.has-options .grid-data:not(.ignore-options) {
     cursor: pointer;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .grid-control-panel-top {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .grid-control-panel-bottom button, .grid-control-panel-top button {
@@ -102,4 +102,8 @@
 .grid-refreshing {
     opacity: 0.4;
     cursor: wait;
+}
+
+.pagination-top {
+    margin-top: 0;
 }

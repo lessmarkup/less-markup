@@ -7,7 +7,7 @@
         <button class="btn btn-primary" ng-click="refreshNewRecords()" ng-show="hasNewRecords">[[[translate GetNewRecords]]]</button>
     </div>
 
-    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPageNumeric" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems" ng-class="{ 'grid-refreshing' : updating }"></pagination>
+    <pagination ng-show="showPagination" items-per-page="itemsPerPage" boundary-links="true" direction-links="true" total-items="totalItems" ng-model="currentPageNumeric" class="pagination-sm pagination-top" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="paginationItems" ng-class="{ 'grid-refreshing' : updating }"></pagination>
 
     <table class="grid-control" ng-class="{ 'show-options' : showOptions, 'has-options' : hasOptionsBar, 'grid-refreshing' : updating }">
         <tr>
@@ -16,8 +16,8 @@
             </th>
         </tr>
         <tr ng-repeat="row in rows" ng-class="{ 'odd': row.isOdd }">
-            <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row)"><span></span></td>
-            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope }" class="{{column.cellClass}}" cell-show-options ng-click="onClickOptions(row)"></td>
+            <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row, null)"><span></span></td>
+            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope, options: !column.ignoreOptions }" class="{{column.cellClass}}" cell-show-options ng-click="onClickOptions(row, column)"></td>
         </tr>
     </table>
 

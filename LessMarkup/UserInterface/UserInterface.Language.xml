@@ -99,6 +99,7 @@
     <Translation Id="PasswordChanged" Text="Password was successfully changed. Now you can login using your new password and your e-mail."/>
     <Translation Id="PasswordChangeError" Text="Cannot change password"/>
     <Translation Id="ChangePassword" Text="Change Password"/>
+    <Translation Id="AddToMenu" Text="Add To Menu"/>
     <!--
     <Translation Id="" Text=""/>
     -->

@@ -1,7 +1,7 @@
 ﻿<div class="body1">
     <div class="body2">
         <header class="navbar navbar-default navbar-fixed-top" id="header">
-            <div class="navbar-inner">
+            <div class="navbar-inner" ui-scrollfix>
                 <div class="container" ng-cloak>
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" ng-click="showXsMenu = !showXsMenu">
@@ -35,7 +35,7 @@
                             </li>
                             <li class="dropdown" ng-if="hasNavigationTree">
                                 <a role="button" class="dropdown-toggle navbar-brand">
-                                    <span ng-bind="title"></span> <b class="caret"></b>
+                                    <span ng-bind="rootTitle"></span> <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -131,13 +131,18 @@
                 </div>
             </div>
         </header>
-
-        <ul class="breadcrumb container" ng-cloak ng-if="breadcrumbs.length > 0">
-            <li ng-repeat="item in breadcrumbs">
-                <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Text"></a>
-            </li>
-            <li class="active" ng-bind="title"></li>
-        </ul>
+        
+        <div class="breadcrumb-host" ui-scrollfix ng-if="breadcrumbs.length > 0 || loadingNewPage" ng-cloak>
+            <div class="container">
+                <ul class="breadcrumb">
+                    <li ng-repeat="item in breadcrumbs">
+                        <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Text"></a>
+                    </li>
+                    <li class="active" ng-bind="title"></li>
+                </ul>
+                <span ng-if="loadingNewPage"><span us-spinner="{radius:2,width:2,length:3,lines:9,top:'15px',left:'-4px',position:'relative'}"></span></span>
+            </div>
+        </div>
         
         <div class="loadmessage container" ng-cloak>[[[translate PleaseWaitLoading]]]</div>
 

@@ -96,5 +96,6 @@ namespace LessMarkup.UserInterface
         PasswordChanged,
         PasswordChangeError,
         ChangePassword,
+        AddToMenu
     }
 }

@@ -72,7 +72,8 @@ namespace LessMarkup.Engine.Helpers
                 }
                 else
                 {
-                    property.SetValue(value, JsonConvert.DeserializeObject(JsonConvert.SerializeObject(propertyValue), property.PropertyType));
+                    var serializedValue = JsonConvert.SerializeObject(propertyValue);
+                    property.SetValue(value, JsonConvert.DeserializeObject(serializedValue, property.PropertyType));
                 }
             }
 

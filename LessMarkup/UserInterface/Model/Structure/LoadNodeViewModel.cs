@@ -105,6 +105,15 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             path = HttpUtility.UrlDecode(path);
 
+            if (path != null)
+            {
+                var queryPost = path.IndexOf('?');
+                if (queryPost >= 0)
+                {
+                    path = path.Substring(0, queryPost);
+                }
+            }
+
             var nodeCache = _dataCache.Get<INodeCache>();
 
             ICachedNodeInformation node;

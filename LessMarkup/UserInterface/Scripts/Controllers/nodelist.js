@@ -217,6 +217,7 @@ define([], function() {
                     settings: settings
                 }, function (data) {
                     node.data.Settings = data;
+                    refreshFlatList();
                     success();
                 }, function (message) {
                     fail(message);
@@ -225,13 +226,19 @@ define([], function() {
         }
 
         $scope.changeProperties = function (node) {
-            var index = nodeIndex(node);
             inputForm.editObject($scope, node.data, $scope.viewData.NodeSettingsModelId, function (updatedNode, success, fail) {
+                updatedNode.Children = null;
                 $scope.sendAction("UpdateNode", {
                     node: updatedNode
                 }, function (returnedNode) {
-                    $scope.nodes[index].data = returnedNode;
-                    updateOrder();
+
+                    for (var property in returnedNode) {
+                        if (property != "Children") {
+                            node.data[property] = returnedNode[property];
+                        }
+                    }
+
+                    refreshFlatList();
                     success();
                 }, function (message) {
                     fail(message);

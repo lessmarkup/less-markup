@@ -23,9 +23,10 @@
 app.directive("cellShowOptions", function($compile) {
 
     return {
+        replace: false,
         link: function (scope, element) {
 
-            if (!scope.hasOptionsBar) {
+            if (!scope.hasOptionsBar || (scope.parameters && scope.parameter.options == false)) {
                 return;
             }
 
@@ -359,13 +360,17 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
         $scope.showOptions = false;
     }
 
-    $scope.onClickOptions = function(record) {
+    $scope.onClickOptions = function(record, column) {
 
         if ($scope.updating) {
             return;
         }
 
         if (!$scope.hasOptionsBar) {
+            return;
+        }
+
+        if (column != null && column.ignoreOptions) {
             return;
         }
 
@@ -679,6 +684,9 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
                 column.cellClass += " grid-right";
                 column.headerClass += " grid-right";
                 break;
+        }
+        if (column.ignoreOptions) {
+            column.cellClass += " ignore-options";
         }
         if (!column.template || column.template.length == 0) {
             var value = "data." + column.name;

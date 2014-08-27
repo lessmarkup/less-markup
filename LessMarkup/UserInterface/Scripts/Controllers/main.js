@@ -51,6 +51,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.recaptchaPublicKey = initialData.RecaptchaPublicKey;
     $scope.lastActivity = new Date().getDate() / 1000;
     $scope.title = $scope.rootTitle;
+    $scope.loadingNewPage = true;
     var pageProperties = {};
 
     function resetPageProperties(currentLink) {
@@ -247,8 +248,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $(window).on('popstate', function () {
-        resetPageProperties();
-        $scope.navigateToView(location.pathname, true);
+        $scope.navigateToView(location.pathname+location.search);
     });
 
     $scope.isToolbarButtonEnabled = function (id) {
@@ -562,6 +562,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
     function onNodeLoaded(data, url) {
 
+        $scope.loadingNewPage = false;
+
         if (url.substring(0, 1) != '/') {
             url = "/" + url;
         }
@@ -628,11 +630,20 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.navigateToView = function (url, leaveProperties) {
+
+        if ($scope.loadingNewPage) {
+            return false;
+        }
+
         $scope.hideXsMenu();
         $scope.onUserActivity();
 
         if (!leaveProperties) {
             resetPageProperties(url);
+            var queryPos = url.indexOf('?');
+            if (queryPos > 0) {
+                url = url.substring(0, queryPos);
+            }
         }
 
         if ($scope.staticNodes.hasOwnProperty(url)) {
@@ -641,12 +652,14 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
 
         var cachedItems = [];
-        for (var key in $scope.templateSources) {
-            if (!$scope.templateSources.hasOwnProperty(key)) {
+        for (var key in $scope.templates) {
+            if (!$scope.templates.hasOwnProperty(key)) {
                 continue;
             }
             cachedItems.push(key);
         }
+
+        $scope.loadingNewPage = true;
 
         $http.post("", {
             "-command-": "View",
@@ -661,6 +674,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             }
             onNodeLoaded(data.Data, url);
         }).error(function (data, status) {
+            $scope.loadingNewPage = false;
             $scope.showError(status > 0 ? "Request failed, error " + status.toString() : "Request failed, unknown communication error");
         });
 
@@ -672,5 +686,6 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     lazyLoad.initialize();
+
     onNodeLoaded(initialData.ViewData, initialData.Path);
 });

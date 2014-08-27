@@ -36,5 +36,6 @@ namespace LessMarkup.Interfaces.RecordModel
         public bool AllowUnsafe { get; set; }
         public string Scope { get; set; }
         public Align Align { get; set; }
+        public bool IgnoreOptions { get; set; }
     }
 }

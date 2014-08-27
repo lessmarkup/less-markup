@@ -191,7 +191,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             InitialData = JsonConvert.SerializeObject(new
             {
                 RootPath = rootNode.FullPath,
-                RootTitle = rootNode.Title,
+                RootTitle = _dataCache.Get<ISiteConfiguration>().SiteName,
                 Path = path ?? "",
                 HasLogin = hasLogin,
                 HasSearch = hasSearch,

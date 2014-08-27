@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -30,6 +31,17 @@ namespace LessMarkup.UserInterface.Model.Structure
         public object HandleRequest(Dictionary<string, object> data, System.Web.Mvc.Controller controller)
         {
             var path = data["-path-"].ToString();
+
+            path = HttpUtility.UrlDecode(path);
+
+            if (path != null)
+            {
+                var queryPost = path.IndexOf('?');
+                if (queryPost >= 0)
+                {
+                    path = path.Substring(0, queryPost);
+                }
+            }
 
             var nodeCache = _dataCache.Get<INodeCache>();
 
@@ -141,7 +153,9 @@ namespace LessMarkup.UserInterface.Model.Structure
                     continue;
                 }
 
-                arguments[i] = JsonHelper.ResolveAndDeserializeObject(JsonConvert.SerializeObject(parameter), parameterType);
+                var serialized = JsonConvert.SerializeObject(parameter);
+
+                arguments[i] = JsonHelper.ResolveAndDeserializeObject(serialized, parameterType);
             }
 
             handler.Context = dataLowered;

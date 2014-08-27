@@ -126,7 +126,7 @@ namespace LessMarkup.Engine.Structure
                     value = defaultValue.Value;
                 }
 
-                GetType().GetProperty(property.Name).SetValue(this, value);
+                GetType().GetProperty(property.Name).SetValue(this, Convert.ChangeType(value, property.PropertyType));
             }
         }
 

@@ -49,6 +49,7 @@ html, body {
 }
 
 .breadcrumb {
+    display: inline-block;
     background: inherit;
     padding-left: 0;
     margin-bottom: 1.5em;
@@ -343,4 +344,32 @@ li.navbar-notification a:hover span.badge {
 
 span.badge.active-notification {
     background: #428bca !important;
+}
+
+.breadcrumb-host > span {
+    position: relative;
+}
+
+.breadcrumb-host.ui-scrollfix {
+    position: fixed;
+    top: 50px;
+    background: white;
+    border-bottom: solid 1px #ccc;
+    width: 100%;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.175);
+    z-index:100;
+}
+
+.breadcrumb-host.ui-scrollfix ul {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.navbar-inner.ui-scrollfix {
+    box-shadow: none;
+}
+
+.breadcrumb > .active {
+    color: black;
+    font-weight: bold;
 }
