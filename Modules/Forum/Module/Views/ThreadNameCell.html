@@ -1,8 +1,17 @@
 ﻿<div class="thread-title">
-    <a href="{{getFullPath(data.Path)}}" ng-click="navigateToView(getFullPath(data.Path)); $event.stopPropagation();" ng-bind="data.Name"></a>
+    <a href="{{data.Path}}" ng-click="navigateToView(getFullPath(data.Path)); $event.stopPropagation();">
+        <span ng-bind="data.Name"></span>
+        <span ng-if="data.Unread" class="thread-unread">{{data.Unread}} unread</span>
+    </a>
 </div>
 <div ng-bind="data.Description" class="thread-statistics">
 </div>
 <div ng-if="data.Author" class="thread-statistics">
     Created on {{data.Created | date:'medium'}} by <a href="{{data.AuthorUrl}}" ng-click="navigateToView(data.AuthorUrl); $event.stopPropagation();">{{data.Author}}</a>
+</div>
+<div ng-if="data.ActiveUsers && data.ActiveUsers.length" class="thread-active-users thread-statistics">
+    <span>Currently viewing:</span>
+    <ul ng-repeat="user in data.ActiveUsers">
+        <li><a href="{{user.ProfileUrl}}" ng-click="navigateToView(user.ProfileUrl); $event.stopPropagation();" ng-bind="user.Name"></a></li>
+    </ul>
 </div>

@@ -33,5 +33,6 @@ namespace LessMarkup.Forum.Model
         Threads,
         ForumConfiguration,
         HasThreads,
+        Views
     }
 }

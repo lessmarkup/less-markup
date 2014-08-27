@@ -38,6 +38,7 @@
     <Translation Id="ThreadIsEmpty" Text="Thread is empty"/>
     <Translation Id="ForumConfiguration" Text="Forum configuration"/>
     <Translation Id="HasThreads" Text="Has Threads"/>
+    <Translation Id="Views" Text="Views"/>
     <!--
     <Translation Id="" Text=""/>
     -->

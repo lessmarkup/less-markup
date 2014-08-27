@@ -12,6 +12,7 @@ using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Forum.Model
@@ -19,13 +20,25 @@ namespace LessMarkup.Forum.Model
     [RecordModel(CollectionType = typeof(Collection))]
     public class ThreadModel
     {
+        public const int ActiveUserThresholdMinutes = 5;
+
+        public class WhoViews
+        {
+            public long UserId { get; set; }
+            public string Name { get; set; }
+            public string ProfileUrl { get; set; }
+        }
+
         public class Collection : AbstractModelCollection<ThreadModel>
         {
             private long _forumId;
             private NodeAccessType _accessType;
+            private readonly ICurrentUser _currentUser;
 
-            public Collection() : base(typeof(Thread))
-            { }
+            public Collection(ICurrentUser currentUser) : base(typeof (Thread))
+            {
+                _currentUser = currentUser;
+            }
 
             public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
@@ -53,8 +66,17 @@ namespace LessMarkup.Forum.Model
                     query = query.Where(t => !t.Removed && t.Posts.Any(p => !p.Removed));
                 }
 
+                var userId = _currentUser.UserId;
+
+                var lastSeenCheck = DateTime.UtcNow.AddMinutes(-ActiveUserThresholdMinutes);
+
                 return query
-                    .Select(t => new { Thread = t, Last = t.Posts.Where(p => !p.Removed).OrderByDescending(p => p.Created).FirstOrDefault()})
+                    .Select(t => new
+                    {
+                        Thread = t, 
+                        Last = t.Posts.Where(p => !p.Removed).OrderByDescending(p => p.Created).FirstOrDefault(),
+                        LastUpdate = userId.HasValue ? t.Views.Where(v => v.UserId == userId).Max(v => v.Updated) : (DateTime?) null
+                    })
                     .Select(t => new ThreadModel
                         {
                             ThreadId = t.Thread.Id,
@@ -70,7 +92,18 @@ namespace LessMarkup.Forum.Model
                             LastUser = t.Last.User.Name,
                             LastUserId = t.Last.UserId,
                             LastCreated = t.Last.Created,
-                            Posts = t.Thread.Posts.Count(p => !p.Removed)
+                            Posts = t.Thread.Posts.Count(p => !p.Removed),
+                            Unread = t.Thread.Removed ? 0 : (t.LastUpdate.HasValue ? t.Thread.Posts.Count(p => p.Created > t.LastUpdate && !p.Removed) : t.Thread.Posts.Count(p => !p.Removed)),
+                            Views = t.Thread.Views.Sum(v => (int?)v.Views) ?? 0,
+                            ActiveUsers = t.Thread.Views
+                                .Where(v => v.UserId != userId && v.LastSeen > lastSeenCheck)
+                                .Select(v => v.User)
+                                .Distinct()
+                                .Select(u => new WhoViews
+                                {
+                                    UserId = u.Id,
+                                    Name = u.Name
+                                }).ToList()
                         });
             }
 
@@ -150,6 +183,13 @@ namespace LessMarkup.Forum.Model
         public string LastUserUrl { get; set; }
 
         public DateTime? LastCreated { get; set; }
+
+        public List<WhoViews> ActiveUsers { get; set; } 
+
+        public int Unread { get; set; }
+
+        [Column(ForumTextIds.Views, Width = "50")]
+        public int Views { get; set; }
 
         [Column(ForumTextIds.Posts, CellTemplate = "~/Views/ThreadPostsCell.html", Width = "40%", CellClass = "forum-cell")]
         public int Posts { get; set; }
@@ -235,7 +275,7 @@ namespace LessMarkup.Forum.Model
             }
         }
 
-        public void PostProcess()
+        public void PostProcess(string fullPath)
         {
             if (AuthorId.HasValue)
             {
@@ -245,6 +285,14 @@ namespace LessMarkup.Forum.Model
             if (LastUserId.HasValue)
             {
                 LastUserUrl = UserHelper.GetUserProfileLink(LastUserId.Value);
+            }
+
+            if (ActiveUsers != null)
+            {
+                foreach (var user in ActiveUsers)
+                {
+                    user.ProfileUrl = UserHelper.GetUserProfileLink(user.UserId);
+                }
             }
         }
     }

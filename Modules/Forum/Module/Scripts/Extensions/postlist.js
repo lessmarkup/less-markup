@@ -18,7 +18,31 @@
                     }
                 }
             }
+
+            if ($scope.viewData.hasOwnProperty("lastRead")) {
+                var lastRead = $scope.viewData.lastRead;
+                if (data.hasOwnProperty("records")) {
+                    for (var i = 0; i < data.records.length; i++) {
+                        var record = data.records[i];
+                        if (lastRead == null || record.Created > lastRead) {
+                            lastRead = record.Created;
+                        }
+                    }
+                } else if (data.hasOwnProperty("record")) {
+                    var record = data.records[i];
+                    if (lastRead == null || record.Created > lastRead) {
+                        lastRead = record.Created;
+                    }
+                }
+
+                if (lastRead != null && ($scope.viewData.lastRead == null || $scope.viewData.lastRead < lastRead)) {
+                    $scope.sendAction("UpdateRead", {
+                        lastRead: lastRead
+                    }, function() {
+                        $scope.viewData.lastRead = lastRead;
+                    });
+                }
+            }
         }
     }
-
 });

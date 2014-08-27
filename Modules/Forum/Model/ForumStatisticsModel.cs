@@ -18,6 +18,8 @@ namespace LessMarkup.Forum.Model
         public long? LastAuthorId { get; set; }
         public string LastAuthorName { get; set; }
         public string LastAuthorUrl { get; set; }
+        internal long? LastNodeId { get; set; }
+        public string LastThreadUrl { get; set; }
         public DateTime? LastCreated { get; set; }
         public long? LastPostId { get; set; }
         public long? LastThreadId { get; set; }

@@ -175,7 +175,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
         protected override void PostProcessRecord(ThreadModel record)
         {
-            record.PostProcess();
+            record.PostProcess(FullPath);
         }
 
         protected override Type SettingsModel

@@ -79,8 +79,8 @@ blockquote[data-from] {
     color: #888;
 }
 
-.allforums + div {
-    margin-top: 2.5em;
+.allforums .allforums-control {
+    margin-bottom: 2.5em;
 }
 
 .allforums-control .forum-description {
@@ -123,4 +123,20 @@ blockquote[data-from] {
 
 .post-attachments li {
     margin-right: 2em;
+}
+
+.thread-unread {
+    font-size: x-small;
+    color: #128012;
+}
+
+.thread-active-users ul, .thread-active-users li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: inline-block;
+}
+
+.thread-active-users li {
+    margin-right: 1em;
 }

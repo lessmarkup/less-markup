@@ -23,8 +23,8 @@
                     <div ng-if="forum.Posts > 0">[[[translate Posts]]]: {{forum.Posts}}</div>
                     <div ng-if="forum.Posts == 0 && forum.Threads == 0">[[[translate ForumIsEmpty]]]</div>
                     <div ng-if="forum.LastAuthorId">
-                        [[[translate LastPost]]]: [[[translate LastPostCreated]]] {{forum.LastCreated | date:'medium'}} [[[translate LastPostBy]]]
-                        <a href="{{forum.LastAuthorUrl}}" ng-click="navigateToView(forum.LastAuthorUrl)">{{forum.LastAuthorName}}</a> [[[translate LastPostIn]]] {{forum.LastThreadTitle}}
+                        <a href="{{forum.LastThreadUrl+'?p=last'}}" ng-click="navigateToView(forum.LastThreadUrl+'?p=last')">[[[translate LastPost]]]</a>: [[[translate LastPostCreated]]] {{forum.LastCreated | date:'medium'}} [[[translate LastPostBy]]]
+                        <a href="{{forum.LastAuthorUrl}}" ng-click="navigateToView(forum.LastAuthorUrl)">{{forum.LastAuthorName}}</a> [[[translate LastPostIn]]] <a href="{{forum.LastThreadUrl}}" ng-click="navigateToView(forum.LastThreadUrl)">{{forum.LastThreadTitle}}</a>
                     </div>
                 </td>
             </tr>

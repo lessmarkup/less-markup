@@ -6,8 +6,8 @@
         <span>[[[translate UserRemoved]]]</span>
     </div>
 </div>
-<div ng-if="data.Avatar && data.Avatar.length" class="post-avatar">
-    <img ng-src="{{data.Avatar}}"/>
+<div ng-if="data.Avatar && data.Avatar.length">
+    <img ng-src="{{data.Avatar}}" class="img-thumbnail"/>
 </div>
 <div ng-if="data.Posts">
     <span>[[[translate Posts]]]: {{data.Posts}}</span>

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -19,12 +20,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     {
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ICurrentUser _currentUser;
 
         public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
+            _currentUser = currentUser;
         }
 
         protected override void AddEditActions()
@@ -230,6 +233,85 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 Handler = handler,
                 Path = path,
             };
+        }
+
+        protected override Dictionary<string, object> GetViewData()
+        {
+            var result = base.GetViewData();
+
+            var userId = _currentUser.UserId;
+
+            if (userId.HasValue && ObjectId.HasValue)
+            {
+                using (var domainModel = _domainModelProvider.Create())
+                {
+                    var lastRead = domainModel.GetSiteCollection<Thread>()
+                        .Where(t => t.Id == ObjectId)
+                        .Select(t => t.Views.Where(v => v.UserId == userId.Value).Max(v => v.Updated))
+                        .First();
+
+                    result["lastRead"] = lastRead;
+
+                    var view = domainModel.GetSiteCollection<ThreadView>()
+                        .Where(v => v.UserId == userId.Value && v.ThreadId == ObjectId.Value)
+                        .OrderByDescending(v => v.LastSeen)
+                        .FirstOrDefault(v => v.UserId == userId);
+                    if (view == null)
+                    {
+                        view = new ThreadView
+                        {
+                            ThreadId = ObjectId.Value, 
+                            UserId = userId.Value,
+                            Views = 1
+                        };
+                        domainModel.GetSiteCollection<ThreadView>().Add(view);
+                    }
+                    else
+                    {
+                        if (DateTime.UtcNow.AddMinutes(-ThreadModel.ActiveUserThresholdMinutes) > view.LastSeen)
+                        {
+                            view.Views++;
+                        }
+                    }
+
+                    view.LastSeen = DateTime.UtcNow;
+
+                    domainModel.SaveChanges();
+                }
+            }
+
+            return result;
+        }
+
+        public object UpdateRead(long threadId, DateTime lastRead)
+        {
+            var userId = _currentUser.UserId;
+
+            if (!userId.HasValue || !ObjectId.HasValue)
+            {
+                return null;
+            }
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                var view = domainModel.GetSiteCollection<ThreadView>().FirstOrDefault(u => u.UserId == userId.Value && u.ThreadId == ObjectId.Value);
+
+                if (view == null)
+                {
+                    view = new ThreadView
+                    {
+                        ThreadId = ObjectId.Value,
+                        UserId = userId.Value
+                    };
+                    domainModel.GetSiteCollection<ThreadView>().Add(view);
+                }
+
+                view.LastSeen = DateTime.UtcNow;
+                view.Updated = lastRead;
+                domainModel.SaveChanges();
+            }
+
+            return null;
         }
     }
 }

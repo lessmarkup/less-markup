@@ -23,6 +23,7 @@ namespace LessMarkup.Forum.Model
         public DateTime? LastCreated;
         public long? LastPostId { get; set; }
         public long? LastThreadId { get; set; }
+        public string LastThreadPath { get; set; }
         public string LastThreadTitle { get; set; }
 
         private List<long> _threadIds;
@@ -57,7 +58,8 @@ namespace LessMarkup.Forum.Model
                         LastCreated = f.LastPost != null ? f.LastPost.Created : (DateTime?)null,
                         LastPostId = f.LastPost != null ? f.LastPost.Id : (long?)null,
                         LastThreadId = f.LastPost != null ? f.LastPost.ThreadId : (long?)null,
-                        LastThreadTitle = f.LastPost != null ? f.LastPost.Thread.Name : null
+                        LastThreadTitle = f.LastPost != null ? f.LastPost.Thread.Name : null,
+                        LastThreadPath = f.LastPost != null ? f.LastPost.Thread.Path : null
                     }).FirstOrDefault();
 
                 if (statistics == null)
@@ -74,6 +76,7 @@ namespace LessMarkup.Forum.Model
                 LastPostId = statistics.LastPostId;
                 LastThreadId = statistics.LastThreadId;
                 LastThreadTitle = statistics.LastThreadTitle;
+                LastThreadPath = statistics.LastThreadPath;
             }
         }
 

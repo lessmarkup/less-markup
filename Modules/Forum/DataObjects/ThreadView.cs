@@ -21,6 +21,7 @@ namespace LessMarkup.Forum.DataObjects
         public long? UserId { get; set; }
         public User User { get; set; }
 
-        public DateTime Updated { get; set; }
+        public DateTime? Updated { get; set; }
+        public DateTime LastSeen { get; set; }
     }
 }

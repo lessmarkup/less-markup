@@ -89,6 +89,8 @@ namespace LessMarkup.Forum.Model
                     forum.Parent.LastPostId = forum.LastPostId;
                     forum.Parent.LastThreadId = forum.LastThreadId;
                     forum.Parent.LastThreadTitle = forum.LastThreadTitle;
+                    forum.Parent.LastNodeId = forum.LastNodeId;
+                    forum.Parent.LastThreadUrl = forum.LastThreadUrl;
                 }
             }
         }
@@ -185,6 +187,12 @@ namespace LessMarkup.Forum.Model
                 forum.LastPostId = forumCache.LastPostId;
                 forum.LastThreadId = forumCache.LastThreadId;
                 forum.LastThreadTitle = forumCache.LastThreadTitle;
+
+                if (forumCache.LastPostId.HasValue)
+                {
+                    forum.LastNodeId = forum.Id;
+                    forum.LastThreadUrl = string.Format("{0}/{1}", forum.Path, forumCache.LastThreadPath);
+                }
             }
 
             foreach (var forum in _idToForum.Values)
