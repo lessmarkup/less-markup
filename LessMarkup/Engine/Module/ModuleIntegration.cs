@@ -5,20 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
-using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Engine.Module
 {
     class ModuleIntegration : IModuleIntegration
     {
         private readonly List<IBackgroundJobHandler>  _backgroundJobHandlers = new List<IBackgroundJobHandler>();
-        private readonly Dictionary<int, ISearchResultValidator> _searchResultValidators = new Dictionary<int, ISearchResultValidator>();
+        private readonly Dictionary<Type, IEntitySearch> _entitySearch = new Dictionary<Type, IEntitySearch>();
         private readonly Dictionary<string, Tuple<Type, string>> _nodeHandlers = new Dictionary<string, Tuple<Type, string>>();
         private readonly IEngineConfiguration _engineConfiguration;
 
@@ -64,19 +62,9 @@ namespace LessMarkup.Engine.Module
             return ret;
         }
 
-        public void RegisterSearchResultValidator<T>(ISearchResultValidator validator) where T : IDataObject
+        public void RegisterEntitySearch<T>(IEntitySearch entitySearch) where T : IDataObject
         {
-            _searchResultValidators[AbstractDomainModel.GetCollectionId<T>()] = validator;
-        }
-
-        public bool IsSearchResultValid(SearchResult searchResult)
-        {
-            ISearchResultValidator validator;
-            if (!_searchResultValidators.TryGetValue(searchResult.CollectionId, out validator))
-            {
-                return true;
-            }
-            return validator.IsValid(searchResult);
+            _entitySearch[typeof(T)] = entitySearch;
         }
 
         public void RegisterNodeHandler<T>(string id) where T : INodeHandler
@@ -98,6 +86,12 @@ namespace LessMarkup.Engine.Module
         public IEnumerable<string> GetNodeHandlers()
         {
             return _nodeHandlers.Keys;
+        }
+
+        public IEntitySearch GetEntitySearch(Type collectionType)
+        {
+            IEntitySearch result;
+            return !_entitySearch.TryGetValue(collectionType, out result) ? null : result;
         }
 
         internal string RegisteringModuleType { get; set; }

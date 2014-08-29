@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using LessMarkup.Engine.ResourceTemplate;
+using LessMarkup.Interfaces;
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -21,7 +23,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.FileSystem
 {
-    public class ResourceCache : AbstractCacheHandler
+    class ResourceCache : AbstractCacheHandler, IResourceCache
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly ISpecialFolder _specialFolder;
@@ -75,6 +77,11 @@ namespace LessMarkup.Engine.FileSystem
         internal ResourceReference GetResourceReference(string path)
         {
             return LoadResource(ExtractPath(path).ToLower());
+        }
+
+        internal void AddResourceReference(string path, ResourceReference reference)
+        {
+            _resourceReferences.Add(path, reference);
         }
 
         public Stream ReadResource(string path)
@@ -316,8 +323,30 @@ namespace LessMarkup.Engine.FileSystem
                 LoadDatabaseResources(siteId.Value);
             }
 
-            var minifier = Interfaces.DependencyResolver.Resolve<ResourceMinifer>();
-            minifier.Minify(_resourceReferences);
+            var resourceTemplateParser = DependencyResolver.Resolve<ResourceTemplateParser>();
+            var results = new Dictionary<ResourceReference, string>();
+
+            foreach (var reference in _resourceReferences)
+            {
+                var ext = (Path.GetExtension(reference.Key) ?? "").ToLower();
+
+                if (ext == ".js" || ext == ".html" || ext == ".cshtml")
+                {
+                    var result = resourceTemplateParser.GetTemplate(reference.Key, reference.Value, this);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        results[reference.Value] = result;
+                    }
+                }
+            }
+
+            foreach (var result in results)
+            {
+                result.Key.Binary = Encoding.UTF8.GetBytes(result.Value);
+            }
+
+            var minifier = DependencyResolver.Resolve<ResourceMinifer>();
+            minifier.Minify(_resourceReferences, this);
         }
     }
 }

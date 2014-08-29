@@ -12,7 +12,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Users)]
-    public class SiteUsersNodeHandler : NewRecordListNodeHandler<UserModel>
+    public class SiteUsersNodeHandler : RecordListNodeHandler<UserModel>
     {
         public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {

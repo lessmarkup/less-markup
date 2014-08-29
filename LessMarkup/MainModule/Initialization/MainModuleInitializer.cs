@@ -5,7 +5,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.DataObjects.Security;
+using LessMarkup.DataObjects.Structure;
 using LessMarkup.Engine;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.MainModule.NodeHandlers;
 
@@ -43,6 +46,8 @@ namespace LessMarkup.MainModule.Initialization
 
             _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>("article");
             _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>("contact");
+            _moduleIntegration.RegisterEntitySearch<Node>(DependencyResolver.Resolve<NodeSearch>());
+            _moduleIntegration.RegisterEntitySearch<User>(DependencyResolver.Resolve<UserSearch>());
         }
 
         public override string DefaultNamespace

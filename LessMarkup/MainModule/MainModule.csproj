@@ -191,6 +191,8 @@
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Initialization\CoreApplication.cs" />
     <Compile Include="Initialization\MainModuleInitializer.cs" />
+    <Compile Include="Initialization\NodeSearch.cs" />
+    <Compile Include="Initialization\UserSearch.cs" />
     <Compile Include="Model\AdministratorApproveModel.cs" />
     <Compile Include="Model\ApproveRequestModel.cs" />
     <Compile Include="Model\ArticleModel.cs" />

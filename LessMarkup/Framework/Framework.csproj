@@ -86,6 +86,7 @@
     <Compile Include="Helpers\ImageUploader.cs" />
     <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\RecordListHelper.cs" />
+    <Compile Include="Helpers\TemplateHelper.cs" />
     <Compile Include="Helpers\TextToUrl.cs" />
     <Compile Include="Helpers\UniCharacters.cs" />
     <Compile Include="Helpers\UserHelper.cs" />

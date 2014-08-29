@@ -10,6 +10,7 @@ using LessMarkup.Engine.Cache;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.DataChange;
 using LessMarkup.Engine.Email;
+using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Security;
@@ -32,7 +33,7 @@ namespace LessMarkup.Engine
         {
             builder.RegisterType<ModuleIntegration>().As<IModuleIntegration>().SingleInstance();
             builder.RegisterType<MailTemplateProvider>().As<IMailTemplateProvider>();
-            builder.RegisterType<TextSearchEngine>().As<ITextSearch>().SingleInstance();
+            builder.RegisterType<SearchModelCache>().As<ITextSearch>().SingleInstance();
             builder.RegisterType<DataCache>().As<IDataCache>().SingleInstance();
             builder.RegisterType<UserSecurity>().As<IUserSecurity>();
             builder.RegisterType<SiteMapper>().As<ISiteMapper>().As<IRequestMapper>().SingleInstance();
@@ -46,6 +47,7 @@ namespace LessMarkup.Engine
             builder.RegisterType<RecordModelCache>().As<IRecordModelCache>();
             builder.RegisterType<UserCache>().As<IUserCache>();
             builder.RegisterType<SiteConfigurationCache>().As<ISiteConfiguration>();
+            builder.RegisterType<ResourceCache>().As<IResourceCache>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

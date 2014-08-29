@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System.Collections.Generic;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -55,7 +59,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                     var accessType = nodeInfo.CheckRights(_currentUser);
 
-                    if (accessType.HasValue && accessType.Value == NodeAccessType.NoAccess)
+                    if (accessType == NodeAccessType.NoAccess)
                     {
                         continue;
                     }
@@ -68,7 +72,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                         settings = JsonConvert.DeserializeObject(nodeInfo.Settings);
                     }
 
-                    handler.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType ?? NodeAccessType.Read);
+                    handler.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType);
 
                     var countAndVersion = ((INotificationProvider) handler).GetCountAndVersion(request.Version, domainModel);
 

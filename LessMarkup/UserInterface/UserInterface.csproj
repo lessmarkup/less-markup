@@ -69,6 +69,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
@@ -121,6 +122,8 @@
     <Compile Include="Exceptions\UnknownActionException.cs" />
     <Compile Include="Model\Common\FlatPageSettingsModel.cs" />
     <Compile Include="Model\Common\FlatPagePosition.cs" />
+    <Compile Include="Model\Common\SearchResultModel.cs" />
+    <Compile Include="Model\Common\SearchTextModel.cs" />
     <Compile Include="Model\Configuration\NodeAccessModel.cs" />
     <Compile Include="Model\Configuration\NodeSettingsModel.cs" />
     <Compile Include="Model\Global\CustomizationModel.cs" />
@@ -155,8 +158,8 @@
     <Compile Include="Model\User\UserCardModel.cs" />
     <Compile Include="NodeHandlers\Common\CompositeNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\FlatPageNodeHandler.cs" />
-    <Compile Include="NodeHandlers\Common\NewRecordListLinkNodeHandler.cs" />
-    <Compile Include="NodeHandlers\Common\NewRecordListNodeHandler.cs" />
+    <Compile Include="NodeHandlers\Common\RecordListLinkNodeHandler.cs" />
+    <Compile Include="NodeHandlers\Common\RecordListNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\PropertiesNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\RecordListWithNotifyNodeHandler.cs" />
     <Compile Include="NodeHandlers\Common\TabPageNodeHandler.cs" />
@@ -513,7 +516,7 @@
     <EmbeddedResource Include="Scripts\Directives\bindcompiled.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\Controllers\newrecordlist.js" />
+    <EmbeddedResource Include="Scripts\Controllers\recordlist.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\codemirror-dialog.css" />
@@ -561,13 +564,13 @@
     <EmbeddedResource Include="UserInterface.Minify.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\NewRecordList.html" />
+    <EmbeddedResource Include="Views\RecordList.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\newrecordlist.css" />
+    <EmbeddedResource Include="Content\recordlist.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\NewRecordOptions.html" />
+    <EmbeddedResource Include="Views\RecordOptions.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\Properties.html" />
@@ -578,6 +581,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Angular\ui-utils.js" />
     <EmbeddedResource Include="Scripts\Lib\Angular\ui-utils.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Filters\relative-date.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

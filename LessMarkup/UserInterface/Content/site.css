@@ -373,3 +373,50 @@ span.badge.active-notification {
     color: black;
     font-weight: bold;
 }
+
+.search-panel {
+    width: 300px;
+    position: relative;
+}
+
+.search-panel .results {
+    position: absolute;
+    width: 200%;
+    left: -150px;
+    top: 2.5em;
+    background: white;
+    border: solid 1px #ccc;
+}
+
+.search-panel ul, .search-panel li {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+.search-panel li {
+    padding: 5px;
+    max-height: 5em;
+    overflow-y: hidden;
+}
+
+.search-panel li a {
+    color: black;
+}
+
+.search-panel .results li:hover a {
+    text-decoration: underline;
+}
+
+.search-panel li:not(:last-child) {
+    border-bottom: solid 1px #eee;
+}
+
+.search-result-name {
+    font-weight: bold;
+}
+
+.search-result-body .highlight {
+    color: #1e90ff;
+    font-weight: bold;
+}

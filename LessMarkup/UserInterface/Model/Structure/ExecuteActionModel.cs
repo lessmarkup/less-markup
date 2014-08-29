@@ -55,11 +55,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var accessType = node.CheckRights(_currentUser);
 
-            if (!accessType.HasValue)
-            {
-                accessType = NodeAccessType.Read;
-            }
-            else if (accessType.Value == NodeAccessType.NoAccess)
+            if (accessType == NodeAccessType.NoAccess)
             {
                 throw new UnknownActionException();
             }
@@ -75,7 +71,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, handler.SettingsModel);
             }
 
-            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType.Value);
+            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
@@ -153,9 +149,19 @@ namespace LessMarkup.UserInterface.Model.Structure
                     continue;
                 }
 
-                var serialized = JsonConvert.SerializeObject(parameter);
-
-                arguments[i] = JsonHelper.ResolveAndDeserializeObject(serialized, parameterType);
+                if (parameter.GetType() == parameterType)
+                {
+                    arguments[i] = parameter;
+                }
+                else if (parameterType.IsPrimitive || !parameterType.IsClass)
+                {
+                    arguments[i] = Convert.ChangeType(parameter, parameterType);
+                }
+                else
+                {
+                    var serialized = JsonConvert.SerializeObject(parameter);
+                    arguments[i] = JsonHelper.ResolveAndDeserializeObject(serialized, parameterType);
+                }
             }
 
             handler.Context = dataLowered;

@@ -5,15 +5,16 @@
 using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Engine.HtmlTemplate
+namespace LessMarkup.Framework.Helpers
 {
     public static class TemplateHelper
     {
         public static IHtmlString RenderTemplate(this HtmlHelper htmlHelper, string path)
         {
-            var templateCache = Interfaces.DependencyResolver.Resolve<IDataCache>().Get<HtmlTemplateCache>();
-            var template = templateCache.GetTemplate(path);
+            var templateCache = Interfaces.DependencyResolver.Resolve<IDataCache>().Get<IResourceCache>();
+            var template = templateCache.ReadText(path);
             return htmlHelper.Raw(template);
         }
     }

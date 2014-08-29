@@ -65,7 +65,7 @@ app.directive("cellShowOptions", function($compile) {
     };
 });
 
-app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
+app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
 
     var recordIdField = $scope.viewData.recordId;
 
@@ -84,6 +84,11 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     $scope.manualRefresh = $scope.viewData.manualRefresh;
     $scope.hasNewRecords = false;
     $scope.updating = false;
+    $scope.hasRecordSearch = $scope.viewData.hasSearch;
+    $scope.recordSearchVisible = false;
+    $scope.recordSearchText = "";
+    $scope.tableColumns = 0;
+
     var records = [];
     var currentRecordId = null;
     var currentRecord = null;
@@ -92,6 +97,25 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
     var lastChange = $scope.viewData.lastChange;
     var liveUpdates = $scope.viewData.liveUpdates;
     var timeoutCancel = null;
+
+    $scope.searchRecords = function () {
+        var model = {
+            search: $scope.recordSearchText
+        }
+        filter = JSON.stringify(model);
+        $scope.refreshNewRecords();
+    }
+
+    $scope.toggleRecordSearch = function() {
+        $scope.recordSearchVisible = !$scope.recordSearchVisible;
+
+        if (!$scope.recordSearchVisible) {
+            if ($scope.recordSearchText.length > 0) {
+                $scope.recordSearchText = "";
+                $scope.searchRecords();
+            }
+        }
+    }
 
     function cancelUpdates() {
         if (timeoutCancel != null) {
@@ -663,6 +687,7 @@ app.controller('newrecordlist', function ($scope, inputForm, $sce, $timeout) {
 
     for (var i = 0; i < $scope.columns.length; i++) {
         var column = $scope.columns[i];
+        $scope.tableColumns += column.colSpan;
         if (!column.headerClass) {
             column.headerClass = "";
         }

@@ -10,7 +10,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.UserInterface.NodeHandlers.User
 {
-    public class UserCardsNodeHandler : NewRecordListNodeHandler<UserCardModel>
+    public class UserCardsNodeHandler : RecordListNodeHandler<UserCardModel>
     {
         private readonly IDataCache _dataCache;
 

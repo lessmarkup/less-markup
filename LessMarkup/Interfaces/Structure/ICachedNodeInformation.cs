@@ -29,6 +29,6 @@ namespace LessMarkup.Interfaces.Structure
         bool Visible { get; }
         bool AddToMenu { get; }
         bool LoggedIn { get; }
-        NodeAccessType? CheckRights(ICurrentUser currentUser);
+        NodeAccessType CheckRights(ICurrentUser currentUser, NodeAccessType defaultAccessType = NodeAccessType.Read);
     }
 }

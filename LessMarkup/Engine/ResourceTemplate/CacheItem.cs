@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace LessMarkup.Engine.HtmlTemplate
+namespace LessMarkup.Engine.ResourceTemplate
 {
     class CacheItem
     {

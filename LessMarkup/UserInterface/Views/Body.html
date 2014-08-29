@@ -55,11 +55,18 @@
                         </ul>
 
                         <form class="navbar-form navbar-left" role="search" ng-if="hasSearch">
-                            <div class="input-group" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Search">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">[[[translate SearchGo]]]</button>
-                                </span>
+                            <div class="input-group search-panel">
+                                <input type="text" class="form-control" placeholder="Search" ng-model="getScope().searchText">
+                                <ul class="results" ng-show="searchText.length > 0">
+                                    <li ng-if="searchResults.length == 0">No results found</li>
+                                    <li ng-repeat="result in searchResults">
+                                        <a href="{{result.Url}}" ng-click="navigateToView(result.Url)">
+                                            <span class="search-result-name" ng-bind="result.Name"></span>
+                                            <span class="search-result-body" ng-bind-html="result.Text"></span>
+                                        </a>
+                                    </li>
+                                    <li><button class="btn btn-default" ng-click="clearSearch()">Close</button></li>
+                                </ul>
                             </div>
                         </form>
 

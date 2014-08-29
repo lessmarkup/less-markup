@@ -70,11 +70,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     {
                         var accessType = child.CheckRights(_currentUser);
 
-                        if (!accessType.HasValue)
-                        {
-                            accessType = NodeAccessType.Read;
-                        }
-                        else
+                        if (accessType == NodeAccessType.NoAccess)
                         {
                             continue;
                         }
@@ -87,7 +83,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                             Path = child.Path,
                             FullPath = child.FullPath,
                             Title = child.Title,
-                            AccessType = accessType.Value
+                            AccessType = accessType
                         });
                     }
                 }

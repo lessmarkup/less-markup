@@ -7,23 +7,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Engine.HtmlTemplate
+namespace LessMarkup.Engine.ResourceTemplate
 {
-    public class HtmlTemplateCache : AbstractCacheHandler
+    class ResourceTemplateParser
     {
         private readonly IDataCache _dataCache;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly Dictionary<string, CacheItem> _cacheItems = new Dictionary<string, CacheItem>();
-        private readonly object _syncLock = new object();
 
-        public HtmlTemplateCache(IDataCache dataCache, IEngineConfiguration engineConfiguration) : base(new[] { typeof(SiteCustomization) })
+        public ResourceTemplateParser(IEngineConfiguration engineConfiguration, IDataCache dataCache)
         {
             _dataCache = dataCache;
             _engineConfiguration = engineConfiguration;
@@ -117,7 +115,7 @@ namespace LessMarkup.Engine.HtmlTemplate
             return null;
         }
 
-        private void BuildTemplate(StringBuilder builder, CacheItem cacheItem, int level = 0)
+        private void BuildTemplate(StringBuilder builder, CacheItem cacheItem, int level, ResourceCache resourceCache)
         {
             int i;
             for (i = 0; i < cacheItem.Directives.Count; i++)
@@ -191,11 +189,13 @@ namespace LessMarkup.Engine.HtmlTemplate
                             path = directiveBody;
                         }
 
-                        var childItem = GetCacheItem(path);
+                        var reference = resourceCache.GetResourceReference(path);
+
+                        var childItem = reference == null ? null : GetCacheItem(path, reference);
 
                         if (childItem != null)
                         {
-                            BuildTemplate(builder, childItem, level + 1);
+                            BuildTemplate(builder, childItem, level + 1, resourceCache);
                         }
 
                         break;
@@ -240,33 +240,33 @@ namespace LessMarkup.Engine.HtmlTemplate
             }
         }
 
-        private CacheItem GetCacheItem(string path)
+        private CacheItem GetCacheItem(string path, ResourceReference resourceReference)
         {
+            if (resourceReference == null)
+            {
+                return null;
+            }
+
             CacheItem cacheItem;
 
-            lock (_syncLock)
+            if (_cacheItems.TryGetValue(path, out cacheItem))
             {
-                if (_cacheItems.TryGetValue(path, out cacheItem))
-                {
-                    return cacheItem;
-                }
-
-                var resourceCache = _dataCache.Get<ResourceCache>();
-                var reference = resourceCache.GetResourceReference(path);
-                if (reference == null || reference.Binary == null)
-                {
-                    return null;
-                }
-                cacheItem = CreateCacheItem(reference, path);
-                _cacheItems[path] = cacheItem;
+                return cacheItem;
             }
+
+            if (resourceReference.Binary == null)
+            {
+                return null;
+            }
+            cacheItem = CreateCacheItem(resourceReference, path);
+            _cacheItems[path] = cacheItem;
 
             return cacheItem;
         }
 
-        public string GetTemplate(string path)
+        public string GetTemplate(string path, ResourceReference resourceReference, ResourceCache resourceCache)
         {
-            var cacheItem = GetCacheItem(path);
+            var cacheItem = GetCacheItem(path, resourceReference);
 
             if (cacheItem == null)
             {
@@ -275,13 +275,9 @@ namespace LessMarkup.Engine.HtmlTemplate
 
             var builder = new StringBuilder();
 
-            BuildTemplate(builder, cacheItem);
+            BuildTemplate(builder, cacheItem, 0, resourceCache);
 
             return builder.ToString().Trim();
-        }
-
-        protected override void Initialize(long? siteId, long? objectId)
-        {
         }
     }
 }

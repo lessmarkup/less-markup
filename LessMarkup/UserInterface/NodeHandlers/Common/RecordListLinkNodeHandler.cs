@@ -14,7 +14,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
-    public class NewRecordListLinkNodeHandler<T> : NewRecordListNodeHandler<T> where T : class
+    public class RecordListLinkNodeHandler<T> : RecordListNodeHandler<T> where T : class
     {
         struct CellLinkHandler
         {
@@ -24,7 +24,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         private readonly Dictionary<string, CellLinkHandler> _cellLinkHandlers = new Dictionary<string, CellLinkHandler>();
 
-        public NewRecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public RecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)
         {
         }

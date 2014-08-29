@@ -84,7 +84,6 @@
     <Compile Include="Composite\MultilineTextElement.cs" />
     <Compile Include="Composite\TextElement.cs" />
     <Compile Include="Data\DataObject.cs" />
-    <Compile Include="Data\EntityAttribute.cs" />
     <Compile Include="Data\IChangeTracker.cs" />
     <Compile Include="Data\IDataObject.cs" />
     <Compile Include="Data\IDataObjectCollection.cs" />
@@ -104,10 +103,12 @@
     <Compile Include="Exceptions\ObjectNotFoundException.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\TextNotFoundException.cs" />
+    <Compile Include="Module\IEntitySearch.cs" />
     <Compile Include="RecordModel\Align.cs" />
     <Compile Include="RecordModel\InputFile.cs" />
     <Compile Include="RecordModel\IRecordModelCache.cs" />
     <Compile Include="RecordModel\IRecordModelDefinition.cs" />
+    <Compile Include="RecordModel\UseInSearchAttribute.cs" />
     <Compile Include="Structure\ActionAccessAttribute.cs" />
     <Compile Include="Structure\CachedNodeAccess.cs" />
     <Compile Include="Structure\ICachedNodeInformation.cs" />
@@ -143,8 +144,10 @@
     <Compile Include="Structure\ConfigurationHandlerAttribute.cs" />
     <Compile Include="Structure\INodeHandler.cs" />
     <Compile Include="Structure\RecordActionAttribute.cs" />
+    <Compile Include="System\IResourceCache.cs" />
     <Compile Include="System\ISiteConfiguration.cs" />
     <Compile Include="System\IUserCache.cs" />
+    <Compile Include="Text\SearchResults.cs" />
     <Compile Include="Text\TranslationAttribute.cs" />
     <Compile Include="Module\IActionUrlHelper.cs" />
     <Compile Include="Module\ICategoryHandler.cs" />
@@ -171,7 +174,6 @@
     <Compile Include="System\ISpecialFolder.cs" />
     <Compile Include="System\MailTemplateModel.cs" />
     <Compile Include="System\PathModel.cs" />
-    <Compile Include="Text\ISearchResultValidator.cs" />
     <Compile Include="Text\ITextSearch.cs" />
     <Compile Include="Text\SearchResult.cs" />
     <Compile Include="Text\TextSearchAttribute.cs" />

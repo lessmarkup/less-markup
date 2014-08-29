@@ -26,7 +26,7 @@ namespace LessMarkup.Engine.Minify
             _moduleProvider = moduleProvider;
         }
 
-        public void Minify(Dictionary<string, ResourceReference> references)
+        public void Minify(Dictionary<string, ResourceReference> references, ResourceCache resourceCache)
         {
             var assemblies = new List<Assembly>
             {
@@ -47,10 +47,10 @@ namespace LessMarkup.Engine.Minify
 
             if (_jsToMinify.Count > 0)
             {
-                jsContent = MinifyContent(_jsToMinify, jsContent, true);
+                jsContent = MinifyContent(_jsToMinify, jsContent, true, resourceCache);
             }
 
-            references.Add(Constants.Minify.JsMinify, new ResourceReference
+            resourceCache.AddResourceReference(Constants.Minify.JsMinify, new ResourceReference
             {
                 Binary = Encoding.UTF8.GetBytes(jsContent)
             });
@@ -59,16 +59,17 @@ namespace LessMarkup.Engine.Minify
 
             if (_cssToMinify.Count > 0)
             {
-                cssContext = MinifyContent(_cssToMinify, cssContext, false);
+                cssContext = MinifyContent(_cssToMinify, cssContext, false, resourceCache);
             }
 
-            references.Add(Constants.Minify.CssMinify, new ResourceReference
+            resourceCache.AddResourceReference(Constants.Minify.CssMinify, new ResourceReference
             {
                 Binary = Encoding.UTF8.GetBytes(cssContext)
             });
         }
 
-        private string MinifyContent(IEnumerable<ResourceReference> toMinify, string initialContent, bool minifyJs)
+        // ReSharper disable once UnusedParameter.Local
+        private string MinifyContent(IEnumerable<ResourceReference> toMinify, string initialContent, bool minifyJs, ResourceCache resourceCache)
         {
             var content = new StringBuilder();
             content.AppendLine(initialContent);
@@ -101,7 +102,7 @@ namespace LessMarkup.Engine.Minify
             return content.ToString();
         }
 
-        private void LoadAssemblyConfiguration(Dictionary<string, ResourceReference> references, Assembly assembly, XmlSerializer serializer)
+        private void LoadAssemblyConfiguration(IReadOnlyDictionary<string, ResourceReference> references, Assembly assembly, XmlSerializer serializer)
         {
             var minifyConfiguration = assembly.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith("Minify.xml"));
             if (minifyConfiguration == null)

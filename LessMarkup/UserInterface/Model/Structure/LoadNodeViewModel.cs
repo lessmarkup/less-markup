@@ -8,11 +8,10 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using LessMarkup.Engine.FileSystem;
-using LessMarkup.Engine.HtmlTemplate;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 using Newtonsoft.Json;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -73,12 +72,11 @@ namespace LessMarkup.UserInterface.Model.Structure
         public static string GetViewTemplate(INodeHandler handler, IDataCache dataCache, System.Web.Mvc.Controller controller)
         {
             var viewPath = GetViewPath(handler.ViewType);
-            var templateCache = dataCache.Get<HtmlTemplateCache>();
-            var template = templateCache.GetTemplate(viewPath + ".html") ?? GetViewContents(viewPath + ".cshtml", handler, controller);
+            var resourceCache = dataCache.Get<IResourceCache>();
+            var template = resourceCache.ReadText(viewPath + ".html") ?? GetViewContents(viewPath + ".cshtml", handler, controller);
             var stylesheets = handler.Stylesheets;
             if (stylesheets != null && stylesheets.Count > 0)
             {
-                var resourceCache = dataCache.Get<ResourceCache>();
                 var sb = new StringBuilder();
                 sb.Append("<style scoped=\"scoped\">");
                 foreach (var stylesheet in stylesheets)
@@ -133,11 +131,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var accessType = node.CheckRights(_currentUser);
 
-            if (!accessType.HasValue)
-            {
-                accessType = NodeAccessType.Read;
-            } 
-            else if (accessType.Value == NodeAccessType.NoAccess)
+            if (accessType == NodeAccessType.NoAccess)
             {
                 return false;
             }
@@ -172,7 +166,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, _nodeHandler.SettingsModel);
             }
 
-            _nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType.Value);
+            _nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
 
             while (!string.IsNullOrWhiteSpace(rest))
             {

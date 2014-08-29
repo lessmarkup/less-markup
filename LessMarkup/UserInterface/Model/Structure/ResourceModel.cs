@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
-using LessMarkup.Engine.FileSystem;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -23,7 +23,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 return false;
             }
 
-            var resourceCache = _dataCache.Get<ResourceCache>();
+            var resourceCache = _dataCache.Get<IResourceCache>();
 
             if (!resourceCache.ResourceExists(path))
             {
@@ -89,7 +89,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ActionResult CreateResult(System.Web.Mvc.Controller controller)
         {
             controller.Response.Cache.SetExpires(DateTime.Now.AddHours(-1));
-            var resourceCache = _dataCache.Get<ResourceCache>();
+            var resourceCache = _dataCache.Get<IResourceCache>();
             return new FileStreamResult(resourceCache.ReadResource(_path), _contentType);
         }
     }

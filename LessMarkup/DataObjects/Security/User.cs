@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Security
 {
@@ -17,6 +18,7 @@ namespace LessMarkup.DataObjects.Security
         public bool IsBlocked { get; set; }
         public string BlockReason { get; set; }
         [Required, MaxLength(100)]
+        [TextSearch]
         public string Name { get; set; }
         [Required, MaxLength(100)]
         public string Email { get; set; }
@@ -43,7 +45,9 @@ namespace LessMarkup.DataObjects.Security
         public Image UserImage { get; set; }
         [ForeignKey("UserImage")]
         public long? UserImageId { get; set; }
+        [TextSearch]
         public string Title { get; set; }
+        [TextSearch]
         public string Signature { get; set; }
         public bool ShowEmail { get; set; }
         [Timestamp]

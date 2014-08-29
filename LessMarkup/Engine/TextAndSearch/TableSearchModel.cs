@@ -3,11 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
+using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.TextAndSearch
 {
-    public class TableSearch
+    class TableSearchModel
     {
+        public string TableName { get; set; }
         public string Name { get; set; }
         public List<string> Columns { get; set; }
         public bool FullTextEnabled { get; set; }
@@ -15,9 +17,11 @@ namespace LessMarkup.Engine.TextAndSearch
         public string IdColumn { get; set; }
         public string UpdatedColumn { get; set; }
         public string CreatedColumn { get; set; }
+        public string SiteIdColumn { get; set; }
         public int CollectionId { get; set; }
+        public IEntitySearch EntitySearch { get; set; }
 
-        public void InitializeQuery(int fieldCount)
+        public void Initialize(int fieldCount)
         {
             string updatedQuery;
 
@@ -58,11 +62,12 @@ namespace LessMarkup.Engine.TextAndSearch
                     }
                 }
 
-                Query = Query + string.Format(" from containstable({0}, *, @{2}) s, {0} t where s.[key] = t.{1}", Name, IdColumn, TextSearchEngine.FulltextSearchParameter);
+                Query = Query + string.Format(" from containstable({0}, *, @{2}) s, {0} t where s.[key] = t.{1} and t.[SiteId] = @{3}", TableName, IdColumn,
+                    SearchModelCache.FulltextSearchParameter, SearchModelCache.SiteIdSearchParameter);
             }
             else
             {
-                Query = string.Format("select t.[{0}] as [key], 50 as [rank], {1} as [type]" + updatedQuery, IdColumn, CollectionId);
+                Query = string.Format("select t.[{0}] as [key], 50 as [rank], {1} as [type] {2}", IdColumn, CollectionId, updatedQuery);
                 
                 for (int i = 0; i < fieldCount; i++)
                 {
@@ -78,7 +83,7 @@ namespace LessMarkup.Engine.TextAndSearch
                     }
                 }
 
-                Query = Query + string.Format(" from {0} t where", Name);
+                Query = Query + string.Format(" from {0} t where t.[SiteId] = @{1} and (", TableName, SearchModelCache.SiteIdSearchParameter);
 
                 for (var i = 0; i < Columns.Count; i++)
                 {
@@ -87,8 +92,10 @@ namespace LessMarkup.Engine.TextAndSearch
                         Query = Query + " or";
                     }
 
-                    Query = Query + string.Format(" upper([{0}]) like @{1}", Columns[i], TextSearchEngine.LikeSearchParameter);
+                    Query = Query + string.Format(" upper([{0}]) like @{1}", Columns[i], SearchModelCache.LikeSearchParameter);
                 }
+
+                Query += ") ";
             }
         }
     }

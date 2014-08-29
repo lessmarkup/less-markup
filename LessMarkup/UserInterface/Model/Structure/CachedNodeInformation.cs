@@ -81,7 +81,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
         }
 
-        public NodeAccessType? CheckRights(ICurrentUser currentUser)
+        public NodeAccessType CheckRights(ICurrentUser currentUser, NodeAccessType defaultAccessType = NodeAccessType.Read)
         {
             if (currentUser.IsAdministrator)
             {
@@ -96,7 +96,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 accessType = NodeAccessType.Read;
             }
 
-            return accessType;
+            return accessType ?? defaultAccessType;
         }
     }
 }

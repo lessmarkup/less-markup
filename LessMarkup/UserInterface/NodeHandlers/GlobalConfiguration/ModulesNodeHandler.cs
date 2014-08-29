@@ -17,7 +17,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Modules)]
-    public class ModulesNodeHandler : NewRecordListNodeHandler<ModuleModel>
+    public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>
     {
         private readonly IChangeTracker _changeTracker;
         private readonly IDomainModelProvider _domainModelProvider;

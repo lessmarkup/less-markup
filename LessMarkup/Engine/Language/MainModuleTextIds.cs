@@ -234,5 +234,6 @@ namespace LessMarkup.Engine.Language
         ThumbnailWidth,
         ThumbnailHeight,
         ApproveUsers,
+        NodeName,
     }
 }

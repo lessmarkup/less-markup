@@ -5,13 +5,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Structure
 {
     public class Node : SiteDataObject
     {
         public string Path { get; set; }
+        [TextSearch]
         public string Title { get; set; }
+        [TextSearch]
         public string Description { get; set; }
         public string HandlerId { get; set; }
         public string Settings { get; set; }

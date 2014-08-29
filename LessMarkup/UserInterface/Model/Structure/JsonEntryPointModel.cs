@@ -8,12 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Exceptions;
+using LessMarkup.UserInterface.Model.Common;
 using LessMarkup.UserInterface.Model.RecordModel;
 using LessMarkup.UserInterface.Model.User;
 using Newtonsoft.Json;
@@ -94,7 +95,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 case "InputFormTemplate":
                 {
-                    var resourceCache = _dataCache.Get<ResourceCache>();
+                    var resourceCache = _dataCache.Get<IResourceCache>();
                     var templateBody = resourceCache.ReadText("~/Views/InputFormTemplate.cshtml");
                     return templateBody;
                 }
@@ -163,6 +164,12 @@ namespace LessMarkup.UserInterface.Model.Structure
                 {
                     var notificationsModel = DependencyResolver.Resolve<NotificationsModel>();
                     return notificationsModel.Handle(data["notifications"].ToString(), controller);
+                }
+
+                case "SearchText":
+                {
+                    var searchTextModel = DependencyResolver.Resolve<SearchTextModel>();
+                    return searchTextModel.Handle(data["text"].ToString());
                 }
 
                 default:

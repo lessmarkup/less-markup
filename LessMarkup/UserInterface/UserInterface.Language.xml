@@ -100,6 +100,21 @@
     <Translation Id="PasswordChangeError" Text="Cannot change password"/>
     <Translation Id="ChangePassword" Text="Change Password"/>
     <Translation Id="AddToMenu" Text="Add To Menu"/>
+    <Translation Id="JustNow" Text="just now"/>
+    <Translation Id="SecondsAgo" Text="seconds ago"/>
+    <Translation Id="MinuteAgo" Text="a minute ago"/>
+    <Translation Id="MinutesAgo" Text="minutes ago"/>
+    <Translation Id="HourAgo" Text="an hour ago"/>
+    <Translation Id="HoursAgo" Text="hours ago"/>
+    <Translation Id="Yesterday" Text="yesterday"/>
+    <Translation Id="DaysAgo" Text="days ago"/>
+    <Translation Id="WeekAgo" Text="a week ago"/>
+    <Translation Id="WeeksAgo" Text="weeks ago"/>
+    <Translation Id="MonthAgo" Text="a month ago"/>
+    <Translation Id="MonthsAgo" Text="months ago"/>
+    <Translation Id="YearAgo" Text="a year ago"/>
+    <Translation Id="OverYearAgo" Text="over a year ago"/>
+
     <!--
     <Translation Id="" Text=""/>
     -->

@@ -13,7 +13,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.MainModule.NodeHandlers
 {
     [ConfigurationHandler(MainModuleTextIds.Files)]
-    public class FileListNodeHandler : NewRecordListNodeHandler<FileModel>
+    public class FileListNodeHandler : RecordListNodeHandler<FileModel>
     {
         public FileListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)

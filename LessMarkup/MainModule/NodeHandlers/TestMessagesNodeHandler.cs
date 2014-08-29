@@ -13,7 +13,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 namespace LessMarkup.MainModule.NodeHandlers
 {
     [ConfigurationHandler(MainModuleTextIds.ViewTestMessages)]
-    public class TestMessagesNodeHandler : NewRecordListNodeHandler<TestMessageModel>
+    public class TestMessagesNodeHandler : RecordListNodeHandler<TestMessageModel>
     {
         public TestMessagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)

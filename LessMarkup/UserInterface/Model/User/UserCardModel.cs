@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -29,8 +30,9 @@ namespace LessMarkup.UserInterface.Model.User
                     return new EnumerableQuery<long>(new long[0]);
                 }
 
-                return
-                    domainModel.GetCollection<DataObjects.Security.User>()
+                var collection = RecordListHelper.GetFilterAndOrderQuery(domainModel.GetCollection<DataObjects.Security.User>(), filter, typeof (UserCardModel));
+
+                return collection
                         .Where(u => !u.IsRemoved && u.SiteId == siteId.Value)
                         .Select(u => u.Id);
             }
@@ -67,12 +69,15 @@ namespace LessMarkup.UserInterface.Model.User
         public long UserId { get; set; }
 
         [Column(UserInterfaceTextIds.Name, CellUrl = "{UserId}")]
+        [UseInSearch]
         public string Name { get; set; }
 
         [Column(UserInterfaceTextIds.Title)]
+        [UseInSearch]
         public string Title { get; set; }
 
         [Column(UserInterfaceTextIds.Signature)]
+        [UseInSearch]
         public string Signature { get; set; }
     }
 }

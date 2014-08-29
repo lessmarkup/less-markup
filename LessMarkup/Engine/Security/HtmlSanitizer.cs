@@ -39,5 +39,17 @@ namespace LessMarkup.Engine.Security
             }
         }
 
+        public string ExtractText(string html)
+        {
+            if (html.IndexOf('<') < 0 && html.IndexOf('&') < 0)
+            {
+                return html;
+            }
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            return doc.DocumentNode.InnerText;
+        }
     }
 }

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Interfaces.Module
 {
@@ -15,10 +14,10 @@ namespace LessMarkup.Interfaces.Module
     {
         void RegisterBackgroundJobHandler(IBackgroundJobHandler backgroundJobHandler);
         bool DoBackgroundJobs(UrlHelper urlHelper);
-        void RegisterSearchResultValidator<T>(ISearchResultValidator validator) where T : IDataObject;
-        bool IsSearchResultValid(SearchResult searchResult);
+        void RegisterEntitySearch<T>(IEntitySearch entitySearch) where T : IDataObject;
         void RegisterNodeHandler<T>(string id) where T : INodeHandler;
         Tuple<Type, string> GetNodeHandler(string id);
         IEnumerable<string> GetNodeHandlers();
+        IEntitySearch GetEntitySearch(Type collectionType);
     }
 }

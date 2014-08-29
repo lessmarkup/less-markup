@@ -107,3 +107,45 @@
 .pagination-top {
     margin-top: 0;
 }
+
+.grid-control th {
+    position: relative;
+}
+
+.grid-control .toggle-search-button {
+    position: absolute;
+    right: 4px;
+}
+
+.grid-control .toggle-search-button button {
+    padding: 0px 5px;
+    
+    margin: 0;
+}
+
+.grid-control .search-row > td {
+    padding: 8px;
+    background: #aaa;
+}
+
+.grid-control .search-row table {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    width: 100%;
+}
+
+.grid-control .search-row table td:last-child {
+    width: 10px;
+}
+
+.grid-control .search-row td input {
+    display: inline-block;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.grid-control .search-row td button {
+  padding: 6px 10px;
+  margin-left: 7px;
+}

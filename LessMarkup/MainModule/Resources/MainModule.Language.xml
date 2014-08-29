@@ -229,6 +229,7 @@
     <Translation Id="ThumbnailWidth" Text="Thumbnail Width"/>
     <Translation Id="ThumbnailHeight" Text="Thumbnail Height"/>
     <Translation Id="ApproveUsers" Text="Approve Users"/>
+    <Translation Id="NodeName" Text="Section"/>
     <!--
     <Translation Id="" Text=""/>
     -->

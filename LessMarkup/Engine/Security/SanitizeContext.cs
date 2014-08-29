@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using DotNetOpenAuth.Messaging;
 using HtmlAgilityPack;
 
@@ -18,7 +19,7 @@ namespace LessMarkup.Engine.Security
             "meta"
         };
 
-        public SanitizeContext(IEnumerable<string> tagsToRemove)
+        public SanitizeContext(IEnumerable<string> tagsToRemove = null)
         {
             if (tagsToRemove != null)
             {

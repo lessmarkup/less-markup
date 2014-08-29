@@ -1,4 +1,4 @@
-﻿<div ng-controller="newrecordlist">
+﻿<div ng-controller="recordlist">
     <div class="grid-control-panel-top" ng-if="toolbarButtons.length > 0">
         <button ng-repeat="button in toolbarButtons" class="btn btn-default" ng-click="onToolbarButtonClick(button)" ng-bind="button.text"></button>
     </div>
@@ -13,7 +13,26 @@
         <tr>
             <th ng-repeat="column in columns" width="{{column.width}}" colspan="{{column.colSpan}}" class="{{column.headerClass}}">
                 <span ng-click="sortColumn(column)" ng-bind="column.text" ng-class="{ 'sort-up' : column.sort == 'up', 'sort-down' : column.sort == 'down' }"></span>
+                <span ng-if="hasRecordSearch && column == columns[columns.length-1]" class="toggle-search-button">
+                    <button class="btn" ng-click="toggleRecordSearch()"><span class="glyphicon" ng-class="{ 'glyphicon-chevron-up' : recordSearchVisible, 'glyphicon-search' : !recordSearchVisible }"></span></button>
+                </span>
             </th>
+        </tr>
+        <tr ng-if="hasRecordSearch" ng-show="recordSearchVisible" class="search-row">
+            <td colspan="{{(tableColumns)}}">
+                <form ui-keypress="{ 13: searchRecords() }">
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="text" placeholder="Enter text to search" ng-model="getRecordListScope().recordSearchText" class="form-control" />
+                            </td>
+                            <td>
+                                <button class="btn" ng-click="searchRecords()"><span class="glyphicon glyphicon-search"></span></button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </td>
         </tr>
         <tr ng-repeat="row in rows" ng-class="{ 'odd': row.isOdd }">
             <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row, null)"><span></span></td>

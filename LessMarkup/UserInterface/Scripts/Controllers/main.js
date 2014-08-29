@@ -14,7 +14,7 @@ function scopeProperty(scope, name) {
     }
 }
 
-app.controller('main', function ($scope, $http, commandHandler, inputForm, $location, $browser, $timeout, lazyLoad) {
+app.controller('main', function ($scope, $http, commandHandler, inputForm, $location, $browser, $timeout, lazyLoad, $sce) {
     var initialData = window.viewInitialData;
     window.viewInitialData = null;
 
@@ -52,7 +52,51 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.lastActivity = new Date().getDate() / 1000;
     $scope.title = $scope.rootTitle;
     $scope.loadingNewPage = true;
+    $scope.searchText = "";
+    $scope.searchResults = [];
+    var searchTimeout = null;
     var pageProperties = {};
+
+    $scope.getScope = function () { return $scope; }
+
+    $scope.clearSearch = function() {
+        $scope.searchResults = [];
+        $scope.searchText = "";
+    }
+
+    $scope.$watch("searchText", function () {
+        if (searchTimeout != null) {
+            $timeout.cancel(searchTimeout);
+        }
+        searchTimeout = $timeout($scope.search, 500);
+    });
+
+    $scope.search = function () {
+        searchTimeout = null;
+        var searchText = $scope.searchText.trim();
+        if (searchText.length == 0) {
+            $scope.searchResults = [];
+            return;
+        }
+        $scope.sendCommand("SearchText", {
+            text: $scope.searchText
+        }, function (data) {
+            if (data != null && data.hasOwnProperty("Results")) {
+                $scope.searchResults = data.Results;
+                for (var i = 0; i < $scope.searchResults.length; i++) {
+                    var result = $scope.searchResults[i];
+                    result.Text = result.Text.replace(new RegExp(searchText, "gim"), "<span class=\"highlight\">$&</span>");
+                    result.Text = $sce.trustAsHtml(result.Text);
+                }
+            } else {
+                $scope.searchResults = [];
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        });
+    }
 
     function resetPageProperties(currentLink) {
         pageProperties = {};
@@ -637,6 +681,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         $scope.hideXsMenu();
         $scope.onUserActivity();
+        $scope.clearSearch();
 
         if (!leaveProperties) {
             resetPageProperties(url);

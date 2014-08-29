@@ -10,6 +10,7 @@
     <Resource Plain="scripts/lib/spinner/angular-spinner.js" Minified="scripts/lib/spinner/angular-spinner.min.js" />
     <Resource Plain="scripts/lib/require/require.js" Minified="scripts/lib/require/require.min.js" />
     <Resource Plain="scripts/config/app" />
+    <Resource Plain="scripts/filters/relative-date.js" />
     <Resource Plain="scripts/providers/lazyload" />
     <Resource Plain="scripts/directives/bindcompiled" />
     <Resource Plain="scripts/providers/commandhandler" />
@@ -19,13 +20,13 @@
     <Resource Plain="scripts/controllers/flatpage" />
     <Resource Plain="scripts/controllers/inputform" />
     <Resource Plain="scripts/controllers/dialog" />
-    <Resource Plain="scripts/controllers/newrecordlist" />
+    <Resource Plain="scripts/controllers/recordlist" />
 
     <Resource Plain="content/bootstrap.css" Minified="content/bootstrap.min.css" />
     <Resource Minified="content/ng-grid" />
     <Resource Plain="content/site" />
     <Resource Plain="content/visualblocks" />
-    <Resource Plain="content/newrecordlist" />
+    <Resource Plain="content/recordlist" />
     <Resource Minified="content/codemirror.min" />
     <Resource Plain="content/nodelist" />
     <Resource Plain="content/flatpage" />

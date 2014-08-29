@@ -76,11 +76,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
                 var accessType = child.CheckRights(_currentUser);
 
-                if (!accessType.HasValue)
-                {
-                    accessType = NodeAccessType.Read;
-                }
-                else if (accessType == NodeAccessType.NoAccess)
+                if (accessType == NodeAccessType.NoAccess)
                 {
                     continue;
                 }
@@ -98,7 +94,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     Path = child.FullPath,
                     FullPath = child.FullPath,
                     Source = child,
-                    AccessType = accessType.Value
+                    AccessType = accessType
                 };
 
                 var treeNode = new TreeNodeEntry
@@ -217,11 +213,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             var accessType = node.Source.CheckRights(_currentUser);
 
-            if (!accessType.HasValue)
-            {
-                accessType = NodeAccessType.Read;
-            }
-            else if (accessType.Value == NodeAccessType.NoAccess)
+            if (accessType == NodeAccessType.NoAccess)
             {
                 return null;
             }
@@ -235,7 +227,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);
             }
 
-            handler.Initialize(node.NodeId, nodeSettings, null, node.Path, node.FullPath, accessType.Value);
+            handler.Initialize(node.NodeId, nodeSettings, null, node.Path, node.FullPath, accessType);
 
             return new ChildHandlerSettings
             {

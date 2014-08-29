@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
-    public abstract class RecordListWithNotifyNodeHandler<T> : NewRecordListNodeHandler<T>, INotificationProvider where T : class
+    public abstract class RecordListWithNotifyNodeHandler<T> : RecordListNodeHandler<T>, INotificationProvider where T : class
     {
         private readonly IDomainModelProvider _domainModelProvider;
 

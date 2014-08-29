@@ -62,7 +62,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                 var accessType = node.CheckRights(_currentUser);
 
-                if (accessType.HasValue && accessType.Value == NodeAccessType.NoAccess)
+                if (accessType == NodeAccessType.NoAccess)
                 {
                     continue;
                 }
@@ -142,11 +142,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 var accessType = nodeInfo.CheckRights(_currentUser);
 
-                if (!accessType.HasValue)
-                {
-                    accessType = NodeAccessType.Read;
-                }
-                else if (accessType.Value == NodeAccessType.NoAccess)
+                if (accessType == NodeAccessType.NoAccess)
                 {
                     continue;
                 }
@@ -158,7 +154,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                     settings = JsonConvert.DeserializeObject(nodeInfo.Settings);
                 }
 
-                node.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType.Value);
+                node.Initialize(nodeInfo.NodeId, settings, controller, nodeInfo.Path, nodeInfo.FullPath, accessType);
 
                 var notificationProvider = node as INotificationProvider;
 

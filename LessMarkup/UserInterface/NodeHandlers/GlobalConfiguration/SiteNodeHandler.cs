@@ -13,7 +13,7 @@ using LessMarkup.UserInterface.NodeHandlers.Configuration;
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
     [ConfigurationHandler(UserInterfaceTextIds.Sites, IsGlobal = true)]
-    public class SiteNodeHandler : NewRecordListLinkNodeHandler<SiteModel>
+    public class SiteNodeHandler : RecordListLinkNodeHandler<SiteModel>
     {
         public SiteNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)

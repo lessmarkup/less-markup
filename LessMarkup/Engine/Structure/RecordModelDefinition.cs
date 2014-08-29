@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.HtmlTemplate;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Scripting;
 using LessMarkup.Framework.Helpers;
@@ -74,7 +73,7 @@ namespace LessMarkup.Engine.Structure
 
                     if (columnDefinition.CellTemplate != null && columnDefinition.CellTemplate.StartsWith("~/"))
                     {
-                        columnDefinition.CellTemplate = _dataCache.Get<HtmlTemplateCache>().GetTemplate(columnDefinition.CellTemplate);
+                        columnDefinition.CellTemplate = _dataCache.Get<IResourceCache>().ReadText(columnDefinition.CellTemplate);
                     }
                 }
             }
