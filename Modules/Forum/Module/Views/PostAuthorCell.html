@@ -12,6 +12,12 @@
 <div ng-if="data.Posts">
     <span>[[[translate Posts]]]: {{data.Posts}}</span>
 </div>
-<div ng-repeat="property in data.Properties">
-    {{property.Name}}: {{property.Value}}
+<div ng-repeat="property in userProperties">
+    <span ng-if="data.Properties.hasOwnProperty(property.Name) && data.Properties[property.Name]">
+        {{property.Title}}:
+        <span ng-switch="property.Type">
+            <span ng-switch-when="Date">{{data.Properties[property.Name] | localeDate}}</span>
+            <span ng-switch-default>{{data.Properties[property.Name]}}</span>
+        </span>
+    </span>
 </div>

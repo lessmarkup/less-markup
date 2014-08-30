@@ -4,6 +4,7 @@ using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using Newtonsoft.Json;
 
 namespace LessMarkup.Forum.Model
 {
@@ -14,7 +15,7 @@ namespace LessMarkup.Forum.Model
         public string Profile { get; set; }
         public string Avatar { get; set; }
         public int Posts { get; set; }
-        public string Properties { get; set; }
+        public Dictionary<string, object> Properties { get; set; }
 
         public void Initialize(PostStatisticsCache cache, long userId)
         {
@@ -35,7 +36,7 @@ namespace LessMarkup.Forum.Model
             }
 
             Posts = user.Posts;
-            Properties = user.Properties;
+            Properties = !string.IsNullOrWhiteSpace(user.Properties) ? JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties) : new Dictionary<string, object>();
         }
 
         public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)

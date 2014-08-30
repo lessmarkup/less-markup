@@ -24,9 +24,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             _attachmentId = attachmentId;
         }
 
-        protected override ActionResult CreateResult()
+        protected override ActionResult CreateResult(string path)
         {
-            return PostAttachmentModel.CreateResult(_threadId, _postId, _attachmentId, _domainModelProvider);
+            if (path == null)
+            {
+                return PostAttachmentModel.CreateResult(_threadId, _postId, _attachmentId, _domainModelProvider);
+            }
+
+            return null;
         }
     }
 }

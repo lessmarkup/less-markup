@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Forum.DataObjects
 {
@@ -26,6 +27,7 @@ namespace LessMarkup.Forum.DataObjects
         public long? UserId { get; set; }
         public User User { get; set; }
 
+        [TextSearch]
         public string Text { get; set; }
 
         public List<PostAttachment> Attachments { get; set; }

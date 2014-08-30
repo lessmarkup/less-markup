@@ -39,6 +39,10 @@
     <Translation Id="ForumConfiguration" Text="Forum configuration"/>
     <Translation Id="HasThreads" Text="Has Threads"/>
     <Translation Id="Views" Text="Views"/>
+    <Translation Id="ThreadName" Text="Thread"/>
+    <Translation Id="PostName" Text="Thread Post"/>
+    <Translation Id="ThreadUnread" Text="unread"/>
+    <Translation Id="CurrentlyViewing" Text="Currently viewing"/>
     <!--
     <Translation Id="" Text=""/>
     -->

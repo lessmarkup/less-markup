@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataObjects.Security;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -21,13 +20,6 @@ namespace LessMarkup.Forum.Model
             public long UserId { get; set; }
             public bool Removed { get; set; }
             public string Properties { get; set; } 
-        }
-
-        public class UserProperty
-        {
-            public string Name { get; set; }
-            public string Value { get; set; }
-            public UserPropertyType Type { get; set; }
         }
 
         private readonly IDomainModelProvider _domainModelProvider;

@@ -15,7 +15,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.Forum.Module.NodeHandlers
 {
-    public class ForumNodeHandler : NewRecordListNodeHandler<ThreadModel>
+    public class ForumNodeHandler : RecordListNodeHandler<ThreadModel>
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;

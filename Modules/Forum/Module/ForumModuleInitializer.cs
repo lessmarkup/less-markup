@@ -3,8 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
 using LessMarkup.Forum.Module.NodeHandlers;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Forum.Module
@@ -39,6 +41,8 @@ namespace LessMarkup.Forum.Module
             _moduleIntegration.RegisterNodeHandler<ForumNodeHandler>("Forum");
             _moduleIntegration.RegisterNodeHandler<PostUpdatesNodeHandler>("PostUpdates");
             _moduleIntegration.RegisterNodeHandler<AllForumsNodeHandler>("AllForums");
+            _moduleIntegration.RegisterEntitySearch<Post>(DependencyResolver.Resolve<PostSearch>());
+            _moduleIntegration.RegisterEntitySearch<Thread>(DependencyResolver.Resolve<ThreadSearch>());
         }
     }
 }

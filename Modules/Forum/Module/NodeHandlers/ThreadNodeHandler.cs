@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
 using LessMarkup.Interfaces;
@@ -16,7 +17,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.Forum.Module.NodeHandlers
 {
-    public class ThreadNodeHandler : NewRecordListNodeHandler<PostModel>
+    public class ThreadNodeHandler : RecordListNodeHandler<PostModel>
     {
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
@@ -245,6 +246,14 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
+                    result["userProperties"] =
+                        domainModel.GetSiteCollection<UserPropertyDefinition>().Select(p => new UserPropertyModel
+                        {
+                            Name = p.Name,
+                            Title = p.Title,
+                            Type = p.Type.ToString()
+                        }).ToList();
+
                     var lastRead = domainModel.GetSiteCollection<Thread>()
                         .Where(t => t.Id == ObjectId)
                         .Select(t => t.Views.Where(v => v.UserId == userId.Value).Max(v => v.Updated))

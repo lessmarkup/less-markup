@@ -2,7 +2,7 @@
     <div ng-if="data.Posts">[[[translate Posts]]]: {{data.Posts}}</div>
     <div ng-if="data.LastUser">
         <a href="{{data.Path + '?p=last'}}" ng-click="navigateToView(getFullPath(data.Path)+'?p=last'); $event.stopPropagation();">[[[translate LastPost]]]</a>: [[[translate LastPostCreated]]] 
-        {{data.LastCreated | date:'medium'}} [[[translate LastPostBy]]] <a href="{{data.LastUserUrl}}" ng-click="navigateToView(data.LastUserUrl); $event.stopPropagation();">{{data.LastUser}}</a>
+        <span title="{{data.LastCreated | date:'medium'}}">{{data.LastCreated | relativeDate}}</span> [[[translate LastPostBy]]] <a href="{{data.LastUserUrl}}" ng-click="navigateToView(data.LastUserUrl); $event.stopPropagation();">{{data.LastUser}}</a>
     </div>
     <div ng-if="!data.Posts">[[[translate ThreadIsEmpty]]]</div>
 </div>

@@ -3,6 +3,7 @@
     return function ($scope) {
 
         $scope.users = {};
+        $scope.userProperties = $scope.viewData.userProperties;
 
         $scope.onDataReceived = function($scope, data) {
             if (data.hasOwnProperty("users")) {

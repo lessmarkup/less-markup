@@ -4,6 +4,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Forum.DataObjects
 {
@@ -12,6 +13,7 @@ namespace LessMarkup.Forum.DataObjects
         [ForeignKey("Post")]
         public long PostId { get; set; }
         public Post Post { get; set; }
+        [TextSearch]
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public byte[] Data { get; set; }

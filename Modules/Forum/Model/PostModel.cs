@@ -35,9 +35,11 @@ namespace LessMarkup.Forum.Model
 
             public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
+                var collection = RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId), filter, typeof(PostModel));
+
                 if (_accessType == NodeAccessType.Manage)
                 {
-                    return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId).Select(p => p.Id);
+                    return collection.Select(p => p.Id);
                 }
 
                 if (_accessType == NodeAccessType.NoAccess)
@@ -45,7 +47,7 @@ namespace LessMarkup.Forum.Model
                     return new List<long>().AsQueryable();
                 }
 
-                return domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == _threadId && !p.Removed).Select(p => p.Id);
+                return collection.Where(p => !p.Removed).Select(p => p.Id);
             }
 
             public override IQueryable<PostModel> Read(IDomainModel domainModel, List<long> ids)
@@ -272,6 +274,7 @@ namespace LessMarkup.Forum.Model
             
         [Column(ForumTextIds.PostText, CellTemplate = "~/Views/PostTextCell.html", AllowUnsafe = true, Width = "*")]
         [InputField(InputFieldType.RichText, ForumTextIds.PostText, Required = true)]
+        [RecordSearch]
         public string Text { get; set; }
     }
 }

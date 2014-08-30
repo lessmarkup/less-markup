@@ -1,6 +1,6 @@
 ﻿<div class="cell-subject">
     <span>[[[translate Created]]]:</span>
-    <span ng-bind="data.Created | date:'medium'"></span>
+    <span title="{{data.Created | date:'medium'}}">{{data.Created | relativeDate}}</span>
 </div>
 <div ng-bind-html="getSafeValue(data.Text)" class="cell-text">
 </div>

@@ -7,14 +7,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Forum.DataObjects
 {
     public class Thread : SiteDataObject
     {
+        [TextSearch]
         public string Name { get; set; }
         public string Path { get; set; }
         public long ForumId { get; set; }
+        [TextSearch]
         public string Description { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }

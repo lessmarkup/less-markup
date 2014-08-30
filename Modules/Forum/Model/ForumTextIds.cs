@@ -33,6 +33,8 @@ namespace LessMarkup.Forum.Model
         Threads,
         ForumConfiguration,
         HasThreads,
-        Views
+        Views,
+        ThreadName,
+        PostName,
     }
 }

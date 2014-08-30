@@ -15,14 +15,14 @@ namespace LessMarkup.Forum.DataAccess
             new ModelCreate().OnModelCreating(modelBuilder);
         }
 
-        public DbSet<Thread> ForumThreads { get; set; }
+        public DbSet<Thread> Threads { get; set; }
 
-        public DbSet<Post> ForumPosts { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
-        public DbSet<PostAttachment> ForumPostAttachments { get; set; }
+        public DbSet<PostAttachment> PostAttachments { get; set; }
 
-        public DbSet<PostHistory> ForumPostHistories { get; set; }
+        public DbSet<PostHistory> PostHistories { get; set; }
 
-        public DbSet<ThreadView> ForumThreadViews { get; set; }
+        public DbSet<ThreadView> ThreadViews { get; set; }
     }
 }

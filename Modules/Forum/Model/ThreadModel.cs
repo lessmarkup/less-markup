@@ -54,6 +54,8 @@ namespace LessMarkup.Forum.Model
                     query = query.OrderByDescending(t => t.Updated);
                 }
 
+                query = RecordListHelper.GetFilterAndOrderQuery(query, filter, typeof (ThreadModel));
+
                 return query.Select(t => t.Id);
             }
 
@@ -156,8 +158,10 @@ namespace LessMarkup.Forum.Model
         public long ThreadId { get; set; }
 
         [Column(ForumTextIds.Name, CellTemplate = "~/Views/ThreadNameCell.html", CellClass = "forum-cell")]
+        [RecordSearch]
         public string Name { get; set; }
 
+        [RecordSearch]
         public string Description { get; set; }
 
         public string Path { get; set; }

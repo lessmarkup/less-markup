@@ -28,7 +28,7 @@ namespace LessMarkup.Forum.Model
 
         private void InitializeNode(ForumStatisticsModel parent, ICachedNodeInformation node, Type forumHandlerType)
         {
-            var accessType = node.CheckRights(_currentUser) ?? NodeAccessType.Read;
+            var accessType = node.CheckRights(_currentUser);
 
             if (accessType == NodeAccessType.NoAccess)
             {
