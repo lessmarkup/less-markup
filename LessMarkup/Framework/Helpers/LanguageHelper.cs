@@ -34,6 +34,42 @@ namespace LessMarkup.Framework.Helpers
             return string.Format(translation, args);
         }
 
+        public static string GetText(long? languageId, string moduleType, object id, params object[] args)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            var translation = GetLanguageCache().GetTranslation(languageId, id.ToString(), moduleType);
+
+            if (args == null || args.Length == 0)
+            {
+                return translation;
+            }
+
+            return string.Format(translation, args);
+        }
+
+        public static string GetTextWithDefault(long? languageId, string moduleType, object id, object defaultId, string defaultModuleType, params object[] args)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            var languageCache = GetLanguageCache();
+
+            var text = languageCache.GetTranslation(languageId, id.ToString(), moduleType, false);
+
+            if (text == null && defaultId != null)
+            {
+                text = languageCache.GetTranslation(languageId, defaultId.ToString(), defaultModuleType);
+            }
+
+            return text == null ? null : string.Format(text, args);
+        }
+
         public static string GetTextWithDefault(string moduleType, object id, object defaultId, string defaultModuleType, params object[] args)
         {
             if (id == null)

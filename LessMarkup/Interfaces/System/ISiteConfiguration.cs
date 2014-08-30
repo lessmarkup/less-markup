@@ -26,9 +26,9 @@ namespace LessMarkup.Interfaces.System
         [DefaultValue(false)]
         bool HasSearch { get; }
         [DefaultValue(false)]
-        bool HasLanguages { get; }
+        bool UseLanguages { get; }
         [DefaultValue(false)]
-        bool HasCurrencies { get; }
+        bool UseCurrencies { get; }
         [DefaultValue("Default")]
         string DefaultCronJobId { get; }
         string AdminLoginPage { get; }

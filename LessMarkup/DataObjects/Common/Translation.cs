@@ -12,8 +12,7 @@ namespace LessMarkup.DataObjects.Common
         [ForeignKey("Language")]
         public long LanguageId { get; set; }
         public Language Language { get; set; }
-        public string Reference { get; set; }
-        public string OriginalText { get; set; }
+        public string Key { get; set; }
         public string Text { get; set; }
     }
 }

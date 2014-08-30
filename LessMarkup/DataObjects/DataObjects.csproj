@@ -53,6 +53,7 @@
     <Compile Include="Security\FailedLoginHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\SuccessfulLoginHistory.cs" />
+    <Compile Include="Security\UserPropertyDefinition.cs" />
     <Compile Include="Statistics\AddressCountry.cs" />
     <Compile Include="Statistics\AddressHistory.cs" />
     <Compile Include="Statistics\AddressToCountry.cs" />

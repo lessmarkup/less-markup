@@ -114,6 +114,12 @@
     <Translation Id="MonthsAgo" Text="months ago"/>
     <Translation Id="YearAgo" Text="a year ago"/>
     <Translation Id="OverYearAgo" Text="over a year ago"/>
+    <Translation Id="Type" Text="Type"/>
+    <Translation Id="UserProperty" Text="User Property"/>
+    <Translation Id="UserProperties" Text="User Properties"/>
+    <Translation Id="Close" Text="Close"/>
+    <Translation Id="Clear" Text="Clear"/>
+    <Translation Id="Today" Text="Today"/>
 
     <!--
     <Translation Id="" Text=""/>

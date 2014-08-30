@@ -36,7 +36,7 @@ namespace LessMarkup.Engine.FileSystem
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
         public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
-            : base(new[] { typeof(SiteCustomization), typeof(Interfaces.Data.Site) })
+            : base(new[] { typeof(SiteCustomization), typeof(Interfaces.Data.Site), typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;
             _specialFolder = specialFolder;
@@ -295,11 +295,6 @@ namespace LessMarkup.Engine.FileSystem
 
         protected override void Initialize(long? siteId, long? objectId)
         {
-            if (objectId.HasValue)
-            {
-                throw new ArgumentOutOfRangeException("objectId");
-            }
-
             _globalAssembly = Assembly.LoadFile(_specialFolder.GeneratedViewAssembly);
 
             var viewImport = new ViewImport();
@@ -332,7 +327,7 @@ namespace LessMarkup.Engine.FileSystem
 
                 if (ext == ".js" || ext == ".html" || ext == ".cshtml")
                 {
-                    var result = resourceTemplateParser.GetTemplate(reference.Key, reference.Value, this);
+                    var result = resourceTemplateParser.GetTemplate(objectId, reference.Key, reference.Value, this);
                     if (!string.IsNullOrWhiteSpace(result))
                     {
                         results[reference.Value] = result;

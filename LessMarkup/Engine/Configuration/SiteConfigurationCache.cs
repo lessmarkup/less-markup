@@ -95,9 +95,9 @@ namespace LessMarkup.Engine.Configuration
 
         public bool HasSearch { get; set; }
 
-        public bool HasLanguages { get; set; }
+        public bool UseLanguages { get; set; }
 
-        public bool HasCurrencies { get; set; }
+        public bool UseCurrencies { get; set; }
 
         public string DefaultCronJobId { get; set; }
 

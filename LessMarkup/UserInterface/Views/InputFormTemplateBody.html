@@ -1,12 +1,12 @@
 ﻿<div class="form-group" ng-repeat="field in fields" ng-class="{'has-error has-feedback' : hasErrors(field.Property)}">
-    <span ng-if="fieldVisible(field)">
-        <span ng-if="field.Type == 'CheckBox'" class="checkbox">
+    <span ng-if="fieldVisible(field)" ng-switch="field.Type">
+        <span ng-switch-when="CheckBox" class="checkbox">
             <label>
                 <input type="checkbox" ng-model="object[field.Property]" ng-readonly="readOnly(field)"/>
                 <span ng-bind="field.Text"></span>
             </label>
         </span>
-        <span ng-if="field.Type != 'CheckBox'">
+        <span ng-switch-default>
             <label ng-if="field.Text" class="control-label" for="{{field.Id}}" ng-bind="field.Text"></label>
             <span ng-switch="field.Type">
                 <span ng-switch-when="Label" ng-bind="object[field.Property]"></span>
@@ -37,12 +37,19 @@
                 <textarea class="form-control" ng-switch-when="MultiLineText" ng-model="object[field.Property]" ng-readonly="readOnly(field)"></textarea>
                 <div ng-switch-when="Image">
                     <div>
-                        <input ng-if="!readOnly(field)" type="file" class="form-control" fileread="object[field.Property + 'File']" />
+                        <input ng-if="!readOnly(field)" type="file" class="form-control" fileread="object[field.Property]" />
                     </div>
                     <div style="margin-top: 1em;">
                         <img ng-if="object[field.Property]" ng-src="/Image/Thumbnail/{{object[field.Property]}}" />
                     </div>
                 </div>
+                <span ng-switch-when="Date" class="input-group">
+                    <input type="text" class="form-control" ng-model="object[field.Property]" ng-readonly="readonly(field)" datepicker-popup close-text="[[[translate Close]]]" clear-text="[[[translate Clear]]]" current-text="[[[translate Today]]]" is-open="field.isOpen"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="showDateTimeField($event, field)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </span>
+
             </span>
             <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="hasErrors(field.Property)"></span>
             <span class="help-block" ng-bind="helpText(field)"></span>

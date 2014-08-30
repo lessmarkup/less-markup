@@ -5,6 +5,8 @@
 using System;
 using System.Web.Mvc;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Structure;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
@@ -17,6 +19,18 @@ namespace LessMarkup.UserInterface.Controller
         {
             try
             {
+                if (path != null && path.StartsWith("language/"))
+                {
+                    long languageId;
+                    if (!long.TryParse(path.Substring("language/".Length), out languageId))
+                    {
+                        return HttpNotFound();
+                    }
+                    var dataCache = DependencyResolver.Resolve<IDataCache>();
+                    dataCache.Get<ILanguageCache>().CurrentLanguageId = languageId;
+                    return Redirect("/");
+                }
+
                 if (HttpContext.IsWebSocketRequest)
                 {
                     var model = DependencyResolver.Resolve<WebSocketEntryPointModel>();

@@ -53,5 +53,6 @@ namespace LessMarkup.DataAccess
         public DbSet<Node> Nodes { get; set; }
         public DbSet<NodeAccess> NodeAccesses { get; set; }
         public DbSet<File> Files { get; set; }
+        public DbSet<UserPropertyDefinition> UserPropertyDefinitions { get; set; }
     }
 }

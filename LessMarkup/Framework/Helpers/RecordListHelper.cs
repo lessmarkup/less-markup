@@ -4,6 +4,7 @@ using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using Newtonsoft.Json;
 
@@ -24,7 +25,7 @@ namespace LessMarkup.Framework.Helpers
         private static IQueryable<TR> GetFilterQuery<TR>(IQueryable<TR> sourceQuery, string searchText, Type modelType)
         {
             var sourceProperties = new HashSet<string>(modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.GetCustomAttribute<UseInSearchAttribute>() != null && p.PropertyType == typeof(string))
+                .Where(p => p.GetCustomAttribute<RecordSearchAttribute>() != null && p.PropertyType == typeof(string))
                 .Select(p => p.Name));
 
             if (sourceProperties.Count == 0)
@@ -100,6 +101,11 @@ namespace LessMarkup.Framework.Helpers
             method = method.MakeGenericMethod(typeof(TR), property.PropertyType);
 
             return (IQueryable<TR>)method.Invoke(null, new object[] { sourceQuery, ascending, propertyExpression, parameter });
+        }
+
+        public static IQueryable<long> GetFilterAndOrderQueryIds<TR>(IQueryable<TR> sourceQuery, string filter, Type modelType) where TR : IDataObject
+        {
+            return GetFilterAndOrderQuery(sourceQuery, filter, modelType).Select(o => o.Id);
         }
 
         public static IQueryable<TR> GetFilterAndOrderQuery<TR>(IQueryable<TR> sourceQuery, string filter, Type modelType)

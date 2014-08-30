@@ -79,6 +79,11 @@ namespace LessMarkup.UserInterface.Model.Global
                 _siteId = objectId;
             }
 
+            public CustomizationModel CreateRecord()
+            {
+                return new CustomizationModel();
+            }
+
             public void AddRecord(CustomizationModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

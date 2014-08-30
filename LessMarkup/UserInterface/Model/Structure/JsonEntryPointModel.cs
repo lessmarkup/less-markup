@@ -95,7 +95,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 case "InputFormTemplate":
                 {
-                    var resourceCache = _dataCache.Get<IResourceCache>();
+                    var resourceCache = _dataCache.Get<IResourceCache>(_dataCache.Get<ILanguageCache>().CurrentLanguageId);
                     var templateBody = resourceCache.ReadText("~/Views/InputFormTemplate.cshtml");
                     return templateBody;
                 }

@@ -83,10 +83,6 @@
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LessMarkup.DataFramework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Web\Bin\LessMarkup.DataFramework.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -199,16 +195,23 @@
     <Compile Include="Model\ContactFormModel.cs" />
     <Compile Include="Model\FileModel.cs" />
     <Compile Include="Model\ImageModel.cs" />
+    <Compile Include="Model\ImportLanguageModel.cs" />
+    <Compile Include="Model\LanguageModel.cs" />
     <Compile Include="Model\SendContactModel.cs" />
     <Compile Include="Model\SuccessfulApprovalModel.cs" />
     <Compile Include="Model\TestMessageModel.cs" />
+    <Compile Include="Model\TranslationModel.cs" />
     <Compile Include="Model\UserProfileModel.cs" />
     <Compile Include="Model\UserValidateModel.cs" />
     <Compile Include="Model\ValidateApprovalModel.cs" />
+    <Compile Include="Model\Xml\LanguageImport.cs" />
+    <Compile Include="Model\Xml\TranslationImport.cs" />
     <Compile Include="NodeHandlers\ArticleNodeHandler.cs" />
     <Compile Include="NodeHandlers\ContactFormNodeHandler.cs" />
     <Compile Include="NodeHandlers\FileListNodeHandler.cs" />
+    <Compile Include="NodeHandlers\LanguagesNodeHandler.cs" />
     <Compile Include="NodeHandlers\TestMessagesNodeHandler.cs" />
+    <Compile Include="NodeHandlers\TranslationsNodeHandler.cs" />
     <Compile Include="NodeHandlers\UserCardCommonNodeHandler.cs" />
     <Compile Include="NodeHandlers\UserProfileCommonNodeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

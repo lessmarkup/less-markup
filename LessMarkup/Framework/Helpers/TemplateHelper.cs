@@ -13,7 +13,9 @@ namespace LessMarkup.Framework.Helpers
     {
         public static IHtmlString RenderTemplate(this HtmlHelper htmlHelper, string path)
         {
-            var templateCache = Interfaces.DependencyResolver.Resolve<IDataCache>().Get<IResourceCache>();
+            var dataCache = Interfaces.DependencyResolver.Resolve<IDataCache>();
+            var languageCache = dataCache.Get<ILanguageCache>();
+            var templateCache = dataCache.Get<IResourceCache>(languageCache.CurrentLanguageId);
             var template = templateCache.ReadText(path);
             return htmlHelper.Raw(template);
         }

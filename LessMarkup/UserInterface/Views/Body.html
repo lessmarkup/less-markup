@@ -69,6 +69,21 @@
                                 </ul>
                             </div>
                         </form>
+                        
+                        <ul ng-if="languages && languages.length" class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a role="button" class="dropdown-toggle">
+                                    <img ng-if="selectedLanguage.ImageUrl" ng-src="{{selectedLanguage.ImageUrl}}" class="language-icon" /> <span ng-bind="selectedLanguage.ShortName"></span> <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="language in languages">
+                                        <a href="{{language.Url}}">
+                                            <img ng-if="language.ImageUrl" ng-src="{{language.ImageUrl}}"/> {{language.Name}} ({{language.ShortName}})
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
 
                         <ul class="nav navbar-nav navbar-right">
                             

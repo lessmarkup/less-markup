@@ -19,5 +19,6 @@ namespace LessMarkup.Interfaces.Data
         void CreateTransaction();
         void CompleteTransaction();
         void ImprovePerformance();
+        bool AutoDetectChangesEnabled { get; set; }
     }
 }

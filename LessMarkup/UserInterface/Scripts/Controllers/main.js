@@ -45,6 +45,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.topMenu = initialData.TopMenu;
     $scope.profilePath = initialData.ProfilePath;
     $scope.forgotPasswordPath = initialData.ForgotPasswordPath;
+    $scope.languages = initialData.Languages;
     $scope.getViewScope = function () { return $scope; }
     $scope.showXsMenu = false;
     $scope.notifications = initialData.Notifications;
@@ -56,6 +57,16 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.searchResults = [];
     var searchTimeout = null;
     var pageProperties = {};
+
+    $scope.selectedLanguage = null;
+    if ($scope.languages != null) {
+        for (var i = 0; i < $scope.languages.length; i++) {
+            if ($scope.languages[i].Selected) {
+                $scope.selectedLanguage = $scope.languages[i];
+                break;
+            }
+        }
+    }
 
     $scope.getScope = function () { return $scope; }
 
@@ -506,11 +517,17 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.sendAction = function (action, data, success, failure, path) {
+        if (data == null) {
+            data = {};
+        }
         data["-action-"] = action;
         return $scope.sendCommand("Action", data, success, failure, path);
     }
 
     $scope.sendCommand = function (command, data, success, failure, path) {
+        if (data == null) {
+            data = {};
+        }
         data["-command-"] = command;
         if (!path) {
             data["-path-"] = $scope.path;
@@ -563,11 +580,17 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.sendActionAsync = function (action, data, success, failure, path) {
+        if (data == null) {
+            data = {};
+        }
         data["-action-"] = action;
         return $scope.sendCommandAsync("Action", data, success, failure, path);
     }
 
     $scope.sendCommandAsync = function (command, data, success, failure, path) {
+        if (data == null) {
+            data = {};
+        }
         data["-command-"] = command;
         if (!path) {
             data["-path-"] = $scope.path;
@@ -714,6 +737,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             validateLoggedIn(data.UserLoggedIn);
             $scope.userNotVerified = data.UserNotVerified;
             if (!data.Success) {
+                $scope.loadingNewPage = false;
                 $scope.showError(data.Message);
                 return;
             }

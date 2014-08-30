@@ -74,6 +74,11 @@ namespace LessMarkup.UserInterface.Model.Global
                 _siteId = objectId;
             }
 
+            public UserModel CreateRecord()
+            {
+                return new UserModel();
+            }
+
             public void AddRecord(UserModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

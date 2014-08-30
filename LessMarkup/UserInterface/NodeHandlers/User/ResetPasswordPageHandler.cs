@@ -32,8 +32,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
             _ticket = ticket;
         }
 
-        protected override ActionResult CreateResult()
+        protected override ActionResult CreateResult(string path)
         {
+            if (path != null)
+            {
+                return null;
+            }
+
             var siteId = _siteMapper.SiteId;
 
             if (!siteId.HasValue)

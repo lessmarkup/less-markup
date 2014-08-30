@@ -12,7 +12,9 @@ namespace LessMarkup.Interfaces.System
         long? CurrentLanguageId { get; set; }
 
         string GetTranslation(string id, string moduleType, bool throwIfNotFound = true);
+        string GetTranslation(long? languageId, string id, string moduleType, bool throwIfNotFound = true);
 
         List<ILanguage> Languages { get; }
+        IReadOnlyDictionary<string, string> DefaultTranslations { get; }
     }
 }

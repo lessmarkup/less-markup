@@ -420,3 +420,8 @@ span.badge.active-notification {
     color: #1e90ff;
     font-weight: bold;
 }
+
+.language-icon {
+    width: 1.5em;
+    height: 1em;
+}

@@ -16,19 +16,21 @@ namespace LessMarkup.Engine.Language
         public string ShortName { get; set; }
         public bool IsDefault { get; set; }
 
-        private readonly Dictionary<string, CachedTranslation> _translations = new Dictionary<string, CachedTranslation>();
-
-        public void AddTranslation(string key, CachedTranslation value)
+        public class Translation
         {
-            _translations[key] = value;
+            public string Reference { get; set; }
+            public string Text { get; set; }
         }
+
+        public List<Translation> Translations { get; set; }
+        public Dictionary<string, string> TranslationsMap { get; set; }
 
         public string GetText(string id, bool throwIfNotFound = true)
         {
-            CachedTranslation cachedTranslation;
-            if (_translations.TryGetValue(id, out cachedTranslation))
+            string cachedTranslation;
+            if (TranslationsMap.TryGetValue(id, out cachedTranslation))
             {
-                return cachedTranslation.Text;
+                return cachedTranslation;
             }
 
             if (throwIfNotFound)

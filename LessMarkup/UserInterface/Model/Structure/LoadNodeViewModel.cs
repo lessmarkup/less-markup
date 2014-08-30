@@ -72,7 +72,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public static string GetViewTemplate(INodeHandler handler, IDataCache dataCache, System.Web.Mvc.Controller controller)
         {
             var viewPath = GetViewPath(handler.ViewType);
-            var resourceCache = dataCache.Get<IResourceCache>();
+            var resourceCache = dataCache.Get<IResourceCache>(dataCache.Get<ILanguageCache>().CurrentLanguageId);
             var template = resourceCache.ReadText(viewPath + ".html") ?? GetViewContents(viewPath + ".cshtml", handler, controller);
             var stylesheets = handler.Stylesheets;
             if (stylesheets != null && stylesheets.Count > 0)
@@ -170,6 +170,15 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             while (!string.IsNullOrWhiteSpace(rest))
             {
+                if (tryCreateResult)
+                {
+                    Result = _nodeHandler.CreateResult(rest);
+                    if (Result != null)
+                    {
+                        return true;
+                    }
+                }
+
                 var childSettings = _nodeHandler.GetChildHandler(rest);
                 if (childSettings == null)
                 {
@@ -199,7 +208,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (tryCreateResult)
             {
-                Result = _nodeHandler.CreateResult();
+                Result = _nodeHandler.CreateResult(null);
                 if (Result != null)
                 {
                     return true;

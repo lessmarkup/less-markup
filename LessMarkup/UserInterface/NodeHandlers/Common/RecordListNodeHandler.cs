@@ -27,6 +27,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             public string Text { get; set; }
             public string Url { get; set; }
+            public bool External { get; set; }
         }
 
         enum ActionType
@@ -202,9 +203,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return "*";
         }
 
-        protected void AddRecordLink(object text, string url)
+        protected void AddRecordLink(object text, string url, bool external = false)
         {
-            _links.Add(new Link { Text = LanguageHelper.GetText(_recordModel.ModuleType, text), Url = url});
+            _links.Add(new Link { Text = LanguageHelper.GetText(_recordModel.ModuleType, text), Url = url, External = external});
         }
 
         protected void AddRecordAction(string name, string moduleType, object text, string visible = null)
@@ -239,7 +240,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
             var recordsPerPage = siteConfiguration.RecordsPerPage;
-            var resourceCache = _dataCache.Get<IResourceCache>();
+            var resourceCache = _dataCache.Get<IResourceCache>(_dataCache.Get<ILanguageCache>().CurrentLanguageId);
 
             using (var domainModel = _domainModelProvider.Create())
             {
@@ -251,7 +252,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     { "recordId", _idProperty.Name },
                     { "liveUpdates", SupportsLiveUpdates },
                     { "manualRefresh", SupportsManualRefresh },
-                    { "hasSearch", typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Any(p => p.GetCustomAttribute<UseInSearchAttribute>() != null && p.PropertyType == typeof(string))},
+                    { "hasSearch", typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Any(p => p.GetCustomAttribute<RecordSearchAttribute>() != null && p.PropertyType == typeof(string))},
                     { "actions", _actions.Select(a => new
                     {
                         name = a.Name, 
@@ -260,7 +261,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         type = a.Type,
                         parameter = a.Parameter
                     }) },
-                    { "links", _links.Select(l => new { text = l.Text, url = l.Url }) },
+                    { "links", _links.Select(l => new { text = l.Text, url = l.Url, external = l.External }) },
                     { "optionsTemplate", resourceCache.ReadText("~/Views/RecordOptions.html") },
                     { "columns", _recordModel.Columns.Select(c => new
                     {
@@ -308,6 +309,16 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             GetEditableCollection().UpdateRecord(modifiedObject);
 
             return ReturnRecordResult(modifiedObject, false, GetIndex(modifiedObject, filter));
+        }
+
+        public object CreateRecord()
+        {
+            var collection = GetEditableCollection();
+
+            return new
+            {
+                record = collection != null ? collection.CreateRecord() : DependencyResolver.Resolve<T>()
+            };
         }
 
         public object AddRecord(T newObject, string filter, Dictionary<string, string> settings, string rawNewObject)
@@ -362,7 +373,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         }
 
 
-        public object GetRecordIds(string filter)
+        public Dictionary<string, object> GetRecordIds(string filter)
         {
             var collection = GetCollection();
             List<long> recordIds;
@@ -372,9 +383,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 recordIds = collection.ReadIds(domainModel, filter, false).ToList();
             }
 
-            return new
+            return new Dictionary<string, object>
             {
-                recordIds
+                {"recordIds", recordIds}
             };
         }
 
@@ -440,10 +451,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             var recordIds = collection.ReadIds(domainModel, null, false).ToList();
             values["recordIds"] = recordIds;
 
-            var readRecordIds = recordIds.Take(recordsPerPage).ToList();
-
-            ReadRecords(values, readRecordIds, domainModel);
-
+            if (recordsPerPage > 0)
+            {
+                var readRecordIds = recordIds.Take(recordsPerPage).ToList();
+                ReadRecords(values, readRecordIds, domainModel);
+            }
         }
 
         protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
@@ -496,6 +508,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return new Dictionary<string, object>
             {
                 { "message", message }
+            };
+        }
+
+        protected Dictionary<string, object> ReturnResetResult()
+        {
+            return new Dictionary<string, object>
+            {
+                {"reset", true}
             };
         }
 

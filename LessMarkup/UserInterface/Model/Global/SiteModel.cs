@@ -52,6 +52,11 @@ namespace LessMarkup.UserInterface.Model.Global
             {
             }
 
+            public SiteModel CreateRecord()
+            {
+                return new SiteModel();
+            }
+
             public void AddRecord(SiteModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

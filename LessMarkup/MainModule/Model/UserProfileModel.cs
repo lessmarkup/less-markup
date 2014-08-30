@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Language;
@@ -11,6 +13,7 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
+using Newtonsoft.Json;
 
 namespace LessMarkup.MainModule.Model
 {
@@ -43,6 +46,9 @@ namespace LessMarkup.MainModule.Model
 
         public InputFile AvatarFile { get; set; }
 
+        [InputField(InputFieldType.DynamicFieldList)]
+        public List<DynamicInputProperty> Properties { get; set; }
+
         public void Initialize()
         {
             Password = "";
@@ -58,6 +64,56 @@ namespace LessMarkup.MainModule.Model
 
                 Name = user.Name;
                 Avatar = user.AvatarImageId;
+
+                Dictionary<string, object> properties = null;
+                if (!string.IsNullOrEmpty(user.Properties))
+                {
+                    properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties);
+                }
+
+                foreach (var propertyDefinition in domainModel.GetSiteCollection<UserPropertyDefinition>())
+                {
+                    var property = new DynamicInputProperty
+                    {
+                        Field = new InputFieldModel()
+                    };
+
+                    property.Field.Text = propertyDefinition.Title;
+                    property.Field.Property = propertyDefinition.Name;
+                    switch (propertyDefinition.Type)
+                    {
+                        case UserPropertyType.Date:
+                            property.Field.Type = InputFieldType.Date;
+                            break;
+                        case UserPropertyType.File:
+                            property.Field.Type = InputFieldType.File;
+                            break;
+                        case UserPropertyType.Image:
+                            property.Field.Type = InputFieldType.Image;
+                            break;
+                        case UserPropertyType.Note:
+                            property.Field.Type = InputFieldType.MultiLineText;
+                            break;
+                        case UserPropertyType.Text:
+                            property.Field.Type = InputFieldType.Text;
+                            break;
+                    }
+                    if (properties != null && property.Field.Type != InputFieldType.File && property.Field.Type != InputFieldType.Image)
+                    {
+                        object propertyValue;
+                        if (properties.TryGetValue(propertyDefinition.Name, out propertyValue))
+                        {
+                            property.Value = propertyValue;
+                        }
+                    }
+
+                    if (Properties == null)
+                    {
+                        Properties = new List<DynamicInputProperty>();
+                    }
+
+                    Properties.Add(property);
+                }
             }
         }
 
@@ -85,6 +141,62 @@ namespace LessMarkup.MainModule.Model
                     _userSecurity.ChangePassword(Password, out salt, out encodedPassword);
                     user.Salt = salt;
                     user.Password = encodedPassword;
+                }
+
+
+                if (Properties != null)
+                {
+                    Dictionary<string, object> properties = null;
+                    if (!string.IsNullOrEmpty(user.Properties))
+                    {
+                        properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties);
+                    }
+
+                    foreach (var propertyDefinition in domainModel.GetSiteCollection<UserPropertyDefinition>())
+                    {
+                        var property = Properties.FirstOrDefault(p => p.Field != null && p.Field.Property == propertyDefinition.Name);
+
+                        if (property == null || property.Value == null)
+                        {
+                            continue;
+                        }
+
+                        if (properties == null)
+                        {
+                            properties = new Dictionary<string, object>();
+                        }
+
+                        switch (propertyDefinition.Type)
+                        {
+                            case UserPropertyType.File:
+                            case UserPropertyType.Image:
+                                var inputFile = (InputFile) property.Value;
+                                if (inputFile == null)
+                                {
+                                    continue;
+                                }
+                                break;
+                            case UserPropertyType.Date:
+                                if (property.Value.GetType() != typeof (DateTime))
+                                {
+                                    continue;
+                                }
+                                break;
+                            case UserPropertyType.Note:
+                            case UserPropertyType.Text:
+                                if (property.Value.GetType() != typeof (string))
+                                {
+                                    continue;
+                                }
+                                break;
+                        }
+                        properties[propertyDefinition.Name] = property.Value;
+                    }
+
+                    if (properties != null)
+                    {
+                        user.Properties = JsonConvert.SerializeObject(properties);
+                    }
                 }
 
                 _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);

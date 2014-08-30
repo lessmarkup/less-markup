@@ -23,7 +23,7 @@ namespace LessMarkup.Interfaces.RecordModel
         public object DefaultValue { get; set; }
         public List<InputFieldEnum> EnumValues { get; set; }
 
-        public void Initialize(InputFieldAttribute configuration, PropertyInfo property, string moduleType)
+        public InputFieldDefinition(InputFieldAttribute configuration, PropertyInfo property)
         {
             Id = configuration.Id;
             ReadOnly = configuration.ReadOnly;
@@ -45,12 +45,16 @@ namespace LessMarkup.Interfaces.RecordModel
                 }
             }
 
+            Initialize(property.PropertyType, configuration.EnumTextIdBase);
+        }
+
+        void Initialize(Type propertyType, object enumTextIdBase)
+        {
             if (Type == InputFieldType.Select || Type == InputFieldType.SelectText || Type == InputFieldType.MultiSelect)
             {
-                var propertyType = property.PropertyType;
                 if (propertyType.IsEnum)
                 {
-                    InitializeEnum(propertyType, configuration.EnumTextIdBase);
+                    InitializeEnum(propertyType, enumTextIdBase);
                 }
             }
         }
@@ -61,7 +65,7 @@ namespace LessMarkup.Interfaces.RecordModel
 
             if (textIdBaseObj != null)
             {
-                textIdBase = textIdBaseObj as string ?? textIdBaseObj.ToString();
+                textIdBase = textIdBaseObj.ToString();
             }
 
             var values = Enum.GetValues(enumType);

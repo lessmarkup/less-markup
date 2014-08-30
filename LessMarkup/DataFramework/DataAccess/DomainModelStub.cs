@@ -60,5 +60,7 @@ namespace LessMarkup.DataFramework.DataAccess
         public void ImprovePerformance()
         {
         }
+
+        public bool AutoDetectChangesEnabled { get; set; }
     }
 }

@@ -106,8 +106,8 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
         $scope.validationErrors = {}
 
-        for (var i = 0; i < definition.Fields.length; i++) {
-            var field = definition.Fields[i];
+        for (var i = 0; i < $scope.fields.length; i++) {
+            var field = $scope.fields[i];
 
             if (!$scope.fieldVisible(field) || $scope.readOnly(field)) {
                 continue;
@@ -145,7 +145,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
                     }
                     break;
                 case 'PasswordRepeat':
-                    var repeatPassword = $scope.object[field.Property + "-Repeat"];
+                    var repeatPassword = $scope.object[field.Property + "$Repeat"];
                     if (typeof (repeatPassword) == 'undefined' || repeatPassword == null || repeatPassword != value) {
                         $scope.validationErrors[field.Property] = 'Passwords must be equal';
                         valid = false;
@@ -155,6 +155,14 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
         if (!valid) {
             return;
+        }
+
+        for (var i = 0; i < $scope.fields.length; i++) {
+            var field = $scope.fields[i];
+
+            if (field.dynamicSource) {
+                field.dynamicSource.Value = $scope.object[field.Property];
+            }
         }
 
         if ($scope.submitWithCaptcha) {
@@ -167,7 +175,37 @@ function InputFormController($scope, $modalInstance, definition, object, success
         if (typeof (success) == "function") {
             $scope.isApplying = true;
             try {
-                success($scope.object, function () {
+
+                var changed = angular.copy($scope.object);
+
+                for (var i = 0; i < $scope.fields.length; i++) {
+                    var field = $scope.fields[i];
+                    if (field.dynamicSource) {
+                        delete changed[field.Property];
+                    } else if (field.Type == "PasswordRepeat") {
+                        delete changed[field.Property + "$Repeat"];
+                    }
+                }
+
+                for (var i = 0; i < definition.Fields.length; i++) {
+                    var field = definition.Fields[i];
+                    if (field.Type == 'DynamicFieldList') {
+                        if ($scope.object == null) {
+                            continue;
+                        }
+
+                        var dynamicFields = changed[field.Property];
+
+                        for (var j = 0; j < dynamicFields.length; j++) {
+                            var dynamicField = dynamicFields[j];
+                            dynamicField.Field = {
+                                Property: dynamicField.Field.Property
+                            }
+                        }
+                    }
+                }
+
+                success(changed, function () {
                     $scope.isApplying = false;
                     $modalInstance.close();
                 }, function (message) {
@@ -190,29 +228,25 @@ function InputFormController($scope, $modalInstance, definition, object, success
         $modalInstance.dismiss('cancel');
     }
 
-    for (var i = 0; i < definition.Fields.length; i++) {
-        var field = definition.Fields[i];
-        if (!$scope.object.hasOwnProperty(field.Property)) {
-            if (typeof (field.DefaultValue) != "undefined") {
-                $scope.object[field.Property] = field.DefaultValue;
-            } else {
-                $scope.object[field.Property] = "";
-            }
-        }
+    $scope.showDateTimeField = function(event, field) {
+        event.preventDefault();
+        event.stopPropagation();
+        field.isOpen = true;
+    }
 
+    function initializeField(field) {
         if (field.Type == 'PasswordRepeat') {
             $scope.object[field.Property] = "";
-            $scope.object[field.Property + "-Repeat"] = "";
-        } else if (field.Type == 'Image') {
-            $scope.object[field.Property + "File"] = null;
+            $scope.object[field.Property + "$Repeat"] = "";
+        } else if (field.Type == 'Image' || field.Type == 'File') {
+            $scope.object[field.Property] = null;
         }
-
-        if (field.Type != 'Hidden') {
-            $scope.fields.push(field);
-        }
-
         if (field.Type == 'Select' && field.SelectedValues != null && field.SelectValues.length > 0) {
             $scope.object[field.Property] = field.SelectValues[0].Value;
+        }
+
+        if (field.Type == 'Date') {
+            field.isOpen = false;
         }
 
         if (typeof (field.VisibleCondition) != "undefined" && field.VisibleCondition != null && field.VisibleCondition.length > 0) {
@@ -225,6 +259,45 @@ function InputFormController($scope, $modalInstance, definition, object, success
             field.ReadOnlyFunction = new Function("obj", "with(obj) { return " + field.ReadOnlyCondition + "; }");
         } else {
             field.ReadOnlyFunction = null;
+        }
+    }
+
+    for (var i = 0; i < definition.Fields.length; i++) {
+        var field = definition.Fields[i];
+        if (!$scope.object.hasOwnProperty(field.Property)) {
+            if (typeof (field.DefaultValue) != "undefined") {
+                $scope.object[field.Property] = field.DefaultValue;
+            } else {
+                $scope.object[field.Property] = "";
+            }
+        }
+
+        if (field.Type == 'DynamicFieldList') {
+            if ($scope.object == null) {
+                continue;
+            }
+
+            var dynamicFields = $scope.object[field.Property];
+
+            if (dynamicFields == null) {
+                continue;
+            }
+
+            for (var j = 0; j < dynamicFields.length; j++) {
+                var dynamicField = dynamicFields[j];
+                var dynamicDefinition = angular.copy(dynamicField.Field);
+                dynamicDefinition.Property = field.Property + "$" + dynamicDefinition.Property;
+                $scope.fields.push(dynamicDefinition);
+                dynamicDefinition.dynamicSource = dynamicField;
+                initializeField(dynamicDefinition);
+                $scope.object[dynamicDefinition.Property] = dynamicField.Value;
+            }
+            continue;
+        }
+
+        if (field.Type != 'Hidden') {
+            $scope.fields.push(field);
+            initializeField(field);
         }
     }
 }

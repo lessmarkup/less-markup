@@ -4,14 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
-using AutoMapper;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -27,12 +25,14 @@ namespace LessMarkup.Engine.Language
     {
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
-        private readonly Dictionary<long, CachedLanguage> _languagesMap = new Dictionary<long, CachedLanguage>();
+        private Dictionary<long, CachedLanguage> _languagesMap;
         private const string CookieLanguage = "lang";
         private long? _defaultLanguageId;
         private List<CachedLanguage> _languagesList;
 
         private readonly Dictionary<string, string> _defaultTranslations = new Dictionary<string, string>();
+
+        public IReadOnlyDictionary<string, string> DefaultTranslations { get { return _defaultTranslations; } }
 
         public LanguageCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
             : base(new[] { typeof(DataObjects.Common.Language) })
@@ -91,24 +91,23 @@ namespace LessMarkup.Engine.Language
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                foreach (var language in domainModel.GetCollection<DataObjects.Common.Language>().Where(l => l.Visible).Include(l => l.Translations))
+                _languagesMap = domainModel.GetSiteCollection<DataObjects.Common.Language>().Where(l => l.Visible)
+                    .Select(l => new CachedLanguage
+                    {
+                        Name = l.Name,
+                        IsDefault = l.IsDefault,
+                        IconId = l.IconId,
+                        LanguageId = l.Id,
+                        ShortName = l.ShortName,
+                        Translations = l.Translations.Select(t => new CachedLanguage.Translation { Reference = t.Key, Text = t.Text}).ToList()
+                    })
+                    .ToDictionary(l => l.LanguageId, l => l);
+
+                foreach (var language in _languagesMap.Values)
                 {
-                    var cachedLanguage = new CachedLanguage
-                    {
-                        Name = language.Name,
-                        IconId = language.IconId,
-                        IsDefault = language.IsDefault,
-                        LanguageId = language.Id,
-                        ShortName = language.ShortName
-                    };
-
-                    foreach (var translation in language.Translations)
-                    {
-                        var cachedTranslation = Mapper.DynamicMap<CachedTranslation>(translation);
-                        cachedLanguage.AddTranslation(translation.Reference, cachedTranslation);
-                    }
-
-                    _languagesMap[language.Id] = cachedLanguage;
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    language.TranslationsMap = language.Translations.ToDictionary(t => t.Reference, t => t.Text);
+                    language.Translations = null;
                 }
             }
 
@@ -165,6 +164,12 @@ namespace LessMarkup.Engine.Language
             }
         }
 
+        public string GetTranslation(long? languageId, string id, string moduleType, bool throwIfNotFound = true)
+        {
+            var language = languageId.HasValue ? _languagesMap[languageId.Value] : null;
+            return GetTranslation(language, id, moduleType, throwIfNotFound);
+        }
+
         public List<ILanguage> Languages
         {
             get { return _languagesList.Select(l => (ILanguage) l).ToList(); }
@@ -173,7 +178,11 @@ namespace LessMarkup.Engine.Language
         public string GetTranslation(string id, string moduleType, bool throwIfNotFound = true)
         {
             var language = CurrentLanguage;
+            return GetTranslation(language, id, moduleType, throwIfNotFound);
+        }
 
+        private string GetTranslation(CachedLanguage language, string id, string moduleType, bool throwIfNotFound)
+        {
             string translation;
 
             id = moduleType + "." + id;

@@ -160,6 +160,8 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
         $scope.sendAction("GetRecordIds", { filter: filter }, function (data2) {
             if (data && data.hasOwnProperty("lastChange")) {
                 lastChange = data.lastChange;
+            } else if (data2.hasOwnProperty("lastChange")) {
+                lastChange = data2.lastChange;
             }
 
             $scope.hasNewRecords = false;
@@ -353,16 +355,18 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
 
         onRecordListActivity();
 
-        inputForm.editObject($scope, null, action.type, function (object, success, failure) {
-            $scope.sendAction(action.name, {
-                newObject: object,
-                filter: filter
-            }, function (data) {
-                handleActionResult(data, -1, success, failure);
-            }, function (message) {
-                failure(message);
-            });
-        }, $scope.getTypeahead);
+        $scope.sendAction("CreateRecord", null, function(data) {
+            inputForm.editObject($scope, data.record, action.type, function (object, success, failure) {
+                $scope.sendAction(action.name, {
+                    newObject: object,
+                    filter: filter
+                }, function (data) {
+                    handleActionResult(data, -1, success, failure);
+                }, function (message) {
+                    failure(message);
+                });
+            }, $scope.getTypeahead);
+        });
     }
 
     function resetRecords(recordIds) {
@@ -502,11 +506,11 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
         }, $scope.getTypeahead);
     }
 
-    function handleActionResult(data, index, success, failure) {
+    function handleActionResult(data, index, success) {
 
         $scope.onDataReceived($scope, data);
 
-        if (data.redirect && data.redirect.length) {
+        if (data != null && data.redirect && data.redirect.length) {
             if (success) {
                 success();
             }
@@ -514,26 +518,31 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
             return;
         }
 
-        if (data.message && data.message.length) {
-            if (failure) {
-                failure(data.message);
-            } else {
-                inputForm.message(data.message, "Information");
-                if (success) {
-                    success();
-                }
+        if (data != null && data.message && data.message.length) {
+            if (success) {
+                success();
             }
+            inputForm.message(data.message, "Information");
             return;
         }
 
-        if (data.hasOwnProperty("removed")) {
+        if (data != null && data.hasOwnProperty("removed")) {
             hideOptions();
             records.splice(index, 1);
             $scope.loadVisibleRecords();
             return;
         }
 
-        if (!data.hasOwnProperty("record")) {
+        if (data != null && data.hasOwnProperty("reset")) {
+            records = [];
+            $scope.refreshNewRecords();
+            return;
+        }
+
+        if (data == null || !data.hasOwnProperty("record")) {
+            if (success) {
+                success();
+            }
             return;
         }
 
@@ -609,7 +618,7 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
 
         function sendAction(success, failure) {
             $scope.sendAction(action.name, actionData, function (data) {
-                handleActionResult(data, index, success, failure);
+                handleActionResult(data, index, success);
             }, failure);
         }
 
@@ -627,11 +636,7 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
                 inputForm.message(message, "Error");
             });
         } else if (action.type == "RecordCreate") {
-            var record = null;
-            if (action.parameter === $scope.viewData.type) {
-                record = currentRecord;
-            }
-            inputForm.editObject($scope, record, action.parameter, function (object, success, failure) {
+            inputForm.editObject($scope, null, action.parameter, function (object, success, failure) {
                 actionData.newObject = object;
                 sendAction(success, failure);
             }, $scope.getTypeahead);

@@ -65,7 +65,7 @@ namespace LessMarkup.Engine.Cache
         {
             lock (_itemsLock)
             {
-                var key = new Tuple<Type, long?>(typeof(T), objectId);
+                var key = Tuple.Create(typeof(T), objectId);
                 CacheItem ret;
                 if (_items.TryGetValue(key, out ret))
                 {
@@ -102,7 +102,7 @@ namespace LessMarkup.Engine.Cache
         {
             lock (_itemsLock)
             {
-                Remove(new Tuple<Type, long?>(typeof(T), objectId));
+                Remove(Tuple.Create(typeof(T), objectId));
             }
         }
 

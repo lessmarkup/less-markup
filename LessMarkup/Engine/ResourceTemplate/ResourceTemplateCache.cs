@@ -115,7 +115,7 @@ namespace LessMarkup.Engine.ResourceTemplate
             return null;
         }
 
-        private void BuildTemplate(StringBuilder builder, CacheItem cacheItem, int level, ResourceCache resourceCache)
+        private void BuildTemplate(StringBuilder builder, CacheItem cacheItem, int level, ResourceCache resourceCache, long? languageId)
         {
             int i;
             for (i = 0; i < cacheItem.Directives.Count; i++)
@@ -195,7 +195,7 @@ namespace LessMarkup.Engine.ResourceTemplate
 
                         if (childItem != null)
                         {
-                            BuildTemplate(builder, childItem, level + 1, resourceCache);
+                            BuildTemplate(builder, childItem, level + 1, resourceCache, languageId);
                         }
 
                         break;
@@ -215,7 +215,7 @@ namespace LessMarkup.Engine.ResourceTemplate
                             moduleType = directive.Body.Substring(0, pos);
                             text = directive.Body.Substring(pos + 1);
                         }
-                        text = LanguageHelper.GetText(moduleType, text);
+                        text = LanguageHelper.GetText(languageId, moduleType, text);
                         builder.Append(text);
                         break;
                     }
@@ -264,7 +264,7 @@ namespace LessMarkup.Engine.ResourceTemplate
             return cacheItem;
         }
 
-        public string GetTemplate(string path, ResourceReference resourceReference, ResourceCache resourceCache)
+        public string GetTemplate(long? languageId, string path, ResourceReference resourceReference, ResourceCache resourceCache)
         {
             var cacheItem = GetCacheItem(path, resourceReference);
 
@@ -275,7 +275,7 @@ namespace LessMarkup.Engine.ResourceTemplate
 
             var builder = new StringBuilder();
 
-            BuildTemplate(builder, cacheItem, 0, resourceCache);
+            BuildTemplate(builder, cacheItem, 0, resourceCache, languageId);
 
             return builder.ToString().Trim();
         }

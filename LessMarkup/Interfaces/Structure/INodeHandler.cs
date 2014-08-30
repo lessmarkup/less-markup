@@ -21,7 +21,7 @@ namespace LessMarkup.Interfaces.Structure
         string ViewType { get; }
         List<string> Scripts { get; }
         NodeAccessType AccessType { get; }
-        ActionResult CreateResult();
+        ActionResult CreateResult(string path);
         object Context { get; set; }
     }
 }

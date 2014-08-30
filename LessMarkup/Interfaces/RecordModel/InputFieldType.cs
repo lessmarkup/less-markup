@@ -31,5 +31,6 @@ namespace LessMarkup.Interfaces.RecordModel
         Typeahead,
         PasswordRepeat,
         Label,
+        DynamicFieldList
     }
 }

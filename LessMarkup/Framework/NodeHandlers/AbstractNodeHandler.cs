@@ -96,14 +96,14 @@ namespace LessMarkup.Framework.NodeHandlers
 
         string INodeHandler.ViewType { get { return ViewType; } }
 
-        ActionResult INodeHandler.CreateResult()
+        ActionResult INodeHandler.CreateResult(string path)
         {
-            return CreateResult();
+            return CreateResult(path);
         }
 
         public object Context { get; set; }
 
-        protected virtual ActionResult CreateResult()
+        protected virtual ActionResult CreateResult(string path)
         {
             return null;
         }

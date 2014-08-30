@@ -82,6 +82,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 }
             }
 
+            public NodeAccessModel CreateRecord()
+            {
+                return new NodeAccessModel();
+            }
+
             public void AddRecord(NodeAccessModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

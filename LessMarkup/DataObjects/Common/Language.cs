@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class Language : NonSiteDataObject
+    public class Language : SiteDataObject
     {
         public string Name { get; set; }
         public long? IconId { get; set; }

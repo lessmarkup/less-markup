@@ -51,6 +51,7 @@ namespace LessMarkup.Engine.Structure
             CollectionType = formType.CollectionType;
             CollectionType = formType.CollectionType;
             SubmitWithCaptcha = formType.SubmitWithCaptcha;
+            var languageId = _dataCache.Get<ILanguageCache>().CurrentLanguageId;
 
             foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -58,8 +59,7 @@ namespace LessMarkup.Engine.Structure
 
                 if (fieldAttribute != null)
                 {
-                    var fieldDefinition = DependencyResolver.Resolve<InputFieldDefinition>();
-                    fieldDefinition.Initialize(fieldAttribute, property, moduleType);
+                    var fieldDefinition = new InputFieldDefinition(fieldAttribute, property);
                     _fields.Add(fieldDefinition);
                 }
 
@@ -73,7 +73,7 @@ namespace LessMarkup.Engine.Structure
 
                     if (columnDefinition.CellTemplate != null && columnDefinition.CellTemplate.StartsWith("~/"))
                     {
-                        columnDefinition.CellTemplate = _dataCache.Get<IResourceCache>().ReadText(columnDefinition.CellTemplate);
+                        columnDefinition.CellTemplate = _dataCache.Get<IResourceCache>(languageId).ReadText(columnDefinition.CellTemplate);
                     }
                 }
             }

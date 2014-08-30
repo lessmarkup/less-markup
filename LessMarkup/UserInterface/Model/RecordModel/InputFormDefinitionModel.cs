@@ -24,29 +24,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
             _engineConfiguration = engineConfiguration;
         }
 
-        public class SelectValue
-        {
-            public string Text { get; set; }
-            public string Value { get; set; }
-        }
-
-        public class FieldModel
-        {
-            public string Text { get; set; }
-            public InputFieldType Type { get; set; }
-            public bool ReadOnly { get; set; }
-            public string Id { get; set; }
-            public bool Required { get; set; }
-            public double? Width { get; set; }
-            public string ReadOnlyCondition { get; set; }
-            public string VisibleCondition { get; set; }
-            public string Property { get; set; }
-            public string HelpText { get; set; }
-            public List<SelectValue> SelectValues { get; set; }
-            public object DefaultValue { get; set; }
-        }
-
-        public List<FieldModel> Fields { get; set; }
+        public List<InputFieldModel> Fields { get; set; }
         public string Title { get; set; }
         public bool SubmitWithCaptcha { get; set; }
 
@@ -71,7 +49,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                 return;
             }
 
-            Fields = new List<FieldModel>();
+            Fields = new List<InputFieldModel>();
 
             if (definition.TitleTextId != null)
             {
@@ -91,7 +69,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
             foreach (var source in definition.Fields)
             {
-                var target = new FieldModel
+                var target = new InputFieldModel
                 {
                     Id = source.Id,
                     ReadOnly = source.ReadOnly,
@@ -107,10 +85,10 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
                 if (source.EnumValues != null && source.EnumValues.Count > 0)
                 {
-                    target.SelectValues = new List<SelectValue>();
+                    target.SelectValues = new List<SelectValueModel>();
                     foreach (var value in source.EnumValues)
                     {
-                        target.SelectValues.Add(new SelectValue
+                        target.SelectValues.Add(new SelectValueModel
                         {
                             Value = value.Value,
                             Text = value.TextId != null ? LanguageHelper.GetText(definition.ModuleType, value.TextId) : value.Value
@@ -126,7 +104,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
                     if (inputSource != null)
                     {
-                        target.SelectValues = inputSource.GetEnumValues(target.Property).Select(v => new SelectValue { Text = v.Text, Value = v.Value }).ToList();
+                        target.SelectValues = inputSource.GetEnumValues(target.Property).Select(v => new SelectValueModel { Text = v.Text, Value = v.Value }).ToList();
                     }
                 }
 

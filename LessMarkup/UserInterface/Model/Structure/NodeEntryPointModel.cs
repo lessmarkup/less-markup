@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
@@ -119,9 +120,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 Url = n.FullPath
             }).ToList();
 
+            var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
+
             if (_siteMapper.SiteId.HasValue)
             {
-                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
                 var adminLoginPage = siteConfiguration.AdminLoginPage;
                 if (string.IsNullOrWhiteSpace(adminLoginPage))
                 {
@@ -184,13 +186,32 @@ namespace LessMarkup.UserInterface.Model.Structure
                 FillNavigationBarItems(rootNode.Children, 0, navigationTree);
             }
 
+            object languages = null;
+
+            if (siteConfiguration.UseLanguages)
+            {
+                var languageCache = _dataCache.Get<ILanguageCache>();
+                var languageId = languageCache.CurrentLanguageId;
+
+                languages = languageCache.Languages.Select(l => new
+                {
+                    Id = l.LanguageId,
+                    l.Name,
+                    l.ShortName,
+                    Url = string.Format("/language/{0}", l.LanguageId),
+                    ImageUrl = l.IconId.HasValue ? ImageHelper.ImageUrl(l.IconId.Value) : null,
+                    Selected = l.LanguageId == languageId
+                });
+            }
+
             InitialData = JsonConvert.SerializeObject(new
             {
                 RootPath = rootNode.FullPath,
-                RootTitle = _dataCache.Get<ISiteConfiguration>().SiteName,
+                RootTitle = siteConfiguration.SiteName,
                 Path = path ?? "",
                 HasLogin = hasLogin,
                 HasSearch = hasSearch,
+                Languages = languages,
                 ShowConfiguration = _currentUser.IsAdministrator,
                 ConfigurationPath = "/" + Constants.NodePath.Configuration,
                 ProfilePath = "/" + Constants.NodePath.Profile,

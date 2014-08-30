@@ -230,6 +230,25 @@
     <Translation Id="ThumbnailHeight" Text="Thumbnail Height"/>
     <Translation Id="ApproveUsers" Text="Approve Users"/>
     <Translation Id="NodeName" Text="Section"/>
+    <Translation Id="ShortName" Text="Short Name"/>
+    <Translation Id="Visible" Text="Visible"/>
+    <Translation Id="Icon" Text="Icon"/>
+    <Translation Id="IsDefault" Text="Default"/>
+    <Translation Id="Languages" Text="Languages"/>
+    <Translation Id="Translations" Text="Translations"/>
+    <Translation Id="ResetLanguage" Text="Reset Translations"/>
+    <Translation Id="AddMissingTranslations" Text="Add Missing Translations"/>
+    <Translation Id="LanguageWasReset" Text="Language was reset"/>
+    <Translation Id="AddedMissingTranslations" Text="Added missing translations"/>
+    <Translation Id="Export" Text="Export"/>
+    <Translation Id="Import" Text="Import"/>
+    <Translation Id="FileToImport" Text="File to import"/>
+    <Translation Id="ImportFinished" Text="Import Finished"/>
+    <Translation Id="Key" Text="Key"/>
+    <Translation Id="Text" Text="Text"/>
+    <Translation Id="Translation" Text="Translation"/>
+    <Translation Id="Language" Text="Language"/>
+    <Translation Id="SetDefault" Text="Set Default"/>
     <!--
     <Translation Id="" Text=""/>
     -->

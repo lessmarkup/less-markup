@@ -69,15 +69,15 @@ namespace LessMarkup.UserInterface.Model.User
         public long UserId { get; set; }
 
         [Column(UserInterfaceTextIds.Name, CellUrl = "{UserId}")]
-        [UseInSearch]
+        [RecordSearch]
         public string Name { get; set; }
 
         [Column(UserInterfaceTextIds.Title)]
-        [UseInSearch]
+        [RecordSearch]
         public string Title { get; set; }
 
         [Column(UserInterfaceTextIds.Signature)]
-        [UseInSearch]
+        [RecordSearch]
         public string Signature { get; set; }
     }
 }

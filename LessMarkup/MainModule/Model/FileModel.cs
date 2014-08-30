@@ -59,6 +59,11 @@ namespace LessMarkup.MainModule.Model
             {
             }
 
+            public FileModel CreateRecord()
+            {
+                return new FileModel();
+            }
+
             public void AddRecord(FileModel record)
             {
                 using (var domainModel = _domainModelProvider.Create())

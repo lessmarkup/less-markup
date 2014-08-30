@@ -105,10 +105,13 @@
     <Compile Include="Exceptions\TextNotFoundException.cs" />
     <Compile Include="Module\IEntitySearch.cs" />
     <Compile Include="RecordModel\Align.cs" />
+    <Compile Include="RecordModel\DynamicInputProperty.cs" />
+    <Compile Include="RecordModel\InputFieldModel.cs" />
     <Compile Include="RecordModel\InputFile.cs" />
     <Compile Include="RecordModel\IRecordModelCache.cs" />
     <Compile Include="RecordModel\IRecordModelDefinition.cs" />
-    <Compile Include="RecordModel\UseInSearchAttribute.cs" />
+    <Compile Include="RecordModel\SelectValueModel.cs" />
+    <Compile Include="RecordModel\RecordSearchAttribute.cs" />
     <Compile Include="Structure\ActionAccessAttribute.cs" />
     <Compile Include="Structure\CachedNodeAccess.cs" />
     <Compile Include="Structure\ICachedNodeInformation.cs" />

@@ -295,7 +295,6 @@
     <Compile Include="TextAndSearch\FormattedText.cs" />
     <Compile Include="TextAndSearch\ITextTagHandler.cs" />
     <Compile Include="Language\CachedLanguage.cs" />
-    <Compile Include="Language\CachedTranslation.cs" />
     <Compile Include="Language\LanguageCache.cs" />
     <Compile Include="Module\ModuleIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

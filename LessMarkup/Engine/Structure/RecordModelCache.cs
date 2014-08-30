@@ -22,7 +22,7 @@ namespace LessMarkup.Engine.Structure
         private readonly Dictionary<Type, string> _typeToId = new Dictionary<Type, string>();
         private readonly IModuleProvider _moduleProvider;
 
-        public RecordModelCache(IModuleProvider moduleProvider) : base(null)
+        public RecordModelCache(IModuleProvider moduleProvider) : base(new [] {typeof(DataObjects.Common.Language)})
         {
             _moduleProvider = moduleProvider;
         }

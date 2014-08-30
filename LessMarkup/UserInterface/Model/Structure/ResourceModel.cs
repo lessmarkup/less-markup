@@ -23,7 +23,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 return false;
             }
 
-            var resourceCache = _dataCache.Get<IResourceCache>();
+            var resourceCache = _dataCache.Get<IResourceCache>(_dataCache.Get<ILanguageCache>().CurrentLanguageId);
 
             if (!resourceCache.ResourceExists(path))
             {
@@ -89,7 +89,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ActionResult CreateResult(System.Web.Mvc.Controller controller)
         {
             controller.Response.Cache.SetExpires(DateTime.Now.AddHours(-1));
-            var resourceCache = _dataCache.Get<IResourceCache>();
+            var resourceCache = _dataCache.Get<IResourceCache>(_dataCache.Get<ILanguageCache>().CurrentLanguageId);
             return new FileStreamResult(resourceCache.ReadResource(_path), _contentType);
         }
     }

@@ -70,10 +70,10 @@ namespace LessMarkup.Engine.Structure
         public bool HasSearch { get; private set; }
 
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasLanguages)]
-        public bool HasLanguages { get; private set; }
+        public bool UseLanguages { get; private set; }
 
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasCurrencies)]
-        public bool HasCurrencies { get; private set; }
+        public bool UseCurrencies { get; private set; }
 
         [InputField(InputFieldType.Text, MainModuleTextIds.DefaultCronJobId)]
         public string DefaultCronJobId { get; private set; }

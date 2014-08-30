@@ -14,7 +14,6 @@ namespace LessMarkup.Interfaces.RecordModel
         IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder);
         int CollectionId { get; }
         IQueryable<TR> Read(IDomainModel domainModel, List<long> ids);
-        bool Filtered { get; }
         void Initialize(long? objectId, NodeAccessType nodeAccessType);
     }
 }

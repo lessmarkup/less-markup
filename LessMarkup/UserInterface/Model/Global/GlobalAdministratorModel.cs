@@ -55,6 +55,11 @@ namespace LessMarkup.UserInterface.Model.Global
             {
             }
 
+            public GlobalAdministratorModel CreateRecord()
+            {
+                return new GlobalAdministratorModel();
+            }
+
             public void AddRecord(GlobalAdministratorModel record)
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())

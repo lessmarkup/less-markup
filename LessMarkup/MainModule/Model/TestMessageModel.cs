@@ -60,6 +60,11 @@ namespace LessMarkup.MainModule.Model
             {
             }
 
+            public TestMessageModel CreateRecord()
+            {
+                return new TestMessageModel();
+            }
+
             public void AddRecord(TestMessageModel record)
             {
                 throw new InvalidOperationException();
