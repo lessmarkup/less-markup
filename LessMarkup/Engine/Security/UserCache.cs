@@ -30,6 +30,8 @@ namespace LessMarkup.Engine.Security
         public DateTime? UnblockTime { get; private set; }
         public long? SiteId { get; private set; }
         public string Properties { get; private set; }
+        public long? AvatarImageId { get; set; }
+        public long? UserImageId { get; set; }
         public string Name { get; private set; }
 
         public UserCache(IDomainModelProvider domainModelProvider)
@@ -63,6 +65,8 @@ namespace LessMarkup.Engine.Security
                         u.UnblockTime,
                         u.IsApproved,
                         u.Properties,
+                        u.AvatarImageId,
+                        u.UserImageId,
                         Groups = u.Groups.Select(g => g.UserGroupId)
 
                     }).FirstOrDefault();
@@ -92,6 +96,8 @@ namespace LessMarkup.Engine.Security
                 UnblockTime = user.UnblockTime;
                 Properties = user.Properties;
                 Name = user.Name;
+                AvatarImageId = user.AvatarImageId;
+                UserImageId = user.UserImageId;
 
                 if (IsBlocked && UnblockTime.HasValue && UnblockTime.Value < DateTime.UtcNow)
                 {

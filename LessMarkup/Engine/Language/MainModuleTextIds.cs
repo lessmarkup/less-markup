@@ -257,6 +257,7 @@ namespace LessMarkup.Engine.Language
         Smiles,
         Code,
         Image,
-        GoogleAnalyticsResource
+        GoogleAnalyticsResource,
+        Signature,
     }
 }

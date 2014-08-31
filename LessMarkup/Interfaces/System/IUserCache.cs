@@ -19,5 +19,7 @@ namespace LessMarkup.Interfaces.System
         DateTime? UnblockTime { get; }
         long? SiteId { get; }
         string Properties { get; }
+        long? AvatarImageId { get; set; }
+        long? UserImageId { get; set; }
     }
 }

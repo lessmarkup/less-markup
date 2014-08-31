@@ -104,6 +104,9 @@
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\TextNotFoundException.cs" />
     <Compile Include="Module\IEntitySearch.cs" />
+    <Compile Include="Module\IUserPropertyProvider.cs" />
+    <Compile Include="Module\UserProperty.cs" />
+    <Compile Include="Module\UserPropertyType.cs" />
     <Compile Include="RecordModel\Align.cs" />
     <Compile Include="RecordModel\DynamicInputProperty.cs" />
     <Compile Include="RecordModel\InputFieldModel.cs" />

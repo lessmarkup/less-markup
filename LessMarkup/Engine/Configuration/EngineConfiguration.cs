@@ -36,9 +36,9 @@ namespace LessMarkup.Engine.Configuration
                 var isAvailableProperty = roleEnvironmentType.GetProperty("IsAvailable", BindingFlags.Static);
                 _isCloudEnvironment = (bool) isAvailableProperty.GetValue(null);
             }
-            catch (Exception e)
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch
             {
-                this.LogException(e);
             }
 
             LoadFileConfiguration();

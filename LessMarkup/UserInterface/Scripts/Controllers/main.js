@@ -70,6 +70,56 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
     }
 
+    var smilesStr = null;
+    var smiles = {};
+
+    $scope.getFriendlyHtml = function (text) {
+
+        if (text == null || text.length == 0) {
+            return text;
+        }
+
+        function getSmileUrl(code) {
+            if (!code.length || !initialData.SmilesBase) {
+                return "";
+            }
+            return "<img src=\"" + initialData.SmilesBase + smiles[code] + "\"/>";
+        }
+
+        if (smilesStr == null) {
+            smilesStr = "";
+            for (var i = 0; i < initialData.Smiles.length; i++) {
+                var smile = initialData.Smiles[i];
+                smiles[smile.Code] = smile.Id;
+                if (smilesStr.length > 0) {
+                    smilesStr += "|";
+                }
+                for (var j = 0; j < smile.Code.length; j++) {
+                    switch (smile.Code[j]) {
+                        case '(':
+                        case ')':
+                        case '[':
+                        case ']':
+                        case '-':
+                        case '?':
+                        case '|':
+                            smilesStr += '\\';
+                            break;
+                    }
+                    smilesStr += smile.Code[j];
+                }
+            }
+        }
+
+        var smilesExpr = new RegExp(smilesStr, "g");
+
+        if (smilesStr.length > 0) {
+            text = text.replace(smilesExpr, getSmileUrl);
+        }
+
+        return Autolinker.link(text, { truncate: 30 });
+    }
+
     $scope.getScope = function () { return $scope; }
 
     $scope.clearSearch = function() {

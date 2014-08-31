@@ -16,8 +16,10 @@ namespace LessMarkup.Interfaces.Module
         bool DoBackgroundJobs(UrlHelper urlHelper);
         void RegisterEntitySearch<T>(IEntitySearch entitySearch) where T : IDataObject;
         void RegisterNodeHandler<T>(string id) where T : INodeHandler;
+        void RegisterUserPropertyProvider(IUserPropertyProvider provider);
         Tuple<Type, string> GetNodeHandler(string id);
         IEnumerable<string> GetNodeHandlers();
         IEntitySearch GetEntitySearch(Type collectionType);
+        IEnumerable<UserProperty> GetUserProperties(long userId);
     }
 }

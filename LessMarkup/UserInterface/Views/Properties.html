@@ -1,4 +1,12 @@
-﻿<div ng-repeat="property in viewData.Properties" class="form-group">
-    <label ng-bind="property.name"></label>
-    <div ng-bind="property.value"></div>
-</div>
+﻿<table class="properties">
+    <tr ng-repeat="property in viewData.Properties">
+        <td class="property-name">
+            <span ng-bind="property.name"></span>
+        </td>
+        <td ng-switch="property.type" class="property-value">
+            <span ng-switch-when="Date" ng-bind="property.value | date:'medium'"></span>
+            <img ng-switch-when="Image" ng-src="{{property.value}}" class="img-thumbnail" />
+            <span ng-switch-default ng-bind="property.value"></span>
+        </td>
+    </tr>
+</table>

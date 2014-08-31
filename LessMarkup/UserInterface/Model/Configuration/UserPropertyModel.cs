@@ -4,6 +4,7 @@ using LessMarkup.DataObjects.Security;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 

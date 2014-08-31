@@ -67,7 +67,6 @@
     <Compile Include="Security\UserGroupMembership.cs" />
     <Compile Include="Security\UserBlockHistory.cs" />
     <Compile Include="Security\UserLoginIpAddress.cs" />
-    <Compile Include="Security\UserPropertyType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFramework\DataFramework.csproj">

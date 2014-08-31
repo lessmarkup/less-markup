@@ -434,3 +434,21 @@ span.badge.active-notification {
 .dialog-notification.bg-danger {
     color: red;
 }
+
+table.properties {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+table.properties td.property-name {
+    padding: 5px;
+}
+
+table.properties td.property-name span {
+    font-weight: bold;
+}
+
+table.properties td.property-value {
+    padding: 5px;
+}

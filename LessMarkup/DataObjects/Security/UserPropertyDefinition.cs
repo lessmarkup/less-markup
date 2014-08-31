@@ -1,4 +1,5 @@
 ﻿using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.DataObjects.Security
 {

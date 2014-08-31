@@ -254,6 +254,7 @@
     <Translation Id="Code" Text="Code"/>
     <Translation Id="Image" Text="Image"/>
     <Translation Id="GoogleAnalyticsResource" Text="Google Analytics Resource"/>
+    <Translation Id="Signature" Text="Signature"/>
     <!--
     <Translation Id="" Text=""/>
     -->

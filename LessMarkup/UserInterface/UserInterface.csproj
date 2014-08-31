@@ -122,7 +122,7 @@
     <Compile Include="Exceptions\UnknownActionException.cs" />
     <Compile Include="Model\Common\FlatPageSettingsModel.cs" />
     <Compile Include="Model\Common\FlatPagePosition.cs" />
-    <Compile Include="Model\Common\GoogleAnalyticsHelper.cs" />
+    <Compile Include="Model\Common\PropertyModel.cs" />
     <Compile Include="Model\Common\SearchResultModel.cs" />
     <Compile Include="Model\Common\SearchTextModel.cs" />
     <Compile Include="Model\Configuration\NodeAccessModel.cs" />

@@ -19,6 +19,7 @@ namespace LessMarkup.Engine.Module
         private readonly Dictionary<Type, IEntitySearch> _entitySearch = new Dictionary<Type, IEntitySearch>();
         private readonly Dictionary<string, Tuple<Type, string>> _nodeHandlers = new Dictionary<string, Tuple<Type, string>>();
         private readonly IEngineConfiguration _engineConfiguration;
+        private readonly List<IUserPropertyProvider> _userPropertyProviders = new List<IUserPropertyProvider>();
 
         private long _lastBackgroundJobTime;
 
@@ -77,6 +78,11 @@ namespace LessMarkup.Engine.Module
             _nodeHandlers[id] = Tuple.Create(typeof (T), RegisteringModuleType);
         }
 
+        public void RegisterUserPropertyProvider(IUserPropertyProvider provider)
+        {
+            _userPropertyProviders.Add(provider);
+        }
+
         public Tuple<Type, string> GetNodeHandler(string id)
         {
             Tuple<Type, string> ret;
@@ -92,6 +98,18 @@ namespace LessMarkup.Engine.Module
         {
             IEntitySearch result;
             return !_entitySearch.TryGetValue(collectionType, out result) ? null : result;
+        }
+
+        public IEnumerable<UserProperty> GetUserProperties(long userId)
+        {
+            var ret = new List<UserProperty>();
+
+            foreach (var provider in _userPropertyProviders)
+            {
+                ret.AddRange(provider.GetProperties(userId));
+            }
+
+            return ret;
         }
 
         internal string RegisteringModuleType { get; set; }

@@ -10,6 +10,7 @@ using LessMarkup.Engine.Language;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
@@ -25,24 +26,32 @@ namespace LessMarkup.MainModule.Model
         private readonly IUserSecurity _userSecurity;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
+        private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache)
+        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
         {
             _currentUser = currentUser;
             _domainModelProvider = domainModelProvider;
             _userSecurity = userSecurity;
             _changeTracker = changeTracker;
             _dataCache = dataCache;
+            _htmlSanitizer = htmlSanitizer;
         }
 
         [InputField(InputFieldType.Text, MainModuleTextIds.Name)]
         public string Name { get; set; }
+
+        [InputField(InputFieldType.Text, MainModuleTextIds.Title)]
+        public string Title { get; set; }
 
         [InputField(InputFieldType.PasswordRepeat, MainModuleTextIds.Password)]
         public string Password { get; set; }
 
         [InputField(InputFieldType.Image, MainModuleTextIds.ProfileAvatar)]
         public long? Avatar { get; set; }
+
+        [InputField(InputFieldType.RichText, MainModuleTextIds.Signature)]
+        public string Signature { get; set; }
 
         public InputFile AvatarFile { get; set; }
 
@@ -64,6 +73,8 @@ namespace LessMarkup.MainModule.Model
 
                 Name = user.Name;
                 Avatar = user.AvatarImageId;
+                Signature = user.Signature;
+                Title = user.Title;
 
                 Dictionary<string, object> properties = null;
                 if (!string.IsNullOrEmpty(user.Properties))
@@ -129,6 +140,8 @@ namespace LessMarkup.MainModule.Model
                 var user = domainModel.GetCollection<User>().Single(u => u.Id == _currentUser.UserId.Value);
 
                 user.Name = Name;
+                user.Signature = _htmlSanitizer.Sanitize(Signature);
+                user.Title = Title;
 
                 if (AvatarFile != null)
                 {
