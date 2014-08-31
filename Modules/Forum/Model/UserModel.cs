@@ -15,6 +15,7 @@ namespace LessMarkup.Forum.Model
         public string Profile { get; set; }
         public string Avatar { get; set; }
         public int Posts { get; set; }
+        public string Signature { get; set; }
         public Dictionary<string, object> Properties { get; set; }
 
         public void Initialize(PostStatisticsCache cache, long userId)
@@ -35,6 +36,7 @@ namespace LessMarkup.Forum.Model
                 Avatar = ImageHelper.ThumbnailUrl(user.AvatarId.Value);
             }
 
+            Signature = user.Signature;
             Posts = user.Posts;
             Properties = !string.IsNullOrWhiteSpace(user.Properties) ? JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties) : new Dictionary<string, object>();
         }

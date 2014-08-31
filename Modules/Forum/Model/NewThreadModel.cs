@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -75,7 +76,7 @@ namespace LessMarkup.Forum.Model
                 post.Text = Post;
                 post.Removed = false;
                 post.UserId = _currentUser.UserId;
-                post.Updated = thread.Created;
+                post.IpAddress = HttpContext.Current.Request.UserHostAddress;
 
                 thread.Posts.Add(post);
 

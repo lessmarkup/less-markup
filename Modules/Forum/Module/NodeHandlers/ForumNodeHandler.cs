@@ -11,6 +11,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.UserInterface;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.Forum.Module.NodeHandlers
@@ -34,6 +35,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
         protected override void AddEditActions()
         {
+            if (HasManageAccess)
+            {
+                AddRecordAction("ModifyRecord", Constants.ModuleType.UserInterface, UserInterfaceTextIds.ModifyRecord);
+            }
         }
 
         protected override object Initialize(object controller)

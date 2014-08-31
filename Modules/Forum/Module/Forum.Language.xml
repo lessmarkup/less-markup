@@ -43,6 +43,8 @@
     <Translation Id="PostName" Text="Thread Post"/>
     <Translation Id="ThreadUnread" Text="unread"/>
     <Translation Id="CurrentlyViewing" Text="Currently viewing"/>
+    <Translation Id="Thread" Text="Thread"/>
+    <Translation Id="Block" Text="Block"/>
     <!--
     <Translation Id="" Text=""/>
     -->

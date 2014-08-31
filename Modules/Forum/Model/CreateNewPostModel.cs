@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -45,19 +47,23 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
+                var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == threadId);
+
                 var post = new Post
                 {
                     ThreadId = threadId,
                     Created = DateTime.UtcNow,
-                    Text = _htmlSanitizer.Sanitize(Text, new List<string> {"blockquote>header"})
+                    Text = _htmlSanitizer.Sanitize(Text, new List<string> {"blockquote>header"}),
+                    UserId = _currentUser.UserId,
+                    IpAddress = HttpContext.Current.Request.UserHostAddress
                 };
-
-                post.Updated = post.Created;
-                post.UserId = _currentUser.UserId;
 
                 domainModel.GetSiteCollection<Post>().Add(post);
                 domainModel.SaveChanges();
                 _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
+
+                thread.Updated = post.Created;
+
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
 

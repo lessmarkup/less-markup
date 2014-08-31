@@ -19,7 +19,8 @@ namespace LessMarkup.Forum.Model
             public long? AvatarId { get; set; }
             public long UserId { get; set; }
             public bool Removed { get; set; }
-            public string Properties { get; set; } 
+            public string Properties { get; set; }
+            public string Signature { get; set; }
         }
 
         private readonly IDomainModelProvider _domainModelProvider;
@@ -54,7 +55,8 @@ namespace LessMarkup.Forum.Model
                         AvatarId = p.Key.AvatarImageId,
                         p.Key.Name,
                         p.Key.IsRemoved,
-                        p.Key.Properties
+                        p.Key.Properties,
+                        p.Key.Signature,
                     }))
                     {
                         _userPosts[user.Id] = new UserStatistics
@@ -64,7 +66,8 @@ namespace LessMarkup.Forum.Model
                             Posts = user.Posts,
                             Removed = user.IsRemoved,
                             UserId = user.Id,
-                            Properties = user.Properties
+                            Properties = user.Properties,
+                            Signature = user.Signature
                         };
                     }
                 }

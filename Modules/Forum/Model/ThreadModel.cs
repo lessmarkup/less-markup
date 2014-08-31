@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
-using LessMarkup.Framework.RecordModel;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -17,7 +16,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Forum.Model
 {
-    [RecordModel(CollectionType = typeof(Collection))]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Threads)]
     public class ThreadModel
     {
         public const int ActiveUserThresholdMinutes = 5;
@@ -29,18 +28,22 @@ namespace LessMarkup.Forum.Model
             public string ProfileUrl { get; set; }
         }
 
-        public class Collection : AbstractModelCollection<ThreadModel>
+        public class Collection : IEditableModelCollection<ThreadModel>
         {
             private long _forumId;
             private NodeAccessType _accessType;
+            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly IChangeTracker _changeTracker;
             private readonly ICurrentUser _currentUser;
 
-            public Collection(ICurrentUser currentUser) : base(typeof (Thread))
+            public Collection(ICurrentUser currentUser, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _currentUser = currentUser;
+                _domainModelProvider = domainModelProvider;
+                _changeTracker = changeTracker;
             }
 
-            public override IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
                 var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId);
 
@@ -59,7 +62,7 @@ namespace LessMarkup.Forum.Model
                 return query.Select(t => t.Id);
             }
 
-            public override IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
+            public IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
             {
                 var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId && ids.Contains(t.Id));
 
@@ -109,9 +112,7 @@ namespace LessMarkup.Forum.Model
                         });
             }
 
-            public override bool Filtered { get { return false; } }
-
-            public override void Initialize(long? objectId, NodeAccessType accessType)
+            public void Initialize(long? objectId, NodeAccessType accessType)
             {
                 if (!objectId.HasValue)
                 {
@@ -121,6 +122,74 @@ namespace LessMarkup.Forum.Model
                 _forumId = objectId.Value;
                 _accessType = accessType;
             }
+
+            public int CollectionId { get { return DataHelper.GetCollectionId<Thread>(); } }
+
+            public ThreadModel CreateRecord()
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            public void AddRecord(ThreadModel record)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            public void UpdateRecord(ThreadModel record)
+            {
+                if (_accessType != NodeAccessType.Manage)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+
+                using (var domainModel = _domainModelProvider.Create())
+                {
+                    var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == record.ThreadId && t.ForumId == _forumId);
+
+                    thread.Description = record.Description;
+
+                    if (thread.Name != record.Name)
+                    {
+                        thread.Name = record.Name;
+
+                        var generatedPath = TextToUrl.Generate(thread.Name);
+
+                        var paths =
+                            new HashSet<string>(
+                                domainModel.GetSiteCollection<Thread>()
+                                    .Where(t => t.Id != record.ThreadId && t.ForumId == _forumId)
+                                    .Select(t => t.Path));
+
+                        var index = 1;
+
+                        string path;
+
+                        for (; ; index++)
+                        {
+                            path = index == 1 ? generatedPath : string.Format("{0}-{1}", generatedPath, index);
+
+                            if (!paths.Contains(path))
+                            {
+                                break;
+                            }
+                        }
+
+                        thread.Path = path;
+                    }
+
+                    _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
+                    domainModel.SaveChanges();
+
+                    record.Path = thread.Path;
+                }
+            }
+
+            public bool DeleteRecords(IEnumerable<long> recordIds)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            public bool DeleteOnly { get { return false; } }
         }
 
         private readonly IDomainModelProvider _domainModelProvider;
@@ -159,9 +228,11 @@ namespace LessMarkup.Forum.Model
 
         [Column(ForumTextIds.Name, CellTemplate = "~/Views/ThreadNameCell.html", CellClass = "forum-cell")]
         [RecordSearch]
+        [InputField(InputFieldType.Text, ForumTextIds.ThreadName, Required = true)]
         public string Name { get; set; }
 
         [RecordSearch]
+        [InputField(InputFieldType.Text, ForumTextIds.Description)]
         public string Description { get; set; }
 
         public string Path { get; set; }

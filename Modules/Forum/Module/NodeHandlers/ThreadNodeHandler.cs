@@ -13,7 +13,9 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
+using UserModel = LessMarkup.Forum.Model.UserModel;
 
 namespace LessMarkup.Forum.Module.NodeHandlers
 {
@@ -178,6 +180,29 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             }
 
             return ret;
+        }
+
+        [RecordAction(ForumTextIds.Block, CreateType = typeof(UserBlockModel), MinimumAccess = NodeAccessType.Manage, Visible = "UserId != null")]
+        public object BlockUser(long recordId, UserBlockModel newObject)
+        {
+            newObject.InternalReason = string.Format("In response for post {0}", recordId);
+            long userId;
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                var post = domainModel.GetSiteCollection<Post>().Single(p => p.Id == recordId);
+
+                if (!post.UserId.HasValue)
+                {
+                    return ReturnMessageResult("User is not defined");
+                }
+
+                userId = post.UserId.Value;
+            }
+
+            newObject.BlockUser(null, userId);
+
+            return null;
         }
 
         protected override void PostProcessRecord(PostModel record)

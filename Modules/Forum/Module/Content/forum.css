@@ -140,3 +140,16 @@ blockquote[data-from] {
 .thread-active-users li {
     margin-right: 1em;
 }
+
+.post-signature {
+    margin: 1em 0;
+    font-size: smaller;
+    color: #888;
+}
+
+.signature-delimiter {
+    width: 200px;
+    border-top: solid 1px #ccc;
+    display: block;
+    padding-bottom: 0.5em;
+}

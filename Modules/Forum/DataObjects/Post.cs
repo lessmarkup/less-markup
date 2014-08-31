@@ -19,9 +19,9 @@ namespace LessMarkup.Forum.DataObjects
         public long ThreadId { get; set; }
         public Thread Thread { get; set; }
 
+        public string IpAddress { get; set; }
+        
         public DateTime Created { get; set; }
-
-        public DateTime Updated { get; set; }
 
         [ForeignKey("User")]
         public long? UserId { get; set; }

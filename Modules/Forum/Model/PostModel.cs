@@ -108,9 +108,9 @@ namespace LessMarkup.Forum.Model
 
         private void OnDeletePost(long threadId, IDomainModel domainModel)
         {
-            var lastPost = domainModel.GetSiteCollection<Thread>()
-                .Where(t => t.Id == threadId)
-                .Select(t => t.Posts.OrderByDescending(p => p.Updated).FirstOrDefault(p => !p.Removed))
+            var lastPost = domainModel.GetSiteCollection<Post>()
+                .Where(p => p.ThreadId == threadId && !p.Removed)
+                .OrderByDescending(p => p.Created)
                 .FirstOrDefault();
 
             var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
@@ -121,7 +121,7 @@ namespace LessMarkup.Forum.Model
             }
             else
             {
-                thread.Updated = lastPost.Updated;
+                thread.Updated = lastPost.Created;
             }
 
             _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
@@ -130,14 +130,14 @@ namespace LessMarkup.Forum.Model
 
         private void OnAddPost(long threadId, IDomainModel domainModel)
         {
-            var lastPost = domainModel.GetSiteCollection<Thread>()
-                .Where(t => t.Id == threadId)
-                .Select(t => t.Posts.OrderByDescending(p => p.Updated).FirstOrDefault(p => !p.Removed))
+            var lastPost = domainModel.GetSiteCollection<Post>()
+                .Where(p => p.ThreadId == threadId && !p.Removed)
+                .OrderByDescending(p => p.Created)
                 .First();
 
             var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
 
-            thread.Updated = lastPost.Updated;
+            thread.Updated = lastPost.Created;
 
             _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
             domainModel.SaveChanges();
@@ -147,7 +147,7 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().Single(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 post.Removed = true;
                 UserId = post.UserId;
@@ -165,7 +165,7 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().Single(p => p.ThreadId == threadId && p.Id == postId && p.Removed);
 
                 post.Removed = false;
                 UserId = post.UserId;
@@ -183,7 +183,7 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId);
+                var post = domainModel.GetSiteCollection<Post>().Single(p => p.ThreadId == threadId && p.Id == postId);
                 UserId = post.UserId;
                 domainModel.GetSiteCollection<Post>().Remove(post);
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Removed, domainModel);
@@ -203,7 +203,7 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
+                var post = domainModel.GetSiteCollection<Post>().Single(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
                 post.Text = _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" });
                 Text = post.Text;
                 _changeTracker.AddChange<Post>(postId, EntityChangeType.Updated, domainModel);

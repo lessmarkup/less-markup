@@ -9,6 +9,7 @@ namespace LessMarkup.Forum.Model
         public static class ModuleType
         {
             public const string Forum = "Forum";
+            public const string UserInterface = "UserInterface";
         }
     }
 }

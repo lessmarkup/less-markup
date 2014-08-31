@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -62,6 +63,8 @@ namespace LessMarkup.Forum.Model
                     throw new Exception(LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.CannotCreatePost));
                 }
 
+                var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == threadId);
+
                 var sourcePost = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
                 var newPost = new Post
@@ -69,14 +72,16 @@ namespace LessMarkup.Forum.Model
                     Text = string.Format("<blockquote data-from=\"{0}\">{1}</blockquote>\r\n{2}", sourcePost.UserId, sourcePost.Text,  _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" })),
                     Created = DateTime.UtcNow,
                     ThreadId = threadId,
-                    UserId = _currentUser.UserId
+                    UserId = _currentUser.UserId,
+                    IpAddress = HttpContext.Current.Request.UserHostAddress
                 };
-
-                newPost.Updated = newPost.Created;
 
                 domainModel.GetSiteCollection<Post>().Add(newPost);
                 domainModel.SaveChanges();
                 _changeTracker.AddChange(newPost, EntityChangeType.Added, domainModel);
+
+                thread.Updated = newPost.Created;
+
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Updated, domainModel);
                 domainModel.SaveChanges();
                 PostId = newPost.Id;

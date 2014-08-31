@@ -36,5 +36,7 @@ namespace LessMarkup.Forum.Model
         Views,
         ThreadName,
         PostName,
+        Thread,
+        Block
     }
 }
