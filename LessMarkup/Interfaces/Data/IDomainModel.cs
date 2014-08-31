@@ -11,6 +11,8 @@ namespace LessMarkup.Interfaces.Data
     {
         void AddObject<T>(T newObject) where T : class, INonSiteDataObject;
         void AddSiteObject<T>(T newObject) where T : class, ISiteDataObject;
+        void RemoveObject<T>(T obj) where T : class, INonSiteDataObject;
+        void RemoveSiteObject<T>(T obj) where T : class, ISiteDataObject;
         IDataObjectCollection<T> GetSiteCollection<T>() where T : class, ISiteDataObject;
         IDataObjectCollection<T> GetCollection<T>() where T : class, INonSiteDataObject;
         IDataObjectCollection<T> GetSiteCollection<T>(long? siteId, bool rawCollection = false) where T : class, ISiteDataObject;

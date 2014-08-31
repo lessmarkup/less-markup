@@ -64,6 +64,7 @@ namespace LessMarkup.DataObjects.Security
 
         public List<UserAddress> Addresses { get; set; }
         public List<UserGroupMembership> Groups { get; set; }
-        public List<UserLoginIpAddress> IpAddresses { get; set; } 
+        public List<UserLoginIpAddress> IpAddresses { get; set; }
+        public List<UserBlockHistory> BlockHistories { get; set; } 
     }
 }

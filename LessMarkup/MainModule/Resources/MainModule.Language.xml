@@ -249,6 +249,10 @@
     <Translation Id="Translation" Text="Translation"/>
     <Translation Id="Language" Text="Language"/>
     <Translation Id="SetDefault" Text="Set Default"/>
+    <Translation Id="Smile" Text="Smile"/>
+    <Translation Id="Smiles" Text="Smiles"/>
+    <Translation Id="Code" Text="Code"/>
+    <Translation Id="Image" Text="Image"/>
     <!--
     <Translation Id="" Text=""/>
     -->

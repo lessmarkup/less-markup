@@ -55,6 +55,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.loadingNewPage = true;
     $scope.searchText = "";
     $scope.searchResults = [];
+    $scope.smiles = initialData.Smiles;
+    $scope.smilesBase = initialData.SmilesBase;
     var searchTimeout = null;
     var pageProperties = {};
 

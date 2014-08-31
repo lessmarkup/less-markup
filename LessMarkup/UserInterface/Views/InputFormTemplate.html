@@ -32,7 +32,10 @@
         <p>{{message}}</p>
     </div>
     <div class="modal-footer">
-        <div class="bg-danger" ng-if="submitError.length > 0" ng-bind="submitError"></div>
+        <div class="bg-danger dialog-notification" ng-if="submitError.length > 0">
+            <span class="glyphicon glyphicon-exclamation-sign"></span>
+            <span ng-bind="submitError"></span>
+        </div>
         <button class="btn btn-primary" ng-click="submit()">
             <span>Yes</span>
             <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>

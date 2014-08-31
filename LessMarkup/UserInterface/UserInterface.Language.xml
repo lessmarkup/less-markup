@@ -120,6 +120,11 @@
     <Translation Id="Close" Text="Close"/>
     <Translation Id="Clear" Text="Clear"/>
     <Translation Id="Today" Text="Today"/>
+    <Translation Id="BlockUser" Text="Block User"/>
+    <Translation Id="BlockReason" Text="Block Reason"/>
+    <Translation Id="UnblockTime" Text="Unblock Time"/>
+    <Translation Id="Block" Text="Block"/>
+    <Translation Id="Unblock" Text="Unblock"/>
 
     <!--
     <Translation Id="" Text=""/>

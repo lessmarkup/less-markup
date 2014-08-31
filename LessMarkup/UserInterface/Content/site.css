@@ -425,3 +425,12 @@ span.badge.active-notification {
     width: 1.5em;
     height: 1em;
 }
+
+.dialog-notification {
+    padding: 5px 10px;
+    border-radius: 2px;
+}
+
+.dialog-notification.bg-danger {
+    color: red;
+}

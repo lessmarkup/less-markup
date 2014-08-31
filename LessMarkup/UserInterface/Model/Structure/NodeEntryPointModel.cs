@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
@@ -26,6 +28,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly ICurrentUser _currentUser;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly ISiteMapper _siteMapper;
+        private readonly IDomainModelProvider _domainModelProvider;
 
         class NotificationInfo
         {
@@ -44,12 +47,13 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
         public ActionResult Result { get; set; }
 
-        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ISiteMapper siteMapper)
+        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ISiteMapper siteMapper, IDomainModelProvider domainModelProvider)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;
             _siteMapper = siteMapper;
             _engineConfiguration = engineConfiguration;
+            _domainModelProvider = domainModelProvider;
         }
 
         private void FillNavigationBarItems(IEnumerable<ICachedNodeInformation> nodes, int level, List<MenuItemModel> menuItems)
@@ -106,6 +110,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var nodeCache = _dataCache.Get<INodeCache>();
             var recordModelCache = _dataCache.Get<IRecordModelCache>();
+
+
 
             var rootNode = nodeCache.RootNode;
             Title = rootNode.Title;
@@ -204,6 +210,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 });
             }
 
+            object smiles;
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                smiles = domainModel.GetSiteCollection<Smile>().Select(s => new {s.Id, s.Code }).ToList();
+            }
+
             InitialData = JsonConvert.SerializeObject(new
             {
                 RootPath = rootNode.FullPath,
@@ -225,7 +238,9 @@ namespace LessMarkup.UserInterface.Model.Structure
                 NodeLoadError = nodeLoadError,
                 Notifications = notifications,
                 _engineConfiguration.RecaptchaPublicKey,
-                LoginModelId = recordModelCache.GetDefinition<LoginModel>().Id
+                LoginModelId = recordModelCache.GetDefinition<LoginModel>().Id,
+                Smiles = smiles,
+                SmilesBase = "/Image/Smile/"
             });
 
             return true;

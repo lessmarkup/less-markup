@@ -736,24 +736,6 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
 
     resetRecords($scope.viewData.recordIds);
 
-    for (var i = 0; i < $scope.viewData.records.length; i++) {
-        var source = $scope.viewData.records[i];
-        var recordId = source[recordIdField];
-
-        for (var j = 0; j < $scope.viewData.records.length; j++) {
-            if (records[j][recordIdField] != recordId) {
-                continue;
-            }
-            var target = records[j];
-            for (var property in source) {
-                target[property] = source[property];
-            }
-
-            target.loaded = true;
-            break;
-        }
-    }
-
     $scope.$watch("currentPageNumeric", function () {
         if (!$scope.pageLoaded) {
             return;
@@ -910,14 +892,36 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
         $scope.showPage($scope.currentPage);
     }
 
+    function initializeRecords() {
+        for (var i = 0; i < $scope.viewData.records.length; i++) {
+            var source = $scope.viewData.records[i];
+            var recordId = source[recordIdField];
+
+            for (var j = 0; j < $scope.viewData.records.length; j++) {
+                if (records[j][recordIdField] != recordId) {
+                    continue;
+                }
+                var target = records[j];
+                for (var property in source) {
+                    target[property] = source[property];
+                }
+
+                target.loaded = true;
+                break;
+            }
+        }
+    }
+
     if ($scope.viewData.extensionScript && $scope.viewData.extensionScript.length) {
         require([$scope.viewData.extensionScript], function(extensionScript) {
             extensionScript($scope);
             $scope.onDataReceived($scope, $scope.viewData);
+            initializeRecords();
             $scope.showPage($scope.getPageProperty("p", 1), true);
         });
     } else {
         $scope.onDataReceived($scope, $scope.viewData);
+        initializeRecords();
         $scope.showPage($scope.getPageProperty("p", 1), true);
     }
 });

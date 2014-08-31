@@ -23,6 +23,14 @@ namespace LessMarkup.DataFramework.DataAccess
         {
         }
 
+        public void RemoveObject<T>(T obj) where T : class, INonSiteDataObject
+        {
+        }
+
+        public void RemoveSiteObject<T>(T obj) where T : class, ISiteDataObject
+        {
+        }
+
         public IDataObjectCollection<T> GetSiteCollection<T>() where T : class, ISiteDataObject
         {
             return new DataObjectCollectionStub<T>();

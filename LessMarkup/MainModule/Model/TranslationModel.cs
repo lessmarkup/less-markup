@@ -113,7 +113,7 @@ namespace LessMarkup.MainModule.Model
         [RecordSearch]
         public string Key { get; set; }
 
-        [InputField(InputFieldType.Text, MainModuleTextIds.Text, Required = true)]
+        [InputField(InputFieldType.Text, MainModuleTextIds.Text)]
         [Column(MainModuleTextIds.Text)]
         [RecordSearch]
         public string Text { get; set; }

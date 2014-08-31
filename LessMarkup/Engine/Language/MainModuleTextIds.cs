@@ -253,5 +253,9 @@ namespace LessMarkup.Engine.Language
         Translation,
         Language,
         SetDefault,
+        Smile,
+        Smiles,
+        Code,
+        Image,
     }
 }

@@ -15,6 +15,7 @@ namespace LessMarkup.DataAccess
             modelBuilder.Entity<User>().HasMany(u => u.Groups).WithRequired(m => m.User);
             modelBuilder.Entity<User>().HasOptional(u => u.Site).WithMany().WillCascadeOnDelete(false);
             modelBuilder.Entity<Site>().HasMany(s => s.Modules).WithRequired(m => m.Site);
+            modelBuilder.Entity<User>().HasMany(u => u.BlockHistories).WithRequired(h => h.User).WillCascadeOnDelete(false);
         }
     }
 }

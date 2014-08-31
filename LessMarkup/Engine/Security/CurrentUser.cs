@@ -13,7 +13,6 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
@@ -617,6 +616,13 @@ namespace LessMarkup.Engine.Security
                 Address = address,
                 Time = DateTime.UtcNow,
                 UserId = userId
+            });
+
+            domainModel.GetCollection<UserLoginIpAddress>().Add(new UserLoginIpAddress
+            {
+                UserId = userId,
+                Created = DateTime.UtcNow,
+                IpAddress = HttpContext.Current.Request.UserHostAddress
             });
         }
 

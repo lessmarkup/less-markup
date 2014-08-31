@@ -9,8 +9,9 @@ namespace LessMarkup.DataObjects.Common
 {
     public class Image : SiteDataObject
     {
-        public ImageType ImageType { get; set; }
+        public string ContentType { get; set; }
         public byte[] Data { get; set; }
+        public string ThumbnailContentType { get; set; }
         public byte[] Thumbnail { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }

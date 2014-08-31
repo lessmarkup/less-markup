@@ -132,6 +132,7 @@
     <Compile Include="Model\ErrorModel.cs" />
     <Compile Include="Model\Global\GlobalAdministratorModel.cs" />
     <Compile Include="Model\Global\ModuleModel.cs" />
+    <Compile Include="Model\Global\UserBlockModel.cs" />
     <Compile Include="Model\Global\UserGroupModel.cs" />
     <Compile Include="Model\RecordModel\InputFormDefinitionModel.cs" />
     <Compile Include="Model\Global\SiteModel.cs" />
@@ -589,6 +590,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Filters\locale-date.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Autolinker\autolinker.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

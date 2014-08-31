@@ -25,24 +25,7 @@ namespace LessMarkup.MainModule.Model
                     return new HttpNotFoundResult();
                 }
 
-                string contentType;
-
-                switch (image.ImageType)
-                {
-                    case ImageType.Gif:
-                        contentType = "image/gif";
-                        break;
-                    case ImageType.Png:
-                        contentType = "image/png";
-                        break;
-                    case ImageType.Jpeg:
-                        contentType = "image/jpeg";
-                        break;
-                    default:
-                        return new HttpNotFoundResult();
-                }
-
-                return new FileContentResult(image.Thumbnail, contentType);
+                return new FileContentResult(image.Thumbnail, image.ThumbnailContentType ?? "image/png");
             }
         }
 
@@ -57,24 +40,22 @@ namespace LessMarkup.MainModule.Model
                     return new HttpNotFoundResult();
                 }
 
-                string contentType;
+                return new FileContentResult(image.Data, image.ContentType ?? "image/png");
+            }
+        }
 
-                switch (image.ImageType)
+        public ActionResult Smile(long smileId)
+        {
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                var smile = domainModel.GetSiteCollection<Smile>().FirstOrDefault(s => s.Id == smileId);
+
+                if (smile == null)
                 {
-                    case ImageType.Gif:
-                        contentType = "image/gif";
-                        break;
-                    case ImageType.Png:
-                        contentType = "image/png";
-                        break;
-                    case ImageType.Jpeg:
-                        contentType = "image/jpeg";
-                        break;
-                    default:
-                        return new HttpNotFoundResult();
+                    return new HttpNotFoundResult();
                 }
 
-                return new FileContentResult(image.Data, contentType);
+                return new FileContentResult(smile.Data, smile.ContentType);
             }
         }
     }

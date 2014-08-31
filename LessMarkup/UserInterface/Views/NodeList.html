@@ -19,7 +19,10 @@
             </div>
         </li>
     </ul>
-    <div class="bg-danger" ng-if="updateError.length > 0" ng-bind="updateError"></div>
+    <div class="bg-danger dialog-notification" ng-if="updateError.length > 0">
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        <span ng-bind="updateError"></span>
+    </div>
     <div ng-if="updateProgress">
         <span us-spinner="{radius:3,width:2,length:4,lines:9,top:0,left:0}"></span>
         <span>Updating</span>

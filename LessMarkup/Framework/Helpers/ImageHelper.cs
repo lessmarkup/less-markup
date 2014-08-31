@@ -11,5 +11,10 @@
         {
             return string.Format("/Image/Thumbnail/{0}", imageId);
         }
+
+        public static string SmileUrl(string code)
+        {
+            return string.Format("/Image/Smile/{0}", code);
+        }
     }
 }

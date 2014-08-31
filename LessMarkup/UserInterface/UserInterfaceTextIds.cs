@@ -101,5 +101,10 @@ namespace LessMarkup.UserInterface
         UserProperty,
         UserProperties,
         Translations,
+        BlockUser,
+        BlockReason,
+        UnblockTime,
+        Block,
+        Unblock,
     }
 }

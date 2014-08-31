@@ -103,11 +103,6 @@ namespace LessMarkup.Framework.Helpers
             return (IQueryable<TR>)method.Invoke(null, new object[] { sourceQuery, ascending, propertyExpression, parameter });
         }
 
-        public static IQueryable<long> GetFilterAndOrderQueryIds<TR>(IQueryable<TR> sourceQuery, string filter, Type modelType) where TR : IDataObject
-        {
-            return GetFilterAndOrderQuery(sourceQuery, filter, modelType).Select(o => o.Id);
-        }
-
         public static IQueryable<TR> GetFilterAndOrderQuery<TR>(IQueryable<TR> sourceQuery, string filter, Type modelType)
         {
             if (string.IsNullOrWhiteSpace(filter))

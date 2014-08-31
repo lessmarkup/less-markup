@@ -16,5 +16,11 @@ namespace LessMarkup.MainModule.Controllers
             var model = Interfaces.DependencyResolver.Resolve<ImageModel>();
             return model.Thumbnail(id);
         }
+
+        public ActionResult Smile(long id)
+        {
+            var model = Interfaces.DependencyResolver.Resolve<ImageModel>();
+            return model.Smile(id);
+        }
     }
 }

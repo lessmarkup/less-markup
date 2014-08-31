@@ -58,5 +58,11 @@
 </div>
 <div ng-if="submitWithCaptcha" captcha="recaptchaPublicKey">
 </div>
-<div class="bg-danger" ng-if="submitError.length > 0" ng-bind="submitError"></div>
-<div class="bg-success" ng-if="submitSuccess.length > 0" ng-bind="submitSuccess"></div>
+<div class="bg-danger dialog-notification" ng-if="submitError.length > 0">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    <span ng-bind="submitError"></span>
+</div>
+<div class="bg-success dialog-notification" ng-if="submitSuccess.length > 0">
+    <span class="glyphicon glyphicon-ok-circle"></span>
+    <span ng-bind="submitSuccess"></span>
+</div>

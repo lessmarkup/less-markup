@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -15,7 +16,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(Collection))]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = UserInterfaceTextIds.User)]
     public class UserModel
     {
         public class Collection : IEditableModelCollection<UserModel>
@@ -39,19 +40,17 @@ namespace LessMarkup.UserInterface.Model.Global
                 get
                 {
                     var siteId = _siteId ?? _siteMapper.SiteId;
-                    if (siteId.HasValue)
+                    if (!siteId.HasValue)
                     {
-                        return siteId.Value;
+                        throw new UnauthorizedAccessException();
                     }
-
-                    throw new Exception("Unknown site id");
+                    return siteId.Value;
                 }
             }
 
             public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
             {
-                return
-                    domainModel.GetCollection<DataObjects.Security.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId).Select(u => u.Id);
+                return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetCollection<DataObjects.Security.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId), filter, typeof(UserModel)).Select(u => u.Id);
             }
 
             public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.Security.User>(); } }
@@ -64,7 +63,12 @@ namespace LessMarkup.UserInterface.Model.Global
                         Id = u.Id,
                         Name = u.Name,
                         IsAdministrator = u.IsAdministrator,
-                        Password = ""
+                        Password = "",
+                        IsBlocked = u.IsBlocked,
+                        EmailConfirmed = u.EmailConfirmed,
+                        IsApproved = u.IsApproved,
+                        IsValidated = u.IsValidated,
+                        Signature = u.Signature
                     });
             }
 
@@ -93,7 +97,8 @@ namespace LessMarkup.UserInterface.Model.Global
                         IsApproved = true,
                         LastPasswordChanged = DateTime.UtcNow,
                         IsAdministrator = record.IsAdministrator,
-                        SiteId = SiteId
+                        SiteId = SiteId,
+                        Signature = record.Signature
                     };
 
                     string userSalt, encodedPassword;
@@ -127,6 +132,7 @@ namespace LessMarkup.UserInterface.Model.Global
                     user.Name = record.Name;
                     user.Email = record.Email;
                     user.IsAdministrator = record.IsAdministrator;
+                    user.Signature = record.Signature;
 
                     if (!string.IsNullOrWhiteSpace(record.Password))
                     {
@@ -170,10 +176,12 @@ namespace LessMarkup.UserInterface.Model.Global
 
         [Column(UserInterfaceTextIds.UserName)]
         [InputField(InputFieldType.Text, UserInterfaceTextIds.UserName, Required = true)]
+        [RecordSearch]
         public string Name { get; set; }
 
         [Column(UserInterfaceTextIds.UserEmail)]
         [InputField(InputFieldType.Email, UserInterfaceTextIds.UserEmail, Required = true)]
+        [RecordSearch]
         public string Email { get; set; }
 
         [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true)]
@@ -182,5 +190,17 @@ namespace LessMarkup.UserInterface.Model.Global
         [Column(UserInterfaceTextIds.IsAdministrator)]
         [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.IsAdministrator, DefaultValue = false)]
         public bool IsAdministrator { get; set; }
+
+        public bool IsValidated { get; set; }
+
+        public bool IsApproved { get; set; }
+
+        public bool EmailConfirmed { get; set; }
+
+        public bool IsBlocked { get; set; }
+
+        [InputField(InputFieldType.Text, UserInterfaceTextIds.Signature)]
+        [RecordSearch]
+        public string Signature { get; set; }
     }
 }

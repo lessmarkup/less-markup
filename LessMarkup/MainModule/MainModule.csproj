@@ -198,6 +198,7 @@
     <Compile Include="Model\ImportLanguageModel.cs" />
     <Compile Include="Model\LanguageModel.cs" />
     <Compile Include="Model\SendContactModel.cs" />
+    <Compile Include="Model\SmileModel.cs" />
     <Compile Include="Model\SuccessfulApprovalModel.cs" />
     <Compile Include="Model\TestMessageModel.cs" />
     <Compile Include="Model\TranslationModel.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="NodeHandlers\ContactFormNodeHandler.cs" />
     <Compile Include="NodeHandlers\FileListNodeHandler.cs" />
     <Compile Include="NodeHandlers\LanguagesNodeHandler.cs" />
+    <Compile Include="NodeHandlers\SmileNodeHandler.cs" />
     <Compile Include="NodeHandlers\TestMessagesNodeHandler.cs" />
     <Compile Include="NodeHandlers\TranslationsNodeHandler.cs" />
     <Compile Include="NodeHandlers\UserCardCommonNodeHandler.cs" />

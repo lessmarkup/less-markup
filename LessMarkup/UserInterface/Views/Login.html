@@ -16,7 +16,9 @@
     </div>
 </div>
 
-<div class="bg-danger" ng-if="userLoginError.length > 0" ng-bind="userLoginError">
+<div class="bg-danger dialog-notification" ng-if="userLoginError.length > 0">
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    <span ng-bind="userLoginError"></span>
 </div>
 
 <div class="form-group">

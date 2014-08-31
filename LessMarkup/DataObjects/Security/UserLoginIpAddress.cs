@@ -15,6 +15,5 @@ namespace LessMarkup.DataObjects.Security
         public User User { get; set; }
         public string IpAddress { get; set; }
         public DateTime Created { get; set; }
-        public DateTime LastLogin { get; set; }
     }
 }

@@ -9,6 +9,8 @@
     <Resource Plain="scripts/lib/spinner/spin.js" Minified="scripts/lib/spinner/spin.min.js" />
     <Resource Plain="scripts/lib/spinner/angular-spinner.js" Minified="scripts/lib/spinner/angular-spinner.min.js" />
     <Resource Plain="scripts/lib/require/require.js" Minified="scripts/lib/require/require.min.js" />
+    <Resource Plain="scripts/lib/autolinker/autolinker.js" />
+
     <Resource Plain="scripts/config/app" />
     <Resource Plain="scripts/filters/relative-date.js" />
     <Resource Plain="scripts/filters/locale-date.js" />

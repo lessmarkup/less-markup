@@ -151,6 +151,16 @@ namespace LessMarkup.DataFramework.DataAccess
             GetSiteCollection<T>().Add(newObject);
         }
 
+        public void RemoveObject<T>(T obj) where T : class, INonSiteDataObject
+        {
+            GetCollection<T>().Remove(obj);
+        }
+
+        public void RemoveSiteObject<T>(T obj) where T : class, ISiteDataObject
+        {
+            GetSiteCollection<T>().Remove(obj);
+        }
+
         public IDataObjectCollection<T> GetSiteCollection<T>() where T : class, ISiteDataObject
         {
             if (!_siteId.HasValue)

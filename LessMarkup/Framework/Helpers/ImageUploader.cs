@@ -182,10 +182,11 @@ namespace LessMarkup.Framework.Helpers
             image.Width = imageWidth;
             image.Height = imageHeight;
             image.FileName = file.Name;
-            image.ImageType = ImageType.Png;
+            image.ContentType = "image/png";
             image.UserId = userId;
             image.Data = imageBytes;
             image.Thumbnail = thumbnailBytes;
+            image.ThumbnailContentType = "image/png";
 
             domainModel.SaveChanges();
  
@@ -244,7 +245,8 @@ namespace LessMarkup.Framework.Helpers
 
             image.Width = newImageWidth;
             image.Height = newImageHeight;
-            image.ImageType = ImageType.Png;
+            image.ContentType = "image/png";
+            image.ThumbnailContentType = "image/png";
         }
     }
 }
