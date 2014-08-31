@@ -43,6 +43,7 @@ namespace LessMarkup.Forum.Module
             _moduleIntegration.RegisterNodeHandler<AllForumsNodeHandler>("AllForums");
             _moduleIntegration.RegisterEntitySearch<Post>(DependencyResolver.Resolve<PostSearch>());
             _moduleIntegration.RegisterEntitySearch<Thread>(DependencyResolver.Resolve<ThreadSearch>());
+            _moduleIntegration.RegisterUserPropertyProvider(DependencyResolver.Resolve<UserPropertiesProvider>());
         }
     }
 }
