@@ -69,10 +69,10 @@ namespace LessMarkup.Engine.Structure
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasSearch)]
         public bool HasSearch { get; private set; }
 
-        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasLanguages)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.UseLanguages)]
         public bool UseLanguages { get; private set; }
 
-        [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasCurrencies)]
+        [InputField(InputFieldType.CheckBox, MainModuleTextIds.UseCurrencies)]
         public bool UseCurrencies { get; private set; }
 
         [InputField(InputFieldType.Text, MainModuleTextIds.DefaultCronJobId)]
@@ -89,6 +89,9 @@ namespace LessMarkup.Engine.Structure
 
         [InputField(InputFieldType.RichText, MainModuleTextIds.UserAgreement)]
         public string UserAgreement { get; private set; }
+
+        [InputField(InputFieldType.Text, MainModuleTextIds.GoogleAnalyticsResource)]
+        public string GoogleAnalyticsResource { get; private set; }
 
         public void Initialize(long? siteId)
         {

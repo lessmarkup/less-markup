@@ -37,5 +37,6 @@ namespace LessMarkup.Interfaces.System
         [DefaultValue(false)]
         bool AdminApproveNewUsers { get; }
         string UserAgreement { get; }
+        string GoogleAnalyticsResource { get; }
     }
 }

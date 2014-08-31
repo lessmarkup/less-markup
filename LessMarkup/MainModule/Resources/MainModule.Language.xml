@@ -212,8 +212,8 @@
     <Translation Id="HasUsers" Text="Has Users"/>
     <Translation Id="HasNavigationBar" Text="Has Navigation Bar"/>
     <Translation Id="HasSearch" Text="Has Search"/>
-    <Translation Id="HasLanguages" Text="Has Languages"/>
-    <Translation Id="HasCurrencies" Text="Has Currencies"/>
+    <Translation Id="UseLanguages" Text="Use Languages"/>
+    <Translation Id="UseCurrencies" Text="Use Currencies"/>
     <Translation Id="DefaultCronJobId" Text="Default Cron Job Id"/>
     <Translation Id="AdminNotifyNewUsers" Text="Administrator Notify Of New Users"/>
     <Translation Id="AdminApproveNewUsers" Text="Administrator Approves New Users"/>
@@ -253,6 +253,7 @@
     <Translation Id="Smiles" Text="Smiles"/>
     <Translation Id="Code" Text="Code"/>
     <Translation Id="Image" Text="Image"/>
+    <Translation Id="GoogleAnalyticsResource" Text="Google Analytics Resource"/>
     <!--
     <Translation Id="" Text=""/>
     -->

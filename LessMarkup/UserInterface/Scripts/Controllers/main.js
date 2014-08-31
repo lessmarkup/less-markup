@@ -657,6 +657,12 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         commandHandler.reset();
 
+        if (initialData.UseGoogleAnalytics) {
+            ga('send', 'pageview', {
+                page: '/' + url
+            });
+        }
+
         var finishNodeLoaded = function() {
             $scope.toolbarButtons = data.ToolbarButtons;
             $scope.viewData = data.ViewData;

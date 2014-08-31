@@ -1,4 +1,5 @@
 ﻿@using LessMarkup.Framework.Helpers
+@using LessMarkup.UserInterface.Model.Common
 @model LessMarkup.UserInterface.Model.Structure.NodeEntryPointModel
 @{
     /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,6 +16,7 @@
         <link href="/minify.css" rel="stylesheet" type="text/css" />
         <meta charset="utf-8" />
         <title ng-bind="title">@Model.Title</title>
+        @Html.RenderGoogleAnalytics()
     </head>
     <body>
         @Html.RenderTemplate("~/Views/InputFormTemplate.html")

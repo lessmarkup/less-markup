@@ -240,7 +240,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 _engineConfiguration.RecaptchaPublicKey,
                 LoginModelId = recordModelCache.GetDefinition<LoginModel>().Id,
                 Smiles = smiles,
-                SmilesBase = "/Image/Smile/"
+                SmilesBase = "/Image/Smile/",
+                UseGoogleAnalytics = !string.IsNullOrWhiteSpace(siteConfiguration.GoogleAnalyticsResource)
             });
 
             return true;

@@ -108,5 +108,7 @@ namespace LessMarkup.Engine.Configuration
         public bool AdminApproveNewUsers { get; set; }
 
         public string UserAgreement { get; set; }
+
+        public string GoogleAnalyticsResource { get; set; }
     }
 }

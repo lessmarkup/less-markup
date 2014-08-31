@@ -217,8 +217,8 @@ namespace LessMarkup.Engine.Language
         HasUsers,
         HasNavigationBar,
         HasSearch,
-        HasLanguages,
-        HasCurrencies,
+        UseLanguages,
+        UseCurrencies,
         DefaultCronJobId,
         AdminNotifyNewUsers,
         AdminApproveNewUsers,
@@ -257,5 +257,6 @@ namespace LessMarkup.Engine.Language
         Smiles,
         Code,
         Image,
+        GoogleAnalyticsResource
     }
 }

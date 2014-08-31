@@ -227,7 +227,7 @@
     <Compile Include="ResourceTemplate\CacheItem.cs" />
     <Compile Include="ResourceTemplate\Directive.cs" />
     <Compile Include="ResourceTemplate\DirectiveType.cs" />
-    <Compile Include="ResourceTemplate\ResourceTemplateCache.cs" />
+    <Compile Include="ResourceTemplate\ResourceTemplateParser.cs" />
     <Compile Include="Minify\CssMinify.cs" />
     <Compile Include="Minify\IMinify.cs" />
     <Compile Include="Minify\JsMinify.cs" />
