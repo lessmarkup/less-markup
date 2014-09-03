@@ -22,10 +22,11 @@
 }
 
 .grid-control .options-panel td {
-    padding: 10px;
+    padding: 5px 8px;
 }
 
 .grid-control .options-panel td * {
+    margin: 3px 0;
     margin-right: 10px;
     display: inline-block;
 }

@@ -21,6 +21,7 @@ using LessMarkup.Engine.Logging;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Response;
 using LessMarkup.Engine.Routing;
+using LessMarkup.Engine.Scripting;
 using LessMarkup.Engine.Site;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -200,6 +201,8 @@ namespace LessMarkup.MainModule.Initialization
 
                     lastDatabaseUpdate = null;
                 }
+
+                NewJsonValueProviderFactory.Initialize();
 
                 ViewEngines.Engines.Clear();
                 ViewEngines.Engines.Add(DependencyResolver.Resolve<CompiledViewEngine>());

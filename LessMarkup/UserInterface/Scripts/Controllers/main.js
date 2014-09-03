@@ -445,7 +445,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
     $scope.showLogin = function () {
         $scope.onUserActivity();
-        inputForm.editObject($scope, null, $scope.viewData.LoginModelId, function (object, success, failure) {
+        inputForm.editObject($scope, null, initialData.LoginModelId, function (object, success, failure) {
             $scope.doLogin(null, object, success, failure);
         });
     }

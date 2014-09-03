@@ -259,6 +259,7 @@
     <Compile Include="Scripting\AtomType.cs" />
     <Compile Include="Scripting\ExpressionAtom.cs" />
     <Compile Include="Scripting\ExpressionParser.cs" />
+    <Compile Include="Scripting\NewJsonValueProviderFactory.cs" />
     <Compile Include="Scripting\ScriptEvaluator.cs" />
     <Compile Include="Scripting\ScriptHelper.cs" />
     <Compile Include="Security\CookieUserModel.cs" />

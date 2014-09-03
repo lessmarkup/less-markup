@@ -17,7 +17,7 @@
                                 <span ng-if="notification.Icon" class="glyphicon" ng-class="notification.Icon"></span>
                                 <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
                             </a>
-                            <a href="#" ng-if="userNotVerified">
+                            <a href="#" ng-if="userNotVerified && userLoggedIn">
                                 <span>
                                     <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
                                 </span>
@@ -126,7 +126,7 @@
                         <ul class="nav navbar-nav" id="navbar-menu-small">
                             <li ng-show="!userLoggedIn && hasLogin">
                                 <a ng-click="showLogin()">
-                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]] <b class="caret"></b>
+                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]]
                                 </a>
                             </li>
 
