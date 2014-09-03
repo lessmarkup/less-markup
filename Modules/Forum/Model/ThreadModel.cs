@@ -123,7 +123,7 @@ namespace LessMarkup.Forum.Model
                 _accessType = accessType;
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionId<Thread>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Thread>(); } }
 
             public ThreadModel CreateRecord()
             {

@@ -37,6 +37,8 @@ namespace LessMarkup.Forum.Model
         ThreadName,
         PostName,
         Thread,
-        Block
+        Block,
+        Attachments,
+        ReplyMoveLastMessage
     }
 }

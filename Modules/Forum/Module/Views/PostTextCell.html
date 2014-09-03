@@ -6,9 +6,10 @@
 </div>
 <div ng-if="data.user && data.user.Signature" class="post-signature">
     <span class="signature-delimiter"></span>
-    <span ng-bind="data.user.Signature"></span>
+    <span ng-bind-html="data.user.Signature"></span>
 </div>
 <div ng-if="data.Attachments && data.Attachments.length" class="post-attachments">
+    <span>[[[translate Attachments]]]:</span>
     <ul>
         <li ng-repeat="attachment in data.Attachments"><a href="{{attachment.Url}}" target="_attachment">{{attachment.FileName}}</a></li>
     </ul>

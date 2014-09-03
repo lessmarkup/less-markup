@@ -45,6 +45,8 @@
     <Translation Id="CurrentlyViewing" Text="Currently viewing"/>
     <Translation Id="Thread" Text="Thread"/>
     <Translation Id="Block" Text="Block"/>
+    <Translation Id="Attachments" Text="Attachments"/>
+    <Translation Id="ReplyMoveLastMessage" Text="After reply, move to the latest message in the thread"/>
     <!--
     <Translation Id="" Text=""/>
     -->

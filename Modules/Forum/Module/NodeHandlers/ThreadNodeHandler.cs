@@ -67,6 +67,11 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 UserModel.FillUsers(ret, _dataCache, newObject.UserId.Value);
             }
 
+            if (!newObject.MoveToLastMessage)
+            {
+                ret["page"] = "current";
+            }
+
             return ret;
         }
 
@@ -141,7 +146,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Purge, MinimumAccess = NodeAccessType.Manage)]
+        [RecordAction(ForumTextIds.Purge, MinimumAccess = NodeAccessType.Manage, Visible = "Removed")]
         public object PurgePost(long recordId, string filter)
         {
             if (!ObjectId.HasValue)

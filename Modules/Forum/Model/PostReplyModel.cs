@@ -12,6 +12,7 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Forum.Model
 {
@@ -22,13 +23,18 @@ namespace LessMarkup.Forum.Model
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
+        private readonly IUserSecurity _userSecurity;
+        private readonly ISiteConfiguration _siteConfiguration;
 
-        public PostReplyModel(IDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker)
+        public PostReplyModel(IDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
         {
             _domainModelProvider = domainModelProvider;
             _htmlSanitizer = htmlSanitizer;
             _currentUser = currentUser;
             _changeTracker = changeTracker;
+            _userSecurity = userSecurity;
+            _siteConfiguration = siteConfiguration;
+            MoveToLastMessage = true;
         }
 
         public object Initialize(long threadId, long postId, bool canWrite)
@@ -56,6 +62,14 @@ namespace LessMarkup.Forum.Model
 
         public void CreateReply(long threadId, long postId, bool canWrite)
         {
+            if (Attachments != null)
+            {
+                foreach (var attachment in Attachments)
+                {
+                    _userSecurity.ValidateInputFile(attachment);
+                }
+            }
+
             using (var domainModel = _domainModelProvider.Create())
             {
                 if (!canWrite)
@@ -67,9 +81,28 @@ namespace LessMarkup.Forum.Model
 
                 var sourcePost = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
 
+                var textToQuote = _htmlSanitizer.Sanitize(sourcePost.Text, null, navigable =>
+                {
+                    var navigator = navigable.CreateNavigator();
+                    if (navigator == null)
+                    {
+                        return null;
+                    }
+                    var level = 0;
+                    while (string.Compare(navigator.Name, "blockquote", StringComparison.InvariantCultureIgnoreCase) == 0 && navigator.MoveToParent())
+                    {
+                        level++;
+                        if (level >= 2)
+                        {
+                            return false;
+                        }
+                    }
+                    return null;
+                });
+
                 var newPost = new Post
                 {
-                    Text = string.Format("<blockquote data-from=\"{0}\">{1}</blockquote>\r\n{2}", sourcePost.UserId, sourcePost.Text,  _htmlSanitizer.Sanitize(Text, new List<string> { "blockquote>header" })),
+                    Text = string.Format("<blockquote data-from=\"{0}\">{1}</blockquote>\r\n{2}", sourcePost.UserId, textToQuote,  _htmlSanitizer.Sanitize(Text, new List<string> {"blockquote>header"})),
                     Created = DateTime.UtcNow,
                     ThreadId = threadId,
                     UserId = _currentUser.UserId,
@@ -79,6 +112,27 @@ namespace LessMarkup.Forum.Model
                 domainModel.GetSiteCollection<Post>().Add(newPost);
                 domainModel.SaveChanges();
                 _changeTracker.AddChange(newPost, EntityChangeType.Added, domainModel);
+
+                if (Attachments != null)
+                {
+                    foreach (var source in Attachments)
+                    {
+                        if (source.Type.ToLower().StartsWith("image/"))
+                        {
+                            ImageUploader.ReduceToAllowedImageSize(source, _siteConfiguration);
+                        }
+
+                        var attachment = new PostAttachment
+                        {
+                            ContentType = source.Type,
+                            FileName = source.Name,
+                            Data = source.File,
+                            PostId = newPost.Id,
+                        };
+
+                        domainModel.AddSiteObject(attachment);
+                    }
+                }
 
                 thread.Updated = newPost.Created;
 
@@ -100,5 +154,11 @@ namespace LessMarkup.Forum.Model
         public long PostId { get; set; }
 
         public long? UserId { get; set; }
+
+        [InputField(InputFieldType.FileList, ForumTextIds.Attachments)]
+        public List<InputFile> Attachments { get; set; }
+
+        [InputField(InputFieldType.CheckBox, ForumTextIds.ReplyMoveLastMessage, DefaultValue = true)]
+        public bool MoveToLastMessage { get; set; }
     }
 }

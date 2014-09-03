@@ -4,6 +4,25 @@
     font-size: smaller;
 }
 
+.cell-text img {
+    max-width: 600px;
+    max-height: 500px;
+}
+
+@media (max-width: 767px) {
+    .cell-text img {
+        max-width: 400px;
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 500px) {
+    .cell-text img {
+        max-width: 300px;
+        max-height: 200px;
+    }
+}
+
 blockquote[data-from] {
     font-size: 9pt;
     display: block;
@@ -121,8 +140,8 @@ blockquote[data-from] {
     display: inline-block;
 }
 
-.post-attachments li {
-    margin-right: 2em;
+.post-attachments li:not(:first-child):before {
+    content: ", ";
 }
 
 .thread-unread {
@@ -153,3 +172,4 @@ blockquote[data-from] {
     display: block;
     padding-bottom: 0.5em;
 }
+

@@ -57,7 +57,7 @@ namespace LessMarkup.Forum.Model
 
                 var basePathName = TextToUrl.Generate(thread.Name);
 
-                var siblingNames = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == forumId).Select(t => t.Path).ToList();
+                var siblingNames = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId != forumId).Select(t => t.Path).ToList();
 
                 for (int i = 1; ; i++)
                 {

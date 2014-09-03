@@ -27,7 +27,30 @@
             }
 
             function updateRecord(record) {
-                record.safeText = $scope.getSafeValue($scope.getFriendlyHtml(record.Text));
+
+                var body = $scope.getFriendlyHtml(record.Text);
+
+                if (record.Attachments) {
+                    for (var i = 0; i < record.Attachments.length; i++) {
+                        var attachment = record.Attachments[i];
+                        if (!attachment.FileName) {
+                            continue;
+                        }
+                        var extPos = attachment.FileName.lastIndexOf('.');
+                        if (extPos < 0) {
+                            continue;
+                        }
+                        var ext = attachment.FileName.substring(extPos + 1).toLowerCase();
+                        if (ext == "jpg" || ext == "png" || ext == "gif") {
+                            if (i == 0) {
+                                body += "<br/>";
+                            }
+                            body += "<img src=\"" + attachment.Url + "\"/><span> </span>";
+                        }
+                    }
+                }
+
+                record.safeText = $scope.getSafeValue(body);
                 if (record.UserId != null) {
                     record.user = $scope.users[record.UserId];
                 }
