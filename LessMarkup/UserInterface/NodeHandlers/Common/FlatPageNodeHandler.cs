@@ -136,6 +136,16 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     var handler = CreateChildHandler(node.HandlerType);
                     object nodeSettings = null;
 
+                    foreach (var script in handler.Scripts)
+                    {
+                        AddScript(script);
+                    }
+
+                    foreach (var stylesheet in handler.Stylesheets)
+                    {
+                        AddStylesheet(stylesheet);
+                    }
+
                     if (handler.SettingsModel != null && !string.IsNullOrEmpty(node.Settings))
                     {
                         nodeSettings = JsonConvert.DeserializeObject(node.Settings, handler.SettingsModel);

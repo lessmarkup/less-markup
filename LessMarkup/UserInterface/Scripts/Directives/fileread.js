@@ -7,15 +7,15 @@ app.directive("fileread", [function () {
         restrict: 'A',
         replace: false,
         scope: {
-            fileread: "="
+            fileread: "=",
         },
         link: function (scope, element) {
             $(element).css({
                 'display': 'none'
             });
 
-            var button = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">Choose File</button>");
-            var clear = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">Clear</button>");
+            var button = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">[[[translate ChooseFile]]]</button>");
+            var clear = $("<button class=\"btn btn-default\" style=\"margin-right: 0.5em;\">[[[translate ClearFile]]]</button>");
             var fileComment = $("<span></span>");
 
             $(element).after(button);

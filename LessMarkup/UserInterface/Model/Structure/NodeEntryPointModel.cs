@@ -241,7 +241,8 @@ namespace LessMarkup.UserInterface.Model.Structure
                 LoginModelId = recordModelCache.GetDefinition<LoginModel>().Id,
                 Smiles = smiles,
                 SmilesBase = "/Image/Smile/",
-                UseGoogleAnalytics = !string.IsNullOrWhiteSpace(siteConfiguration.GoogleAnalyticsResource)
+                UseGoogleAnalytics = !string.IsNullOrWhiteSpace(siteConfiguration.GoogleAnalyticsResource),
+                siteConfiguration.MaximumFileSize
             });
 
             return true;

@@ -208,7 +208,7 @@
     <Translation Id="Template" Text="Template"/>
     <Translation Id="ViewTestMessages" Text="View Test Messages"/>
     <Translation Id="DefaultUserGroup" Text="Default User Group"/>
-    <Translation Id="MaximumImageSize" Text="Maximum Image Size"/>
+    <Translation Id="MaximumFileSize" Text="Maximum File Size For Download"/>
     <Translation Id="HasUsers" Text="Has Users"/>
     <Translation Id="HasNavigationBar" Text="Has Navigation Bar"/>
     <Translation Id="HasSearch" Text="Has Search"/>
@@ -237,7 +237,7 @@
     <Translation Id="Languages" Text="Languages"/>
     <Translation Id="Translations" Text="Translations"/>
     <Translation Id="ResetLanguage" Text="Reset Translations"/>
-    <Translation Id="AddMissingTranslations" Text="Add Missing Translations"/>
+    <Translation Id="AddMissingTranslations" Text="Add Missing"/>
     <Translation Id="LanguageWasReset" Text="Language was reset"/>
     <Translation Id="AddedMissingTranslations" Text="Added missing translations"/>
     <Translation Id="Export" Text="Export"/>
@@ -255,6 +255,14 @@
     <Translation Id="Image" Text="Image"/>
     <Translation Id="GoogleAnalyticsResource" Text="Google Analytics Resource"/>
     <Translation Id="Signature" Text="Signature"/>
+    <Translation Id="ImageSizeIsBigger" Text="Image size is bigger than allowed ({0})"/>
+    <Translation Id="UnsupportedFileType" Text="Unsupported file type"/>
+    <Translation Id="ValidFileType" Text="Valid File Type"/>
+    <Translation Id="ValidFileExtension" Text="Valid File Extension"/>
+    <Translation Id="MaximumFileSizeReached" Text="File is bigger than allowed ({0})"/>
+    <Translation Id="MaximumImageWidth" Text="Maximum Image Width"/>
+    <Translation Id="MaximumImageHeight" Text="Maximum Image Height"/>
+    <Translation Id="Caption" Text="Caption"/>
     <!--
     <Translation Id="" Text=""/>
     -->

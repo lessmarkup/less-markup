@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -43,7 +44,7 @@ namespace LessMarkup.MainModule.Model
                 return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<File>(), filter, typeof(FileModel)).Select(f => f.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<File>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<File>(); } }
 
             public IQueryable<FileModel> Read(IDomainModel domainModel, List<long> ids)
             {

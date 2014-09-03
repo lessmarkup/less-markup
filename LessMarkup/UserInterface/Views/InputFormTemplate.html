@@ -7,10 +7,10 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" ng-click="submit()" ng-disabled="okDisabled()">
-            <span>OK</span>
+            <span>[[[translate ButtonOk]]]</span>
             <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0,position:'relative'}" ng-show="isApplying"></span>
         </button>
-        <button class="btn btn-warning" ng-click="cancel()" ng-disabled="isApplying">Cancel</button>
+        <button class="btn btn-warning" ng-click="cancel()" ng-disabled="isApplying">[[[translate ButtonCancel]]]</button>
     </div>
 </script>
 <script type="text/ng-template" id="inputform-message-template">
@@ -21,7 +21,7 @@
         <p>{{message}}</p>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="submit()">OK</button>
+        <button class="btn btn-primary" ng-click="submit()">[[[translate ButtonOk]]]</button>
     </div>
 </script>
 <script type="text/ng-template" id="inputform-question-template">
@@ -37,9 +37,9 @@
             <span ng-bind="submitError"></span>
         </div>
         <button class="btn btn-primary" ng-click="submit()">
-            <span>Yes</span>
+            <span>[[[translate ButtonYes]]]</span>
             <span us-spinner="{radius:3,width:2,length:4,lines:9,color:'#fff',top:0,left:0}" ng-show="isApplying"></span>
         </button>
-        <button class="btn btn-warning" ng-click="cancel()">No</button>
+        <button class="btn btn-warning" ng-click="cancel()">[[[translate ButtonNo]]]</button>
     </div>
 </script>

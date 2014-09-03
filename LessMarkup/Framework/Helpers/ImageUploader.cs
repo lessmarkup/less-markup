@@ -6,6 +6,7 @@ using System;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -111,27 +112,111 @@ namespace LessMarkup.Framework.Helpers
             domainModel.GetSiteCollection<Image>().Remove(image);
         }
 
+        public static void ReduceToAllowedImageSize(InputFile file, ISiteConfiguration siteConfiguration)
+        {
+            using (var inputStream = new MemoryStream(file.File))
+            using (var imageData = System.Drawing.Image.FromStream(inputStream, true, true))
+            {
+                if (imageData.Width <= siteConfiguration.MaximumImageWidth &&
+                    imageData.Height <= siteConfiguration.MaximumImageHeight)
+                {
+                    return;
+                }
+
+                var newImageWidth = (double)imageData.Width;
+                var newImageHeight = (double)imageData.Height;
+
+                if (newImageWidth > siteConfiguration.MaximumImageWidth)
+                {
+                    newImageHeight *= siteConfiguration.MaximumImageWidth / newImageWidth;
+                    newImageWidth = siteConfiguration.MaximumImageWidth;
+                }
+
+                if (newImageHeight > siteConfiguration.MaximumImageHeight)
+                {
+                    newImageWidth *= siteConfiguration.MaximumImageHeight / newImageHeight;
+                    newImageHeight = siteConfiguration.MaximumImageHeight;
+                }
+
+                var imageWidth = (int)newImageWidth;
+                var imageHeight = (int)newImageHeight;
+
+                using (var reducedImage = imageData.GetThumbnailImage(imageWidth, imageHeight, () => false, IntPtr.Zero))
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        reducedImage.Save(stream, ImageFormat.Png);
+                        file.File = stream.ToArray();
+                        file.Type = "image/png";
+                        if (!string.IsNullOrWhiteSpace(file.Name))
+                        {
+                            file.Name = Path.ChangeExtension(file.Name, "png");
+                        }
+                    }
+                }
+            }
+        }
+
         public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
         {
-            if (file.File.Length > siteConfiguration.MaximumImageSize)
+            if (file.File.Length > siteConfiguration.MaximumFileSize)
             {
-                throw new Exception(string.Format("Image size is bigger than allowed ({0})", siteConfiguration.MaximumImageSize));
+                throw new Exception(string.Format(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.ImageSizeIsBigger), siteConfiguration.MaximumFileSize));
             }
 
             byte[] imageBytes;
             byte[] thumbnailBytes;
             int imageWidth, imageHeight;
 
+            if (!file.Type.ToLower().StartsWith("image/"))
+            {
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.UnsupportedFileType));
+            }
+
             using (var inputStream = new MemoryStream(file.File))
             {
                 using (var imageData = System.Drawing.Image.FromStream(inputStream, true, true))
                 {
-                    using (var stream = new MemoryStream())
+                    imageWidth = imageData.Width;
+                    imageHeight = imageData.Height;
+
+                    if (imageData.Width > siteConfiguration.MaximumImageWidth ||
+                        imageData.Height > siteConfiguration.MaximumImageHeight)
                     {
-                        imageData.Save(stream, ImageFormat.Png);
-                        imageBytes = stream.ToArray();
-                        imageWidth = imageData.Width;
-                        imageHeight = imageData.Height;
+                        var newImageWidth = (double) imageData.Width;
+                        var newImageHeight = (double) imageData.Height;
+
+                        if (newImageWidth > siteConfiguration.MaximumImageWidth)
+                        {
+                            newImageHeight *= siteConfiguration.MaximumImageWidth/newImageWidth;
+                            newImageWidth = siteConfiguration.MaximumImageWidth;
+                        }
+
+                        if (newImageHeight > siteConfiguration.MaximumImageHeight)
+                        {
+                            newImageWidth *= siteConfiguration.MaximumImageHeight/newImageHeight;
+                            newImageHeight = siteConfiguration.MaximumImageHeight;
+                        }
+
+                        imageWidth = (int) newImageWidth;
+                        imageHeight = (int) newImageHeight;
+
+                        using (var reducedImage = imageData.GetThumbnailImage(imageWidth, imageHeight, () => false, IntPtr.Zero))
+                        {
+                            using (var stream = new MemoryStream())
+                            {
+                                reducedImage.Save(stream, ImageFormat.Png);
+                                imageBytes = stream.ToArray();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            imageData.Save(stream, ImageFormat.Png);
+                            imageBytes = stream.ToArray();
+                        }
                     }
 
                     var thumbnailWidth = (double) imageData.Width;

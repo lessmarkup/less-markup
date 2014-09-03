@@ -69,7 +69,7 @@ namespace LessMarkup.Engine.TextAndSearch
                 return;
             }
 
-            var collectionId = DataHelper.GetCollectionId(dataType);
+            var collectionId = DataHelper.GetCollectionIdVerified(dataType);
 
             var entitySearch = _moduleIntegration.GetEntitySearch(dataType);
 

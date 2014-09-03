@@ -8,6 +8,7 @@ using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -38,7 +39,7 @@ namespace LessMarkup.MainModule.Model
                 return query.Select(e => e.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<TestMail>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<TestMail>(); } }
 
             public IQueryable<TestMessageModel> Read(IDomainModel domainModel, List<long> ids)
             {

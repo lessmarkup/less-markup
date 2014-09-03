@@ -125,6 +125,13 @@
     <Translation Id="UnblockTime" Text="Unblock Time"/>
     <Translation Id="Block" Text="Block"/>
     <Translation Id="Unblock" Text="Unblock"/>
+    <Translation Id="ChooseFile" Text="Choose File"/>
+    <Translation Id="ClearFile" Text="Clear"/>
+    <Translation Id="ButtonOk" Text="OK"/>
+    <Translation Id="ButtonCancel" Text="Cancel"/>
+    <Translation Id="ButtonYes" Text="Yes"/>
+    <Translation Id="ButtonNo" Text="No"/>
+    <Translation Id="OpenForm" Text="Open Form"/>
 
     <!--
     <Translation Id="" Text=""/>

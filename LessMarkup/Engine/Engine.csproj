@@ -245,7 +245,6 @@
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Helpers\TextSearchHelper.cs" />
-    <Compile Include="Language\MainModuleTextIds.cs" />
     <Compile Include="Language\XmlLanguageFile.cs" />
     <Compile Include="Language\XmlTranslation.cs" />
     <Compile Include="FileSystem\ResourceCache.cs" />

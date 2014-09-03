@@ -35,8 +35,8 @@
             </td>
         </tr>
         <tr ng-repeat="row in rows" ng-class="{ 'odd': row.isOdd }">
-            <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row, null)"><span></span></td>
-            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope, options: !column.ignoreOptions }" class="{{column.cellClass}}" cell-show-options ng-click="onClickOptions(row, column)"></td>
+            <td ng-if="hasOptionsBar" class="grid-cell-options {{columns[0].cellClass}}" cell-show-options ng-click="onClickOptions(row, null, $event)"><span></span></td>
+            <td ng-repeat="column in columns" bind-cell="{ template: column.template, scope: column.scope, options: !column.ignoreOptions }" class="{{column.cellClass}}" cell-show-options ng-click="onClickOptions(row, column, $event)"></td>
         </tr>
     </table>
 

@@ -54,7 +54,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 return domainModel.GetSiteCollection<SiteCustomization>(SiteId).Select(c => c.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<SiteCustomization>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<SiteCustomization>(); } }
 
             public IQueryable<CustomizationModel> Read(IDomainModel domainModel, List<long> ids)
             {

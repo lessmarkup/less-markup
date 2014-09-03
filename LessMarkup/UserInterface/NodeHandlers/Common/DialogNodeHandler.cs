@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
@@ -70,9 +71,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                         AddScript("lib/codemirror/ui-codemirror");
                         break;
                     case InputFieldType.RichText:
-                        AddScript("lib/tinymce/tinymce");
-                        AddScript("lib/tinymce/config");
-                        AddScript("lib/tinymce/tinymce-angular");
+                        AddScript("lib/ckeditor/ckeditor");
+                        AddScript("directives/angular-ckeditor");
                         break;
                 }
             }

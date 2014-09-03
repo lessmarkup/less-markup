@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -31,6 +32,7 @@ namespace LessMarkup.MainModule.NodeHandlers
             return ReturnMessageResult(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.LanguageWasReset));
         }
 
+        [RecordAction(MainModuleTextIds.AddMissingTranslations)]
         public object AddMissing(long recordId)
         {
             var model = DependencyResolver.Resolve<LanguageModel>();

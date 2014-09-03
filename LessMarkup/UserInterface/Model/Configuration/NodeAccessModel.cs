@@ -59,7 +59,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 return domainModel.GetSiteCollection<NodeAccess>(_siteId).Where(a => a.NodeId == _nodeId).Select(a => a.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<NodeAccess>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<NodeAccess>(); } }
 
             public IQueryable<NodeAccessModel> Read(IDomainModel domainModel, List<long> ids)
             {

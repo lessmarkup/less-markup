@@ -19,16 +19,17 @@
                         <input type="password" class="form-control" ng-model="object[field.Property]" placeholder="Enter Password" ng-readonly="readOnly(field)" />
                     </div>
                     <div class="col-xs-6">
-                        <input type="password" class="form-control" ng-model="object[field.Property + '-Repeat']" placeholder="Repeat Password" ng-readonly="readOnly(field)" />
+                        <input type="password" class="form-control" ng-model="object[field.Property + '$Repeat']" placeholder="Repeat Password" ng-readonly="readOnly(field)" />
                     </div>
                 </div>
                 <div ng-switch-when="RichText">
-                    <textarea ng-if="!readOnly(field)" ui-tinymce ng-model="object[field.Property]" class="form-control" ng-readonly="readOnly(field)" cols="10"></textarea>
+                    <textarea ng-if="!readOnly(field)" ck-editor ng-model="object[field.Property]" class="form-control" cols="10"></textarea>
                     <div ng-if="readOnly(field)" ng-bind-html="getValue(object, field)" class="rich-control"></div>
                 </div>
                 <div ng-switch-when="File" class="form-control" style="height: auto;">
-                    <input type="file" fileread="object[field.Property]" ng-readonly="readOnly(field)" />
+                    <input type="file" fileread="object[field.Property]" />
                 </div>
+                <div ng-switch-when="FileList" multi-file-read="object[field.Property]"></div>
                 <textarea class="form-control" ng-switch-when="CodeText" ui-codemirror="codeMirrorDefaultOptions" ng-model="object[field.Property]" ng-readonly="readOnly(field)" cols="10"></textarea>
                 <select ng-switch-when="Select" ng-model="object[field.Property]" class="form-control">
                     <option ng-repeat="select in field.SelectValues" value="{{select.Value}}" ng-bind="select.Text" ng-selected="select.Value == object[field.Property]"></option>

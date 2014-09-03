@@ -53,7 +53,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetCollection<DataObjects.Security.User>().Where(u => !u.IsRemoved && u.SiteId.Value == SiteId), filter, typeof(UserModel)).Select(u => u.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.Security.User>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<DataObjects.Security.User>(); } }
 
             public IQueryable<UserModel> Read(IDomainModel domainModel, List<long> ids)
             {
@@ -199,7 +199,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
         public bool IsBlocked { get; set; }
 
-        [InputField(InputFieldType.Text, UserInterfaceTextIds.Signature)]
+        [InputField(InputFieldType.RichText, UserInterfaceTextIds.Signature)]
         [RecordSearch]
         public string Signature { get; set; }
     }

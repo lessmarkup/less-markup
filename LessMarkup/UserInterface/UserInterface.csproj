@@ -595,6 +595,70 @@
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Lib\Autolinker\autolinker.js" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Directives\multifileread.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Adapters\jquery.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\ckeditor.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\config.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\contents.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Lang\en.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Clipboard\Dialogs\paste.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Dialog\dialogDefinition.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\icons.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\icons_hidpi.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Image\Dialogs\image.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Image\Images\noimage.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Link\Dialogs\anchor.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Link\Dialogs\link.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Link\Images\anchor.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Link\Images\Hidpi\anchor.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Magicline\Images\Hidpi\icon-rtl.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Magicline\Images\Hidpi\icon.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Magicline\Images\icon-rtl.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Magicline\Images\icon.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Pastefromword\Filter\default.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Scayt\Dialogs\options.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Scayt\Dialogs\toolbar.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Specialchar\Dialogs\Lang\en.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Specialchar\Dialogs\specialchar.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Youtube\Images\icon.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog_ie.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog_ie7.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog_ie8.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog_iequirks.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\dialog_opera.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor_gecko.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor_ie.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor_ie7.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor_ie8.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\editor_iequirks.css" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\icons.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\icons_hidpi.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\arrow.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\close.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\Hidpi\close.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\Hidpi\lock-open.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\Hidpi\lock.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\Hidpi\refresh.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\lock-open.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\lock.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Skins\Moonocolor\Images\refresh.png" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\styles.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Directives\angular-ckeditor.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Tabletools\Dialogs\tableCell.js" />
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Table\Dialogs\table.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\Lib\Ckeditor\Plugins\Smiley\Dialogs\smiley.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

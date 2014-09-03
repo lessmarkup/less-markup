@@ -37,7 +37,13 @@ namespace LessMarkup.UserInterface.Model.User
                         .Select(u => u.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.Security.User>(); } }
+            public int CollectionId
+            {
+                get
+                {
+                    return AbstractDomainModel.GetCollectionIdVerified<DataObjects.Security.User>();
+                }
+            }
 
             public IQueryable<UserCardModel> Read(IDomainModel domainModel, List<long> ids)
             {

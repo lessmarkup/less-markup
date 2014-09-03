@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Data;
@@ -12,7 +13,7 @@ namespace LessMarkup.Framework.RecordModel
     {
         protected AbstractModelCollection(Type dataType)
         {
-            CollectionId = AbstractDomainModel.GetCollectionId(dataType);
+            CollectionId = AbstractDomainModel.GetCollectionIdVerified(dataType);
         } 
 
         public abstract IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder);

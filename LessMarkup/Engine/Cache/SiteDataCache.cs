@@ -49,13 +49,16 @@ namespace LessMarkup.Engine.Cache
                     foreach (var type in collectionTypes)
                     {
                         var collectionId = AbstractDomainModel.GetCollectionId(type);
-                        List<CacheItem> items;
-                        if (!_handledCollectionIds.TryGetValue(collectionId, out items))
+                        if (collectionId.HasValue)
                         {
-                            items = new List<CacheItem>();
-                            _handledCollectionIds.Add(collectionId, items);
+                            List<CacheItem> items;
+                            if (!_handledCollectionIds.TryGetValue(collectionId.Value, out items))
+                            {
+                                items = new List<CacheItem>();
+                                _handledCollectionIds.Add(collectionId.Value, items);
+                            }
+                            items.Add(cacheItem);
                         }
-                        items.Add(cacheItem);
                     }
                 }
             }
@@ -159,8 +162,12 @@ namespace LessMarkup.Engine.Cache
             foreach (var type in cacheItem.CachedObject.HandledCollectionTypes)
             {
                 var collectionId = AbstractDomainModel.GetCollectionId(type);
+                if (!collectionId.HasValue)
+                {
+                    continue;
+                }
                 List<CacheItem> items;
-                if (_handledCollectionIds.TryGetValue(collectionId, out items))
+                if (_handledCollectionIds.TryGetValue(collectionId.Value, out items))
                 {
                     items.Remove(cacheItem);
                 }

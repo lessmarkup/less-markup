@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.System;
 
@@ -17,6 +17,9 @@ namespace LessMarkup.MainModule.Model
         {
             _mailSender = mailSender;
         }
+
+        [InputField(InputFieldType.RichText, ReadOnly = true)]
+        public string Caption { get; set; }
 
         [InputField(InputFieldType.Email, MainModuleTextIds.YourEmail, Required = true)]
         public string Email { get; set; }

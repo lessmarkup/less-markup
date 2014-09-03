@@ -46,7 +46,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 return domainModel.GetCollection<Module>().Where(m => !m.Removed && !m.System && m.Enabled).Select(m => m.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<Module>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<Module>(); } }
 
             public IQueryable<ModuleModel> Read(IDomainModel domainModel, List<long> ids)
             {

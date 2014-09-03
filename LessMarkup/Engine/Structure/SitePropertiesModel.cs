@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -51,14 +51,20 @@ namespace LessMarkup.Engine.Structure
         [InputField(InputFieldType.Text, MainModuleTextIds.DefaultUserGroup)]
         public string DefaultUserGroup { get; private set; }
 
-        [InputField(InputFieldType.Number, MainModuleTextIds.MaximumImageSize)]
-        public int MaximumImageSize { get; private set; }
+        [InputField(InputFieldType.Number, MainModuleTextIds.MaximumFileSize)]
+        public int MaximumFileSize { get; private set; }
 
         [InputField(InputFieldType.Number, MainModuleTextIds.ThumbnailWidth)]
         public int ThumbnailWidth { get; private set; }
 
         [InputField(InputFieldType.Number, MainModuleTextIds.ThumbnailHeight)]
         public int ThumbnailHeight { get; private set; }
+
+        [InputField(InputFieldType.Number, MainModuleTextIds.MaximumImageWidth)]
+        public int MaximumImageWidth { get; private set; }
+
+        [InputField(InputFieldType.Number, MainModuleTextIds.MaximumImageHeight)]
+        public int MaximumImageHeight { get; private set; }
 
         [InputField(InputFieldType.CheckBox, MainModuleTextIds.HasUsers)]
         public bool HasUsers { get; private set; }
@@ -92,6 +98,12 @@ namespace LessMarkup.Engine.Structure
 
         [InputField(InputFieldType.Text, MainModuleTextIds.GoogleAnalyticsResource)]
         public string GoogleAnalyticsResource { get; private set; }
+
+        [InputField(InputFieldType.Text, MainModuleTextIds.ValidFileType)]
+        public string ValidFileType { get; private set; }
+
+        [InputField(InputFieldType.Text, MainModuleTextIds.ValidFileExtension)]
+        public string ValidFileExtension { get; private set; }
 
         public void Initialize(long? siteId)
         {

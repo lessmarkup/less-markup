@@ -9,6 +9,7 @@ using System.Web;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Scripting;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -157,7 +158,7 @@ namespace LessMarkup.Engine.Structure
                 }
 
                 var errorText = LanguageHelper.GetText(Constants.ModuleType.UserInterface, MainModuleTextIds.PropertyMustBeSpecified);
-                var fieldText = LanguageHelper.GetText(ModuleType, field.TextId);
+                var fieldText = field.TextId == null ? "" : LanguageHelper.GetText(ModuleType, field.TextId);
 
                 throw new Exception(string.Format(errorText, fieldText));
             }

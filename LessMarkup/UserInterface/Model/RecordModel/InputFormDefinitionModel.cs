@@ -75,7 +75,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                     ReadOnly = source.ReadOnly,
                     ReadOnlyCondition = source.ReadOnlyCondition,
                     Required = source.Required,
-                    Text = LanguageHelper.GetText(definition.ModuleType, source.TextId),
+                    Text = source.TextId == null ? null : LanguageHelper.GetText(definition.ModuleType, source.TextId),
                     Type = source.Type,
                     VisibleCondition = source.VisibleCondition,
                     Width = source.Width,

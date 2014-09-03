@@ -42,7 +42,7 @@ namespace LessMarkup.UserInterface.ChangeTracking
         {
             _connectionId = connectionId;
             Filter = filter;
-            _collectionId = AbstractDomainModel.GetCollectionId(collectionType);
+            _collectionId = AbstractDomainModel.GetCollectionIdVerified(collectionType);
 
             var managerInstance = DependencyResolver.Resolve(collectionManagerType);
             _collectionManager = (IModelCollection<T>) managerInstance;

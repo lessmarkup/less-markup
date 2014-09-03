@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-namespace LessMarkup.Engine.Language
+namespace LessMarkup.Framework
 {
     public enum MainModuleTextIds
     {
@@ -213,7 +213,7 @@ namespace LessMarkup.Engine.Language
         Template,
         ViewTestMessages,
         DefaultUserGroup,
-        MaximumImageSize,
+        MaximumFileSize,
         HasUsers,
         HasNavigationBar,
         HasSearch,
@@ -259,5 +259,13 @@ namespace LessMarkup.Engine.Language
         Image,
         GoogleAnalyticsResource,
         Signature,
+        ImageSizeIsBigger,
+        UnsupportedFileType,
+        ValidFileType,
+        ValidFileExtension,
+        MaximumFileSizeReached,
+        MaximumImageWidth,
+        MaximumImageHeight,
+        Caption
     }
 }

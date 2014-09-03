@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System;
+using System.Collections.Generic;
+using System.Xml.XPath;
 using DotNetOpenAuth.Messaging;
 using HtmlAgilityPack;
 
@@ -16,62 +21,106 @@ namespace LessMarkup.Engine.Security
             "embed",
             "link",
             "head",
-            "meta"
+            "meta",
+            "input",
+            "button",
+            "style"
         };
 
-        public SanitizeContext(IEnumerable<string> tagsToRemove = null)
+        private Func<IXPathNavigable, bool?> _validateFunc;
+
+        public SanitizeContext(IEnumerable<string> tagsToRemove = null, Func<IXPathNavigable, bool?> validateFunc = null)
         {
             if (tagsToRemove != null)
             {
                 _blackList.AddRange(tagsToRemove);
             }
+
+            _validateFunc = validateFunc;
+        }
+
+        private void RemoveSuspiciousAttributes(HtmlNode node)
+        {
+            if (!node.HasAttributes)
+            {
+                return;
+            }
+
+            for (int i = node.Attributes.Count - 1; i >= 0; i--)
+            {
+                HtmlAttribute currentAttribute = node.Attributes[i];
+
+                var attributeName = currentAttribute.Name.ToLower();
+                var attributeValue = (currentAttribute.Value ?? "").ToLower();
+
+                if (attributeName.StartsWith("on"))
+                {
+                    node.Attributes.Remove(currentAttribute);
+                }
+                else if (attributeValue.Contains("script:"))
+                {
+                    node.Attributes.Remove(currentAttribute);
+                }
+                else if (attributeName == "style" && attributeValue.Contains("expression") || attributeValue.Contains("script:"))
+                {
+                    node.Attributes.Remove(currentAttribute);
+                }
+            }
+        }
+
+        private bool ValidateNode(HtmlNode node)
+        {
+            // check for blacklist items and remove
+            if (_blackList.Contains(node.Name))
+            {
+                return false;
+            }
+
+            if (_blackList.Contains(node.ParentNode.Name + ">" + node.Name))
+            {
+                return false;
+            }
+
+            if (node.Name == "style" && string.IsNullOrEmpty(node.InnerText) && (node.InnerHtml.Contains("expression") || node.InnerHtml.Contains("javascript:")))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void Execute(HtmlNode node)
         {
             if (node.NodeType == HtmlNodeType.Element)
             {
-                // check for blacklist items and remove
-                if (_blackList.Contains(node.Name))
-                {
-                    node.Remove();
-                    return;
-                }
+                bool? ret = null;
 
-                if (_blackList.Contains(node.ParentNode.Name + ">" + node.Name))
+                if (_validateFunc != null)
                 {
-                    node.Remove();
-                    return;
-                }
+                    ret = _validateFunc(node);
 
-                if (node.Name == "style" && string.IsNullOrEmpty(node.InnerText) && (node.InnerHtml.Contains("expression") || node.InnerHtml.Contains("javascript:")))
-                {
-                    node.ParentNode.RemoveChild(node);
-                }
-
-                if (node.HasAttributes)
-                {
-                    for (int i = node.Attributes.Count - 1; i >= 0; i--)
+                    if (ret.HasValue)
                     {
-                        HtmlAttribute currentAttribute = node.Attributes[i];
-
-                        var attributeName = currentAttribute.Name.ToLower();
-                        var attributeValue = (currentAttribute.Value ?? "").ToLower();
-
-                        if (attributeName.StartsWith("on"))
+                        if (!ret.Value)
                         {
-                            node.Attributes.Remove(currentAttribute);
-                        }
-                        else if (attributeValue.Contains("script:"))
-                        {
-                            node.Attributes.Remove(currentAttribute);
-                        }
-                        else if (attributeName == "style" && attributeValue.Contains("expression") || attributeValue.Contains("script:"))
-                        {
-                            node.Attributes.Remove(currentAttribute);
+                            node.Remove();
+                            return;
                         }
                     }
                 }
+
+                if (!ret.HasValue)
+                {
+                    ret = ValidateNode(node);
+                }
+
+                if (!ret.Value)
+                {
+                    node.Remove();
+                    return;
+                }
+
+                RemoveSuspiciousAttributes(node);
             }
 
             if (node.HasChildNodes)

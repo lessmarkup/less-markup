@@ -8,6 +8,7 @@ using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -199,7 +200,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 }
             }
 
-            _rootNode = cachedNodes.First(n => !n.ParentNodeId.HasValue);
+            _rootNode = cachedNodes.FirstOrDefault(n => !n.ParentNodeId.HasValue);
 
             if (_rootNode == null)
             {

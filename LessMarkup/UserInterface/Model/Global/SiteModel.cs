@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
@@ -32,7 +33,13 @@ namespace LessMarkup.UserInterface.Model.Global
                 return domainModel.GetCollection<Site>().Select(s => s.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<Site>(); } }
+            public int CollectionId
+            {
+                get
+                {
+                    return AbstractDomainModel.GetCollectionIdVerified<Site>();
+                }
+            }
 
             public IQueryable<SiteModel> Read(IDomainModel domainModel, List<long> ids)
             {

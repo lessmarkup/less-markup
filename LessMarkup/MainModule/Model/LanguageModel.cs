@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Xml.Serialization;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -39,7 +40,7 @@ namespace LessMarkup.MainModule.Model
                 return domainModel.GetSiteCollection<Language>().Select(l => l.Id);
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionId<Language>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Language>(); } }
 
             public IQueryable<LanguageModel> Read(IDomainModel domainModel, List<long> ids)
             {

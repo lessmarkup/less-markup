@@ -4,7 +4,7 @@
 
 using System;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.MainModule.Model;
@@ -28,6 +28,7 @@ namespace LessMarkup.MainModule.NodeHandlers
             {
                 result.UserEmail = contactFormSettings.ContactEmail;
                 result.Subject = contactFormSettings.ContactSubject;
+                result.Caption = contactFormSettings.Caption;
             }
 
             return result;

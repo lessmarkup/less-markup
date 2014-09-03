@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Engine.Language;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -27,7 +28,7 @@ namespace LessMarkup.MainModule.Model
                 return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<Smile>(), filter, typeof (SmileModel)).Select(s => s.Id);
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionId<Smile>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Smile>(); } }
 
             public IQueryable<SmileModel> Read(IDomainModel domainModel, List<long> ids)
             {

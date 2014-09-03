@@ -55,6 +55,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.loadingNewPage = true;
     $scope.searchText = "";
     $scope.searchResults = [];
+    $scope.maximumFileSize = initialData.MaximumFileSize;
     $scope.smiles = initialData.Smiles;
     $scope.smilesBase = initialData.SmilesBase;
     var searchTimeout = null;
@@ -70,8 +71,56 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
     }
 
-    var smilesStr = null;
     var smiles = {};
+    var smilesStr = "";
+
+    $scope.getSmileUrl = function(code) {
+        if (!code.length || !initialData.SmilesBase) {
+            return "";
+        }
+        return "<img alt=\"" + code + "\" src=\"" + initialData.SmilesBase + smiles[code] + "\" title=\"" + code + "\" />";
+    }
+
+    for (var i = 0; i < initialData.Smiles.length; i++) {
+        var smile = initialData.Smiles[i];
+        smiles[smile.Code] = smile.Id;
+        if (smilesStr.length > 0) {
+            smilesStr += "|";
+        }
+        for (var j = 0; j < smile.Code.length; j++) {
+            switch (smile.Code[j]) {
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '-':
+                case '?':
+                case '|':
+                    smilesStr += '\\';
+                    break;
+            }
+            smilesStr += smile.Code[j];
+        }
+    }
+
+    if (smilesStr.length > 0) {
+        $scope.smilesExpr = new RegExp(smilesStr, "g");
+    } else {
+        $scope.smilesExpr = null;
+    }
+
+    $scope.smilesToImg = function(text) {
+        if ($scope.smilesExpr != null) {
+            text = text.replace(/([^<>]*)(<[^<>]*>)/gi, function (match, left, tag) {
+                if (!left || left.length == 0) {
+                    return match;
+                }
+                left = left.replace($scope.smilesExpr, $scope.getSmileUrl);
+                return tag ? left + tag : left;
+            });
+        }
+        return text;
+    }
 
     $scope.getFriendlyHtml = function (text) {
 
@@ -79,43 +128,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             return text;
         }
 
-        function getSmileUrl(code) {
-            if (!code.length || !initialData.SmilesBase) {
-                return "";
-            }
-            return "<img src=\"" + initialData.SmilesBase + smiles[code] + "\"/>";
-        }
-
-        if (smilesStr == null) {
-            smilesStr = "";
-            for (var i = 0; i < initialData.Smiles.length; i++) {
-                var smile = initialData.Smiles[i];
-                smiles[smile.Code] = smile.Id;
-                if (smilesStr.length > 0) {
-                    smilesStr += "|";
-                }
-                for (var j = 0; j < smile.Code.length; j++) {
-                    switch (smile.Code[j]) {
-                        case '(':
-                        case ')':
-                        case '[':
-                        case ']':
-                        case '-':
-                        case '?':
-                        case '|':
-                            smilesStr += '\\';
-                            break;
-                    }
-                    smilesStr += smile.Code[j];
-                }
-            }
-        }
-
-        var smilesExpr = new RegExp(smilesStr, "g");
-
-        if (smilesStr.length > 0) {
-            text = text.replace(smilesExpr, getSmileUrl);
-        }
+        text = $scope.smilesToImg(text);
 
         return Autolinker.link(text, { truncate: 30 });
     }

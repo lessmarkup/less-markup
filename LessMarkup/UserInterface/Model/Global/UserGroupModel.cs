@@ -53,7 +53,7 @@ namespace LessMarkup.UserInterface.Model.Global
                 return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<UserGroup>(); } }
+            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<UserGroup>(); } }
 
             public IQueryable<UserGroupModel> Read(IDomainModel domainModel, List<long> ids)
             {

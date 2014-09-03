@@ -115,12 +115,37 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
             var value = $scope.object[field.Property];
 
-            if (field.Type == 'File') {
-                if (field.Required && $scope.isNewObject && (value == null || value.length == 0)) {
-                    $scope.validationErrors[field.Property] = "Field is required";
-                    valid = false;
-                }
-                continue;
+            switch (field.Type) {
+                case 'File':
+                    if (field.Required && $scope.isNewObject && (value == null || value.File == null || value.File.length == 0)) {
+                        $scope.validationErrors[field.Property] = "Field is required";
+                        valid = false;
+                    }
+
+                    if (value.File.length > $scope.maximumFileSize) {
+                        $scope.validationErrors[field.Property] = "File is too big";
+                        valid = false;
+                    }
+                    continue;
+
+                case 'FileList':
+                    if (field.required && $scope.isNewObject && (value == null || value.length == 0)) {
+                        $scope.validationErrors[field.Property] = "Field is required";
+                        valid = false;
+                    }
+
+                    if (value != null) {
+                        for (var j = 0; j < value.length; j++) {
+                            var file = value[j];
+                            if (file.File != null && file.File.length > $scope.maximumFileSize) {
+                                $scope.validationErrors[field.Property] = "File is too big";
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    continue;
             }
 
             if (typeof (value) == 'undefined' || value == null || value.toString().trim().length == 0) {

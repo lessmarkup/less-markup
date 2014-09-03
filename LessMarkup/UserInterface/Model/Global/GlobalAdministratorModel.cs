@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
@@ -35,7 +36,13 @@ namespace LessMarkup.UserInterface.Model.Global
                 return domainModel.GetCollection<DataObjects.Security.User>().Where(u => !u.SiteId.HasValue && !u.IsRemoved && !u.IsBlocked && u.IsAdministrator).Select(u => u.Id);
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionId<DataObjects.Security.User>(); } }
+            public int CollectionId
+            {
+                get
+                {
+                    return AbstractDomainModel.GetCollectionIdVerified<DataObjects.Security.User>();
+                }
+            }
 
             public IQueryable<GlobalAdministratorModel> Read(IDomainModel domainModel, List<long> ids)
             {

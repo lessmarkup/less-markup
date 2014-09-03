@@ -83,11 +83,15 @@ namespace LessMarkup.Engine.Configuration
 
         public string DefaultUserGroup { get; set; }
 
-        public int MaximumImageSize { get; set; }
+        public int MaximumFileSize { get; set; }
 
         public int ThumbnailWidth { get; set; }
 
         public int ThumbnailHeight { get; set; }
+
+        public int MaximumImageWidth { get; private set; }
+
+        public int MaximumImageHeight { get; private set; }
 
         public bool HasUsers { get; set; }
 
@@ -110,5 +114,9 @@ namespace LessMarkup.Engine.Configuration
         public string UserAgreement { get; set; }
 
         public string GoogleAnalyticsResource { get; set; }
+
+        public string ValidFileType { get; private set; }
+
+        public string ValidFileExtension { get; private set; }
     }
 }

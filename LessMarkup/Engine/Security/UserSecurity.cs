@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -16,8 +17,11 @@ using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Security.Models;
+using LessMarkup.Framework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 
@@ -66,7 +70,8 @@ namespace LessMarkup.Engine.Security
 
         public string CreatePasswordChangeToken(long? userId)
         {
-            return CreateAccessToken(AbstractDomainModel.GetCollectionId<User>(), 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+            var collectionId = AbstractDomainModel.GetCollectionIdVerified<User>();
+            return CreateAccessToken(collectionId, 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
         }
 
         public long? ValidatePasswordChangeToken(string token)
@@ -264,6 +269,74 @@ namespace LessMarkup.Engine.Security
             {
                 var formatter = new BinaryFormatter();
                 return (T) formatter.Deserialize(memoryStream);
+            }
+        }
+
+        public void ValidateInputFile(InputFile file)
+        {
+            if (file == null)
+            {
+                return;
+            }
+
+            var configuration = _dataCache.Get<ISiteConfiguration>();
+
+            if (file.File.Length > configuration.MaximumFileSize)
+            {
+                throw new Exception(string.Format(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.MaximumFileSizeReached), configuration.MaximumFileSize));
+            }
+
+            var found = false;
+
+            var sourceFileType = file.Type.ToLower().Trim();
+
+            foreach (var fileType in configuration.ValidFileType.Split(new[] {','}).Select(s => s.ToLower().Trim()))
+            {
+                if (fileType.EndsWith("*"))
+                {
+                    if (sourceFileType.StartsWith(fileType.Substring(0, fileType.Length-1)))
+                    {
+                        found = true;
+                        break;
+                    }
+                    continue;
+                }
+
+                if (fileType == sourceFileType)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.UnsupportedFileType));
+            }
+
+            var sourceExtension = Path.GetExtension(file.Name);
+
+            if (sourceExtension == null)
+            {
+                return;
+            }
+            
+            sourceExtension = sourceExtension.TrimStart(new []{'.'}).Trim().ToLower();
+
+            found = false;
+
+            foreach (var extension in configuration.ValidFileExtension.Split(new[] { ',' }).Select(s => s.ToLower().Trim()))
+            {
+                if (extension == sourceExtension)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.UnsupportedFileType));
             }
         }
 

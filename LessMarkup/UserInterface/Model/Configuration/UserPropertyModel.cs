@@ -31,7 +31,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public int CollectionId
             {
-                get { return DataHelper.GetCollectionId<UserPropertyDefinition>(); }
+                get { return DataHelper.GetCollectionIdVerified<UserPropertyDefinition>(); }
             }
 
             public IQueryable<UserPropertyModel> Read(IDomainModel domainModel, List<long> ids)

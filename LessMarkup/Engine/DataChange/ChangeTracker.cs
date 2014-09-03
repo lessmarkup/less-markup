@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -222,7 +223,7 @@ namespace LessMarkup.Engine.DataChange
 
         public void AddChange<T>(long objectId, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject
         {
-            var collectionId = AbstractDomainModel.GetCollectionId<T>();
+            var collectionId = AbstractDomainModel.GetCollectionIdVerified<T>();
 
             this.LogDebug(string.Format("ChangeTracker: recorded {0}/{1}, change {2}", collectionId, objectId, changeType));
 

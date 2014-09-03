@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Reflection;
 using System.Transactions;
@@ -131,19 +132,54 @@ namespace LessMarkup.DataFramework.DataAccess
             GetCollection<T>().Add(newObject);
         }
 
-        public static int GetCollectionId<T>() where T : IDataObject
+        public static int GetCollectionIdVerified<T>() where T : IDataObject
         {
-            return _collectionTypeToId[typeof (T)];
+            var ret = GetCollectionId<T>();
+            if (!ret.HasValue)
+            {
+                throw new NoNullAllowedException();
+            }
+            return ret.Value;
         }
 
-        public static int GetCollectionId(Type type)
+        public static int? GetCollectionId<T>() where T : IDataObject
         {
-            return _collectionTypeToId[type];
+            int ret;
+            if (!_collectionTypeToId.TryGetValue(typeof (T), out ret))
+            {
+                return null;
+            }
+            return ret;
+        }
+
+        public static int GetCollectionIdVerified(Type type)
+        {
+            var ret = GetCollectionId(type);
+            if (!ret.HasValue)
+            {
+                throw new NoNullAllowedException();
+            }
+            return ret.Value;
+        }
+
+        public static int? GetCollectionId(Type type)
+        {
+            int ret;
+            if (!_collectionTypeToId.TryGetValue(type, out ret))
+            {
+                return null;
+            }
+            return ret;
         }
 
         public static Type GetCollectionType(int collectionId)
         {
-            return _collectionIdToType[collectionId];
+            Type ret;
+            if (!_collectionIdToType.TryGetValue(collectionId, out ret))
+            {
+                return null;
+            }
+            return ret;
         }
 
         public void AddSiteObject<T>(T newObject) where T : class, ISiteDataObject

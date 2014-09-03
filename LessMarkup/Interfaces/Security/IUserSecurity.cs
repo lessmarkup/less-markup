@@ -4,6 +4,7 @@
 
 using System;
 using System.Web.Mvc;
+using LessMarkup.Interfaces.RecordModel;
 
 namespace LessMarkup.Interfaces.Security
 {
@@ -19,5 +20,6 @@ namespace LessMarkup.Interfaces.Security
         bool ConfirmUser(string validateSecret, out long userId);
         string EncryptObject(object obj);
         T DecryptObject<T>(string encrypted) where T : class;
+        void ValidateInputFile(InputFile file);
     }
 }

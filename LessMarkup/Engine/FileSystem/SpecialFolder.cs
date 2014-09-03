@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Security;
@@ -40,6 +39,16 @@ namespace LessMarkup.Engine.FileSystem
                 if (folderPath.EndsWith("\bin") || folderPath.EndsWith("/bin"))
                 {
                     folderPath = folderPath.Substring(0, folderPath.Length - "\bin".Length);
+                }
+
+                if (!Directory.Exists(Path.Combine(folderPath, "ApplicationData")))
+                {
+                    var parentFolderPath = Path.GetDirectoryName(folderPath);
+
+                    if (parentFolderPath != null && Directory.Exists(Path.Combine(parentFolderPath, "ApplicationData")))
+                    {
+                        folderPath = parentFolderPath;
+                    }
                 }
 
                 _applicationDataFolder = Path.Combine(folderPath, "ApplicationData");

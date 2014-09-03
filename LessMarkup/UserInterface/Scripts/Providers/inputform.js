@@ -45,10 +45,8 @@ app.provider('inputForm', function () {
                                 case "RichText":
                                     if (!hasTinymce) {
                                         hasTinymce = true;
-                                        requires.push("lib/tinymce/tinymce");
-                                        requires.push("lib/tinymce/config");
-                                        requires.push("lib/tinymce/tinymce-angular");
-                                        app.ensureModule('ui.tinymce');
+                                        requires.push("lib/ckeditor/ckeditor");
+                                        requires.push("directives/angular-ckeditor");
                                     }
                                     break;
                                 case "CodeText":

@@ -6,14 +6,24 @@ namespace LessMarkup.Framework.Helpers
 {
     public static class DataHelper
     {
-        public static int GetCollectionId(Type dataType)
+        public static int? GetCollectionId(Type dataType)
         {
             return AbstractDomainModel.GetCollectionId(dataType);
         }
 
-        public static int GetCollectionId<T>() where T : IDataObject
+        public static int? GetCollectionId<T>() where T : IDataObject
         {
             return AbstractDomainModel.GetCollectionId<T>();
+        }
+
+        public static int GetCollectionIdVerified(Type dataType)
+        {
+            return AbstractDomainModel.GetCollectionIdVerified(dataType);
+        }
+
+        public static int GetCollectionIdVerified<T>() where T : IDataObject
+        {
+            return AbstractDomainModel.GetCollectionIdVerified<T>();
         }
 
         public static Type GetCollectionType(int collectionId)

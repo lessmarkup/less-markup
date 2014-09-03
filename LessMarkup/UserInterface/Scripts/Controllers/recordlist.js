@@ -388,13 +388,17 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
         $scope.showOptions = false;
     }
 
-    $scope.onClickOptions = function(record, column) {
+    $scope.onClickOptions = function(record, column, event) {
 
         if ($scope.updating) {
             return;
         }
 
         if (!$scope.hasOptionsBar) {
+            return;
+        }
+
+        if (event && event.target && event.target.nodeName == "A") {
             return;
         }
 
@@ -565,14 +569,18 @@ app.controller('recordlist', function ($scope, inputForm, $sce, $timeout) {
                 newIndex = records.length;
                 records.push(record);
             }
-            var totalItems = records.length;
-            var itemsPerPage = $scope.viewData.recordsPerPage;
-            var pageCount = ((totalItems + itemsPerPage - 1) / itemsPerPage) | 0;
-            if (pageCount <= 1) {
-                $scope.loadVisibleRecords();
+            if (!data.hasOwnProperty("page") || data.page == "last") {
+                var totalItems = records.length;
+                var itemsPerPage = $scope.viewData.recordsPerPage;
+                var pageCount = ((totalItems + itemsPerPage - 1) / itemsPerPage) | 0;
+                if (pageCount <= 1) {
+                    $scope.loadVisibleRecords();
+                } else {
+                    var page = (newIndex / itemsPerPage) + 1;
+                    $scope.showPage(page);
+                }
             } else {
-                var page = (newIndex / itemsPerPage) + 1;
-                $scope.showPage(page);
+                $scope.loadVisibleRecords();
             }
         }
 

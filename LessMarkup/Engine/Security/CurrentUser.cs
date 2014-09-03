@@ -15,6 +15,7 @@ using System.Web.Security;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -217,6 +218,10 @@ namespace LessMarkup.Engine.Security
             }
             catch (Exception e)
             {
+                while (e.InnerException != null)
+                {
+                    e = e.InnerException;
+                }
                 this.LogDebug("Failed to decrypt user cookie, exception: " + e.Message);
                 ContextUser = null;
                 return null;

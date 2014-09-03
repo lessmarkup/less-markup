@@ -14,11 +14,15 @@ namespace LessMarkup.Interfaces.System
         [DefaultValue("Registered")]
         string DefaultUserGroup { get; }
         [DefaultValue(1024 * 1024 * 10)]
-        int MaximumImageSize { get; }
+        int MaximumFileSize { get; }
         [DefaultValue(75)]
         int ThumbnailWidth { get; }
         [DefaultValue(75)]
         int ThumbnailHeight { get; }
+        [DefaultValue(800)]
+        int MaximumImageWidth { get; }
+        [DefaultValue(600)]
+        int MaximumImageHeight { get; }
         [DefaultValue(false)]
         bool HasUsers { get; }
         [DefaultValue(false)]
@@ -38,5 +42,9 @@ namespace LessMarkup.Interfaces.System
         bool AdminApproveNewUsers { get; }
         string UserAgreement { get; }
         string GoogleAnalyticsResource { get; }
+        [DefaultValue("image/*,text/*,application/vnd.ms-excel,application/msword")]
+        string ValidFileType { get; }
+        [DefaultValue("txt,jpg,png,gif,bmp,doc,xls")]
+        string ValidFileExtension { get; }
     }
 }
