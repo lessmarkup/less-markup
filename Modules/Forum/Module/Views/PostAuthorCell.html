@@ -1,23 +1,23 @@
 ﻿<div>
-    <div ng-if="data.Profile && data.Profile.length">
-        <a href="{{data.Profile}}" ng-click="navigateToView(data.Profile); $event.stopPropagation();"><span ng-bind="data.Name"></span></a>
+    <div ng-if="data.profile && data.profile.length">
+        <a href="{{data.profile}}" ng-click="navigateToView(data.profile); $event.stopPropagation();"><span ng-bind="data.name"></span></a>
     </div>
-    <div ng-if="!data.Profile || !data.Profile.length">
+    <div ng-if="!data.profile || !data.profile.length">
         <span>[[[translate UserRemoved]]]</span>
     </div>
 </div>
-<div ng-if="data.Avatar && data.Avatar.length">
-    <img ng-src="{{data.Avatar}}" class="img-thumbnail"/>
+<div ng-if="data.avatar && data.avatar.length">
+    <img ng-src="{{data.avatar}}" class="img-thumbnail"/>
 </div>
-<div ng-if="data.Posts">
-    <span>[[[translate Posts]]]: {{data.Posts}}</span>
+<div ng-if="data.posts">
+    <span>[[[translate Posts]]]: {{data.posts}}</span>
 </div>
 <div ng-repeat="property in userProperties">
-    <span ng-if="data.Properties.hasOwnProperty(property.Name) && data.Properties[property.Name]">
-        {{property.Title}}:
-        <span ng-switch="property.Type">
-            <span ng-switch-when="Date">{{data.Properties[property.Name] | localeDate}}</span>
-            <span ng-switch-default>{{data.Properties[property.Name]}}</span>
+    <span ng-if="data.properties.hasOwnProperty(property.name) && data.properties[property.name]">
+        {{property.title}}:
+        <span ng-switch="property.type">
+            <span ng-switch-when="Date">{{data.properties[property.name] | localeDate}}</span>
+            <span ng-switch-default>{{data.properties[property.name]}}</span>
         </span>
     </span>
 </div>

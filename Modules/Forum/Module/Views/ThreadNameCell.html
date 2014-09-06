@@ -1,17 +1,17 @@
 ﻿<div class="thread-title">
-    <a href="{{data.Path}}" ng-click="navigateToView(getFullPath(data.Path)); $event.stopPropagation();">
-        <span ng-bind="data.Name"></span>
-        <span ng-if="data.Unread" class="thread-unread">{{data.Unread}} [[[translate ThreadUnread]]]</span>
+    <a href="{{data.path}}" ng-click="navigateToView(getFullPath(data.path)); $event.stopPropagation();">
+        <span ng-bind="data.name"></span>
+        <span ng-if="data.unread" class="thread-unread">{{data.unread}} [[[translate ThreadUnread]]]</span>
     </a>
 </div>
-<div ng-bind="data.Description" class="thread-statistics">
+<div ng-bind="data.description" class="thread-statistics">
 </div>
-<div ng-if="data.Author" class="thread-statistics">
-    [[[translate Created]]] <span title="{{data.Created | date:'medium'}}">{{data.Created | relativeDate}}</span> [[[Translate LastPostBy]]] <a href="{{data.AuthorUrl}}" ng-click="navigateToView(data.AuthorUrl); $event.stopPropagation();">{{data.Author}}</a>
+<div ng-if="data.author" class="thread-statistics">
+    [[[translate Created]]] <span title="{{data.created | date:'medium'}}">{{data.created | relativeDate}}</span> [[[Translate LastPostBy]]] <a href="{{data.authorUrl}}" ng-click="navigateToView(data.authorUrl); $event.stopPropagation();">{{data.author}}</a>
 </div>
-<div ng-if="data.ActiveUsers && data.ActiveUsers.length" class="thread-active-users thread-statistics">
+<div ng-if="data.activeUsers && data.activeUsers.length" class="thread-active-users thread-statistics">
     <span>[[[translate CurrentlyViewing]]]:</span>
-    <ul ng-repeat="user in data.ActiveUsers">
-        <li><a href="{{user.ProfileUrl}}" ng-click="navigateToView(user.ProfileUrl); $event.stopPropagation();" ng-bind="user.Name"></a></li>
+    <ul ng-repeat="user in data.activeUsers">
+        <li><a href="{{user.profileUrl}}" ng-click="navigateToView(user.profileUrl); $event.stopPropagation();" ng-bind="user.name"></a></li>
     </ul>
 </div>

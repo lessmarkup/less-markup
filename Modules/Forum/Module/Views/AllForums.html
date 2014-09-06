@@ -9,22 +9,22 @@
                 <th>[[[translate Statistics]]]</th>
             </tr>
             <tr ng-repeat="forum in group track by $index">
-                <td ng-class="{'header-forum' : forum.IsHeader}">
-                    <div class="thread-title"><a href="{{forum.Path}}" ng-click="navigateToView(forum.Path)" ng-bind="forum.Title"></a></div>
-                    <div class="forum-description" ng-if="forum.Description"><span ng-bind="forum.Description"></span></div>
-                    <ul ng-if="forum.Children.length > 0">
-                        <li ng-repeat="child in forum.Children">
-                            <a href="{{child.Path}}" ng-click="navigateToView(child.Path)">{{child.Title}}</a>
+                <td ng-class="{'header-forum' : forum.isHeader}">
+                    <div class="thread-title"><a href="{{forum.path}}" ng-click="navigateToView(forum.path)" ng-bind="forum.title"></a></div>
+                    <div class="forum-description" ng-if="forum.description"><span ng-bind="forum.description"></span></div>
+                    <ul ng-if="forum.children.length > 0">
+                        <li ng-repeat="child in forum.children">
+                            <a href="{{child.path}}" ng-click="navigateToView(child.path)">{{child.title}}</a>
                         </li>
                     </ul>
                 </td>
                 <td ng-class="{'header-forum' : forum.IsHeader}">
-                    <div ng-if="forum.Threads > 0">[[[translate Threads]]]: {{forum.Threads}}</div>
-                    <div ng-if="forum.Posts > 0">[[[translate Posts]]]: {{forum.Posts}}</div>
-                    <div ng-if="forum.Posts == 0 && forum.Threads == 0">[[[translate ForumIsEmpty]]]</div>
-                    <div ng-if="forum.LastAuthorId">
-                        <a href="{{forum.LastThreadUrl+'?p=last'}}" ng-click="navigateToView(forum.LastThreadUrl+'?p=last')">[[[translate LastPost]]]</a>: [[[translate LastPostCreated]]] <span title="{{forum.LastCreated | date:'medium'}}">{{forum.LastCreated | relativeDate}}</span> [[[translate LastPostBy]]]
-                        <a href="{{forum.LastAuthorUrl}}" ng-click="navigateToView(forum.LastAuthorUrl)">{{forum.LastAuthorName}}</a> [[[translate LastPostIn]]] <a href="{{forum.LastThreadUrl}}" ng-click="navigateToView(forum.LastThreadUrl)">{{forum.LastThreadTitle}}</a>
+                    <div ng-if="forum.threads > 0">[[[translate Threads]]]: {{forum.threads}}</div>
+                    <div ng-if="forum.posts > 0">[[[translate Posts]]]: {{forum.posts}}</div>
+                    <div ng-if="forum.posts == 0 && forum.threads == 0">[[[translate ForumIsEmpty]]]</div>
+                    <div ng-if="forum.lastAuthorId">
+                        <a href="{{forum.lastThreadUrl+'?p=last'}}" ng-click="navigateToView(forum.lastThreadUrl+'?p=last')">[[[translate LastPost]]]</a>: [[[translate LastPostCreated]]] <span title="{{forum.lastCreated | date:'medium'}}">{{forum.lastCreated | relativeDate}}</span> [[[translate LastPostBy]]]
+                        <a href="{{forum.lastAuthorUrl}}" ng-click="navigateToView(forum.lastAuthorUrl)">{{forum.LastAuthorName}}</a> [[[translate LastPostIn]]] <a href="{{forum.lastThreadUrl}}" ng-click="navigateToView(forum.lastThreadUrl)">{{forum.lastThreadTitle}}</a>
                     </div>
                 </td>
             </tr>

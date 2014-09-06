@@ -257,7 +257,7 @@ namespace LessMarkup.Forum.Model
 
         public long PostId { get; set; }
 
-        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.UserId]", Width = "15%", Align = Align.Center)]
+        [Column(ForumTextIds.Author, CellTemplate = "~/Views/PostAuthorCell.html", Scope = "users[row.userId]", Width = "15%", Align = Align.Center)]
         public string UserName { get; set; }
 
         public long? UserId { get; set; }

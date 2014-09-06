@@ -70,12 +70,12 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 statistics.OrganizeGroups(false);
             }
 
-            ret["Groups"] = statistics.Groups;
-            ret["IsSubForum"] = true;
+            ret["groups"] = statistics.Groups;
+            ret["isSubForum"] = true;
 
             var settings = GetSettings<ForumConfigurationModel>();
 
-            ret["HasThreads"] = settings == null || settings.HasThreads;
+            ret["hasThreads"] = settings == null || settings.HasThreads;
 
             return ret;
         }
@@ -134,7 +134,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ReturnRedirectResult(url);
         }
 
-        [RecordAction(ForumTextIds.Close, MinimumAccess = NodeAccessType.Manage, Visible = "!Closed")]
+        [RecordAction(ForumTextIds.Close, MinimumAccess = NodeAccessType.Manage, Visible = "!closed")]
         public object CloseThread(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -145,7 +145,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return thread.Close(AccessType, ObjectId.Value, recordId, HasManageAccess);
         }
 
-        [RecordAction(ForumTextIds.Open, MinimumAccess = NodeAccessType.Manage, Visible = "Closed")]
+        [RecordAction(ForumTextIds.Open, MinimumAccess = NodeAccessType.Manage, Visible = "closed")]
         public object OpenThread(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -156,7 +156,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return thread.Open(AccessType, ObjectId.Value, recordId, HasManageAccess);
         }
 
-        [RecordAction(ForumTextIds.Delete, MinimumAccess = NodeAccessType.Manage, Visible = "!Removed")]
+        [RecordAction(ForumTextIds.Delete, MinimumAccess = NodeAccessType.Manage, Visible = "!removed")]
         public object DeleteThread(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -167,7 +167,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return thread.Delete(AccessType, ObjectId.Value, recordId, HasManageAccess);
         }
 
-        [RecordAction(ForumTextIds.Restore, MinimumAccess = NodeAccessType.Manage, Visible = "Removed")]
+        [RecordAction(ForumTextIds.Restore, MinimumAccess = NodeAccessType.Manage, Visible = "removed")]
         public object RestoreThread(long recordId, string filter)
         {
             if (!ObjectId.HasValue)

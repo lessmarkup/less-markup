@@ -1,4 +1,4 @@
 ﻿app.controller("allforums", function($scope) {
-    $scope.groups = $scope.viewData.Groups;
-    $scope.isSubForum = $scope.viewData.IsSubForum;
+    $scope.groups = $scope.viewData.groups;
+    $scope.isSubForum = $scope.viewData.isSubForum;
 });

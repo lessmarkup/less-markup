@@ -14,45 +14,45 @@
             if (data.hasOwnProperty("users")) {
                 for (var i = 0; i < data.users.length; i++) {
                     var user = data.users[i];
-                    user.Signature = $scope.getSafeValue($scope.getFriendlyHtml(user.Signature));
-                    if ($scope.users.hasOwnProperty(user.Id)) {
-                        var target = $scope.users[user.Id];
+                    user.signature = $scope.getSafeValue($scope.getFriendlyHtml(user.signature));
+                    if ($scope.users.hasOwnProperty(user.id)) {
+                        var target = $scope.users[user.id];
                         for (var property in user) {
                             target[property] = user[property];
                         }
                     } else {
-                        $scope.users[user.Id] = user;
+                        $scope.users[user.id] = user;
                     }
                 }
             }
 
             function updateRecord(record) {
 
-                var body = $scope.getFriendlyHtml(record.Text);
+                var body = $scope.getFriendlyHtml(record.text);
 
-                if (record.Attachments) {
-                    for (var i = 0; i < record.Attachments.length; i++) {
-                        var attachment = record.Attachments[i];
-                        if (!attachment.FileName) {
+                if (record.attachments) {
+                    for (var i = 0; i < record.attachments.length; i++) {
+                        var attachment = record.attachments[i];
+                        if (!attachment.fileName) {
                             continue;
                         }
-                        var extPos = attachment.FileName.lastIndexOf('.');
+                        var extPos = attachment.fileName.lastIndexOf('.');
                         if (extPos < 0) {
                             continue;
                         }
-                        var ext = attachment.FileName.substring(extPos + 1).toLowerCase();
+                        var ext = attachment.fileName.substring(extPos + 1).toLowerCase();
                         if (ext == "jpg" || ext == "png" || ext == "gif") {
                             if (i == 0) {
                                 body += "<br/>";
                             }
-                            body += "<img src=\"" + attachment.Url + "\"/><span> </span>";
+                            body += "<img src=\"" + attachment.url + "\"/><span> </span>";
                         }
                     }
                 }
 
                 record.safeText = $scope.getSafeValue(body);
-                if (record.UserId != null) {
-                    record.user = $scope.users[record.UserId];
+                if (record.userId != null) {
+                    record.user = $scope.users[record.userId];
                 }
             }
 
@@ -72,19 +72,19 @@
                 if (data.hasOwnProperty("records")) {
                     for (var i = 0; i < data.records.length; i++) {
                         var record = data.records[i];
-                        if (lastRead == null || record.Created > lastRead) {
-                            lastRead = record.Created;
+                        if (lastRead == null || record.created > lastRead) {
+                            lastRead = record.created;
                         }
                     }
                 } else if (data.hasOwnProperty("record")) {
                     var record = data.record;
-                    if (lastRead == null || record.Created > lastRead) {
-                        lastRead = record.Created;
+                    if (lastRead == null || record.created > lastRead) {
+                        lastRead = record.created;
                     }
                 }
 
                 if (lastRead != null && ($scope.viewData.lastRead == null || $scope.viewData.lastRead < lastRead)) {
-                    $scope.sendAction("UpdateRead", {
+                    $scope.sendCommand("UpdateRead", {
                         lastRead: lastRead
                     }, function() {
                         $scope.viewData.lastRead = lastRead;

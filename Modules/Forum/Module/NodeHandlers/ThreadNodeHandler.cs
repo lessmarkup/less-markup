@@ -8,6 +8,7 @@ using System.Linq;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -43,7 +44,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             }
         }
 
-        [RecordAction(ForumTextIds.Reply, CreateType = typeof(PostReplyModel), Initialize = true, MinimumAccess = NodeAccessType.Write, Visible = "!Removed")]
+        [RecordAction(ForumTextIds.Reply, CreateType = typeof(PostReplyModel), Initialize = true, MinimumAccess = NodeAccessType.Write, Visible = "!removed")]
         public object CreateReply(long recordId, PostReplyModel newObject, string filter)
         {
             if (!ObjectId.HasValue)
@@ -75,7 +76,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Edit, Visible = "!Removed", MinimumAccess = NodeAccessType.Manage, CreateType = typeof(PostModel), Initialize = true)]
+        [RecordAction(ForumTextIds.Edit, Visible = "!removed", MinimumAccess = NodeAccessType.Manage, CreateType = typeof(PostModel), Initialize = true)]
         public object EditPost(long recordId, PostModel newObject, string filter)
         {
             if (!ObjectId.HasValue)
@@ -104,7 +105,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Delete, Visible = "CanManage && !Removed", MinimumAccess = NodeAccessType.Manage)]
+        [RecordAction(ForumTextIds.Delete, Visible = "canManage && !removed", MinimumAccess = NodeAccessType.Manage)]
         public object DeletePost(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -125,7 +126,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Restore, Visible = "CanManage && Removed", MinimumAccess = NodeAccessType.Manage)]
+        [RecordAction(ForumTextIds.Restore, Visible = "canManage && removed", MinimumAccess = NodeAccessType.Manage)]
         public object RestorePost(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -146,7 +147,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Purge, MinimumAccess = NodeAccessType.Manage, Visible = "Removed")]
+        [RecordAction(ForumTextIds.Purge, MinimumAccess = NodeAccessType.Manage, Visible = "removed")]
         public object PurgePost(long recordId, string filter)
         {
             if (!ObjectId.HasValue)
@@ -187,7 +188,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return ret;
         }
 
-        [RecordAction(ForumTextIds.Block, CreateType = typeof(UserBlockModel), MinimumAccess = NodeAccessType.Manage, Visible = "UserId != null")]
+        [RecordAction(ForumTextIds.Block, CreateType = typeof(UserBlockModel), MinimumAccess = NodeAccessType.Manage, Visible = "userId != null")]
         public object BlockUser(long recordId, UserBlockModel newObject)
         {
             newObject.InternalReason = string.Format("In response for post {0}", recordId);
@@ -276,13 +277,19 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    result["userProperties"] =
-                        domainModel.GetSiteCollection<UserPropertyDefinition>().Select(p => new UserPropertyModel
+                    var properties = domainModel.GetSiteCollection<UserPropertyDefinition>().Select(p => new UserPropertyModel
                         {
                             Name = p.Name,
                             Title = p.Title,
                             Type = p.Type.ToString()
                         }).ToList();
+
+                    result["userProperties"] = properties;
+
+                    foreach (var property in properties)
+                    {
+                        property.Name = property.Name.ToJsonCase();
+                    }
 
                     var lastRead = domainModel.GetSiteCollection<Thread>()
                         .Where(t => t.Id == ObjectId)
