@@ -2,25 +2,25 @@
     <div ng-switch-when="Right" class="row">
         <div class="col-md-10">
             <div ng-repeat="page in flat" class="flatpage">
-                <div ng-switch="page.Level">
-                    <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h2>
-                    <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h3>
+                <div ng-switch="page.level">
+                    <h2 ng-switch-when="1" ng-bind="page.title" id="{{page.anchor}}" class="spyelement"></h2>
+                    <h3 ng-switch-when="2" ng-bind="page.title" id="{{page.anchor}}" class="spyelement"></h3>
                 </div>
 
                 <div class="toolbar">
-        	        <button ng-repeat="button in getPageScope(page).toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.Id)" ng-click="onToolbarButtonClick(button.Id)" ng-bind="button.Text"></button>
+        	        <button ng-repeat="button in getPageScope(page).toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.id)" ng-click="onToolbarButtonClick(button.id)" ng-bind="button.text"></button>
 	            </div>
 
-                <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
+                <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.viewBody, context: page}"></div>
             </div>
         </div>
         <div class="col-md-2 scrollspy scrollspy-side">
             <ul class="nav" scrollspy-side>
-                <li ng-repeat="node in tree" class="spyref" data-anchor="{{node.Anchor}}">
-                    <a href="#" ng-bind="node.Title" ng-click="scrollToPage(node.Anchor)"></a>
-                    <ul ng-if="node.Children.length > 0">
-                        <li ng-repeat="child in node.Children" class="spyref" data-anchor="{{child.Anchor}}">
-                            <a href="#" ng-bind="child.Title" ng-click="scrollToPage(child.Anchor)"></a>
+                <li ng-repeat="node in tree" class="spyref" data-anchor="{{node.anchor}}">
+                    <a href="#" ng-bind="node.title" ng-click="scrollToPage(node.anchor)"></a>
+                    <ul ng-if="node.children.length > 0">
+                        <li ng-repeat="child in node.children" class="spyref" data-anchor="{{child.anchor}}">
+                            <a href="#" ng-bind="child.title" ng-click="scrollToPage(child.anchor)"></a>
                         </li>
                     </ul>
                 </li>
@@ -29,16 +29,16 @@
     </div>
     <div ng-switch-when="Top">
         <div ng-repeat="page in flat" class="flatpage">
-            <div ng-switch="page.Level">
-                <h2 ng-switch-when="1" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h2>
-                <h3 ng-switch-when="2" ng-bind="page.Title" id="{{page.Anchor}}" class="spyelement"></h3>
+            <div ng-switch="page.level">
+                <h2 ng-switch-when="1" ng-bind="page.title" id="{{page.anchor}}" class="spyelement"></h2>
+                <h3 ng-switch-when="2" ng-bind="page.title" id="{{page.anchor}}" class="spyelement"></h3>
             </div>
-            <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.ViewBody, context: page}"></div>
+            <div bind-compiled-html="{name: 'bindHtml', scope: getPageScope, html: page.viewBody, context: page}"></div>
         </div>
         <div scrollspy-top>
             <ul class="nav navbar-nav navbar-left">
-                <li ng-repeat="node in tree" class="scrollspy-menu spyref" data-anchor="{{node.Anchor}}">
-                    <a href="#" ng-bind="node.Title" ng-click="scrollToPage(node.Anchor)"></a>
+                <li ng-repeat="node in tree" class="scrollspy-menu spyref" data-anchor="{{node.anchor}}">
+                    <a href="#" ng-bind="node.title" ng-click="scrollToPage(node.anchor)"></a>
                 </li>
             </ul>
         </div>

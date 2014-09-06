@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using LessMarkup.DataFramework;
-using LessMarkup.DataObjects.Common;
-using LessMarkup.Engine.Language;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.NodeHandlers;
@@ -250,7 +248,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     { "recordsPerPage", recordsPerPage },
                     { "type", _recordModel.Id },
                     { "extensionScript", ExtensionScript },
-                    { "recordId", _idProperty.Name },
+                    { "recordId", _idProperty.Name.ToJsonCase() },
                     { "liveUpdates", SupportsLiveUpdates },
                     { "manualRefresh", SupportsManualRefresh },
                     { "hasSearch", typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Any(p => p.GetCustomAttribute<RecordSearchAttribute>() != null && p.PropertyType == typeof(string))},
@@ -267,7 +265,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     { "columns", _recordModel.Columns.Select(c => new
                     {
                         width = GetColumnWidth(c),
-                        name = c.Property.Name,
+                        name = c.Property.Name.ToJsonCase(),
                         text = LanguageHelper.GetText(_recordModel.ModuleType, c.TextId),
                         url = GetColumnLink(c.Property.Name) ?? c.CellUrl,
                         sortable = c.Sortable,
@@ -282,7 +280,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     }).ToList() },
                 };
 
-                ReadRecordsAndIds(data, domainModel, recordsPerPage, null);
+                ReadRecordsAndIds(data, domainModel, recordsPerPage);
 
                 return data;
             }
@@ -343,37 +341,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return ReturnRemovedResult();
         }
 
-        protected IQueryable<EntityChangeHistory> GetRecordUpdates(IModelCollection<T> collection, IDomainModel domainModel, string filter, long? historyFrom, bool ignoreRemoved, bool ignoreMyself)
-        {
-            var query = domainModel.GetCollection<EntityChangeHistory>().Where(h => h.CollectionId == collection.CollectionId);
-
-            if (historyFrom.HasValue)
-            {
-                query = query.Where(h => h.Id > historyFrom.Value);
-            }
-
-            if (ignoreRemoved)
-            {
-                query = query.Where(h => h.ChangeType != (int) EntityChangeType.Removed);
-            }
-
-            var userId = _currentUser.UserId;
-
-            if (ignoreMyself && userId.HasValue)
-            {
-                query = query.Where(h => !h.UserId.HasValue || h.UserId.Value != userId.Value);
-            }
-
-            query = query.GroupJoin(collection.ReadIds(domainModel, filter, true),
-                    history => history.EntityId,
-                    id => id,
-                    (history, id) => new {History = history, HasIds = id.Any()})
-                .Where(h => h.HasIds || h.History.ChangeType == (int) EntityChangeType.Removed)
-                .Select(h => h.History);
-            return query;
-        }
-
-
         public Dictionary<string, object> GetRecordIds(string filter)
         {
             var collection = GetCollection();
@@ -390,64 +357,62 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             };
         }
 
-        public object GetUpdates(long lastChange, string filter)
+        protected override bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
         {
             var collection = GetCollection();
+            var changesCache = _dataCache.Get<IChangesCache>();
+            var changes = changesCache.GetCollectionChanges(collection.CollectionId, fromVersion, toVersion);
 
-            var result = new Dictionary<string, object>();
+            if (changes == null)
+            {
+                return false;
+            }
 
             var removed = new List<long>();
             var updated = new List<long>();
 
+            string filter = null;
+            object filterObj;
+            if (arguments.TryGetValue("filter", out filterObj) && filterObj != null)
+            {
+                filter = filterObj.ToString();
+            }
+
             List<long> recordIds = null;
 
-            using (var domainModel = _domainModelProvider.Create())
+            foreach (var change in changes)
             {
-                foreach (var change in GetRecordUpdates(collection, domainModel, filter, lastChange, false, true).ToList())
+                if (recordIds == null)
                 {
-                    if (recordIds == null)
+                    recordIds = collection.ReadIds(domainModel, filter, false).ToList();
+                }
+
+                if (!recordIds.Contains(change.EntityId))
+                {
+                    if (removed.Count == 0)
                     {
-                        recordIds = collection.ReadIds(domainModel, filter, false).ToList();
+                        returnValues["records_removed"] = removed;
                     }
 
-                    if (!recordIds.Contains(change.EntityId))
+                    removed.Add(change.EntityId);
+                }
+                else
+                {
+                    if (updated.Count == 0)
                     {
-                        if (removed.Count == 0)
-                        {
-                            result["removed"] = removed;
-                        }
-
-                        removed.Add(change.EntityId);
-                    }
-                    else
-                    {
-                        if (updated.Count == 0)
-                        {
-                            result["updated"] = updated;
-                        }
-
-                        updated.Add(change.EntityId);
+                        returnValues["records_updated"] = updated;
                     }
 
-                    result["lastChange"] = change.Id;
+                    updated.Add(change.EntityId);
                 }
             }
 
-            return result;
+            return removed.Count > 0 || updated.Count > 0;
         }
 
-        private void ReadRecordsAndIds(Dictionary<string, object> values, IDomainModel domainModel, int recordsPerPage, string filter)
+        private void ReadRecordsAndIds(Dictionary<string, object> values, IDomainModel domainModel, int recordsPerPage)
         {
             var collection = GetCollection();
-
-            if (SupportsLiveUpdates || SupportsManualRefresh)
-            {
-                var lastChange = GetRecordUpdates(collection, domainModel, filter, null, false, true)
-                    .OrderByDescending(h => h.Id)
-                    .FirstOrDefault();
-                var lastChangeId = lastChange != null ? lastChange.Id : 0;
-                values["lastChange"] = lastChangeId;
-            }
 
             var recordIds = collection.ReadIds(domainModel, null, false).ToList();
             values["recordIds"] = recordIds;

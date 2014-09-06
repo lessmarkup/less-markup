@@ -5,7 +5,7 @@
     <ul class="nodes">
         <li ng-repeat="node in nodes" ng-style="getLevelStyle(node)" ng-class="{'node-disabled' : !nodeEnabled(node)}">
             <div>
-                <span class="title" ng-bind="node.data.Title" ng-click="changeProperties(node)"></span>
+                <span class="title" ng-bind="node.data.title" ng-click="changeProperties(node)"></span>
                 <span class="buttons">
                     <button ng-disabled="upDisabled(node)" ng-click="moveUp(node)">Up</button>
                     <button ng-disabled="downDisabled(node)" ng-click="moveDown(node)">Down</button>

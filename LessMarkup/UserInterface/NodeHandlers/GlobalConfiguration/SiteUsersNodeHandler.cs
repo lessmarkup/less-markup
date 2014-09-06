@@ -24,7 +24,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             _domainModelProvider = domainModelProvider;
         }
 
-        [RecordAction(UserInterfaceTextIds.BlockUser, Visible = "!IsBlocked", CreateType = typeof(UserBlockModel))]
+        [RecordAction(UserInterfaceTextIds.BlockUser, Visible = "!isBlocked", CreateType = typeof(UserBlockModel))]
         public object Block(long recordId, UserBlockModel newObject)
         {
             newObject.BlockUser(ObjectId, recordId);
@@ -36,7 +36,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             }
         }
 
-        [RecordAction(UserInterfaceTextIds.Unblock, Visible = "IsBlocked")]
+        [RecordAction(UserInterfaceTextIds.Unblock, Visible = "isBlocked")]
         public object Unblock(long recordId)
         {
             var model = DependencyResolver.Resolve<UserBlockModel>();

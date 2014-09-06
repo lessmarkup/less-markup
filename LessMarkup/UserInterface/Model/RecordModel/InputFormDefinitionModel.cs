@@ -79,7 +79,7 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                     Type = source.Type,
                     VisibleCondition = source.VisibleCondition,
                     Width = source.Width,
-                    Property = source.Property,
+                    Property = source.Property.ToJsonCase(),
                     DefaultValue = source.DefaultValue
                 };
 

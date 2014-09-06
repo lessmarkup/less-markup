@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Security;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Interfaces.Structure
 {
@@ -30,5 +31,6 @@ namespace LessMarkup.Interfaces.Structure
         bool AddToMenu { get; }
         bool LoggedIn { get; }
         NodeAccessType CheckRights(ICurrentUser currentUser, NodeAccessType defaultAccessType = NodeAccessType.Read);
+        NodeAccessType CheckRights(IUserCache userCache, long? userId, NodeAccessType defaultAccessType = NodeAccessType.Read);
     }
 }

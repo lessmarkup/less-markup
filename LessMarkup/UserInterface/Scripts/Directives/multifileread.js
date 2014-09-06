@@ -50,10 +50,10 @@ app.directive("multiFileRead", [function () {
                                 value = value.substring(pos + 7);
                             }
                             var file = {
-                                File: value,
-                                Type: sourceFile.type,
-                                Name: sourceFile.name,
-                                Id: fileId++
+                                file: value,
+                                type: sourceFile.type,
+                                name: sourceFile.name,
+                                id: fileId++
                             };
                             if (scope.multiFileRead == null) {
                                 scope.multiFileRead = [];

@@ -13,6 +13,7 @@ using LessMarkup.UserInterface.Model.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace LessMarkup.UserInterface
 {
@@ -28,8 +29,11 @@ namespace LessMarkup.UserInterface
 
             JsonConvert.DefaultSettings = () =>
             {
-                var settings = new JsonSerializerSettings();
-                settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                var settings = new JsonSerializerSettings
+                {
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
                 settings.Converters.Add(new StringEnumConverter());
                 return settings;
             };

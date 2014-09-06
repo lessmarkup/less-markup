@@ -224,6 +224,7 @@
     <Compile Include="Build\BuildEngine.cs" />
     <Compile Include="Build\ControllerFactory.cs" />
     <Compile Include="Build\Data\DataBuilder.cs" />
+    <Compile Include="DataChange\ChangesCache.cs" />
     <Compile Include="ResourceTemplate\CacheItem.cs" />
     <Compile Include="ResourceTemplate\Directive.cs" />
     <Compile Include="ResourceTemplate\DirectiveType.cs" />

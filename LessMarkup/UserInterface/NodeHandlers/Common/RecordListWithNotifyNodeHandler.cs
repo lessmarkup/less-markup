@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
@@ -9,45 +8,43 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
     public abstract class RecordListWithNotifyNodeHandler<T> : RecordListNodeHandler<T>, INotificationProvider where T : class
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly IDataCache _dataCache;
+        private readonly ICurrentUser _currentUser;
 
         protected RecordListWithNotifyNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
-            _domainModelProvider = domainModelProvider;
+            _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
         public abstract string Title { get; }
         public abstract string Tooltip { get; }
         public abstract string Icon { get; }
 
-        public long? Version
+        public virtual int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel)
         {
-            get
+            var changesCache = _dataCache.Get<IChangesCache>();
+            var userId = _currentUser.UserId;
+
+            var collection = GetCollection();
+
+            var changes = changesCache.GetCollectionChanges(collection.CollectionId, fromVersion, toVersion, change =>
             {
-                using (var domainModel = _domainModelProvider.Create())
+                if (userId.HasValue && change.UserId == userId)
                 {
-                    var update = GetRecordUpdates(GetCollection(), domainModel, null, null, true, true)
-                        .OrderByDescending(h => h.Id)
-                        .FirstOrDefault();
-
-                    if (update == null)
-                    {
-                        return null;
-                    }
-
-                    return update.Id;
+                    return false;
                 }
+                return change.Type != EntityChangeType.Removed;
+            });
+
+            if (changes == null)
+            {
+                return 0;
             }
-        }
 
-        public Tuple<int, long?> GetCountAndVersion(long? lastVersion, IDomainModel domainModel)
-        {
-            var query = GetRecordUpdates(GetCollection(), domainModel, null, lastVersion, true, true);
+            var changeIds = changes.Select(c => c.EntityId).Distinct().ToList();
 
-            var count = query.Select(h => h.EntityId).Distinct().Count();
-            var newVersion = query.OrderByDescending(h => h.Id).FirstOrDefault();
-
-            return Tuple.Create(count, newVersion != null ? newVersion.Id : (long?) null);
+            return collection.ReadIds(domainModel, null, true).Count(r => changeIds.Contains(r));
         }
 
         protected override bool SupportsLiveUpdates

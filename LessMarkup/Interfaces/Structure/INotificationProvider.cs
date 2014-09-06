@@ -1,5 +1,4 @@
-﻿using System;
-using LessMarkup.Interfaces.Data;
+﻿using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.Structure
 {
@@ -8,7 +7,6 @@ namespace LessMarkup.Interfaces.Structure
         string Title { get; }
         string Tooltip { get; }
         string Icon { get; }
-        long? Version { get; }
-        Tuple<int, long?> GetCountAndVersion(long? lastVersion, IDomainModel domainModel);
+        int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel);
     }
 }

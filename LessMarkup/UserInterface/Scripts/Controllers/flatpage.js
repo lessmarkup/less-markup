@@ -170,36 +170,15 @@
         var pageToScope = {};
 
         $scope.getPageScope = function (page) {
-            return pageToScope[page.UniqueId];
+            return pageToScope[page.uniqueId];
         }
 
         function initializePageScope(scope, page) {
-            scope.sendAction = function (action, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendAction(action, data, success, failure, path);
-            }
-
-            scope.sendCommand = function (command, data, success, failure, path) {
+            scope.sendCommand = function (action, data, success, failure, path) {
                 if (!path) {
                     path = page.Path;
                 }
                 return $scope.sendCommand(action, data, success, failure, path);
-            }
-
-            scope.sendActionAsync = function (action, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendActionAsync(action, data, success, failure, path);
-            }
-
-            scope.sendCommandAsync = function (command, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendCommandAsync(action, data, success, failure, path);
             }
 
             scope.navigateToView = function(path) {
@@ -207,10 +186,10 @@
             }
 
             scope.toolbarButtons = [];
-            scope.path = page.Path;
+            scope.path = page.path;
 
             scope.getFullPath = function(path) {
-                return page.Path + "/" + path;
+                return page.path + "/" + path;
             }
         }
 
@@ -236,16 +215,16 @@
         }
 
         function initializePages() {
-            $scope.flat = $scope.viewData.Flat;
-            $scope.tree = $scope.viewData.Tree;
-            $scope.position = $scope.viewData.Position;
+            $scope.flat = $scope.viewData.flat;
+            $scope.tree = $scope.viewData.tree;
+            $scope.position = $scope.viewData.position;
 
             for (var i = 0; i < $scope.flat.length; i++) {
                 var page = $scope.flat[i];
                 var pageScope = $scope.$new();
                 initializePageScope(pageScope, page);
-                pageToScope[page.UniqueId] = pageScope;
-                pageScope.viewData = page.ViewData;
+                pageToScope[page.uniqueId] = pageScope;
+                pageScope.viewData = page.viewData;
             }
 
             if (!$scope.$$phase) {
@@ -253,8 +232,8 @@
             }
         }
 
-        if ($scope.viewData.Scripts.length > 0) {
-            require($scope.viewData.Scripts, initializePages);
+        if ($scope.viewData.scripts.length > 0) {
+            require($scope.viewData.scripts, initializePages);
         } else {
             initializePages();
         }

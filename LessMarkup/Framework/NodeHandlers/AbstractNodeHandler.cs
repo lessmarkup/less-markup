@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Framework.NodeHandlers
@@ -102,6 +103,16 @@ namespace LessMarkup.Framework.NodeHandlers
         }
 
         public object Context { get; set; }
+
+        protected virtual bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
+        {
+            return false;
+        }
+
+        bool INodeHandler.ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
+        {
+            return ProcessUpdates(fromVersion, toVersion, returnValues, domainModel, arguments);
+        }
 
         protected virtual ActionResult CreateResult(string path)
         {

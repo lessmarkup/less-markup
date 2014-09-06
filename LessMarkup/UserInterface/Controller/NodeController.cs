@@ -40,7 +40,7 @@ namespace LessMarkup.UserInterface.Controller
                 if (JsonEntryPointModel.AppliesToRequest(Request, path))
                 {
                     var jsonModel = DependencyResolver.Resolve<JsonEntryPointModel>();
-                    return jsonModel.HandleRequest(this, path);
+                    return jsonModel.HandleRequest(this);
                 }
 
                 var nodeModel = DependencyResolver.Resolve<NodeEntryPointModel>();

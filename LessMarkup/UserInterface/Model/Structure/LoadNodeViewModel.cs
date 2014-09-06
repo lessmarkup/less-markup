@@ -5,15 +5,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
-using Newtonsoft.Json;
-using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -21,8 +19,6 @@ namespace LessMarkup.UserInterface.Model.Structure
     {
         private readonly IDataCache _dataCache;
         private INodeHandler _nodeHandler;
-        private readonly ICurrentUser _currentUser;
-
         public string Template { get; set; }
         public string TemplateId { get; set; }
         public object ViewData { get; set; }
@@ -37,10 +33,9 @@ namespace LessMarkup.UserInterface.Model.Structure
         public List<NodeBreadcrumbModel> Breadcrumbs { get; set; }
         public List<ToolbarButtonModel> ToolbarButtons { get; set; } 
 
-        public LoadNodeViewModel(IDataCache dataCache, ICurrentUser currentUser)
+        public LoadNodeViewModel(IDataCache dataCache)
         {
             _dataCache = dataCache;
-            _currentUser = currentUser;
         }
 
         public static string GetViewPath(string viewName)
@@ -89,18 +84,11 @@ namespace LessMarkup.UserInterface.Model.Structure
             return template;
         }
 
-        private void FillBreadcrumbs(ICachedNodeInformation node)
-        {
-            if (node.Parent != null)
-            {
-                FillBreadcrumbs(node.Parent);
-            }
-
-            Breadcrumbs.Add(new NodeBreadcrumbModel { Text = node.Title, Url = node.FullPath });
-        }
-
         public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements, bool tryCreateResult)
         {
+
+
+
             path = HttpUtility.UrlDecode(path);
 
             if (path != null)
@@ -114,105 +102,43 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var nodeCache = _dataCache.Get<INodeCache>();
 
-            ICachedNodeInformation node;
-            string rest;
-
-            nodeCache.GetNode(path, out node, out rest);
-
-            if (node == null)
-            {
-                return false;
-            }
-
-            if (node.LoggedIn && !_currentUser.UserId.HasValue)
-            {
-                return false;
-            }
-
-            var accessType = node.CheckRights(_currentUser);
-
-            if (accessType == NodeAccessType.NoAccess)
-            {
-                return false;
-            }
-
             if (initializeUiElements)
             {
                 Breadcrumbs = new List<NodeBreadcrumbModel>();
-
-                if (node.Parent != null)
-                {
-                    FillBreadcrumbs(node.Parent);
-                }
             }
 
-            _nodeHandler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
-
-            if (_nodeHandler == null)
+            _nodeHandler = nodeCache.GetNodeHandler(path, controller, (nodeHandler, nodeTitle, nodePath, nodeRest) =>
             {
-                return false;
-            }
-
-            Title = node.Title;
-
-            Path = node.FullPath;
-
-            var settings = node.Settings;
-
-            object settingsObject = null;
-
-            if (!string.IsNullOrWhiteSpace(settings) && _nodeHandler.SettingsModel != null)
-            {
-                settingsObject = JsonConvert.DeserializeObject(settings, _nodeHandler.SettingsModel);
-            }
-
-            _nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
-
-            while (!string.IsNullOrWhiteSpace(rest))
-            {
-                if (tryCreateResult)
-                {
-                    Result = _nodeHandler.CreateResult(rest);
-                    if (Result != null)
-                    {
-                        return true;
-                    }
-                }
-
-                var childSettings = _nodeHandler.GetChildHandler(rest);
-                if (childSettings == null)
-                {
-                    return false;
-                }
-
                 if (initializeUiElements)
                 {
                     Breadcrumbs.Add(new NodeBreadcrumbModel
                     {
-                        Text = Title,
-                        Url = Path
+                        Text = nodeTitle,
+                        Url = nodePath
                     });
                 }
 
-                _nodeHandler = childSettings.Handler;
-                Title = childSettings.Title;
-                Path += "/" + childSettings.Path;
+                Title = nodeTitle;
+                Path = nodePath;
 
-                if (string.IsNullOrWhiteSpace(childSettings.Rest))
+                if (nodeHandler == null)
                 {
-                    break;
+                    return false;
                 }
 
-                rest = childSettings.Rest;
+                Result = nodeHandler.CreateResult(nodeRest);
+
+                return Result != null;
+            });
+
+            if (initializeUiElements && Breadcrumbs.Count > 0)
+            {
+                Breadcrumbs.Remove(Breadcrumbs.Last());
             }
 
-            if (tryCreateResult)
+            if (_nodeHandler == null)
             {
-                Result = _nodeHandler.CreateResult(null);
-                if (Result != null)
-                {
-                    return true;
-                }
+                return false;
             }
 
             TemplateId = _nodeHandler.TemplateId;

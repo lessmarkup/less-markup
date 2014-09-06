@@ -139,7 +139,8 @@
     <Compile Include="Model\Global\SiteModel.cs" />
     <Compile Include="Model\Structure\ExecuteActionModel.cs" />
     <Compile Include="Model\Structure\LoadNodeViewModel.cs" />
-    <Compile Include="Model\Structure\NotificationsModel.cs" />
+    <Compile Include="Model\Structure\LoadUpdatesModel.cs" />
+    <Compile Include="Model\Structure\UserInteraceElementsModel.cs" />
     <Compile Include="Model\Structure\WebSocketEntryPointModel.cs" />
     <Compile Include="Model\User\ChangePasswordModel.cs" />
     <Compile Include="Model\User\ForgotPasswordModel.cs" />

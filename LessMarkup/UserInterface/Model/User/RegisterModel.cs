@@ -34,15 +34,15 @@ namespace LessMarkup.UserInterface.Model.User
         [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.GeneratePassword)]
         public bool GeneratePassword { get; set; }
 
-        [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true, VisibleCondition = "!GeneratePassword")]
+        [InputField(InputFieldType.PasswordRepeat, UserInterfaceTextIds.Password, Required = true, VisibleCondition = "!generatePassword")]
         public string Password { get; set; }
 
         public bool ShowUserAgreement { get; set; }
 
-        [InputField(InputFieldType.RichText, UserInterfaceTextIds.UserAgreement, VisibleCondition = "ShowUserAgreement")]
+        [InputField(InputFieldType.RichText, UserInterfaceTextIds.UserAgreement, VisibleCondition = "showUserAgreement")]
         public string UserAgreement { get; set; }
 
-        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Agree, Required = true, VisibleCondition = "ShowUserAgreement")]
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Agree, Required = true, VisibleCondition = "showUserAgreement")]
         public bool Agree { get; set; }
 
         public object GetRegisterObject()

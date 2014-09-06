@@ -5,20 +5,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.Engine.Language;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.NodeHandlers;
 using LessMarkup.UserInterface.NodeHandlers.Configuration;
 using LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration;
 using LessMarkup.UserInterface.NodeHandlers.User;
+using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -28,6 +31,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
+        private readonly ICurrentUser _currentUser;
         private long? _siteId;
 
         private readonly List<ICachedNodeInformation> _cachedNodes = new List<ICachedNodeInformation>();
@@ -37,13 +41,14 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
         public IReadOnlyList<ICachedNodeInformation> Nodes { get { return _cachedNodes; } }
 
-        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache)
+        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ICurrentUser currentUser)
             : base(new[] { typeof(Node), typeof(Site) })
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
             _engineConfiguration = engineConfiguration;
             _dataCache = dataCache;
+            _currentUser = currentUser;
         }
 
         private void InitializeTree(CachedNodeInformation node, List<CachedNodeInformation> allNodes)
@@ -94,6 +99,114 @@ namespace LessMarkup.UserInterface.Model.Structure
         {
             ICachedNodeInformation ret;
             return _idToNode.TryGetValue(nodeId, out ret) ? ret : null;
+        }
+
+        private bool TraverseParents(ICachedNodeInformation node, Func<INodeHandler, string, string, string, bool> preprocessFunc)
+        {
+            if (node.Parent != null)
+            {
+                if (TraverseParents(node.Parent, preprocessFunc))
+                {
+                    return true;
+                }
+            }
+
+            return preprocessFunc(null, node.Title, node.FullPath, null);
+        }
+
+        public INodeHandler GetNodeHandler(string path, object controller = null, Func<INodeHandler, string, string, string, bool> preprocessFunc = null)
+        {
+            path = HttpUtility.UrlDecode(path);
+
+            if (path != null)
+            {
+                var queryPost = path.IndexOf('?');
+                if (queryPost >= 0)
+                {
+                    path = path.Substring(0, queryPost);
+                }
+            }
+
+            ICachedNodeInformation node;
+            string rest;
+
+            GetNode(path, out node, out rest);
+
+            if (node == null)
+            {
+                return null;
+            }
+
+            if (node.LoggedIn && !_currentUser.UserId.HasValue)
+            {
+                return null;
+            }
+
+            var accessType = node.CheckRights(_currentUser);
+
+            if (accessType == NodeAccessType.NoAccess)
+            {
+                return null;
+            }
+
+            if (preprocessFunc != null && node.Parent != null)
+            {
+                TraverseParents(node.Parent, preprocessFunc);
+            }
+
+            var nodeHandler = (INodeHandler)DependencyResolver.Resolve(node.HandlerType);
+
+            if (nodeHandler == null)
+            {
+                return null;
+            }
+
+            var currentTitle = node.Title;
+            var currentPath = node.FullPath;
+
+            var settings = node.Settings;
+
+            object settingsObject = null;
+
+            if (!string.IsNullOrWhiteSpace(settings) && nodeHandler.SettingsModel != null)
+            {
+                settingsObject = JsonConvert.DeserializeObject(settings, nodeHandler.SettingsModel);
+            }
+
+            nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
+
+            while (!string.IsNullOrWhiteSpace(rest))
+            {
+                if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest))
+                {
+                    return null;
+                }
+
+                var childSettings = nodeHandler.GetChildHandler(rest);
+                if (childSettings == null)
+                {
+                    return null;
+                }
+
+                nodeHandler = childSettings.Handler;
+
+                currentTitle = childSettings.Title;
+                currentPath += "/" + childSettings.Path;
+
+                if (string.IsNullOrWhiteSpace(childSettings.Rest))
+                {
+                    break;
+                }
+
+                rest = childSettings.Rest;
+            }
+
+            if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest))
+            {
+                return null;
+            }
+
+            return nodeHandler;
         }
 
         public void GetNode(string path, out ICachedNodeInformation node, out string rest)

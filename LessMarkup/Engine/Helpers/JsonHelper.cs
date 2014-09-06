@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using Newtonsoft.Json;
 
@@ -61,7 +62,7 @@ namespace LessMarkup.Engine.Helpers
             foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 object propertyValue;
-                if (!valueData.TryGetValue(property.Name, out propertyValue) || propertyValue == null)
+                if (!valueData.TryGetValue(property.Name.ToJsonCase(), out propertyValue) || propertyValue == null)
                 {
                     continue;
                 }

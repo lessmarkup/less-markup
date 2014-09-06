@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -79,6 +80,24 @@ namespace LessMarkup.UserInterface.Model.Structure
             {
                 accessType = nodeAccess;
             }
+        }
+
+        public NodeAccessType CheckRights(IUserCache userCache, long? userId, NodeAccessType defaultAccessType = NodeAccessType.Read)
+        {
+            if (userCache.IsAdministrator)
+            {
+                return NodeAccessType.Manage;
+            }
+
+            NodeAccessType? accessType = null;
+            CheckRights(userId, userCache.Groups, ref accessType);
+
+            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!userCache.IsApproved || !userCache.IsValidated))
+            {
+                accessType = NodeAccessType.Read;
+            }
+
+            return accessType ?? defaultAccessType;
         }
 
         public NodeAccessType CheckRights(ICurrentUser currentUser, NodeAccessType defaultAccessType = NodeAccessType.Read)

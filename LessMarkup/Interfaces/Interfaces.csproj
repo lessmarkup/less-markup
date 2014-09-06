@@ -83,7 +83,9 @@
     <Compile Include="Composite\ContainerElement.cs" />
     <Compile Include="Composite\MultilineTextElement.cs" />
     <Compile Include="Composite\TextElement.cs" />
+    <Compile Include="Data\DataChange.cs" />
     <Compile Include="Data\DataObject.cs" />
+    <Compile Include="Data\IChangesCache.cs" />
     <Compile Include="Data\IChangeTracker.cs" />
     <Compile Include="Data\IDataObject.cs" />
     <Compile Include="Data\IDataObjectCollection.cs" />

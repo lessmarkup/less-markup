@@ -23,7 +23,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
     $scope.isModal = $modalInstance != null;
     $scope.submitError = "";
     $scope.isApplying = false;
-    $scope.submitWithCaptcha = definition.SubmitWithCaptcha;
+    $scope.submitWithCaptcha = definition.submitWithCaptcha;
 
     $scope.codeMirrorDefaultOptions = {
         mode: 'text/html',
@@ -52,10 +52,10 @@ function InputFormController($scope, $modalInstance, definition, object, success
     $scope.fields = [];
 
     $scope.getValue = function (object, field) {
-        if (field.Type === "RichText" && $scope.readOnly(field)) {
-            return $sce.trustAsHtml(object[field.Property]);
+        if (field.type === "RichText" && $scope.readOnly(field)) {
+            return $sce.trustAsHtml(object[field.property]);
         }
-        return object[field.Property];
+        return object[field.property];
     }
 
     $scope.hasErrors = function (property) {
@@ -67,24 +67,24 @@ function InputFormController($scope, $modalInstance, definition, object, success
     }
 
     $scope.helpText = function (field) {
-        var ret = field.HelpText;
+        var ret = field.helpText;
         if (ret == null) {
             ret = "";
         }
-        if ($scope.hasErrors(field.Property)) {
+        if ($scope.hasErrors(field.property)) {
             if (ret.length) {
                 ret += " / ";
             }
-            ret += $scope.errorText(field.Property);
+            ret += $scope.errorText(field.property);
         }
         return ret;
     }
 
     $scope.fieldVisible = function (field) {
-        if (field.VisibleFunction == null) {
+        if (!field.visibleFunction) {
             return true;
         }
-        return field.VisibleFunction($scope.object);
+        return field.visibleFunction($scope.object);
     }
 
     $scope.getTypeahead = function (field, searchText) {
@@ -95,10 +95,10 @@ function InputFormController($scope, $modalInstance, definition, object, success
     }
 
     $scope.readOnly = function (field) {
-        if (field.ReadOnlyFunction == null) {
-            return field.ReadOnly ? "readonly" : "";
+        if (!field.readOnlyFunction) {
+            return field.readOnly ? "readonly" : "";
         }
-        return field.ReadOnlyFunction($scope.object) ? "readonly" : "";
+        return field.readOnlyFunction($scope.object) ? "readonly" : "";
     }
 
     $scope.submit = function () {
@@ -113,32 +113,32 @@ function InputFormController($scope, $modalInstance, definition, object, success
                 continue;
             }
 
-            var value = $scope.object[field.Property];
+            var value = $scope.object[field.property];
 
-            switch (field.Type) {
+            switch (field.type) {
                 case 'File':
-                    if (field.Required && $scope.isNewObject && (value == null || value.File == null || value.File.length == 0)) {
-                        $scope.validationErrors[field.Property] = "Field is required";
+                    if (field.required && $scope.isNewObject && (value == null || value.file == null || value.file.length == 0)) {
+                        $scope.validationErrors[field.property] = "Field is required";
                         valid = false;
                     }
 
-                    if (value.File.length > $scope.maximumFileSize) {
-                        $scope.validationErrors[field.Property] = "File is too big";
+                    if (value.file.length > $scope.maximumFileSize) {
+                        $scope.validationErrors[field.property] = "File is too big";
                         valid = false;
                     }
                     continue;
 
                 case 'FileList':
                     if (field.required && $scope.isNewObject && (value == null || value.length == 0)) {
-                        $scope.validationErrors[field.Property] = "Field is required";
+                        $scope.validationErrors[field.property] = "Field is required";
                         valid = false;
                     }
 
                     if (value != null) {
                         for (var j = 0; j < value.length; j++) {
                             var file = value[j];
-                            if (file.File != null && file.File.length > $scope.maximumFileSize) {
-                                $scope.validationErrors[field.Property] = "File is too big";
+                            if (file.file != null && file.file.length > $scope.maximumFileSize) {
+                                $scope.validationErrors[field.property] = "File is too big";
                                 valid = false;
                                 break;
                             }
@@ -149,30 +149,30 @@ function InputFormController($scope, $modalInstance, definition, object, success
             }
 
             if (typeof (value) == 'undefined' || value == null || value.toString().trim().length == 0) {
-                if (field.Required) {
-                    $scope.validationErrors[field.Property] = "Field is required";
+                if (field.required) {
+                    $scope.validationErrors[field.property] = "Field is required";
                     valid = false;
                 }
                 continue;
             }
 
-            switch (field.Type) {
+            switch (field.type) {
                 case 'Number':
                     if (parseFloat(value) == NaN) {
-                        $scope.validationErrors[field.Property] = "Field '" + field.Text + "' is not a number";
+                        $scope.validationErrors[field.property] = "Field '" + field.text + "' is not a number";
                         valid = false;
                     }
                     break;
                 case 'Email':
                     if (!value.search(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/)) {
-                        $scope.validationErrors[field.Property] = "Field'" + field.Text + "' is not an e-mail";
+                        $scope.validationErrors[field.property] = "Field'" + field.text + "' is not an e-mail";
                         valid = false;
                     }
                     break;
                 case 'PasswordRepeat':
-                    var repeatPassword = $scope.object[field.Property + "$Repeat"];
+                    var repeatPassword = $scope.object[field.property + "$Repeat"];
                     if (typeof (repeatPassword) == 'undefined' || repeatPassword == null || repeatPassword != value) {
-                        $scope.validationErrors[field.Property] = 'Passwords must be equal';
+                        $scope.validationErrors[field.property] = 'Passwords must be equal';
                         valid = false;
                     }
             }
@@ -186,7 +186,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
             var field = $scope.fields[i];
 
             if (field.dynamicSource) {
-                field.dynamicSource.Value = $scope.object[field.Property];
+                field.dynamicSource.value = $scope.object[field.property];
             }
         }
 
@@ -206,25 +206,25 @@ function InputFormController($scope, $modalInstance, definition, object, success
                 for (var i = 0; i < $scope.fields.length; i++) {
                     var field = $scope.fields[i];
                     if (field.dynamicSource) {
-                        delete changed[field.Property];
-                    } else if (field.Type == "PasswordRepeat") {
-                        delete changed[field.Property + "$Repeat"];
+                        delete changed[field.property];
+                    } else if (field.type == "PasswordRepeat") {
+                        delete changed[field.property + "$Repeat"];
                     }
                 }
 
-                for (var i = 0; i < definition.Fields.length; i++) {
-                    var field = definition.Fields[i];
-                    if (field.Type == 'DynamicFieldList') {
+                for (var i = 0; i < definition.fields.length; i++) {
+                    var field = definition.fields[i];
+                    if (field.type == 'DynamicFieldList') {
                         if ($scope.object == null) {
                             continue;
                         }
 
-                        var dynamicFields = changed[field.Property];
+                        var dynamicFields = changed[field.property];
 
                         for (var j = 0; j < dynamicFields.length; j++) {
                             var dynamicField = dynamicFields[j];
-                            dynamicField.Field = {
-                                Property: dynamicField.Field.Property
+                            dynamicField.field = {
+                                property: dynamicField.field.property
                             }
                         }
                     }
@@ -260,49 +260,49 @@ function InputFormController($scope, $modalInstance, definition, object, success
     }
 
     function initializeField(field) {
-        if (field.Type == 'PasswordRepeat') {
-            $scope.object[field.Property] = "";
-            $scope.object[field.Property + "$Repeat"] = "";
-        } else if (field.Type == 'Image' || field.Type == 'File') {
-            $scope.object[field.Property] = null;
+        if (field.type == 'PasswordRepeat') {
+            $scope.object[field.property] = "";
+            $scope.object[field.property + "$Repeat"] = "";
+        } else if (field.type == 'Image' || field.type == 'File') {
+            $scope.object[field.property] = null;
         }
-        if (field.Type == 'Select' && field.SelectedValues != null && field.SelectValues.length > 0) {
-            $scope.object[field.Property] = field.SelectValues[0].Value;
+        if (field.type == 'Select' && field.selectedValues != null && field.selectValues.length > 0) {
+            $scope.object[field.property] = field.selectValues[0].value;
         }
 
-        if (field.Type == 'Date') {
+        if (field.type == 'Date') {
             field.isOpen = false;
         }
 
-        if (typeof (field.VisibleCondition) != "undefined" && field.VisibleCondition != null && field.VisibleCondition.length > 0) {
-            field.VisibleFunction = new Function("obj", "with(obj) { return " + field.VisibleCondition + "; }");
+        if (field.visibleCondition && field.visibleCondition.length > 0) {
+            field.visibleFunction = new Function("obj", "with(obj) { return " + field.visibleCondition + "; }");
         } else {
-            field.VisibleFunction = null;
+            field.visibleFunction = null;
         }
 
-        if (typeof (field.ReadOnlyCondition) != "undefined" && field.ReadOnlyCondition != null && field.ReadOnlyCondition.length > 0) {
-            field.ReadOnlyFunction = new Function("obj", "with(obj) { return " + field.ReadOnlyCondition + "; }");
+        if (field.readOnlyCondition && field.readOnlyCondition.length > 0) {
+            field.readOnlyFunction = new Function("obj", "with(obj) { return " + field.readOnlyCondition + "; }");
         } else {
-            field.ReadOnlyFunction = null;
+            field.readOnlyFunction = null;
         }
     }
 
-    for (var i = 0; i < definition.Fields.length; i++) {
-        var field = definition.Fields[i];
-        if (!$scope.object.hasOwnProperty(field.Property)) {
-            if (typeof (field.DefaultValue) != "undefined") {
-                $scope.object[field.Property] = field.DefaultValue;
+    for (var i = 0; i < definition.fields.length; i++) {
+        var field = definition.fields[i];
+        if (!$scope.object.hasOwnProperty(field.property)) {
+            if (typeof (field.defaultValue) != "undefined") {
+                $scope.object[field.property] = field.defaultValue;
             } else {
-                $scope.object[field.Property] = "";
+                $scope.object[field.property] = "";
             }
         }
 
-        if (field.Type == 'DynamicFieldList') {
+        if (field.type == 'DynamicFieldList') {
             if ($scope.object == null) {
                 continue;
             }
 
-            var dynamicFields = $scope.object[field.Property];
+            var dynamicFields = $scope.object[field.property];
 
             if (dynamicFields == null) {
                 continue;
@@ -310,17 +310,17 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
             for (var j = 0; j < dynamicFields.length; j++) {
                 var dynamicField = dynamicFields[j];
-                var dynamicDefinition = angular.copy(dynamicField.Field);
-                dynamicDefinition.Property = field.Property + "$" + dynamicDefinition.Property;
+                var dynamicDefinition = angular.copy(dynamicField.field);
+                dynamicDefinition.property = field.property + "$" + dynamicDefinition.property;
                 $scope.fields.push(dynamicDefinition);
                 dynamicDefinition.dynamicSource = dynamicField;
                 initializeField(dynamicDefinition);
-                $scope.object[dynamicDefinition.Property] = dynamicField.Value;
+                $scope.object[dynamicDefinition.property] = dynamicField.value;
             }
             continue;
         }
 
-        if (field.Type != 'Hidden') {
+        if (field.type != 'Hidden') {
             $scope.fields.push(field);
             initializeField(field);
         }

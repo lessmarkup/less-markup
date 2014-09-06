@@ -4,11 +4,11 @@
 
 function DialogController($http, $scope, $timeout, lazyLoad, $sce) {
 
-    $scope.definition = $scope.viewData.Definition;
-    $scope.object = $scope.viewData.Object;
+    $scope.definition = $scope.viewData.definition;
+    $scope.object = $scope.viewData.object;
     $scope.submitError = "";
     $scope.submitSuccess = "";
-    $scope.applyCaption = $scope.viewData.ApplyCaption;
+    $scope.applyCaption = $scope.viewData.applyCaption;
     $scope.changesApplied = false;
 
     $scope.openForm = function() {
@@ -24,7 +24,7 @@ function DialogController($http, $scope, $timeout, lazyLoad, $sce) {
         if (!$scope.$$phase) {
             $scope.$apply();
         }
-        $scope.sendAction("Save", {
+        $scope.sendCommand("Save", {
             "changedObject": changedObject
         }, function(data) {
             $scope.hasChanges = false;

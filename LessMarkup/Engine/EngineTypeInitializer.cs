@@ -48,6 +48,7 @@ namespace LessMarkup.Engine
             builder.RegisterType<UserCache>().As<IUserCache>();
             builder.RegisterType<SiteConfigurationCache>().As<ISiteConfiguration>();
             builder.RegisterType<ResourceCache>().As<IResourceCache>();
+            builder.RegisterType<ChangesCache>().As<IChangesCache>();
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.FullName.StartsWith("Microsoft") && !a.FullName.StartsWith("System") && !a.FullName.StartsWith("mscorlib")))

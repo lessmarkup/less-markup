@@ -8,9 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using LessMarkup.Engine.Helpers;
-using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Exceptions;
 using Newtonsoft.Json;
@@ -20,18 +18,14 @@ namespace LessMarkup.UserInterface.Model.Structure
     public class ExecuteActionModel
     {
         private readonly IDataCache _dataCache;
-        private readonly ICurrentUser _currentUser;
 
-        public ExecuteActionModel(IDataCache dataCache, ICurrentUser currentUser)
+        public ExecuteActionModel(IDataCache dataCache)
         {
             _dataCache = dataCache;
-            _currentUser = currentUser;
         }
 
-        public object HandleRequest(Dictionary<string, object> data, System.Web.Mvc.Controller controller)
+        public object HandleRequest(Dictionary<string, object> data, string path)
         {
-            var path = data["-path-"].ToString();
-
             path = HttpUtility.UrlDecode(path);
 
             if (path != null)
@@ -44,53 +38,12 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
 
             var nodeCache = _dataCache.Get<INodeCache>();
-
-            ICachedNodeInformation node;
-            string rest;
-            nodeCache.GetNode(path, out node, out rest);
-            if (node == null)
-            {
-                throw new UnknownActionException();
-            }
-
-            var accessType = node.CheckRights(_currentUser);
-
-            if (accessType == NodeAccessType.NoAccess)
-            {
-                throw new UnknownActionException();
-            }
-
-            var handler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
-
-            string settings = node.Settings;
-
-            object settingsObject = null;
-
-            if (!string.IsNullOrWhiteSpace(settings) && handler.SettingsModel != null)
-            {
-                settingsObject = JsonConvert.DeserializeObject(settings, handler.SettingsModel);
-            }
-
-            handler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
-
-            while (!string.IsNullOrWhiteSpace(rest))
-            {
-                var childSettings = handler.GetChildHandler(rest);
-                if (childSettings == null)
-                {
-                    throw new UnknownActionException();
-                }
-                settings = null;
-                handler = childSettings.Handler;
-                rest = childSettings.Rest;
-            }
-
+            var handler = nodeCache.GetNodeHandler(path);
             var handlerType = handler.GetType();
 
-            var actionName = data["-action-"].ToString();
+            var actionName = data["command"].ToString();
 
-            var method = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            var method = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             if (method == null)
             {
@@ -122,26 +75,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                 if (!dataLowered.TryGetValue(parameterName, out parameter))
                 {
-                    if (parameterName == "settings")
-                    {
-                        if (settings == null)
-                        {
-                            arguments[i] = null;
-                        }
-                        else
-                        {
-                            if (parameterType == typeof (string))
-                            {
-                                arguments[i] = settings;
-                            }
-                            else
-                            {
-                                arguments[i] = JsonConvert.DeserializeObject(settings, parameterType);
-                            }
-                        }
-
-                    }
-                    else if (parameterName.StartsWith("raw") && parameterType == typeof(string) && dataLowered.TryGetValue(parameterName.Remove(0, 3), out parameter))
+                    if (parameterName.StartsWith("raw") && parameterType == typeof(string) && dataLowered.TryGetValue(parameterName.Substring(3), out parameter))
                     {
                         arguments[i] = parameter != null ? JsonConvert.SerializeObject(parameter) : null;
                     }

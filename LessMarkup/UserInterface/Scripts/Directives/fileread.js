@@ -46,9 +46,9 @@ app.directive("fileread", [function () {
                         }
 
                         scope.fileread = {
-                            File: value,
-                            Type: changeEvent.target.files[0].type,
-                            Name: changeEvent.target.files[0].name
+                            file: value,
+                            type: changeEvent.target.files[0].type,
+                            name: changeEvent.target.files[0].name
                         };
                         
                     });

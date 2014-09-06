@@ -13,7 +13,6 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
@@ -87,12 +86,11 @@ namespace LessMarkup.Engine.Security
 
         private CookieUserModel GetCurrentUser()
         {
-            var ret = ContextUser;
-            if (ret != null)
+            if (!HasContextUser)
             {
-                return ret;
+                MapCurrentUser();
             }
-            MapCurrentUser();
+
             return ContextUser;
         }
 
@@ -137,6 +135,15 @@ namespace LessMarkup.Engine.Security
             {
                 var user = GetCurrentUser();
                 return user == null ? null : user.Email;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                var user = GetCurrentUser();
+                return user == null ? null : user.Name;
             }
         }
 
@@ -350,6 +357,7 @@ namespace LessMarkup.Engine.Security
             return new CookieUserModel
             {
                 Email = currentUser.Email,
+                Name = currentUser.Name,
                 Groups = currentUser.Groups,
                 IsAdministrator = currentUser.IsAdministrator,
                 IsGlobalAdministrator = currentUser.IsGlobalAdministrator,
@@ -463,9 +471,11 @@ namespace LessMarkup.Engine.Security
                 AddSuccessfulLoginHistory(address, model, user.Id);
 
                 model.SaveChanges();
-            }
 
-            return true;
+                HasContextUser = false;
+
+                return true;
+            }
         }
 
         public bool LoginWithPassword(string email, string password, bool savePassword, bool allowAdmin, bool allowRegular, string address, string encodedPassword)
@@ -496,9 +506,7 @@ namespace LessMarkup.Engine.Security
             {
                 var siteId = _siteMapper.SiteId;
 
-                if (allowAdmin &&
-                    email.Equals(_engineConfiguration.NoAdminName, StringComparison.InvariantCultureIgnoreCase) &&
-                    NoGlobalAdminUser(model))
+                if (allowAdmin && email.Equals(_engineConfiguration.NoAdminName, StringComparison.InvariantCultureIgnoreCase) && NoGlobalAdminUser(model))
                 {
                     this.LogDebug("No admin defined and user email is equal to NoAdminName");
 
@@ -507,8 +515,7 @@ namespace LessMarkup.Engine.Security
                         return false;
                     }
 
-                    model.GetCollection<SuccessfulLoginHistory>()
-                        .Add(new SuccessfulLoginHistory { Address = address, Time = DateTime.UtcNow, UserId = -2 });
+                    model.GetCollection<SuccessfulLoginHistory>().Add(new SuccessfulLoginHistory { Address = address, Time = DateTime.UtcNow, UserId = -2 });
                     model.SaveChanges();
                     return true;
                 }
@@ -590,9 +597,11 @@ namespace LessMarkup.Engine.Security
                 AddSuccessfulLoginHistory(address, model, user.Id);
 
                 model.SaveChanges();
-            }
 
-            return true;
+                HasContextUser = false;
+
+                return true;
+            }
         }
 
         public void Logout()
@@ -607,6 +616,7 @@ namespace LessMarkup.Engine.Security
             HttpContext.Current.Response.Cookies.Add(cookie);
 
             ContextUser = null;
+            HasContextUser = true;
         }
 
         private bool NoGlobalAdminUser(IDomainModel model)

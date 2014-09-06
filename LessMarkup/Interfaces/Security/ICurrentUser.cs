@@ -20,6 +20,7 @@ namespace LessMarkup.Interfaces.Security
         bool IsFakeUser { get; }
         void MapCurrentUser();
         string Email { get; }
+        string Name { get; }
         void Logout();
         bool LoginWithPassword(string email, string password, bool savePassword, bool allowAdmin, bool allowRegular, string address, string encodedPassword);
         bool LoginWithOAuth(string provider, string providerUserId, bool savePassword, bool allowAdmin, bool allowRegular, string address);

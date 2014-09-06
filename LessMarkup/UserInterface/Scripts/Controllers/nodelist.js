@@ -8,7 +8,7 @@ define([], function() {
         $scope.nodes = [];
         $scope.updateProgress = false;
         $scope.updateError = "";
-        $scope.rootNode = $scope.viewData.Root;
+        $scope.rootNode = $scope.viewData.root;
 
         function addNodeToFlatList(node, level, parent, parentIndex) {
             var target = {
@@ -21,8 +21,8 @@ define([], function() {
 
             $scope.nodes.push(target);
 
-            for (var i = 0; i < node.Children.length; i++) {
-                addNodeToFlatList(node.Children[i], level + 1, target, i);
+            for (var i = 0; i < node.children.length; i++) {
+                addNodeToFlatList(node.children[i], level + 1, target, i);
             }
         }
 
@@ -41,12 +41,12 @@ define([], function() {
         }
 
         $scope.nodeAccessPage = function (node) {
-            return $scope.path + "/" + node.data.NodeId.toString() + "/access";
+            return $scope.path + "/" + node.data.nodeId.toString() + "/access";
         }
 
         $scope.nodeEnabled = function (node) {
             for (; node != null; node = node.parent) {
-                if (!node.data.Enabled) {
+                if (!node.data.enabled) {
                     return false;
                 }
             }
@@ -61,7 +61,7 @@ define([], function() {
             if (node.parent == null) {
                 return true;
             }
-            return node.parentIndex == node.parent.data.Children.length - 1 && node.parent.parent == null;
+            return node.parentIndex == node.parent.data.children.length - 1 && node.parent.parent == null;
         }
 
         $scope.leftDisabled = function (node) {
@@ -73,16 +73,16 @@ define([], function() {
         }
 
         function changeParent(node, parent, order) {
-            if (parent != null && order > parent.data.Children.length) {
-                order = parent.data.Children.length;
+            if (parent != null && order > parent.data.children.length) {
+                order = parent.data.children.length;
             }
 
-            $scope.sendAction("UpdateParent", {
-                nodeId: node.data.NodeId,
-                parentId: parent != null ? parent.data.NodeId : null,
+            $scope.sendCommand("UpdateParent", {
+                nodeId: node.data.nodeId,
+                parentId: parent != null ? parent.data.nodeId : null,
                 order: order
             }, function (data) {
-                $scope.rootNode = data.Root;
+                $scope.rootNode = data.root;
                 refreshFlatList();
             }, function (message) {
                 inputForm.message(message);
@@ -120,7 +120,7 @@ define([], function() {
                 return;
             }
 
-            if (node.parentIndex + 1 < node.parent.data.Children.length) {
+            if (node.parentIndex + 1 < node.parent.data.children.length) {
                 changeParent(node, node.parent, node.parentIndex + 1);
                 return;
             }
@@ -157,19 +157,19 @@ define([], function() {
             inputForm.editObject($scope, null, $scope.viewData.NodeSettingsModelId, function (node, success, error) {
                 if (parentNode == null) {
                     // create root node
-                    node.ParentId = null;
-                    node.Order = 0;
+                    node.parentId = null;
+                    node.order = 0;
                 } else {
-                    node.ParentId = parentNode.data.NodeId;
-                    node.Order = parentNode.data.Children.length;
+                    node.parentId = parentNode.data.nodeId;
+                    node.order = parentNode.data.children.length;
                 }
-                $scope.sendAction("CreateNode", {
+                $scope.sendCommand("CreateNode", {
                     node: node
                 }, function (data) {
                     if (parentNode == null) {
                         $scope.rootNode = data;
                     } else {
-                        parentNode.data.Children.push(data);
+                        parentNode.data.children.push(data);
                     }
                     refreshFlatList();
                     success();
@@ -180,20 +180,20 @@ define([], function() {
         }
 
         $scope.canBeDeleted = function (node) {
-            return node.data.Children.length == 0;
+            return node.data.children.length == 0;
         }
 
         $scope.deleteNode = function (node) {
-            if (node.data.Children.length != 0) {
+            if (node.data.children.length != 0) {
                 return;
             }
 
             inputForm.question("Do you want to delete node?", "Delete Nodes", function (success, fail) {
-                $scope.sendAction("DeleteNode", { id: node.data.NodeId }, function () {
+                $scope.sendCommand("DeleteNode", { id: node.data.nodeId }, function () {
                     if (node.parent == null) {
                         $scope.rootNode = null;
                     } else {
-                        node.parent.data.Children.splice(node.parentIndex, 1);
+                        node.parent.data.children.splice(node.parentIndex, 1);
                     }
                     refreshFlatList();
                     success();
@@ -204,19 +204,19 @@ define([], function() {
         }
 
         $scope.hasSettings = function (node) {
-            return node.data.Customizable;
+            return node.data.customizable;
         }
 
         $scope.changeSettings = function (node) {
-            if (!node.data.Customizable) {
+            if (!node.data.customizable) {
                 return;
             }
-            inputForm.editObject($scope, node.data.Settings, node.data.SettingsModelId, function (settings, success, fail) {
-                $scope.sendAction("ChangeSettings", {
-                    nodeId: node.data.NodeId,
+            inputForm.editObject($scope, node.data.settings, node.data.settingsModelId, function (settings, success, fail) {
+                $scope.sendCommand("ChangeSettings", {
+                    nodeId: node.data.nodeId,
                     settings: settings
                 }, function (data) {
-                    node.data.Settings = data;
+                    node.data.settings = data;
                     refreshFlatList();
                     success();
                 }, function (message) {
@@ -226,9 +226,9 @@ define([], function() {
         }
 
         $scope.changeProperties = function (node) {
-            inputForm.editObject($scope, node.data, $scope.viewData.NodeSettingsModelId, function (updatedNode, success, fail) {
-                updatedNode.Children = null;
-                $scope.sendAction("UpdateNode", {
+            inputForm.editObject($scope, node.data, $scope.viewData.nodeSettingsModelId, function (updatedNode, success, fail) {
+                updatedNode.children = null;
+                $scope.sendCommand("UpdateNode", {
                     node: updatedNode
                 }, function (returnedNode) {
 

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 function ArticleController($scope, $sce) {
-    $scope.articleBody = $sce.trustAsHtml($scope.viewData.Body);
+    $scope.articleBody = $sce.trustAsHtml($scope.viewData.body);
 }
 
 app.controller("article", ArticleController);

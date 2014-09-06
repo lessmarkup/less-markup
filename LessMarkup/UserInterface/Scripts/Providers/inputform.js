@@ -5,20 +5,15 @@
 app.provider('inputForm', function () {
     var definitions = {};
 
-    function getDefinition(type, $http, result) {
+    function getDefinition(type, scope, result) {
         if (definitions.hasOwnProperty(type)) {
             result(definitions[type]);
         } else {
-            $http.post("", {
-                "-id-": type,
-                "-command-": "InputFormDefinition"
-            }).success(function (data) {
-                if (!data.Success) {
-                    result(null);
-                    return;
-                }
-                definitions[type] = data.Data;
-                result(data.Data);
+            scope.sendCommand("form", { id: type }, function(data) {
+                definitions[type] = data;
+                result(data);
+            }, function () {
+                result(null);
             });
         }
     }
@@ -27,7 +22,7 @@ app.provider('inputForm', function () {
         function ($modal, $http, lazyLoad) {
             return {
                 editObject: function (scope, object, type, success, getTypeahead) {
-                    getDefinition(type, $http, function (definition) {
+                    getDefinition(type, scope, function (definition) {
 
                         var hasTinymce = false;
                         var hasCodemirror = false;
@@ -35,10 +30,10 @@ app.provider('inputForm', function () {
 
                         var requires = [];
 
-                        for (var i = 0; i < definition.Fields.length && (!hasTinymce || !hasCodemirror) ; i++) {
-                            var field = definition.Fields[i];
+                        for (var i = 0; i < definition.fields.length && (!hasTinymce || !hasCodemirror) ; i++) {
+                            var field = definition.fields[i];
 
-                            switch (field.Type) {
+                            switch (field.type) {
                                 case "DynamicFieldList":
                                     hasDynamicFields = true;
                                     break;
@@ -50,7 +45,7 @@ app.provider('inputForm', function () {
                                     }
                                     break;
                                 case "CodeText":
-                                    if (field.Type == "CodeText" && !hasCodemirror) {
+                                    if (!hasCodemirror) {
                                         hasCodemirror = true;
                                         requires.push("lib/codemirror/codemirror");
                                         requires.push("lib/codemirror/plugins/css");

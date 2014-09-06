@@ -7,36 +7,15 @@ define([], function() {
         var pageToScope = {};
 
         $scope.getPageScope = function (page) {
-            return pageToScope[page.UniqueId];
+            return pageToScope[page.uniqueId];
         }
 
         function initializePageScope(scope, page) {
-            scope.sendAction = function (action, data, success, failure, path) {
+            scope.sendCommand = function (action, data, success, failure, path) {
                 if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendAction(action, data, success, failure, path);
-            }
-
-            scope.sendCommand = function (command, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
+                    path = page.path;
                 }
                 return $scope.sendCommand(action, data, success, failure, path);
-            }
-
-            scope.sendActionAsync = function (action, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendActionAsync(action, data, success, failure, path);
-            }
-
-            scope.sendCommandAsync = function (command, data, success, failure, path) {
-                if (!path) {
-                    path = page.Path;
-                }
-                return $scope.sendCommandAsync(action, data, success, failure, path);
             }
 
             scope.toolbarButtons = [];
@@ -44,15 +23,15 @@ define([], function() {
         }
 
         function loadPages() {
-            $scope.pages = $scope.viewData.Pages;
+            $scope.pages = $scope.viewData.pages;
             $scope.activePage = $scope.pages.length > 0 ? $scope.pages[0] : null;
 
             for (var i = 0; i < $scope.pages.length; i++) {
                 var page = $scope.pages[i];
                 var pageScope = $scope.$new();
                 initializePageScope(pageScope, page);
-                pageToScope[page.UniqueId] = pageScope;
-                pageScope.viewData = page.ViewData;
+                pageToScope[page.uniqueId] = pageScope;
+                pageScope.viewData = page.viewData;
             }
 
             if (!$scope.$$phase) {
@@ -60,8 +39,8 @@ define([], function() {
             }
         }
 
-        if ($scope.viewData.Requires.length > 0) {
-            require($scope.viewData.Requires, loadPages);
+        if ($scope.viewData.requires.length > 0) {
+            require($scope.viewData.requires, loadPages);
         } else {
             loadPages();
         }

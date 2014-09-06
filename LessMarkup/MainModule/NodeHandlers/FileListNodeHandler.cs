@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using LessMarkup.Engine.Language;
 using LessMarkup.Framework;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -16,8 +15,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.Files)]
     public class FileListNodeHandler : RecordListNodeHandler<FileModel>
     {
-        public FileListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+        public FileListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
         }
     }

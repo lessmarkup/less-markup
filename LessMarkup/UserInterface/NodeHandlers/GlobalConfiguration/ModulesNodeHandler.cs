@@ -30,13 +30,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             _siteMapper = siteMapper;
         }
 
-        [RecordAction(UserInterfaceTextIds.Enable, Visible = "!Enabled")]
+        [RecordAction(UserInterfaceTextIds.Enable, Visible = "!enabled")]
         public object EnableModule(long recordId, string filter)
         {
             return EnableModule(recordId, true);
         }
 
-        [RecordAction(UserInterfaceTextIds.Disable, Visible = "Enabled")]
+        [RecordAction(UserInterfaceTextIds.Disable, Visible = "enabled")]
         public object DisableModule(long recordId, string filter)
         {
             return EnableModule(recordId, false);

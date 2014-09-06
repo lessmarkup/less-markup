@@ -1,5 +1,8 @@
-﻿using System.Web.Mvc;
-using LessMarkup.Engine.Language;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System.Web.Mvc;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -50,7 +53,7 @@ namespace LessMarkup.MainModule.NodeHandlers
             return null;
         }
 
-        [RecordAction(MainModuleTextIds.SetDefault, Visible = "!IsDefault")]
+        [RecordAction(MainModuleTextIds.SetDefault, Visible = "!isDefault")]
         public object SetDefault(long recordId)
         {
             var model = DependencyResolver.Resolve<LanguageModel>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Interfaces.System
 {
@@ -21,5 +22,6 @@ namespace LessMarkup.Interfaces.System
         string Properties { get; }
         long? AvatarImageId { get; set; }
         long? UserImageId { get; set; }
+        IReadOnlyList<Tuple<ICachedNodeInformation, NodeAccessType>> Nodes { get; }
     }
 }

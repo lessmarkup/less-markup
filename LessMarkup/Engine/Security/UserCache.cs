@@ -6,16 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.DataObjects.Security;
+using LessMarkup.DataObjects.Structure;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Security
 {
     class UserCache : AbstractCacheHandler, IUserCache
     {
-        private long _userId;
+        private long? _userId;
+        private readonly int _userCollectionId;
         private readonly IDomainModelProvider _domainModelProvider;
+        private readonly IDataCache _dataCache;
         private List<long> _groups;
 
         public bool IsRemoved { get; private set; }
@@ -33,23 +38,18 @@ namespace LessMarkup.Engine.Security
         public long? AvatarImageId { get; set; }
         public long? UserImageId { get; set; }
         public string Name { get; private set; }
+        public IReadOnlyList<Tuple<ICachedNodeInformation, NodeAccessType>> Nodes { get; private set; }
 
-        public UserCache(IDomainModelProvider domainModelProvider)
-            : base(new[] { typeof(User) })
+        public UserCache(IDomainModelProvider domainModelProvider, IDataCache dataCache)
+            : base(new[] { typeof(User), typeof(Node), typeof(NodeAccess), typeof(Interfaces.Data.Site) })
         {
             _domainModelProvider = domainModelProvider;
+            _userCollectionId = DataHelper.GetCollectionIdVerified<User>();
+            _dataCache = dataCache;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        private void InitializeUser(long? siteId)
         {
-            if (!objectId.HasValue)
-            {
-                throw new ArgumentOutOfRangeException("objectId");
-            }
-
-            _userId = objectId.Value;
-            SiteId = siteId;
-
             using (var domainModel = _domainModelProvider.Create())
             {
                 var user = domainModel.GetCollection<User>().Where(u => u.Id == _userId)
@@ -73,16 +73,14 @@ namespace LessMarkup.Engine.Security
 
                 if (user == null)
                 {
-                    IsRemoved = true;
+                    _userId = null;
                     return;
                 }
 
-                if (siteId.HasValue)
+                if (siteId.HasValue && (user.SiteId.HasValue && user.SiteId.Value != siteId.Value))
                 {
-                    if (user.SiteId.HasValue && user.SiteId.Value != siteId.Value)
-                    {
-                        return;
-                    }
+                    _userId = null;
+                    return;
                 }
 
                 IsAdministrator = user.IsAdministrator;
@@ -106,9 +104,30 @@ namespace LessMarkup.Engine.Security
             }
         }
 
+        protected override void Initialize(long? siteId, long? objectId)
+        {
+            _userId = objectId;
+            SiteId = siteId;
+
+            if (_userId.HasValue)
+            {
+                InitializeUser(siteId);
+            }
+
+            if (IsBlocked || IsRemoved)
+            {
+                _userId = null;
+            }
+
+            Nodes = _dataCache.Get<INodeCache>().Nodes
+                .Select(n => new {Node = n, Rights = n.CheckRights(this, _userId)})
+                .Where(n => n.Rights != NodeAccessType.NoAccess)
+                .Select(n => Tuple.Create(n.Node, n.Rights)).ToList();
+        }
+
         protected override bool Expires(int collectionId, long entityId, EntityChangeType changeType)
         {
-            return entityId == _userId;
+            return collectionId != _userCollectionId || entityId == _userId;
         }
     }
 }

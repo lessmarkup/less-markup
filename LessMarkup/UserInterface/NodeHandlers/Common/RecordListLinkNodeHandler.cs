@@ -24,8 +24,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         private readonly Dictionary<string, CellLinkHandler> _cellLinkHandlers = new Dictionary<string, CellLinkHandler>();
 
-        public RecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+        public RecordListLinkNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
         }
 

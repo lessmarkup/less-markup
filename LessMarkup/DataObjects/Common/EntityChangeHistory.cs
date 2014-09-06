@@ -15,5 +15,8 @@ namespace LessMarkup.DataObjects.Common
         public int ChangeType { get; set; } // EntityChangeType
         public DateTime Created { get; set; }
         public long? SiteId { get; set; }
+        public long Parameter1 { get; set; }
+        public long Parameter2 { get; set; }
+        public long Parameter3 { get; set; }
     }
 }

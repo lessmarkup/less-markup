@@ -141,7 +141,7 @@ namespace LessMarkup.Engine.Structure
                     }
                 }
 
-                var property = objectToValidate.GetType().GetProperty(field.Property, BindingFlags.Public | BindingFlags.Instance);
+                var property = objectToValidate.GetType().GetProperty(field.Property.FromJsonCase(), BindingFlags.Public | BindingFlags.Instance);
 
                 if (property != null)
                 {

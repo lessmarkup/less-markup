@@ -153,7 +153,7 @@ namespace LessMarkup.UserInterface.Model.Global
         [JsonIgnore]
         public byte[] Body { get; set; }
         
-        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.IsBinary, VisibleCondition = "!TypeDefined")]
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.IsBinary, VisibleCondition = "!typeDefined")]
         [Column(UserInterfaceTextIds.IsBinary)]
         public bool IsBinary { get; set; }
 
@@ -161,10 +161,10 @@ namespace LessMarkup.UserInterface.Model.Global
         [Column(UserInterfaceTextIds.Path)]
         public string Path { get; set; }
 
-        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Append, DefaultValue = false, VisibleCondition = "!IsBinary")]
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.Append, DefaultValue = false, VisibleCondition = "!isBinary")]
         public bool Append { get; set; }
 
-        [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "IsBinary", Required = true)]
+        [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "isBinary", Required = true)]
         public byte[] File
         {
             get
@@ -184,7 +184,7 @@ namespace LessMarkup.UserInterface.Model.Global
             }
         }
 
-        [InputField(InputFieldType.CodeText, UserInterfaceTextIds.Text, VisibleCondition = "!IsBinary", Required = true)]
+        [InputField(InputFieldType.CodeText, UserInterfaceTextIds.Text, VisibleCondition = "!isBinary", Required = true)]
         public string Text
         {
             get

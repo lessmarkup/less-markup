@@ -16,10 +16,10 @@
                     options.smiley_images = [];
                     for (var i = 0; i < $scope.smiles.length; i++) {
                         var smile = $scope.smiles[i];
-                        smileCodeToId[smile.Code] = smile.Id;
-                        smileIdToCode[smile.Id] = smile.Code;
-                        options.smiley_descriptions.push(smile.Code);
-                        options.smiley_images.push(smile.Id);
+                        smileCodeToId[smile.code] = smile.id;
+                        smileIdToCode[smile.id] = smile.code;
+                        options.smiley_descriptions.push(smile.code);
+                        options.smiley_images.push(smile.id);
                     }
                 }
 
@@ -57,7 +57,7 @@
 
                     var text = ngModel.$modelValue;
 
-                    if ($scope.smilesExpr != null) {
+                    if (text && $scope.smilesExpr) {
                         text = $scope.smilesToImg(text);
                     }
 

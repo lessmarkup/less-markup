@@ -174,7 +174,7 @@ namespace LessMarkup.MainModule.Initialization
                     LoggingHelper.Level = LogLevel.None;
                 }
 
-                this.LogDebug("Starting application");
+                this.LogDebug(string.Format("Starting application, pid={0}", Process.GetCurrentProcess().Id));
 
                 var moduleProvider = DependencyResolver.Resolve<IModuleProvider>();
 

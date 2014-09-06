@@ -13,11 +13,11 @@
                         <a class="navbar-brand visible-xs" href="{{rootPath}}" ng-click="navigateToView(rootPath)" ng-bind="rootTitle"></a>
                         
                         <div class="visible-xs navbar-notifications">
-                            <a ng-repeat="notification in notifications" href="{{notification.Path}}" ng-click="gotoNotification(notification)" ng-show="notification.Count > 0">
-                                <span ng-if="notification.Icon" class="glyphicon" ng-class="notification.Icon"></span>
-                                <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
+                            <a ng-repeat="notification in notifications" href="{{notification.path}}" ng-click="gotoNotification(notification)" ng-show="notification.count > 0">
+                                <span ng-if="notification.icon" class="glyphicon" ng-class="notification.icon"></span>
+                                <span class="badge" ng-bind="notification.count" ng-class="notificationClass(notification)"></span>
                             </a>
-                            <a href="#" ng-if="userNotVerified && userLoggedIn">
+                            <a href="#" ng-if="userNotVerified">
                                 <span>
                                     <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
                                 </span>
@@ -29,11 +29,11 @@
                     <nav class="hidden-xs">
                         <ul class="nav navbar-nav navbar-left" id="navbar-menu">
                             <li>
-                                <a href="{{rootPath}}" ng-if="!hasNavigationTree" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
+                                <a href="{{rootPath}}" ng-if="navigationTree.length == 0" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
                                     <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
                                 </a>
                             </li>
-                            <li class="dropdown" ng-if="hasNavigationTree">
+                            <li class="dropdown" ng-if="navigationTree.length > 0">
                                 <a role="button" class="dropdown-toggle navbar-brand">
                                     <span ng-bind="rootTitle"></span> <b class="caret"></b>
                                 </a>
@@ -44,13 +44,13 @@
                                         </a>
                                     </li>
                                     <li ng-repeat="item in navigationTree" style="{{item.style}}">
-                                        <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
+                                        <a href="{{item.url}}" ng-click="navigateToView(item.url)" ng-bind="item.title"></a>
                                     </li>
                                 </ul>
                             </li>
 
-                            <li ng-repeat="menu in topMenu" ng-style="{ active: path === menu.Url }">
-                                <a href="{{menu.Url}}" ng-click="navigateToView(menu.Url)" ng-bind="menu.Title"></a>
+                            <li ng-repeat="menu in topMenu" ng-style="{ active: path === menu.url }">
+                                <a href="{{menu.url}}" ng-click="navigateToView(menu.url)" ng-bind="menu.title"></a>
                             </li>
                         </ul>
 
@@ -60,9 +60,9 @@
                                 <ul class="results" ng-show="searchText.length > 0">
                                     <li ng-if="searchResults.length == 0">No results found</li>
                                     <li ng-repeat="result in searchResults">
-                                        <a href="{{result.Url}}" ng-click="navigateToView(result.Url)">
-                                            <span class="search-result-name" ng-bind="result.Name"></span>
-                                            <span class="search-result-body" ng-bind-html="result.Text"></span>
+                                        <a href="{{result.url}}" ng-click="navigateToView(result.url)">
+                                            <span class="search-result-name" ng-bind="result.name"></span>
+                                            <span class="search-result-body" ng-bind-html="result.text"></span>
                                         </a>
                                     </li>
                                     <li><button class="btn btn-default" ng-click="clearSearch()">Close</button></li>
@@ -73,12 +73,12 @@
                         <ul ng-if="languages && languages.length" class="nav navbar-nav navbar-right">
                             <li class="dropdown">
                                 <a role="button" class="dropdown-toggle">
-                                    <img ng-if="selectedLanguage.ImageUrl" ng-src="{{selectedLanguage.ImageUrl}}" class="language-icon" /> <span ng-bind="selectedLanguage.ShortName"></span> <b class="caret"></b>
+                                    <img ng-if="selectedLanguage.imageUrl" ng-src="{{selectedLanguage.imageUrl}}" class="language-icon" /> <span ng-bind="selectedLanguage.shortName"></span> <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li ng-repeat="language in languages">
-                                        <a href="{{language.Url}}">
-                                            <img ng-if="language.ImageUrl" ng-src="{{language.ImageUrl}}"/> {{language.Name}} ({{language.ShortName}})
+                                        <a href="{{language.url}}">
+                                            <img ng-if="language.imageUrl" ng-src="{{language.imageUrl}}"/> {{language.name}} ({{language.shortName}})
                                         </a>
                                     </li>
                                 </ul>
@@ -87,15 +87,15 @@
 
                         <ul class="nav navbar-nav navbar-right">
                             
-                            <li ng-repeat="notification in notifications" class="navbar-notification" ng-show="notification.Count > 0">
-                                <a href="{{notification.Path}}" ng-click="gotoNotification(notification)">
-                                    <span ng-if="notification.Icon" class="glyphicon" ng-class="notification.Icon"></span>
-                                    <span ng-bind="notification.Title"></span>
-                                    <span class="badge" ng-bind="notification.Count" ng-class="notificationClass(notification)"></span>
+                            <li ng-repeat="notification in notifications" class="navbar-notification" ng-show="notification.count > 0">
+                                <a href="{{notification.path}}" ng-click="gotoNotification(notification)">
+                                    <span ng-if="notification.icon" class="glyphicon" ng-class="notification.icon"></span>
+                                    <span ng-bind="notification.title"></span>
+                                    <span class="badge" ng-bind="notification.count" ng-class="notificationClass(notification)"></span>
                                 </a>
                             </li>
 
-                            <li class="dropdown" ng-show="!userLoggedIn && hasLogin">
+                            <li class="dropdown" ng-show="!loggedIn && hasLogin">
                                 <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]] <b class="caret"></b></a>
                                 <div class="dropdown-menu">
                                     <form role="form" class="login-form">
@@ -104,7 +104,7 @@
                                 </div>
                             </li>
 
-                            <li class="dropdown" ng-show="userLoggedIn">
+                            <li class="dropdown" ng-show="loggedIn">
                                 <a role="button" class="dropdown-toggle">
                                     <span ng-if="userNotVerified">
                                         <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
@@ -124,19 +124,19 @@
                     
                     <nav class="visible-xs" collapse="!showXsMenu">
                         <ul class="nav navbar-nav" id="navbar-menu-small">
-                            <li ng-show="!userLoggedIn && hasLogin">
+                            <li ng-show="!loggedIn && hasLogin">
                                 <a ng-click="showLogin()">
                                     <span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]]
                                 </a>
                             </li>
 
-                            <li ng-show="userLoggedIn">
+                            <li ng-show="loggedIn">
                                 <a href="{{profilePath}}" ng-click="navigateToView(profilePath)">
                                     <span class="glyphicon glyphicon-user" style="font-size:small"></span> <span>{{userName}}</span>
                                 </a>
                             </li>
 
-                            <li ng-show="userLoggedIn">
+                            <li ng-show="loggedIn">
                                 <a href="#" ng-click="doLogout()">[[[translate Logout]]]</a>
                             </li>
 
@@ -146,7 +146,7 @@
                                 </a>
                             </li>
                             <li ng-repeat="item in navigationTree" style="{{item.style}}">
-                                <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Title"></a>
+                                <a href="{{item.url}}" ng-click="navigateToView(item.url)" ng-bind="item.title"></a>
                             </li>
                         </ul>
                     </nav>
@@ -158,7 +158,7 @@
             <div class="container">
                 <ul class="breadcrumb">
                     <li ng-repeat="item in breadcrumbs">
-                        <a href="{{item.Url}}" ng-click="navigateToView(item.Url)" ng-bind="item.Text"></a>
+                        <a href="{{item.url}}" ng-click="navigateToView(item.url)" ng-bind="item.text"></a>
                     </li>
                     <li class="active" ng-bind="title"></li>
                 </ul>
@@ -170,7 +170,7 @@
 
         <div class="contents container" ng-cloak>
             <div class="toolbar">
-                <button ng-repeat="button in toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.Id)" ng-click="onToolbarButtonClick(button.Id)" ng-bind="button.Text"></button>
+                <button ng-repeat="button in toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.id)" ng-click="onToolbarButtonClick(button.id)" ng-bind="button.text"></button>
             </div>
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert(alert.id)"><div ng-bind="alert.message"></div></alert>
             <div bind-compiled-html="{ name: 'bindBody', scope: getViewScope }">

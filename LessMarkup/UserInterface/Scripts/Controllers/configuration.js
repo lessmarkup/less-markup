@@ -3,5 +3,5 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 app.controller('configuration', function ($scope) {
-    $scope.groups = $scope.viewData.Groups;
+    $scope.groups = $scope.viewData.groups;
 });

@@ -22,8 +22,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         private long? _siteId;
         private long _nodeId;
 
-        public NodeAccessNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ISiteMapper siteMapper, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+        public NodeAccessNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ISiteMapper siteMapper, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
             _siteMapper = siteMapper;
         }
@@ -54,13 +53,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             switch (property)
             {
-                case "User":
+                case "user":
                     if (!siteId.HasValue)
                     {
                         throw new NullReferenceException();
                     }
                     return domainModel.GetCollection<DataObjects.Security.User>().Where(u => u.SiteId == siteId.Value && (SqlFunctions.PatIndex(searchText, u.Name) > 0 || SqlFunctions.PatIndex(searchText, u.Email) > 0)).Select(u => u.Email);
-                case "Group":
+                case "group":
                     return domainModel.GetSiteCollection<UserGroup>(_siteId).Where(g => SqlFunctions.PatIndex(searchText, g.Name) > 0).Select(g => g.Name);
                 default:
                     return null;

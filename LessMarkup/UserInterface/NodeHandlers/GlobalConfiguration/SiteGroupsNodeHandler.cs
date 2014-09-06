@@ -14,8 +14,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Groups)]
     public class SiteGroupsNodeHandler: RecordListNodeHandler<UserGroupModel>
     {
-        public SiteGroupsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+        public SiteGroupsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
         }
     }

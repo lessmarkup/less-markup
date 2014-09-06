@@ -28,46 +28,47 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     $scope.loginUserEmail = "";
     $scope.loginUserPassword = "";
     $scope.loginUserRemember = false;
-    $scope.userLoggedIn = initialData.UserLoggedIn;
-    $scope.userNotVerified = initialData.UserNotVerified;
-    $scope.userName = initialData.UserName;
+    $scope.loggedIn = initialData.loggedIn;
+    $scope.userNotVerified = initialData.userNotVerified || false;
+    $scope.userName = initialData.userName || "";
     $scope.userLoginError = "";
     $scope.userLoginProgress = false;
     $scope.alerts = [];
-    $scope.hasLogin = initialData.HasLogin;
-    $scope.hasSearch = initialData.HasSearch;
-    $scope.showConfiguration = initialData.ShowConfiguration;
-    $scope.configurationPath = initialData.ConfigurationPath;
-    $scope.rootPath = initialData.RootPath;
-    $scope.rootTitle = initialData.RootTitle;
-    $scope.navigationTree = initialData.NavigationTree;
-    $scope.hasNavigationTree = $scope.navigationTree != null && $scope.navigationTree.length > 0;
-    $scope.topMenu = initialData.TopMenu;
-    $scope.profilePath = initialData.ProfilePath;
-    $scope.forgotPasswordPath = initialData.ForgotPasswordPath;
-    $scope.languages = initialData.Languages;
+    $scope.hasLogin = initialData.hasLogin || false;
+    $scope.hasSearch = initialData.hasSearch || false;
+    $scope.showConfiguration = initialData.showConfiguration || false;
+    $scope.configurationPath = initialData.configurationPath || "";
+    $scope.rootPath = initialData.rootPath || "/";
+    $scope.rootTitle = initialData.rootTitle || "Home";
+    $scope.navigationTree = initialData.navigationTree || [];
+    $scope.topMenu = initialData.topMenu || [];
+    $scope.profilePath = initialData.profilePath || "";
+    $scope.forgotPasswordPath = initialData.forgotPasswordPath || "";
+    $scope.languages = initialData.languages || [];
     $scope.getViewScope = function () { return $scope; }
     $scope.showXsMenu = false;
-    $scope.notifications = initialData.Notifications;
-    $scope.recaptchaPublicKey = initialData.RecaptchaPublicKey;
+    $scope.notifications = initialData.notifications || [];
+    $scope.recaptchaPublicKey = initialData.recaptchaPublicKey || "";
     $scope.lastActivity = new Date().getDate() / 1000;
     $scope.title = $scope.rootTitle;
     $scope.loadingNewPage = true;
     $scope.searchText = "";
     $scope.searchResults = [];
-    $scope.maximumFileSize = initialData.MaximumFileSize;
-    $scope.smiles = initialData.Smiles;
-    $scope.smilesBase = initialData.SmilesBase;
+    $scope.maximumFileSize = initialData.maximumFileSize || 1024;
+    $scope.smiles = initialData.smiles || [];
+    $scope.smilesBase = initialData.smilesBase || "";
+    $scope.versionId = initialData.versionId || null;
+    $scope.updateProperties = {};
+
     var searchTimeout = null;
     var pageProperties = {};
 
     $scope.selectedLanguage = null;
-    if ($scope.languages != null) {
-        for (var i = 0; i < $scope.languages.length; i++) {
-            if ($scope.languages[i].Selected) {
-                $scope.selectedLanguage = $scope.languages[i];
-                break;
-            }
+
+    for (var i = 0; i < $scope.languages.length; i++) {
+        if ($scope.languages[i].selected) {
+            $scope.selectedLanguage = $scope.languages[i];
+            break;
         }
     }
 
@@ -75,20 +76,20 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     var smilesStr = "";
 
     $scope.getSmileUrl = function(code) {
-        if (!code.length || !initialData.SmilesBase) {
+        if (!code.length || !$scope.smilesBase) {
             return "";
         }
-        return "<img alt=\"" + code + "\" src=\"" + initialData.SmilesBase + smiles[code] + "\" title=\"" + code + "\" />";
+        return "<img alt=\"" + code + "\" src=\"" + $scope.smilesBase + smiles[code] + "\" title=\"" + code + "\" />";
     }
 
-    for (var i = 0; i < initialData.Smiles.length; i++) {
-        var smile = initialData.Smiles[i];
-        smiles[smile.Code] = smile.Id;
+    for (var i = 0; i < $scope.smiles.length; i++) {
+        var smile = $scope.smiles[i];
+        smiles[smile.code] = smile.id;
         if (smilesStr.length > 0) {
             smilesStr += "|";
         }
-        for (var j = 0; j < smile.Code.length; j++) {
-            switch (smile.Code[j]) {
+        for (var j = 0; j < smile.code.length; j++) {
+            switch (smile.code[j]) {
                 case '(':
                 case ')':
                 case '[':
@@ -99,7 +100,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                     smilesStr += '\\';
                     break;
             }
-            smilesStr += smile.Code[j];
+            smilesStr += smile.code[j];
         }
     }
 
@@ -154,15 +155,15 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             $scope.searchResults = [];
             return;
         }
-        $scope.sendCommand("SearchText", {
+        $scope.sendCommand("searchText", {
             text: $scope.searchText
         }, function (data) {
-            if (data != null && data.hasOwnProperty("Results")) {
-                $scope.searchResults = data.Results;
+            if (data != null && data.hasOwnProperty("results")) {
+                $scope.searchResults = data.results;
                 for (var i = 0; i < $scope.searchResults.length; i++) {
                     var result = $scope.searchResults[i];
-                    result.Text = result.Text.replace(new RegExp(searchText, "gim"), "<span class=\"highlight\">$&</span>");
-                    result.Text = $sce.trustAsHtml(result.Text);
+                    result.text = result.text.replace(new RegExp(searchText, "gim"), "<span class=\"highlight\">$&</span>");
+                    result.text = $sce.trustAsHtml(result.text);
                 }
             } else {
                 $scope.searchResults = [];
@@ -200,16 +201,17 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
     resetPageProperties();
 
-    if ($scope.hasNavigationTree) {
+    function updateNavigationTree() {
         for (var i = 0; i < $scope.navigationTree.length; i++) {
             var item = $scope.navigationTree[i];
-            item.style = 'margin-left:' + (item.Level).toString() + 'em;';
+            item.style = 'margin-left:' + (item.level).toString() + 'em;';
         }
     }
 
+    updateNavigationTree();
+
     $scope.onUserActivity = function () {
         $scope.lastActivity = new Date().getDate() / 1000;
-        $scope.$broadcast("UserActivity", {});
     }
 
     $scope.getDynamicDelay = function() {
@@ -276,89 +278,35 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         updatePageHistory();
     }
 
-    if ($scope.notifications.length) {
+    $scope.gotoNotification = function (notification) {
+        $scope.navigateToView(notification.path);
+    }
 
-        $scope.gotoNotification = function(notification) {
-            notification.Version = notification.NewVersion;
-            $scope.navigateToView(notification.Path);
+    $scope.notificationClass = function (notification) {
+        if (notification.count > 0) {
+            return "active-notification";
         }
+        return "";
+    }
 
-        $scope.notificationClass = function(notification) {
-            if (notification.Count > 0) {
-                return "active-notification";
-            }
-            return "";
-        }
+    var timeoutCancel = null;
 
-        for (var i = 0; i < $scope.notifications.length; i++) {
-            $scope.notifications[i].NewVersion = $scope.notifications[i].Version;
-        }
-
-        var timeoutCancel = null;
-        var lastDelay = 0;
-
-        function cancelUpdates() {
-            if (timeoutCancel != null) {
-                $timeout.cancel(timeoutCancel);
-                timeoutCancel = null;
-            }
-        }
-
-        function subscribeForUpdates() {
-            cancelUpdates();
-            lastDelay = $scope.getDynamicDelay();
-            if (lastDelay > 0) {
-                timeoutCancel = $timeout(getUpdates, lastDelay * 1000);
-            }
-        }
-
-        $scope.$on('UserActivity', function() {
-            var delay = $scope.getDynamicDelay();
-            if (delay != lastDelay) {
-                cancelUpdates();
-                $timeout(getUpdates, 1000);
-            }
-        });
-
-        function getUpdates() {
+    function cancelUpdates() {
+        if (timeoutCancel != null) {
+            $timeout.cancel(timeoutCancel);
             timeoutCancel = null;
-
-            var data = {};
-
-            var current = [];
-
-            for (var i = 0; i < $scope.notifications.length; i++) {
-                var notification = $scope.notifications[i];
-                current.push({
-                    Id: notification.Id,
-                    Version: notification.Version,
-                });
-            }
-
-            data.notifications = current;
-
-            $scope.sendCommand("GetNotifications", data, function(data) {
-                subscribeForUpdates();
-                for (var i = 0; i < data.notifications.length; i++) {
-                    var source = data.notifications[i];
-                    for (var j = 0; j < $scope.notifications.length; j++) {
-                        var target = $scope.notifications[j];
-                        if (source.Id == target.Id) {
-                            target.Count = source.Count;
-                            target.NewVersion = source.Version;
-                            break;
-                        }
-                    }
-                }
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
-            }, function(message) {
-                subscribeForUpdates();
-            });
         }
+    }
 
-        subscribeForUpdates();
+    function subscribeForUpdates() {
+        cancelUpdates();
+        var lastDelay = $scope.getDynamicDelay();
+        if (lastDelay > 0) {
+            timeoutCancel = $timeout(function() {
+                timeoutCancel = null;
+                $scope.sendCommand("idle", null);
+            }, lastDelay * 1000);
+        }
     }
 
     var browserUrl = $browser.url();
@@ -381,18 +329,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.doLogout = function () {
-        $http.post("", {
-            "-command-": "Logout"
-        }).success(function (data) {
-            if (!data.Success) {
-                $scope.showError(data.Message);
-                return;
-            }
-
-            $scope.showConfiguration = false;
-            $scope.userLoggedIn = false;
-            $scope.userNotVerified = false;
-            $scope.userName = "";
+        $scope.sendCommand("logout", null, function() {
             $scope.staticNodes = {};
             $scope.navigateToView("/");
         });
@@ -423,15 +360,11 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     }
 
     $scope.doRegister = function () {
-        $scope.sendCommand("GetRegisterObject", {}, function (data) {
-            var registerObject = data.RegisterObject;
-            var modelId = data.ModelId;
+        $scope.sendCommand("getRegisterObject", {}, function (data) {
+            var registerObject = data.registerObject;
+            var modelId = data.modelId;
             inputForm.editObject($scope, registerObject, modelId, function (object, success, failure) {
-                $scope.sendCommand("Register", { user: object }, function (data) {
-                    $scope.userLoggedIn = true;
-                    $scope.userNotVerified = data.UserNotVerified;
-                    $scope.userName = data.UserName;
-                    $scope.showConfiguration = data.ShowConfiguration;
+                $scope.sendCommand("register", { user: object }, function () {
                     $scope.loginUserPassword = "";
                     $scope.loginUserEmail = "";
                     $scope.loginUserRemember = false;
@@ -445,7 +378,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
     $scope.showLogin = function () {
         $scope.onUserActivity();
-        inputForm.editObject($scope, null, initialData.LoginModelId, function (object, success, failure) {
+        inputForm.editObject($scope, null, initialData.loginModelId, function (object, success, failure) {
             $scope.doLogin(null, object, success, failure);
         });
     }
@@ -458,8 +391,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         var userPassword;
 
         if (object) {
-            userEmail = object.Email;
-            userPassword = object.Password;
+            userEmail = object.email;
+            userPassword = object.password;
         } else {
             userEmail = $scope.loginUserEmail.trim();
             userPassword = $scope.loginUserPassword.trim();
@@ -483,20 +416,16 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         $scope.userLoginProgress = true;
 
-        function addLoginError(status) {
-            if (status > 0) {
-                $scope.userLoginError = "Request failed, unknown communication error";
-            } else {
-                $scope.userLoginError = "Request failed, status: " + status.toString();
-            }
+        function addLoginError(message) {
+            $scope.loggedIn = false;
             $scope.userLoginProgress = false;
+            $scope.userLoginError = message;
             if (failure) {
                 failure($scope.userLoginError);
             }
         }
 
         var stage1Data = {
-            "-command-": "LoginStage1",
             user: userEmail
         };
 
@@ -504,25 +433,14 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             stage1Data.administratorKey = administratorKey;
         }
 
-        $http.post("", stage1Data).success(function (data) {
-            if (!data.Success) {
-                $scope.userLoggedIn = false;
-                $scope.userLoginProgress = false;
-                $scope.userLoginError = data.Message;
-                if (failure) {
-                    failure($scope.userLoginError);
-                }
-                return;
-            }
-
-            require(['lib/sha512'], function() {
-                var pass1 = CryptoJS.SHA512(data.Data.Pass1 + userPassword);
-                var pass2 = CryptoJS.SHA512(data.Data.Pass2 + pass1);
+        $scope.sendCommand("loginStage1", stage1Data, function(data) {
+            require(['lib/sha512'], function () {
+                var pass1 = CryptoJS.SHA512(data.pass1 + userPassword);
+                var pass2 = CryptoJS.SHA512(data.pass2 + pass1);
 
                 var stage2Data = {
-                    "-command-": "LoginStage2",
                     user: userEmail,
-                    hash: data.Data.Pass2 + ';' + pass2,
+                    hash: data.pass2 + ';' + pass2,
                     remember: $scope.loginUserRemember
                 }
 
@@ -530,26 +448,16 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                     stage2Data.administratorKey = administratorKey;
                 }
 
-                $http.post("", stage2Data).success(function (data) {
+                $scope.sendCommand("loginStage2", stage2Data, function (data) {
+
                     $scope.userLoginProgress = false;
-                    if (!data.Success) {
-                        $scope.userLoginError = data.Message;
-                        $scope.userLoggedIn = false;
-                        if (failure) {
-                            failure($scope.userLoginError);
-                        }
-                        return;
-                    }
-                    $scope.userLoggedIn = true;
-                    $scope.userNotVerified = data.Data.UserNotVerified;
-                    $scope.userName = data.Data.UserName;
-                    $scope.showConfiguration = data.Data.ShowConfiguration;
+
                     $scope.loginUserPassword = "";
                     $scope.loginUserEmail = "";
                     $scope.loginUserRemember = false;
                     $scope.staticNodes = {};
 
-                    var path = data.Data.Path;
+                    var path = data.path;
 
                     if (!path || path.length == 0) {
                         path = $scope.path;
@@ -561,12 +469,12 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
                     $scope.navigateToView(path);
 
-                }).error(function (data, status) {
-                    addLoginError(status);
+                }, function (message) {
+                    addLoginError(message);
                 });
             });
-        }).error(function (data, status) {
-            addLoginError(status);
+        }, function (message) {
+            addLoginError(message);
         });
     }
 
@@ -581,47 +489,123 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         }
     }
 
-    $scope.sendAction = function (action, data, success, failure, path) {
-        if (data == null) {
-            data = {};
+    function updateLoggedIn(data) {
+        if ($scope.loggedIn && !data.loggedIn) {
+            $scope.loggedIn = false;
+            $scope.userName = "";
+            $scope.showConfiguration = false;
+            $scope.userNotVerified = false;
+            return;
         }
-        data["-action-"] = action;
-        return $scope.sendCommand("Action", data, success, failure, path);
+
+        $scope.loggedIn = data.loggedIn;
+
+        if (data.hasOwnProperty("userName")) {
+            $scope.userName = data.userName;
+        }
+
+        if (data.hasOwnProperty("userNotVerified")) {
+            $scope.userNotVerified = data.userNotVerified;
+        }
+        if (data.hasOwnProperty("showConfiguration")) {
+            $scope.showConfiguration = data.showConfiguration;
+        }
     }
 
     $scope.sendCommand = function (command, data, success, failure, path) {
+
         if (data == null) {
             data = {};
         }
-        data["-command-"] = command;
-        if (!path) {
-            data["-path-"] = $scope.path;
-        } else {
-            data["-path-"] = path;
+
+        if (command != "idle") {
+            $scope.onUserActivity();
         }
-        $scope.alerts = [];
-        $http.post("", data).success(function (data) {
-            validateLoggedIn(data.UserLoggedIn);
-            $scope.userNotVerified = data.UserNotVerified;
-            if (!data.Success) {
-                if (failure) {
-                    failure(data.Message);
-                } else {
-                    $scope.showError(data.Message);
-                }
-                return;
+
+        cancelUpdates();
+
+        data["command"] = command;
+        if (!path) {
+            data["path"] = $scope.path;
+        } else {
+            data["path"] = path;
+        }
+
+        data["versionId"] = $scope.versionId;
+
+        for (var property in $scope.updateProperties) {
+            if ($scope.updateProperties[property] != null) {
+                data[property] = $scope.updateProperties[property];
             }
+        }
+
+        $scope.resetAlerts();
+
+        return $http.post("", data).then(function (result) {
+
+            updateLoggedIn(result.data);
+
+            subscribeForUpdates();
+
+            if (!result.data.success) {
+                if (failure) {
+                    failure(result.data.message || "Error");
+                } else {
+                    $scope.showError(result.data.message || "Error");
+                }
+                return null;
+            }
+
+            if (result.data.hasOwnProperty("versionId")) {
+                $scope.versionId = result.data.versionId;
+            }
+
+            if (result.data.hasOwnProperty("notifications")) {
+                $scope.notifications = result.data.notifications;
+            }
+
+            if (result.data.hasOwnProperty("topMenu")) {
+                $scope.topMenu = result.data.topMenu;
+            }
+
+            if (result.data.hasOwnProperty("navigationTree")) {
+                $scope.navigationTree = result.data.navigationTree;
+                updateNavigationTree();
+            }
+
+            if (result.data.hasOwnProperty("notificationChanges")) {
+                for (var i = 0; i < result.data.notificationChanges.length; i++) {
+                    var change = result.data.notificationChanges[i];
+                    for (var j = 0; j < $scope.notifications.length; j++) {
+                        var notification = $scope.notifications[j];
+                        if (notification.id == change.id) {
+                            notification.count += change.change;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (result.data.hasOwnProperty("updates")) {
+                $scope.$broadcast("receivedUpdates", result.data.updates);
+            }
+
             if (success) {
                 try {
-                    success(data.Data);
+                    return success(result.data.data);
                 } catch (e) {
-                    failure(e.toString());
+                    if (failure) {
+                        failure(e.toString());
+                    } else {
+                        $scope.showError(e.toString());
+                    }
                 }
-            } else {
-                $scope.showMessage("Command successful");
             }
-        }).error(function (data, status) {
-            var message = status > 0 ? "Request failed, error " + status.toString() : "Request failed, unknown communication error";
+
+            return null;
+        }, function (data) {
+            subscribeForUpdates();
+            var message = data.status > 0 ? "Request failed, error " + data.status.toString() : "Request failed, unknown communication error";
             if (failure) {
                 failure(message);
             } else {
@@ -630,61 +614,9 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         });
     }
 
-    function validateLoggedIn(userLoggedIn) {
-        if ($scope.userLoggedIn && !userLoggedIn) {
-            $scope.userLoggedIn = false;
-            $scope.userName = "";
-            $scope.showConfiguration = false;
-        }
-    }
-
     $scope.getTypeahead = function (field, searchText) {
-        return $scope.sendCommandAsync("Typeahead", { property: field.Property, searchText: searchText }, function (data) {
-            return data.Records;
-        });
-    }
-
-    $scope.sendActionAsync = function (action, data, success, failure, path) {
-        if (data == null) {
-            data = {};
-        }
-        data["-action-"] = action;
-        return $scope.sendCommandAsync("Action", data, success, failure, path);
-    }
-
-    $scope.sendCommandAsync = function (command, data, success, failure, path) {
-        if (data == null) {
-            data = {};
-        }
-        data["-command-"] = command;
-        if (!path) {
-            data["-path-"] = $scope.path;
-        } else {
-            data["-path-"] = path;
-        }
-        $scope.alerts = [];
-        return $http.post("", data).then(function (result) {
-            data = result.data;
-            validateLoggedIn(data.UserLoggedIn);
-            $scope.userNotVerified = data.UserNotVerified;
-            if (!data.Success) {
-                if (failure) {
-                    failure(data.Message);
-                } else {
-                    $scope.showError(data.Message);
-                }
-                return null;
-            }
-            if (success) {
-                try {
-                    return success(data.Data);
-                } catch (e) {
-                    failure(e.toString());
-                }
-            } else {
-                $scope.showMessage("Command successful");
-            }
-            return null;
+        return $scope.sendCommand("typeahead", { property: field.property, searchText: searchText }, function (data) {
+            return data.records;
         });
     }
 
@@ -702,35 +634,37 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         $scope.path = url;
         $scope.resetAlerts();
-        $scope.title = data.Title;
+        $scope.title = data.title;
 
         updatePageHistory();
 
         var template;
-        if (data.Template != null && data.Template.length > 0) {
-            $scope.templates[data.TemplateId] = data.Template;
-            template = data.Template;
+        if (data.template && data.template.length > 0) {
+            $scope.templates[data.templateId] = data.template;
+            template = data.template;
         } else {
-            template = $scope.templates[data.TemplateId];
+            template = $scope.templates[data.templateId];
         }
 
-        if (data.IsStatic) {
+        if (data.isStatic) {
             $scope.staticNodes[url] = data;
         }
 
         commandHandler.reset();
 
-        if (initialData.UseGoogleAnalytics) {
+        if (initialData.useGoogleAnalytics) {
             ga('send', 'pageview', {
                 page: '/' + url
             });
         }
 
-        var finishNodeLoaded = function() {
-            $scope.toolbarButtons = data.ToolbarButtons;
-            $scope.viewData = data.ViewData;
-            $scope.breadcrumbs = data.Breadcrumbs;
-            $scope.title = data.Title;
+        var finishNodeLoaded = function () {
+
+            $scope.toolbarButtons = data.toolbarButtons;
+            $scope.viewData = data.viewData;
+            $scope.breadcrumbs = data.breadcrumbs;
+            $scope.title = data.title;
+
             $scope.$broadcast("onNodeLoaded", {});
 
             if (!$scope.bindBody) {
@@ -745,8 +679,8 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             }
         }
 
-        if (data.Require && data.Require != null && data.Require.length > 0) {
-            require(data.Require, function() {
+        if (data.require && data.require.length > 0) {
+            require(data.require, function() {
                 finishNodeLoaded();
             });
         } else {
@@ -776,6 +710,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
         $scope.hideXsMenu();
         $scope.onUserActivity();
         $scope.clearSearch();
+        $scope.updateProperties = {};
 
         if (!leaveProperties) {
             resetPageProperties(url);
@@ -800,32 +735,25 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         $scope.loadingNewPage = true;
 
-        $http.post("", {
-            "-command-": "View",
-            "-cached-": cachedItems,
-            "-path-": url
-        }).success(function (data) {
-            validateLoggedIn(data.UserLoggedIn);
-            $scope.userNotVerified = data.UserNotVerified;
-            if (!data.Success) {
-                $scope.loadingNewPage = false;
-                $scope.showError(data.Message);
-                return;
-            }
-            onNodeLoaded(data.Data, url);
-        }).error(function (data, status) {
+        $scope.sendCommand("view", {
+            cached: cachedItems,
+            newPath: url
+        }, function(data) {
             $scope.loadingNewPage = false;
-            $scope.showError(status > 0 ? "Request failed, error " + status.toString() : "Request failed, unknown communication error");
+            onNodeLoaded(data, url);
+        }, function(message) {
+            $scope.loadingNewPage = false;
+            $scope.showError(message);
         });
 
         return false;
     };
 
-    if (initialData.NodeLoadError && initialData.NodeLoadError.length > 0) {
-        $scope.showError(initialData.NodeLoadError);
+    if (initialData.nodeLoadError && initialData.nodeLoadError.length > 0) {
+        $scope.showError(initialData.nodeLoadError);
     }
 
     lazyLoad.initialize();
 
-    onNodeLoaded(initialData.ViewData, initialData.Path);
+    onNodeLoaded(initialData.viewData, initialData.path);
 });
