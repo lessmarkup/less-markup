@@ -1,0 +1,7 @@
+﻿<div class="thread-title">
+    <a href="{{data.threadUrl}}" ng-click="navigateToView(data.threadUrl); $event.stopPropagation();" ng-bind="data.threadName"></a>
+</div>
+<div class="thread-statistics">
+    [[[translate Created]]] <span title="{{data.created | date:'medium'}}">{{data.created | relativeDate}}</span>
+    <span ng-if="data.authorUrl">[[[Translate LastPostBy]]] <a href="{{data.authorUrl}}" ng-click="navigateToView(data.authorUrl); $event.stopPropagation();">{{data.author}}</a></span>
+</div>

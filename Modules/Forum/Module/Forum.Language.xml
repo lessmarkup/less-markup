@@ -47,6 +47,8 @@
     <Translation Id="Block" Text="Block"/>
     <Translation Id="Attachments" Text="Attachments"/>
     <Translation Id="ReplyMoveLastMessage" Text="After reply, move to the latest message in the thread"/>
+    <Translation Id="Subscribe" Text="Subscribe"/>
+    <Translation Id="UserNotDefined" Text="User is not defined"/>
     <!--
     <Translation Id="" Text=""/>
     -->

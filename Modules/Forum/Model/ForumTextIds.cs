@@ -39,6 +39,9 @@ namespace LessMarkup.Forum.Model
         Thread,
         Block,
         Attachments,
-        ReplyMoveLastMessage
+        ReplyMoveLastMessage,
+        Subscribe,
+        Forums,
+        UserNotDefined
     }
 }

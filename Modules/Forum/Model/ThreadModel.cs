@@ -127,7 +127,7 @@ namespace LessMarkup.Forum.Model
 
             public ThreadModel CreateRecord()
             {
-                throw new UnauthorizedAccessException();
+                return new ThreadModel();
             }
 
             public void AddRecord(ThreadModel record)

@@ -200,7 +200,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
                 if (!post.UserId.HasValue)
                 {
-                    return ReturnMessageResult("User is not defined");
+                    return ReturnMessageResult(LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.UserNotDefined));
                 }
 
                 userId = post.UserId.Value;
