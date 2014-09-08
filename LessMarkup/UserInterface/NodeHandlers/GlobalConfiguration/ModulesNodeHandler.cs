@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -53,7 +55,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
             {
                 if (!_siteMapper.SiteId.HasValue)
                 {
-                    throw new Exception("Unknown site");
+                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
                 }
                 siteId = _siteMapper.SiteId.Value;
             }

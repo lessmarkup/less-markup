@@ -6,7 +6,6 @@ using System;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -15,6 +14,7 @@ using System.Web.Security;
 using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Security;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Engine.Security.Models;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
@@ -23,6 +23,7 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
+using Newtonsoft.Json;
 
 namespace LessMarkup.Engine.Security
 {
@@ -70,7 +71,7 @@ namespace LessMarkup.Engine.Security
         public string CreatePasswordChangeToken(long? userId)
         {
             var collectionId = AbstractDomainModel.GetCollectionIdVerified<User>();
-            return CreateAccessToken(collectionId, 0, EntityAccessType.Everyone, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+            return CreateAccessToken(collectionId, 0, EntityAccessType.Read, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
         }
 
         public long? ValidatePasswordChangeToken(string token)
@@ -217,13 +218,12 @@ namespace LessMarkup.Engine.Security
 
         public string EncryptObject(object obj)
         {
-            var formatter = new BinaryFormatter();
-            byte[] bytes;
-            using (var memoryStream = new MemoryStream())
+            if (obj == null)
             {
-                formatter.Serialize(memoryStream, obj);
-                bytes = memoryStream.ToArray();
+                return null;
             }
+
+            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj, Formatting.None));
             var salt = GetSaltBytes();
             var hash = CreateHash(bytes);
 
@@ -240,12 +240,16 @@ namespace LessMarkup.Engine.Security
 
             data = MachineKey.Protect(data, null);
 
-            return Convert.ToBase64String(data);
+            return Convert.ToBase64String(data).Replace('+', '_');
         }
 
         public T DecryptObject<T>(string encrypted) where T : class
         {
-            var decrypted = Convert.FromBase64String(encrypted);
+            if (string.IsNullOrEmpty(encrypted))
+            {
+                return null;
+            }
+            var decrypted = Convert.FromBase64String(encrypted.Replace('_', '+'));
             decrypted = MachineKey.Unprotect(decrypted, null);
             if (decrypted == null)
             {
@@ -264,10 +268,16 @@ namespace LessMarkup.Engine.Security
                 }
             }
 
-            using (var memoryStream = new MemoryStream(decrypted, SaltLength, decrypted.Length - HashSize - SaltLength))
+            try
             {
-                var formatter = new BinaryFormatter();
-                return (T) formatter.Deserialize(memoryStream);
+                return
+                    JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(decrypted, SaltLength,
+                        decrypted.Length - HashSize - SaltLength));
+            }
+            catch (Exception e)
+            {
+                this.LogException(e);
+                return null;
             }
         }
 
@@ -339,7 +349,8 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        class AccessToken
+        [Serializable]
+        public class AccessToken
         {
             public long? UserId { get; set; }
             public int CollectionId { get; set; }

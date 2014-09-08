@@ -101,7 +101,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return _idToNode.TryGetValue(nodeId, out ret) ? ret : null;
         }
 
-        private bool TraverseParents(ICachedNodeInformation node, Func<INodeHandler, string, string, string, bool> preprocessFunc)
+        private bool TraverseParents(ICachedNodeInformation node, Func<INodeHandler, string, string, string, long?, bool> preprocessFunc)
         {
             if (node.Parent != null)
             {
@@ -111,10 +111,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 }
             }
 
-            return preprocessFunc(null, node.Title, node.FullPath, null);
+            return preprocessFunc(null, node.Title, node.FullPath, null, node.NodeId);
         }
 
-        public INodeHandler GetNodeHandler(string path, object controller = null, Func<INodeHandler, string, string, string, bool> preprocessFunc = null)
+        public INodeHandler GetNodeHandler(string path, object controller = null, Func<INodeHandler, string, string, string, long?, bool> preprocessFunc = null)
         {
             path = HttpUtility.UrlDecode(path);
 
@@ -175,12 +175,16 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
 
+            bool first = true;
+
             while (!string.IsNullOrWhiteSpace(rest))
             {
-                if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest))
+                if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest, first ? node.NodeId : (long?)null))
                 {
                     return null;
                 }
+
+                first = false;
 
                 var childSettings = nodeHandler.GetChildHandler(rest);
                 if (childSettings == null)
@@ -201,7 +205,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 rest = childSettings.Rest;
             }
 
-            if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest))
+            if (preprocessFunc != null && preprocessFunc(nodeHandler, currentTitle, currentPath, rest, first ? node.NodeId : (long?) null))
             {
                 return null;
             }
@@ -211,7 +215,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public void GetNode(string path, out ICachedNodeInformation node, out string rest)
         {
-            var nodeParts = (path ?? "").ToLower().Split(new[] {'/'}).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            var nodeParts = (path ?? "").Split(new[] {'/'}).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
             if (nodeParts.Count == 0)
             {

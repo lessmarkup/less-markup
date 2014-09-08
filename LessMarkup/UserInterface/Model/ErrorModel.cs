@@ -5,7 +5,6 @@
 using System;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Language;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using Newtonsoft.Json;
@@ -24,7 +23,7 @@ namespace LessMarkup.UserInterface.Model
             }
             catch (Exception)
             {
-                Error = "Unknown Error Occurred";
+                Error = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownError);
             }
         }
 

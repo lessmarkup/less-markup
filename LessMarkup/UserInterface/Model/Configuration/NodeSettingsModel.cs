@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -355,7 +357,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                     if (!newRootNode.ParentId.HasValue)
                     {
-                        throw new Exception("Cannot have two root nodes");
+                        throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.CannotHaveTwoRootNodes));
                     }
 
                     foreach (var neighbor in collection.Where(n => n.ParentId == newRootNode.ParentId.Value && n.Order > newRootNode.Order))

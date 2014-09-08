@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using System;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -65,11 +69,11 @@ namespace LessMarkup.UserInterface.Model.User
                     return;
                 }
 
-                var ticket = _userSecurity.CreatePasswordChangeToken(user.Id);
+                var ticket = HttpUtility.UrlEncode(_userSecurity.CreatePasswordChangeToken(user.Id));
 
                 _mailSender.SendMail(null, user.Id, Email, "ResetPassword", new ResetPasswordEmailModel
                 {
-                    ResetUrl = string.Format("{0}/{1}/ticket/{2}", hostName, fullPath, ticket),
+                    ResetUrl = string.Format("http://{0}/{1}/ticket/{2}", hostName, fullPath.TrimStart(new []{'/'}), ticket),
                     SiteName = _siteMapper.Title,
                     HostName = hostName,
                     Subject = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.RestorePassword)

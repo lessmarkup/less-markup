@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -137,7 +139,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             {
                 Handler = handler,
                 Path = path,
-                Title = "Node Access",
+                Title = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.NodeAccess),
                 Id = nodeId
             };
         }

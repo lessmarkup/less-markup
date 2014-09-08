@@ -305,7 +305,7 @@ app.controller('recordlist', function ($scope, inputForm, $sce) {
             return;
         }
 
-        $scope.sendCommand("CreateRecord", null, function(data) {
+        $scope.sendCommand(action.name, { newObject: null }, function(data) {
             inputForm.editObject($scope, data.record, action.type, function (object, success, failure) {
                 $scope.sendCommand(action.name, {
                     newObject: object

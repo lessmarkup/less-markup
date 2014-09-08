@@ -32,7 +32,9 @@
                 <div ng-switch-when="FileList" multi-file-read="object[field.property]"></div>
                 <textarea class="form-control" ng-switch-when="CodeText" ui-codemirror="codeMirrorDefaultOptions" ng-model="object[field.property]" ng-readonly="readOnly(field)" cols="10"></textarea>
                 <select ng-switch-when="Select" ng-model="object[field.property]" class="form-control">
-                    <option ng-repeat="select in field.selectValues" value="{{select.value}}" ng-bind="select.text" ng-selected="select.value == object[field.property]"></option>
+                    <option ng-repeat="select in field.selectValues" value="{{select.value}}" ng-bind="select.text" ng-selected="fieldValueSelected(object, field, select)"></option>
+                </select>
+                <select ng-switch-when="MultiSelect" ng-model="object[field.property]" class="form-control" multiple="multiple" ng-options="item.value as item.text for item in field.selectValues">
                 </select>
                 <input type="text" ng-switch-when="Typeahead" class="form-control" ng-model="object[field.property]" ng-readonly="readOnly(field)" typeahead="name for name in getTypeahead(field, $viewValue)" />
                 <textarea class="form-control" ng-switch-when="MultiLineText" ng-model="object[field.property]" ng-readonly="readOnly(field)"></textarea>

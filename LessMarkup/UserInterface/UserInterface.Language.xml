@@ -132,7 +132,24 @@
     <Translation Id="ButtonYes" Text="Yes"/>
     <Translation Id="ButtonNo" Text="No"/>
     <Translation Id="OpenForm" Text="Open Form"/>
-
+    <Translation Id="NoResultsFound" Text="No results found"/>
+    <Translation Id="CreateRootNode" Text="Create Root Node"/>
+    <Translation Id="NodeUp" Text="Up"/>
+    <Translation Id="NodeDown" Text="Down"/>
+    <Translation Id="NodeLeft" Text="Left"/>
+    <Translation Id="NodeUp" Text="Up"/>
+    <Translation Id="NodeSettings" Text="Settings"/>
+    <Translation Id="AddChild" Text="Add Child"/>
+    <Translation Id="Delete" Text="Delete"/>
+    <Translation Id="EditAccess" Text="Edit Access"/>
+    <Translation Id="Updating" Text="Updating"/>
+    <Translation Id="CannotHaveTwoRootNodes" Text="Cannot have two root nodes"/>
+    <Translation Id="UnknownSite" Text="Unknown site"/>
+    <Translation Id="UnknownPath" Text="Unknown path"/>
+    <Translation Id="UnknownError" Text="Unknown Error Occurred"/>
+    <Translation Id="UserNotFound" Text="User not found or wrong password"/>
+    <Translation Id="CannotRegisterNewUser" Text="Cannot register new user"/>
+    <Translation Id="NodeAccess" Text="Node Access"/>
     <!--
     <Translation Id="" Text=""/>
     -->

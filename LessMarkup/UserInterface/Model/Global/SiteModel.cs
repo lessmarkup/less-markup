@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Interfaces.Cache;
@@ -108,7 +107,8 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     foreach (var recordId in recordIds)
                     {
-                        var site = domainModel.GetCollection<Site>().Single(s => s.Id == recordId);
+                        long id = recordId;
+                        var site = domainModel.GetCollection<Site>().Single(s => s.Id == id);
                         domainModel.GetCollection<Site>().Remove(site);
                         _changeTracker.AddChange(site, EntityChangeType.Removed, domainModel);
                     }

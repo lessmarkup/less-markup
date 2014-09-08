@@ -211,11 +211,12 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     updateNavigationTree();
 
     $scope.onUserActivity = function () {
-        $scope.lastActivity = new Date().getDate() / 1000;
+        $scope.lastActivity = new Date().getTime() / 1000;
+        subscribeForUpdates();
     }
 
     $scope.getDynamicDelay = function() {
-        var activityDelayMin = (new Date().getDate() / 1000 - $scope.lastActivity) / 60;
+        var activityDelayMin = (new Date().getTime() / 1000 - $scope.lastActivity) / 60;
 
         if (activityDelayMin < 2) {
             return 30;
@@ -229,7 +230,7 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
             return 60 * 2;
         }
 
-        return -1;
+        return 60*20;
     }
 
     $scope.getPageProperty = function(name, defaultValue) {
@@ -543,9 +544,9 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
 
         return $http.post("", data).then(function (result) {
 
-            updateLoggedIn(result.data);
-
             subscribeForUpdates();
+
+            updateLoggedIn(result.data);
 
             if (!result.data.success) {
                 if (failure) {
@@ -579,7 +580,11 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
                     for (var j = 0; j < $scope.notifications.length; j++) {
                         var notification = $scope.notifications[j];
                         if (notification.id == change.id) {
-                            notification.count += change.change;
+                            if (change.change > 0) {
+                                notification.count += change.change;
+                            } else {
+                                notification.count = change.newValue;
+                            }
                             break;
                         }
                     }
@@ -756,4 +761,5 @@ app.controller('main', function ($scope, $http, commandHandler, inputForm, $loca
     lazyLoad.initialize();
 
     onNodeLoaded(initialData.viewData, initialData.path);
+    subscribeForUpdates();
 });

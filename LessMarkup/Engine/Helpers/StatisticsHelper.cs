@@ -130,9 +130,18 @@ namespace LessMarkup.Engine.Helpers
 
                         var entries = day.Entries;
 
-                        foreach (var history in domainModel.GetSiteCollection<AddressHistory>().Where(h => entries.Contains(h.Id)))
+                        try
                         {
-                            domainModel.GetSiteCollection<AddressHistory>().Remove(history);
+                            domainModel.AutoDetectChangesEnabled = false;
+
+                            foreach (var history in domainModel.GetSiteCollection<AddressHistory>().Where(h => entries.Contains(h.Id)))
+                            {
+                                domainModel.GetSiteCollection<AddressHistory>().Remove(history);
+                            }
+                        }
+                        finally
+                        {
+                            domainModel.AutoDetectChangesEnabled = true;
                         }
 
                         domainModel.SaveChanges();

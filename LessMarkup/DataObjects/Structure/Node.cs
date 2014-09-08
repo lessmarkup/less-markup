@@ -25,5 +25,6 @@ namespace LessMarkup.DataObjects.Structure
         public long? ParentId { get; set; }
         public Node Parent { get; set; }
         public List<NodeAccess> NodeAccess { get; set; }
+        public List<NodeUserData> NodeUserData { get; set; } 
     }
 }

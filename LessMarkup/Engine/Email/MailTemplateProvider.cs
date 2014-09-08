@@ -28,7 +28,22 @@ namespace LessMarkup.Engine.Email
         {
             var resourceCache = _dataCache.Get<ResourceCache>();
 
+            if (!viewPath.Any(c => c == '/' || c == '\\'))
+            {
+                viewPath = "~/Views/EmailTemplates/" + viewPath;
+            }
+
+            if (!viewPath.Contains("."))
+            {
+                viewPath += ".html";
+            }
+
             var template = resourceCache.ReadText(viewPath);
+
+            if (template == null)
+            {
+                throw new Exception("Cannot find template");
+            }
 
             var pos = 0;
 

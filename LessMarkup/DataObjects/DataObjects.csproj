@@ -38,7 +38,6 @@
     <Compile Include="Common\EntityChangeHistory.cs" />
     <Compile Include="Common\File.cs" />
     <Compile Include="Common\Image.cs" />
-    <Compile Include="Common\ImageType.cs" />
     <Compile Include="Common\Language.cs" />
     <Compile Include="Common\Menu.cs" />
     <Compile Include="Common\Currency.cs" />
@@ -67,6 +66,7 @@
     <Compile Include="Security\UserGroupMembership.cs" />
     <Compile Include="Security\UserBlockHistory.cs" />
     <Compile Include="Security\UserLoginIpAddress.cs" />
+    <Compile Include="Structure\NodeUserData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFramework\DataFramework.csproj">

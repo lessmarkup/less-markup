@@ -115,9 +115,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChangeTracking\RecordChangeTracker.cs" />
-    <Compile Include="ChangeTracking\TrackerRecordType.cs" />
-    <Compile Include="ChangeTracking\TrackerSite.cs" />
     <Compile Include="Exceptions\ActionAccessException.cs" />
     <Compile Include="Exceptions\UnknownActionException.cs" />
     <Compile Include="Model\Common\FlatPageSettingsModel.cs" />

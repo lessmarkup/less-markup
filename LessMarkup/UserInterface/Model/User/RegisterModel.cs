@@ -4,6 +4,8 @@
 
 using System;
 using System.Web;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
@@ -51,7 +53,7 @@ namespace LessMarkup.UserInterface.Model.User
 
             if (!siteProperties.HasUsers)
             {
-                throw new Exception("Cannot register new user");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.CannotRegisterNewUser));
             }
 
             UserAgreement = siteProperties.UserAgreement;
@@ -72,7 +74,7 @@ namespace LessMarkup.UserInterface.Model.User
 
             if (!siteProperties.HasUsers)
             {
-                throw new Exception("Cannot register new user");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.CannotRegisterNewUser));
             }
 
             var modelCache = _dataCache.Get<IRecordModelCache>();

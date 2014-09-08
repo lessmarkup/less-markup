@@ -8,7 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Helpers;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
@@ -26,6 +28,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
+        private long? NodeId { get; set; }
 
         public JsonEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IChangeTracker changeTracker)
         {
@@ -155,13 +158,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 notificationsModel.Handle(returnValues, null, newVersionId);
             }
 
-            if (newVersionId == versionId)
+            if (newVersionId == versionId && !NodeId.HasValue)
             {
                 return;
             }
 
             var model = DependencyResolver.Resolve<LoadUpdatesModel>();
-            model.Handle(versionId, newVersionId, path, arguments, returnValues);
+            model.Handle(versionId, newVersionId, path, arguments, returnValues, NodeId);
         }
 
         private object HandleDataRequest(Dictionary<string, object> data, string command, string path, System.Web.Mvc.Controller controller)
@@ -180,7 +183,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                     var model = DependencyResolver.Resolve<LoadNodeViewModel>();
                     if (!model.Initialize(data["newPath"].ToString(), JsonConvert.DeserializeObject<List<string>>(data["cached"].ToString()), controller, true, false))
                     {
-                        throw new ObjectNotFoundException("Unknown path");
+                        throw new ObjectNotFoundException(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownPath));
+                    }
+                    if (model.NodeId.HasValue)
+                    {
+                        NodeId = model.NodeId;
                     }
                     return model;
                 }

@@ -58,14 +58,14 @@
                             <div class="input-group search-panel">
                                 <input type="text" class="form-control" placeholder="Search" ng-model="getScope().searchText">
                                 <ul class="results" ng-show="searchText.length > 0">
-                                    <li ng-if="searchResults.length == 0">No results found</li>
+                                    <li ng-if="searchResults.length == 0">[[[translate NoResultsFound]]]</li>
                                     <li ng-repeat="result in searchResults">
                                         <a href="{{result.url}}" ng-click="navigateToView(result.url)">
                                             <span class="search-result-name" ng-bind="result.name"></span>
                                             <span class="search-result-body" ng-bind-html="result.text"></span>
                                         </a>
                                     </li>
-                                    <li><button class="btn btn-default" ng-click="clearSearch()">Close</button></li>
+                                    <li><button class="btn btn-default" ng-click="clearSearch()">[[[translate Close]]]</button></li>
                                 </ul>
                             </div>
                         </form>

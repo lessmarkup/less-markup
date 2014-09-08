@@ -1,4 +1,8 @@
-﻿using LessMarkup.DataFramework;
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+using LessMarkup.DataFramework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -34,9 +38,18 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
         protected override ChildHandlerSettings GetChildHandler(string path)
         {
-            var parts = path.Split(new[] {'/'});
+            if (path == null)
+            {
+                return null;
+            }
 
-            if (parts.Length != 2 || parts[0] != "ticket")
+            var pos = path.IndexOf('/');
+            if (pos <= 0)
+            {
+                return null;
+            }
+
+            if (path.Substring(0, pos) != "ticket")
             {
                 return null;
             }
@@ -45,7 +58,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             ((INodeHandler) handler).Initialize(null, null, null, null, null, NodeAccessType.Read);
 
-            handler.Initialize(parts[1]);
+            handler.Initialize(path.Substring(pos+1));
 
             return new ChildHandlerSettings
             {

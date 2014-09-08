@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Security;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -37,7 +39,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         return siteId.Value;
                     }
 
-                    throw new Exception("Unknown site");
+                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
                 }
             }
 

@@ -104,7 +104,11 @@ namespace LessMarkup.UserInterface.Model.RecordModel
 
                     if (inputSource != null)
                     {
-                        target.SelectValues = inputSource.GetEnumValues(target.Property).Select(v => new SelectValueModel { Text = v.Text, Value = v.Value }).ToList();
+                        target.SelectValues = inputSource.GetEnumValues(target.Property).Select(v => new SelectValueModel
+                        {
+                            Text = v.Text, 
+                            Value = v.Value
+                        }).ToList();
                     }
                 }
 

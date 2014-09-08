@@ -83,7 +83,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                     continue;
                 }
 
-                if (parameter.GetType() == parameterType)
+                if (parameter == null)
+                {
+                    arguments[i] = null;
+                }
+                else if (parameter.GetType() == parameterType)
                 {
                     arguments[i] = parameter;
                 }

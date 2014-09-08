@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Web;
-using LessMarkup.Engine.Configuration;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
@@ -86,7 +87,7 @@ namespace LessMarkup.UserInterface.Model.User
             if (!_currentUser.LoginWithPassword(email, "", savePassword != null && savePassword == true.ToString(), allowAdministrator, allowUser,
                 HttpContext.Current.Request.UserHostAddress, passwordHash))
             {
-                throw new UnauthorizedAccessException("User not found or wrong password");
+                throw new UnauthorizedAccessException(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserNotFound));
             }
 
             return new

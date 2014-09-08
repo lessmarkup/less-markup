@@ -29,6 +29,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ActionResult Result { get; set; }
 
         internal INodeHandler NodeHandler { get { return _nodeHandler; } }
+        internal long? NodeId { get; set; }
 
         public List<NodeBreadcrumbModel> Breadcrumbs { get; set; }
         public List<ToolbarButtonModel> ToolbarButtons { get; set; } 
@@ -86,9 +87,6 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements, bool tryCreateResult)
         {
-
-
-
             path = HttpUtility.UrlDecode(path);
 
             if (path != null)
@@ -107,8 +105,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 Breadcrumbs = new List<NodeBreadcrumbModel>();
             }
 
-            _nodeHandler = nodeCache.GetNodeHandler(path, controller, (nodeHandler, nodeTitle, nodePath, nodeRest) =>
+            _nodeHandler = nodeCache.GetNodeHandler(path, controller, (nodeHandler, nodeTitle, nodePath, nodeRest, nodeId) =>
             {
+                if (nodeId.HasValue)
+                {
+                    NodeId = nodeId;
+                }
+
                 if (initializeUiElements)
                 {
                     Breadcrumbs.Add(new NodeBreadcrumbModel

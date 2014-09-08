@@ -106,5 +106,12 @@ namespace LessMarkup.UserInterface
         UnblockTime,
         Block,
         Unblock,
+        CannotHaveTwoRootNodes,
+        UnknownSite,
+        UnknownPath,
+        UnknownError,
+        UserNotFound,
+        CannotRegisterNewUser,
+        NodeAccess,
     }
 }

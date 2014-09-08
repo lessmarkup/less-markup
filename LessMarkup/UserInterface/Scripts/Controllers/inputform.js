@@ -51,6 +51,26 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
     $scope.fields = [];
 
+    $scope.fieldValueSelected = function(object, field, select) {
+        var value = object[field.property];
+        switch (field.type) {
+            case "Select":
+                return select.value == value;
+            case "MultiSelect":
+                if (!value) {
+                    return false;
+                }
+                for (var i = 0; i < value.length; i++) {
+                    if (value[i] == select.value) {
+                        return true;
+                    }
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+
     $scope.getValue = function (object, field) {
         if (field.type === "RichText" && $scope.readOnly(field)) {
             return $sce.trustAsHtml(object[field.property]);
@@ -145,6 +165,8 @@ function InputFormController($scope, $modalInstance, definition, object, success
                         }
                     }
 
+                    continue;
+                case "MultiSelect":
                     continue;
             }
 
@@ -266,7 +288,7 @@ function InputFormController($scope, $modalInstance, definition, object, success
         } else if (field.type == 'Image' || field.type == 'File') {
             $scope.object[field.property] = null;
         }
-        if (field.type == 'Select' && field.selectedValues != null && field.selectValues.length > 0) {
+        if (field.type == 'Select' && field.selectValues != null && field.selectValues.length > 0) {
             $scope.object[field.property] = field.selectValues[0].value;
         }
 

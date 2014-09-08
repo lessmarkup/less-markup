@@ -5,10 +5,8 @@
 using System;
 using System.Reflection;
 using Autofac;
-using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.UserInterface.ChangeTracking;
 using LessMarkup.UserInterface.Model.Structure;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 using Newtonsoft.Json;
@@ -19,8 +17,6 @@ namespace LessMarkup.UserInterface
 {
     public class UserInterfaceModuleInitializer : BaseModuleInitializer
     {
-        public RecordChangeTracker RecordChangeTracker { get; private set; }
-
         private readonly IModuleIntegration _moduleIntegration;
 
         public UserInterfaceModuleInitializer(IModuleIntegration moduleIntegration)
@@ -37,7 +33,6 @@ namespace LessMarkup.UserInterface
                 settings.Converters.Add(new StringEnumConverter());
                 return settings;
             };
-            RecordChangeTracker = DependencyResolver.Resolve<RecordChangeTracker>();
         }
 
         public override string Name
@@ -58,7 +53,6 @@ namespace LessMarkup.UserInterface
         public override void InitializeDatabase()
         {
             base.InitializeDatabase();
-            RecordChangeTracker.Initialize();
             _moduleIntegration.RegisterNodeHandler<FlatPageNodeHandler>("flatpage");
         }
 

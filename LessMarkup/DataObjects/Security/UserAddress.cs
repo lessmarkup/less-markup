@@ -13,7 +13,7 @@ namespace LessMarkup.DataObjects.Security
         public bool IsRemoved { get; set; }
         [ForeignKey("User")]
         public long? UserId { get; set; }
-        public Security.User User { get; set; }
+        public User User { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }

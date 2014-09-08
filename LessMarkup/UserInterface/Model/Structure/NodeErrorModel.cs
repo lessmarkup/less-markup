@@ -4,6 +4,8 @@
 
 using System;
 using System.Web.Mvc;
+using LessMarkup.DataFramework;
+using LessMarkup.Framework.Helpers;
 
 namespace LessMarkup.UserInterface.Model.Structure
 {
@@ -18,7 +20,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return new ContentResult
             {
                 // TBD: Make smarter error description
-                Content = "Unknown Error Occurred",
+                Content = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownError),
             };
         }
     }

@@ -12,6 +12,7 @@ namespace LessMarkup.Interfaces.Structure
     public interface INodeHandler
     {
         object Initialize(long? objectId, object settings, object controller, string path, string fullPath, NodeAccessType accessType);
+        long? ObjectId { get; }
         object GetViewData();
         bool HasChildren { get; }
         bool IsStatic { get; }

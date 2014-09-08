@@ -55,7 +55,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly IRecordModelDefinition _recordModel;
         private readonly IDataCache _dataCache;
         private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ICurrentUser _currentUser;
 
         protected PropertyInfo IdProperty { get { return _idProperty; } }
 
@@ -65,7 +64,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
-            _currentUser = currentUser;
 
             var formCache = dataCache.Get<IRecordModelCache>();
             _recordModel = formCache.GetDefinition(typeof(T));
@@ -466,6 +464,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 { "record", record },
                 { "isNew", isNew },
                 { "index", index }
+            };
+        }
+
+        protected Dictionary<string, object> ReturnNewObjectResult<TN>(TN record)
+        {
+            return new Dictionary<string, object>
+            {
+                { "record", record },
             };
         }
 

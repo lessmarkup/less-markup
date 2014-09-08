@@ -159,7 +159,8 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     foreach (var userId in recordIds)
                     {
-                        var user = domainModel.GetCollection<DataObjects.Security.User>().First(u => !u.IsRemoved && u.SiteId == SiteId && u.Id == userId);
+                        var id = userId;
+                        var user = domainModel.GetCollection<DataObjects.Security.User>().First(u => !u.IsRemoved && u.SiteId == SiteId && u.Id == id);
                         domainModel.GetCollection<DataObjects.Security.User>().Remove(user);
                         _changeTracker.AddChange(user, EntityChangeType.Removed, domainModel);
                     }

@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataFramework;
 using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -37,7 +39,7 @@ namespace LessMarkup.UserInterface.Model.Global
                         return siteId.Value;
                     }
 
-                    throw new Exception("Unknown site");
+                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
                 }
             }
 
@@ -61,7 +63,8 @@ namespace LessMarkup.UserInterface.Model.Global
 
                 foreach (var moduleId in domainModel.GetCollection<SiteModule>().Where(s => s.SiteId == SiteId && ids.Contains(s.ModuleId)).Select(s => s.ModuleId))
                 {
-                    var module = modules.First(m => m.ModuleId == moduleId);
+                    long id = moduleId;
+                    var module = modules.First(m => m.ModuleId == id);
                     module.Enabled = true;
                 }
 

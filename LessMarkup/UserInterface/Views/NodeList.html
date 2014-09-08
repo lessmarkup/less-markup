@@ -1,20 +1,20 @@
 ﻿<div ng-controller="nodelist">
     <div ng-if="nodes.length == 0">
-        <button ng-click="createNode(null)">Create Root Node</button>
+        <button ng-click="createNode(null)">[[[translate CreateRootNode]]]</button>
     </div>
     <ul class="nodes">
         <li ng-repeat="node in nodes" ng-style="getLevelStyle(node)" ng-class="{'node-disabled' : !nodeEnabled(node)}">
             <div>
                 <span class="title" ng-bind="node.data.title" ng-click="changeProperties(node)"></span>
                 <span class="buttons">
-                    <button ng-disabled="upDisabled(node)" ng-click="moveUp(node)">Up</button>
-                    <button ng-disabled="downDisabled(node)" ng-click="moveDown(node)">Down</button>
-                    <button ng-disabled="leftDisabled(node)" ng-click="moveLeft(node)">Left</button>
-                    <button ng-disabled="rightDisabled(node)" ng-click="moveRight(node)">Right</button>
-                    <button ng-if="hasSettings(node)" ng-click="changeSettings(node)">Settings</button>
-                    <button ng-click="createNode(node)">Add Child</button>
-                    <button ng-if="canBeDeleted(node)" ng-click="deleteNode(node)">Delete</button>
-                    <a href="{{nodeAccessPage(node)}}" ng-click="navigateToView(nodeAccessPage(node))">Edit Access</a>
+                    <button ng-disabled="upDisabled(node)" ng-click="moveUp(node)">[[[translate NodeUp]]]</button>
+                    <button ng-disabled="downDisabled(node)" ng-click="moveDown(node)">[[[translate NodeDown]]]</button>
+                    <button ng-disabled="leftDisabled(node)" ng-click="moveLeft(node)">[[[translate NodeLeft]]]</button>
+                    <button ng-disabled="rightDisabled(node)" ng-click="moveRight(node)">[[[translate NodeRight]]]</button>
+                    <button ng-if="hasSettings(node)" ng-click="changeSettings(node)">[[[translate NodeSettings]]]</button>
+                    <button ng-click="createNode(node)">[[[translate AddChild]]]</button>
+                    <button ng-if="canBeDeleted(node)" ng-click="deleteNode(node)">[[[translate Delete]]]</button>
+                    <a href="{{nodeAccessPage(node)}}" ng-click="navigateToView(nodeAccessPage(node))">[[[translate EditAccess]]]</a>
                 </span>
             </div>
         </li>
@@ -25,6 +25,6 @@
     </div>
     <div ng-if="updateProgress">
         <span us-spinner="{radius:3,width:2,length:4,lines:9,top:0,left:0}"></span>
-        <span>Updating</span>
+        <span>[[[translate Updating]]]</span>
     </div>
 </div>

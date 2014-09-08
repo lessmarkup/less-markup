@@ -18,8 +18,8 @@ app.provider('inputForm', function () {
         }
     }
 
-    this.$get = ['$modal', '$http', 'lazyLoad',
-        function ($modal, $http, lazyLoad) {
+    this.$get = ['$modal', 'lazyLoad',
+        function ($modal, lazyLoad) {
             return {
                 editObject: function (scope, object, type, success, getTypeahead) {
                     getDefinition(type, scope, function (definition) {
