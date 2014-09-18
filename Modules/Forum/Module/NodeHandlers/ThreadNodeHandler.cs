@@ -171,6 +171,11 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         [ActionAccess(NodeAccessType.Write)]
         public object NewPost(CreateNewPostModel newObject, string filter)
         {
+            if (newObject == null)
+            {
+                return ReturnNewObjectResult(DependencyResolver.Resolve<CreateNewPostModel>());
+            }
+
             if (!ObjectId.HasValue)
             {
                 throw new NullReferenceException("ObjectId");
@@ -191,6 +196,11 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         [RecordAction(ForumTextIds.Block, CreateType = typeof(UserBlockModel), MinimumAccess = NodeAccessType.Manage, Visible = "userId != null")]
         public object BlockUser(long recordId, UserBlockModel newObject)
         {
+            if (newObject == null)
+            {
+                return ReturnNewObjectResult(DependencyResolver.Resolve<UserBlockModel>());
+            }
+
             newObject.InternalReason = string.Format("In response for post {0}", recordId);
             long userId;
 

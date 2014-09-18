@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
@@ -57,7 +58,7 @@ namespace LessMarkup.Engine.Configuration
             {
                 object value;
 
-                if (properties == null || !properties.TryGetValue(property.Name, out value))
+                if (properties == null || !properties.TryGetValue(property.Name.ToJsonCase(), out value))
                 {
                     var defaultValue = property.GetCustomAttribute<DefaultValueAttribute>();
                     if (defaultValue == null)

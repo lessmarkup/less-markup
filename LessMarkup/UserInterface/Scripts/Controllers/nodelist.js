@@ -154,7 +154,7 @@ define([], function() {
                 return;
             }
 
-            inputForm.editObject($scope, null, $scope.viewData.NodeSettingsModelId, function (node, success, error) {
+            inputForm.editObject($scope, null, $scope.viewData.nodeSettingsModelId, function (node, success, error) {
                 if (parentNode == null) {
                     // create root node
                     node.parentId = null;

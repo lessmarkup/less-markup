@@ -1,0 +1,22 @@
+﻿@model LessMarkup.MainModule.Model.UserValidateModel
+@{
+    Layout = null;
+    var title = Model.Success ? "Successful Validation" : "Request Failed";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>@title</title>
+    </head>
+    <body>
+        <h2>@title</h2>
+        <p>
+            @(Model.Success ? "You have successfully validated your e-mail." : "Wrong request")
+        </p>
+        @if (Model.ApproveRequired && Model.Success)
+        {
+            <p>Before you can log in to the site, your account should be approved by the administrator. Once it will be approved, you will receive confirmation e-mail. Please be patient.</p>
+        }
+        <p>Have a nice day!</p>
+    </body>
+</html>

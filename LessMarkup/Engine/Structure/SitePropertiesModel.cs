@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using LessMarkup.Framework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -135,7 +136,7 @@ namespace LessMarkup.Engine.Structure
             foreach (var property in typeof (ISiteConfiguration).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 object value;
-                if (properties == null || !properties.TryGetValue(property.Name, out value))
+                if (properties == null || !properties.TryGetValue(property.Name.ToJsonCase(), out value))
                 {
                     var defaultValue = property.GetCustomAttribute<DefaultValueAttribute>();
                     if (defaultValue == null)
@@ -172,7 +173,7 @@ namespace LessMarkup.Engine.Structure
                     continue;
                 }
 
-                properties[property.Name] = propertyValue;
+                properties[property.Name.ToJsonCase()] = propertyValue;
             }
 
             using (var domainModel = _domainModelProvider.Create())

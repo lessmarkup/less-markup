@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
@@ -133,6 +134,16 @@ namespace LessMarkup.UserInterface.Model.Structure
 
                 return Result != null;
             });
+
+            if (Result != null)
+            {
+                return true;
+            }
+
+            if (_nodeHandler != null)
+            { 
+                this.LogDebug("Found node " + (_nodeHandler.ObjectId.HasValue ? _nodeHandler.ObjectId.Value.ToString(CultureInfo.InvariantCulture) : "(no id)"));
+            }
 
             if (initializeUiElements && Breadcrumbs.Count > 0)
             {

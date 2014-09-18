@@ -31,7 +31,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         protected void AddCellLink<TH>(object text, string link) where TH : INodeHandler
         {
             _cellLinkHandlers.Add(link, new CellLinkHandler { Text = text, HandlerType = typeof(TH) });
-            AddRecordLink(text, "{" + IdProperty.Name + "}/" + link);
+            AddRecordLink(text, "{" + IdProperty.Name.ToJsonCase() + "}/" + link);
         }
 
         protected override bool HasChildren

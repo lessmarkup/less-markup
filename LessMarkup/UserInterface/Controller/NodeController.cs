@@ -17,13 +17,16 @@ namespace LessMarkup.UserInterface.Controller
         [Engine.Routing.Route("Node", "{*path}")]
         public ActionResult NodeEntryPoint(string path)
         {
+            this.LogDebug("Request to '" + path + "'");
             try
             {
                 if (path != null && path.StartsWith("language/"))
                 {
+                    this.LogDebug("Handling language change request");
                     long languageId;
                     if (!long.TryParse(path.Substring("language/".Length), out languageId))
                     {
+                        this.LogDebug("Unknown language id");
                         return HttpNotFound();
                     }
                     var dataCache = DependencyResolver.Resolve<IDataCache>();
@@ -33,12 +36,14 @@ namespace LessMarkup.UserInterface.Controller
 
                 if (HttpContext.IsWebSocketRequest)
                 {
+                    this.LogDebug("Switching to WebSocket API");
                     var model = DependencyResolver.Resolve<WebSocketEntryPointModel>();
                     return model.HandleRequest(this, path);
                 }
 
                 if (JsonEntryPointModel.AppliesToRequest(Request, path))
                 {
+                    this.LogDebug("Handling language change request");
                     var jsonModel = DependencyResolver.Resolve<JsonEntryPointModel>();
                     return jsonModel.HandleRequest(this);
                 }
@@ -46,15 +51,18 @@ namespace LessMarkup.UserInterface.Controller
                 var nodeModel = DependencyResolver.Resolve<NodeEntryPointModel>();
                 if (nodeModel.Initialize(path, this))
                 {
+                    this.LogDebug("Handling node access request");
                     return nodeModel.CreateResult(this);
                 }
 
                 var resourceModel = DependencyResolver.Resolve<ResourceModel>();
                 if (resourceModel.Initialize(path))
                 {
+                    this.LogDebug("Handling resource access request");
                     return resourceModel.CreateResult(this);
                 }
 
+                this.LogDebug("Unknown path");
                 return new HttpNotFoundResult();
             }
             catch (Exception e)

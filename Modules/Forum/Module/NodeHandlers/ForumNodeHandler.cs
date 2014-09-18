@@ -114,6 +114,11 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
         public object NewThread(NewThreadModel newObject)
         {
+            if (newObject == null)
+            {
+                return ReturnNewObjectResult(DependencyResolver.Resolve<NewThreadModel>());
+            }
+
             if (!ObjectId.HasValue)
             {
                 throw new ArgumentException("ObjectId");

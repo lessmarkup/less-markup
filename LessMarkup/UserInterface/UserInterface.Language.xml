@@ -137,7 +137,7 @@
     <Translation Id="NodeUp" Text="Up"/>
     <Translation Id="NodeDown" Text="Down"/>
     <Translation Id="NodeLeft" Text="Left"/>
-    <Translation Id="NodeUp" Text="Up"/>
+    <Translation Id="NodeRight" Text="Right"/>
     <Translation Id="NodeSettings" Text="Settings"/>
     <Translation Id="AddChild" Text="Add Child"/>
     <Translation Id="Delete" Text="Delete"/>

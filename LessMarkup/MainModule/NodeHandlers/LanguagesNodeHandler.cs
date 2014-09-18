@@ -23,7 +23,7 @@ namespace LessMarkup.MainModule.NodeHandlers
         public LanguagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
         {
             AddCellLink<TranslationsNodeHandler>(UserInterfaceTextIds.Translations, "translations");
-            AddRecordLink(MainModuleTextIds.Export, "export/{Id}", true);
+            AddRecordLink(MainModuleTextIds.Export, "export/{id}", true);
         }
 
         [RecordAction(MainModuleTextIds.ResetLanguage)]

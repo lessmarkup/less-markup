@@ -78,7 +78,7 @@ namespace LessMarkup.UserInterface.Model.User
 
         public long UserId { get; set; }
 
-        [Column(UserInterfaceTextIds.Name, CellUrl = "{UserId}")]
+        [Column(UserInterfaceTextIds.Name, CellUrl = "{userId}")]
         [RecordSearch]
         public string Name { get; set; }
 

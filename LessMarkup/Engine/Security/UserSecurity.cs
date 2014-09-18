@@ -4,6 +4,7 @@
 
 using System;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -70,8 +71,11 @@ namespace LessMarkup.Engine.Security
 
         public string CreatePasswordChangeToken(long? userId)
         {
+            this.LogDebug("Creating password validation token for user " + (userId.HasValue ? userId.Value.ToString(CultureInfo.InvariantCulture) : "(null)"));
             var collectionId = AbstractDomainModel.GetCollectionIdVerified<User>();
-            return CreateAccessToken(collectionId, 0, EntityAccessType.Read, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+            var ret = CreateAccessToken(collectionId, 0, EntityAccessType.Read, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
+            this.LogDebug("Created password validation token " + ret);
+            return ret;
         }
 
         public long? ValidatePasswordChangeToken(string token)
@@ -81,10 +85,13 @@ namespace LessMarkup.Engine.Security
                 return null;
             }
 
+            this.LogDebug("Validating password change token " + token);
+
             var validation = DecryptObject<AccessToken>(token);
 
             if (validation == null)
             {
+                this.LogDebug("Cannot validate password - error while decrypting the token");
                 return null;
             }
 
@@ -92,9 +99,12 @@ namespace LessMarkup.Engine.Security
             {
                 if (DateTime.UtcNow.Ticks > validation.Ticks.Value)
                 {
+                    this.LogDebug("Password change token error - date is expired");
                     return null;
                 }
             }
+
+            this.LogDebug("Password validated ok");
 
             return validation.UserId;
         }

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -79,6 +80,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             if (!siteId.HasValue)
             {
+                this.LogDebug("Cannot change password: unknown site id");
                 return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
             }
 
@@ -86,6 +88,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             if (!userId.HasValue)
             {
+                this.LogDebug("Cannot change password: cannot get valid user id");
                 return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
             }
 
@@ -95,6 +98,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
                 if (user == null)
                 {
+                    this.LogDebug("Cannot change password: user id=" + userId.Value + " does not exist");
                     return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
                 }
 
@@ -105,6 +109,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 user.Password = encodedPassword;
                 user.Salt = salt;
                 user.LastPasswordChanged = DateTime.UtcNow;
+                user.EmailConfirmed = true;
 
                 domainModel.SaveChanges();
 

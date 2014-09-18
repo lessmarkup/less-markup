@@ -70,7 +70,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
         public List<EnumSource> GetEnumValues(string fieldName)
         {
-            switch (fieldName)
+            switch (fieldName.FromJsonCase())
             {
                 case "HandlerId":
                 {
