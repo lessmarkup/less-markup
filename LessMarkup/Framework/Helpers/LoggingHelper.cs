@@ -7,26 +7,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Timers;
-using LessMarkup.Engine.FileSystem;
-using LessMarkup.Engine.Helpers;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Interfaces.Exceptions;
+using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.Engine.Logging
+namespace LessMarkup.Framework.Helpers
 {
     public static class LoggingHelper
     {
-        private static LogLevel _logLevel = LogLevel.Error;
-        private static readonly string _logFolder;
+        private static LogLevel _logLevel = LogLevel.None;
+        private static string _logFolder;
         private static readonly object _syncWrite = new object();
         private static readonly List<string> _logCache = new List<string>();
         private static readonly Timer _timer;
 
         static LoggingHelper()
         {
-            _logFolder = SpecialFolder.LogFolder;
-
-            Directory.CreateDirectory(_logFolder);
-
             _timer = new Timer(1000);
             _timer.Elapsed += (sender, args) => SyncCache();
 
@@ -110,7 +106,6 @@ namespace LessMarkup.Engine.Logging
             {
                 return;
             }
-            StatisticsHelper.FlagError(exception.Message);
             var lines = new List<string>();
             LogExceptionRecursive(exception, lines);
             LogLines(sender, LogLevel.Error, lines, methodName);
@@ -159,6 +154,16 @@ namespace LessMarkup.Engine.Logging
 
             lock (_syncWrite)
             {
+                if (_logFolder == null)
+                {
+                    var specialFolder = Interfaces.DependencyResolver.Resolve<ISpecialFolder>();
+                    if (specialFolder == null)
+                    {
+                        return;
+                    }
+                    _logFolder = specialFolder.LogFolder;
+                    Directory.CreateDirectory(_logFolder);
+                }
                 var logFilePath = Path.Combine(_logFolder, string.Format("Engine.{0}.Log", DateTime.Now.ToString("yyyyMMdd")));
                 File.AppendAllLines(logFilePath, _logCache);
                 _logCache.Clear();

@@ -12,7 +12,7 @@ using System.Text;
 using System.Web.Configuration;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
-using LessMarkup.Engine.Logging;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;

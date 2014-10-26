@@ -66,7 +66,7 @@ namespace LessMarkup.Engine.FileSystem
             get { return _applicationDataFolder; }
         }
 
-        public static string LogFolder
+        public string LogFolder
         {
             get { return Path.Combine(ApplicationDataFolder, "Log"); }
         }

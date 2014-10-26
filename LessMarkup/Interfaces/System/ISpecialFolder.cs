@@ -21,5 +21,7 @@ namespace LessMarkup.Interfaces.System
         string GeneratedViewAssembly { get; }
 
         string GeneratedViewAssemblyNew { get; }
+
+        string LogFolder { get; }
     }
 }

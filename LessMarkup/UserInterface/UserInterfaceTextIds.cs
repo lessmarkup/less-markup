@@ -113,5 +113,6 @@ namespace LessMarkup.UserInterface
         UserNotFound,
         CannotRegisterNewUser,
         NodeAccess,
+        LevelToLoad
     }
 }

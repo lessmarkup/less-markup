@@ -11,6 +11,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Framework.Helpers;
 
 namespace LessMarkup.Engine.Email
 {

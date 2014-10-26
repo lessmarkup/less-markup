@@ -115,21 +115,20 @@ namespace LessMarkup.Engine.Structure
             if (!siteId.HasValue)
             {
                 siteId = _siteMapper.SiteId;
-                if (!siteId.HasValue)
-                {
-                    throw new ArgumentOutOfRangeException("siteId");
-                }
             }
 
             Dictionary<string, object> properties = null;
 
-            using (var domainModel = _domainModelProvider.Create())
+            if (siteId.HasValue)
             {
-                var site = domainModel.GetCollection<Interfaces.Data.Site>().First(s => s.Id == siteId.Value);
-
-                if (!string.IsNullOrWhiteSpace(site.Properties))
+                using (var domainModel = _domainModelProvider.Create())
                 {
-                    properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
+                    var site = domainModel.GetCollection<Interfaces.Data.Site>().First(s => s.Id == siteId.Value);
+
+                    if (!string.IsNullOrWhiteSpace(site.Properties))
+                    {
+                        properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
+                    }
                 }
             }
 

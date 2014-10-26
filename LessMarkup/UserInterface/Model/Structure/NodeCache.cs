@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
+using LessMarkup.Engine.Logging;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
@@ -116,6 +117,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public INodeHandler GetNodeHandler(string path, object controller = null, Func<INodeHandler, string, string, string, long?, bool> preprocessFunc = null)
         {
+            this.LogDebug("BeginGetNodeHandler");
+
             path = HttpUtility.UrlDecode(path);
 
             if (path != null)
@@ -134,18 +137,23 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (node == null)
             {
+                this.LogDebug("Cannot get node for path '" + path + "'");
                 return null;
             }
 
             if (node.LoggedIn && !_currentUser.UserId.HasValue)
             {
+                this.LogDebug("This node requires logged in user");
                 return null;
             }
+
+            this.LogDebug("Checking node access rights");
 
             var accessType = node.CheckRights(_currentUser);
 
             if (accessType == NodeAccessType.NoAccess)
             {
+                this.LogDebug("Current user has no access to specified node");
                 return null;
             }
 
@@ -173,7 +181,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                 settingsObject = JsonConvert.DeserializeObject(settings, nodeHandler.SettingsModel);
             }
 
+            this.LogDebug("BeginInitializeRootNodeHandler");
+
             nodeHandler.Initialize(node.NodeId, settingsObject, controller, node.Path, node.FullPath, accessType);
+
+            this.LogDebug("EndInitializeRootNodeHandler");
 
             bool first = true;
 

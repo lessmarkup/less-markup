@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using LessMarkup.Framework.Helpers;
 
 namespace LessMarkup.Engine.Scripting
 {
@@ -29,7 +30,7 @@ namespace LessMarkup.Engine.Scripting
 
             if (childInstance == null || property.PropertyType.IsPrimitive || property.PropertyType.IsEnum || property.PropertyType == typeof(string))
             {
-                _properties.Add(prefix + property.Name, childInstance);
+                _properties.Add((prefix + property.Name).ToJsonCase(), childInstance);
                 return;
             }
 

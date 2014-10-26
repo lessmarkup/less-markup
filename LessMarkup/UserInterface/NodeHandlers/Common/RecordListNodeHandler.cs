@@ -413,6 +413,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             var collection = GetCollection();
 
             var recordIds = collection.ReadIds(domainModel, null, false).ToList();
+
             values["recordIds"] = recordIds;
 
             if (recordsPerPage > 0)

@@ -16,13 +16,13 @@ using LessMarkup.DataFramework;
 using LessMarkup.Engine;
 using LessMarkup.Engine.Build.View;
 using LessMarkup.Engine.FileSystem;
-using LessMarkup.Engine.Helpers;
 using LessMarkup.Engine.Logging;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Response;
 using LessMarkup.Engine.Routing;
 using LessMarkup.Engine.Scripting;
 using LessMarkup.Engine.Site;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -279,7 +279,6 @@ namespace LessMarkup.MainModule.Initialization
             BeginRequest += OnBeginRequest;
             EndRequest += OnEndRequest;
             Error += OnError;
-            LogRequest += OnLogRequest;
         }
 
         private const string RequestStartedKey = "RequestStarted";
@@ -357,23 +356,10 @@ namespace LessMarkup.MainModule.Initialization
                     }
                     this.LogException(exception);
                 }
-                StatisticsHelper.FlagError(exception != null ? exception.Message : "Unknown Exception");
             }
             finally
             {
                 SiteMapperScope.ResetMapping();
-            }
-        }
-
-        private void OnLogRequest(object sender, EventArgs eventArgs)
-        {
-            try
-            {
-                DependencyResolver.Resolve<StatisticsHelper>().LogRequest();
-            }
-            catch (Exception e)
-            {
-                this.LogException(e);
             }
         }
 

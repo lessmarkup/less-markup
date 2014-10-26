@@ -5,6 +5,7 @@
 using System;
 using System.Web.Mvc;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Structure;
@@ -43,9 +44,11 @@ namespace LessMarkup.UserInterface.Controller
 
                 if (JsonEntryPointModel.AppliesToRequest(Request, path))
                 {
-                    this.LogDebug("Handling language change request");
+                    this.LogDebug("Start of JSON request");
                     var jsonModel = DependencyResolver.Resolve<JsonEntryPointModel>();
-                    return jsonModel.HandleRequest(this);
+                    var ret = jsonModel.HandleRequest(this);
+                    this.LogDebug("End of JSON request");
+                    return ret;
                 }
 
                 var nodeModel = DependencyResolver.Resolve<NodeEntryPointModel>();

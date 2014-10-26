@@ -6,7 +6,6 @@ using System.Data.Entity;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.Gallery;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.DataObjects.Statistics;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Interfaces.Data;
 
@@ -46,10 +45,6 @@ namespace LessMarkup.DataAccess
         public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<ViewHistory> ViewHistories { get; set; }
-        public DbSet<AddressCountry> AddressCountries { get; set; }
-        public DbSet<AddressHistory> AddressHistories { get; set; }
-        public DbSet<AddressToCountry> AddressToCountries { get; set; }
-        public DbSet<DaySummaryHistory> DaySummaryHistories { get; set; }
         public DbSet<Node> Nodes { get; set; }
         public DbSet<NodeAccess> NodeAccesses { get; set; }
         public DbSet<NodeUserData> NodeUserDatas { get; set; }

@@ -14,5 +14,8 @@ namespace LessMarkup.UserInterface.Model.Common
 
         [InputField(InputFieldType.Select, UserInterfaceTextIds.Position, DefaultValue = FlatPagePosition.Right)]
         public FlatPagePosition Position { get; set; }
+
+        [InputField(InputFieldType.Number, UserInterfaceTextIds.LevelToLoad, DefaultValue = 2)]
+        public int LevelToLoad { get; set; }
     }
 }

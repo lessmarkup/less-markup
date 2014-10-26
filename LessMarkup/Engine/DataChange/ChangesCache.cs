@@ -26,7 +26,7 @@ namespace LessMarkup.Engine.DataChange
             public long Parameter3 { get; set; }
         }
 
-        private long _siteId;
+        private long? _siteId;
         private long? _lastUpdateId;
         private long _lastUpdateTime;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
@@ -41,21 +41,21 @@ namespace LessMarkup.Engine.DataChange
 
         protected override void Initialize(long? siteId, long? objectId)
         {
-            if (!siteId.HasValue)
-            {
-                throw new ArgumentNullException("siteId");
-            }
-
             if (objectId.HasValue)
             {
                 throw new ArgumentException("objectId");
             }
 
-            _siteId = siteId.Value;
+            _siteId = siteId;
         }
 
         private void UpdateIfRequired()
         {
+            if (!_siteId.HasValue)
+            {
+                return;
+            }
+
             if (Environment.TickCount - _lastUpdateTime <= UpdateInterval)
             {
                 return;
@@ -75,7 +75,7 @@ namespace LessMarkup.Engine.DataChange
                 using (var domainModel = _domainModelProvider.Create())
                 {
                     var dateFrame = DateTime.UtcNow.AddHours(-24);
-                    var query = domainModel.GetCollection<EntityChangeHistory>().Where(c => c.SiteId.HasValue && c.SiteId.Value == _siteId && c.Created >= dateFrame);
+                    var query = domainModel.GetCollection<EntityChangeHistory>().Where(c => c.SiteId.HasValue && c.SiteId.Value == _siteId.Value && c.Created >= dateFrame);
                     if (_lastUpdateId.HasValue)
                     {
                         query = query.Where(c => c.Id > _lastUpdateId.Value);
@@ -115,6 +115,11 @@ namespace LessMarkup.Engine.DataChange
 
         public IEnumerable<IDataChange> GetCollectionChanges(int collectionId, long? fromId, long? toId, Func<IDataChange, bool> filterFunc = null)
         {
+            if (!_siteId.HasValue)
+            {
+                return null;
+            }
+
             UpdateIfRequired();
 
             _lock.EnterReadLock();

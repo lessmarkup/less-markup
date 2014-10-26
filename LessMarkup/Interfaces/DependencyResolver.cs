@@ -18,12 +18,14 @@ namespace LessMarkup.Interfaces
 
         public static T Resolve<T>()
         {
-            return LifetimeScope.Resolve<T>();
+            var scope = LifetimeScope;
+            return scope == null ? default(T) : scope.Resolve<T>();
         }
 
         public static object Resolve(Type type)
         {
-            return LifetimeScope.Resolve(type);
+            var scope = LifetimeScope;
+            return scope == null ? null : scope.Resolve(type);
         }
     }
 }

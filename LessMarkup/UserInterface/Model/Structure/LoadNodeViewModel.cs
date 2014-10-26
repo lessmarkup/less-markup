@@ -10,6 +10,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
@@ -170,7 +171,11 @@ namespace LessMarkup.UserInterface.Model.Structure
                     }
                 }
 
+                this.LogDebug("BeginNodeHandlerGetViewData");
+
                 ViewData = _nodeHandler.GetViewData();
+
+                this.LogDebug("EndNodeHandlerGetViewData");
             }
 
             IsStatic = _nodeHandler.IsStatic;

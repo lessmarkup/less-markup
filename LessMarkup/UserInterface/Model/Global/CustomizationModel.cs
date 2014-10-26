@@ -165,7 +165,7 @@ namespace LessMarkup.UserInterface.Model.Global
         public bool Append { get; set; }
 
         [InputField(InputFieldType.File, UserInterfaceTextIds.File, VisibleCondition = "isBinary", Required = true)]
-        public byte[] File
+        public InputFile File
         {
             get
             {
@@ -173,13 +173,18 @@ namespace LessMarkup.UserInterface.Model.Global
                 {
                     return null;
                 }
-                return Body;
+                return new InputFile
+                {
+                    File = Body,
+                    Name = "File.bin",
+                    Type = "binary"
+                };
             }
             set
             {
-                if (value != null && value.Length > 0)
+                if (value != null && value.File != null && value.File.Length > 0)
                 {
-                    Body = value;
+                    Body = value.File;
                 }
             }
         }
