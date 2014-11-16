@@ -1,7 +1,9 @@
 ﻿<div class="thread-title">
     <a href="{{data.path}}" ng-click="navigateToView(getFullPath(data.path)); $event.stopPropagation();">
         <span ng-bind="data.name"></span>
-        <span ng-if="data.unread" class="thread-unread">{{data.unread}} [[[translate ThreadUnread]]]</span>
+    </a>
+    <a ng-if="data.unread" href="{{data.path + data.unreadUrl}}" ng-click="navigateToView(getFullPath(data.path)+data.unreadUrl); $event.stopPropagation();">
+        <span class="thread-unread">{{data.unread}} [[[translate ThreadUnread]]]</span>
     </a>
 </div>
 <div ng-bind="data.description" class="thread-statistics">

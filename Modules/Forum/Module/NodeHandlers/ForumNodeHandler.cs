@@ -6,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.Model;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -21,8 +21,8 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
 
-        public ForumNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+        public ForumNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache)
+            : base(domainModelProvider, dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
@@ -183,9 +183,28 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return thread.Restore(AccessType, ObjectId.Value, recordId, HasManageAccess);
         }
 
-        protected override void PostProcessRecord(ThreadModel record)
+        protected override void PostProcessRecords(List<ThreadModel> records)
         {
-            record.PostProcess(FullPath);
+            var recordsSet = new Dictionary<long, ThreadModel>();
+
+            foreach (var record in records)
+            {
+                recordsSet[record.ThreadId] = record;
+                record.PostProcess(FullPath, _dataCache);
+            }
+
+            foreach (var item in _dataCache.Get<ThreadsActiveUsersCache>().GetThreadUsers(recordsSet.Keys.ToList()))
+            {
+                recordsSet[item.Key].ActiveUsers =
+                    item.Value.Select(
+                        a =>
+                            new ThreadModel.WhoViews
+                            {
+                                Name = a.Name,
+                                UserId = a.UserId,
+                                ProfileUrl = UserHelper.GetUserProfileLink(a.UserId)
+                            }).ToList();
+            }
         }
 
         protected override Type SettingsModel

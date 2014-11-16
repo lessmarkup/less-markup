@@ -13,14 +13,13 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Forum.Model
 {
     [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Threads)]
     public class ThreadModel
     {
-        public const int ActiveUserThresholdMinutes = 5;
-
         public class WhoViews
         {
             public long UserId { get; set; }
@@ -64,24 +63,38 @@ namespace LessMarkup.Forum.Model
 
             public IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
             {
-                var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId && ids.Contains(t.Id));
+                var userId = _currentUser.UserId;
+
+                var query = domainModel.GetSiteCollection<Thread>()
+                    .Where(t => t.ForumId == _forumId && ids.Contains(t.Id))
+                    .Select(t => new
+                    {
+                        Thread = t,
+                        Posts = t.Posts.Where(p => !p.Removed),
+                        LastUpdate = userId.HasValue
+                                ? t.Views.Where(v => v.UserId == userId).Max(v => v.Updated)
+                                : (DateTime?) null
+                    }).Select(t => new
+                    {
+                        t.Thread,
+                        t.LastUpdate,
+                        Last = t.Posts.OrderByDescending(p => p.Created).FirstOrDefault(),
+                        PostCount = t.Posts.Count(),
+                        t.Posts
+                    }).Select(t => new
+                    {
+                        t.Thread,
+                        t.Last,
+                        t.PostCount,
+                        Unread = userId.HasValue ? (t.LastUpdate.HasValue ? t.Posts.Count(p => p.Created > t.LastUpdate) : t.PostCount) : 0
+                    });
 
                 if (_accessType != NodeAccessType.Manage)
                 {
-                    query = query.Where(t => !t.Removed && t.Posts.Any(p => !p.Removed));
+                    query = query.Where(t => !t.Thread.Removed && t.PostCount > 0);
                 }
 
-                var userId = _currentUser.UserId;
-
-                var lastSeenCheck = DateTime.UtcNow.AddMinutes(-ActiveUserThresholdMinutes);
-
                 return query
-                    .Select(t => new
-                    {
-                        Thread = t, 
-                        Last = t.Posts.Where(p => !p.Removed).OrderByDescending(p => p.Created).FirstOrDefault(),
-                        LastUpdate = userId.HasValue ? t.Views.Where(v => v.UserId == userId).Max(v => v.Updated) : (DateTime?) null
-                    })
                     .Select(t => new ThreadModel
                         {
                             ThreadId = t.Thread.Id,
@@ -97,18 +110,9 @@ namespace LessMarkup.Forum.Model
                             LastUser = t.Last.User.Name,
                             LastUserId = t.Last.UserId,
                             LastCreated = t.Last.Created,
-                            Posts = t.Thread.Posts.Count(p => !p.Removed),
-                            Unread = t.Thread.Removed ? 0 : (t.LastUpdate.HasValue ? t.Thread.Posts.Count(p => p.Created > t.LastUpdate && !p.Removed) : t.Thread.Posts.Count(p => !p.Removed)),
-                            Views = t.Thread.Views.Sum(v => (int?)v.Views) ?? 0,
-                            ActiveUsers = t.Thread.Views
-                                .Where(v => v.UserId != userId && v.LastSeen > lastSeenCheck)
-                                .Select(v => v.User)
-                                .Distinct()
-                                .Select(u => new WhoViews
-                                {
-                                    UserId = u.Id,
-                                    Name = u.Name
-                                }).ToList()
+                            Posts = t.PostCount,
+                            Unread = t.Unread,
+                            Views = t.Thread.Views.Sum(v => (int?)v.Views) ?? 0
                         });
             }
 
@@ -259,7 +263,9 @@ namespace LessMarkup.Forum.Model
 
         public DateTime? LastCreated { get; set; }
 
-        public List<WhoViews> ActiveUsers { get; set; } 
+        public List<WhoViews> ActiveUsers { get; set; }
+
+        public string UnreadUrl { get; set; }
 
         public int Unread { get; set; }
 
@@ -350,7 +356,7 @@ namespace LessMarkup.Forum.Model
             }
         }
 
-        public void PostProcess(string fullPath)
+        public void PostProcess(string fullPath, IDataCache dataCache)
         {
             if (AuthorId.HasValue)
             {
@@ -362,11 +368,13 @@ namespace LessMarkup.Forum.Model
                 LastUserUrl = UserHelper.GetUserProfileLink(LastUserId.Value);
             }
 
-            if (ActiveUsers != null)
+            if (Unread > 0)
             {
-                foreach (var user in ActiveUsers)
+                var siteConfiguration = dataCache.Get<ISiteConfiguration>();
+                var recordsPerPage = siteConfiguration.RecordsPerPage;
+                if (recordsPerPage > 0)
                 {
-                    user.ProfileUrl = UserHelper.GetUserProfileLink(user.UserId);
+                    UnreadUrl = RecordListHelper.PageLink("", ((Posts - Unread)/recordsPerPage) + 1);
                 }
             }
         }

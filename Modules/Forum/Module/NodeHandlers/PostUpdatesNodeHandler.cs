@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using LessMarkup.Forum.Model;
 using LessMarkup.Framework.Helpers;
@@ -99,9 +100,12 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return collection.ReadIds(domainModel, null, true).Count(r => changeIds.Contains(r));
         }
 
-        protected override void PostProcessRecord(PostUpdateModel record)
+        protected override void PostProcessRecords(List<PostUpdateModel> records)
         {
-            record.PostProcess(_domainModelProvider, _dataCache);
+            foreach (var record in records)
+            {
+                record.PostProcess(_domainModelProvider, _dataCache);
+            }
         }
     }
 }

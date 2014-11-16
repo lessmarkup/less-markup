@@ -27,7 +27,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         private readonly ICurrentUser _currentUser;
 
         public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
-            : base(domainModelProvider, dataCache, currentUser)
+            : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
@@ -221,14 +221,17 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return null;
         }
 
-        protected override void PostProcessRecord(PostModel record)
+        protected override void PostProcessRecords(List<PostModel> records)
         {
-            base.PostProcessRecord(record);
+            base.PostProcessRecords(records);
 
-            record.PostProcess(_dataCache, FullPath);
+            foreach (var record in records)
+            {
+                record.PostProcess(_dataCache, FullPath);
 
-            record.CanManage = HasManageAccess;
-            record.CanEdit = HasManageAccess;
+                record.CanManage = HasManageAccess;
+                record.CanEdit = HasManageAccess;
+            }
         }
 
         protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
@@ -324,7 +327,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                     }
                     else
                     {
-                        if (DateTime.UtcNow.AddMinutes(-ThreadModel.ActiveUserThresholdMinutes) > view.LastSeen)
+                        if (DateTime.UtcNow.AddMinutes(-ThreadsActiveUsersCache.ActiveUserThresholdMinutes) > view.LastSeen)
                         {
                             view.Views++;
                         }
