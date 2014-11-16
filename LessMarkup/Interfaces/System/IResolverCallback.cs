@@ -10,5 +10,8 @@ namespace LessMarkup.Interfaces.System
     {
         T Resolve<T>();
         object Resolve(Type type);
+
+        T TryResolve<T>();
+        object TryResolve(Type type);
     }
 }

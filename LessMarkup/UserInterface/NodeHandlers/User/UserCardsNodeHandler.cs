@@ -6,7 +6,6 @@ using System.Linq;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.User;
@@ -18,7 +17,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
     {
         private readonly IDataCache _dataCache;
 
-        public UserCardsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        public UserCardsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
         }

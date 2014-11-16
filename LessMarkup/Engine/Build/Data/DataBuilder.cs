@@ -8,6 +8,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,6 +30,7 @@ namespace LessMarkup.Engine.Build.Data
         private readonly List<Assembly> _linkedAssemblies = new List<Assembly>();
         private readonly Dictionary<string, PropertyInfo> _domainModelProperties = new Dictionary<string, PropertyInfo>();
         private readonly List<Type> _modelCreateTypes = new List<Type>(); 
+        private readonly List<Type> _migrationTypes = new List<Type>();
         private readonly ISpecialFolder _specialFolder;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly HashSet<string> _dataNamespaces = new HashSet<string>();
@@ -193,9 +195,7 @@ namespace LessMarkup.Engine.Build.Data
                 "SetInitializer",
                 new CodeExpression[]
                 {
-                    new CodeObjectCreateExpression(
-                        new CodeTypeReference("MigrateDatabaseToLatestVersion", new CodeTypeReference("DomainModel"),
-                            new CodeTypeReference("Configuration")))
+                    new CodeObjectCreateExpression(new CodeTypeReference("MigrateDatabaseToLatestVersion", new CodeTypeReference("DomainModel"), new CodeTypeReference("Configuration")))
                 });
             staticDomainModelConstructor.Statements.Add(setExpression);
 
@@ -239,6 +239,15 @@ namespace LessMarkup.Engine.Build.Data
             configurationType.Members.Add(configurationConstructor);
 
             codeNamespace.Types.Add(configurationType);
+
+            foreach (var migration in _migrationTypes)
+            {
+                var migrationType = new CodeTypeDeclaration(migration.Name);
+                migrationType.BaseTypes.Add(migration);
+                var constructor = new CodeConstructor {Attributes = MemberAttributes.Public};
+                migrationType.Members.Add(constructor);
+                codeNamespace.Types.Add(migrationType);
+            }
 
             compileUnit.Namespaces.Add(codeNamespace);
 
@@ -356,10 +365,13 @@ namespace LessMarkup.Engine.Build.Data
                             _dataNamespaces.Add(propertyType.Namespace);
                         }
                     }
-
-                    if (typeof (IModelCreate).IsAssignableFrom(sourceType) && !sourceType.IsInterface)
+                    else if (typeof (IModelCreate).IsAssignableFrom(sourceType) && !sourceType.IsInterface)
                     {
                         _modelCreateTypes.Add(sourceType);
+                    }
+                    else if (typeof (DbMigration).IsAssignableFrom(sourceType))
+                    {
+                        _migrationTypes.Add(sourceType);
                     }
                 }
             }

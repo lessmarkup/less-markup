@@ -27,5 +27,17 @@ namespace LessMarkup.Interfaces
             var scope = LifetimeScope;
             return scope == null ? null : scope.Resolve(type);
         }
+
+        public static T TryResolve<T>()
+        {
+            var scope = LifetimeScope;
+            return scope == null ? default(T) : scope.TryResolve<T>();
+        }
+
+        public static object TryResolve(Type type)
+        {
+            var scope = LifetimeScope;
+            return scope == null ? null : scope.TryResolve(type);
+        }
     }
 }

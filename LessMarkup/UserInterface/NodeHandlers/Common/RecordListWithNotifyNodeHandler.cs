@@ -15,7 +15,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
 
-        protected RecordListWithNotifyNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        protected RecordListWithNotifyNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;

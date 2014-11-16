@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using LessMarkup.Framework.Helpers;
@@ -50,12 +51,17 @@ namespace LessMarkup.Engine.Helpers
                 return bool.Parse(text);
             }
 
-            if (!type.IsClass || type == typeof(DateTime) || type.GetConstructor(new Type[0]) != null)
+            if (!type.IsClass || type == typeof(DateTime) || type == typeof(object) || typeof(IEnumerable).IsAssignableFrom(type))
             {
                 return JsonConvert.DeserializeObject(text, type);
             }
 
-            var value = DependencyResolver.Resolve(type);
+            var value = DependencyResolver.TryResolve(type);
+
+            if (value == null)
+            {
+                return Activator.CreateInstance(type);
+            }
 
             var valueData = JsonConvert.DeserializeObject<Dictionary<string, object>>(text);
 

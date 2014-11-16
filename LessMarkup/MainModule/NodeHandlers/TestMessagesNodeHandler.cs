@@ -5,7 +5,6 @@
 using LessMarkup.Framework;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -15,7 +14,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.ViewTestMessages)]
     public class TestMessagesNodeHandler : RecordListNodeHandler<TestMessageModel>
     {
-        public TestMessagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        public TestMessagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

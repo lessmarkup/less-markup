@@ -9,7 +9,6 @@ using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Configuration;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -22,7 +21,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         private long? _siteId;
         private long _nodeId;
 
-        public NodeAccessNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ISiteMapper siteMapper, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        public NodeAccessNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ISiteMapper siteMapper) : base(domainModelProvider, dataCache)
         {
             _siteMapper = siteMapper;
         }

@@ -60,6 +60,26 @@ namespace LessMarkup.MainModule.Initialization
             {
                 return _container.Resolve(type);
             }
+
+            public T TryResolve<T>()
+            {
+                T ret;
+                if (!_container.TryResolve(out ret))
+                {
+                    return default(T);
+                }
+                return ret;
+            }
+
+            public object TryResolve(Type type)
+            {
+                object ret;
+                if (!_container.TryResolve(type, out ret))
+                {
+                    return null;
+                }
+                return ret;
+            }
         }
 
         public static void InitializeDependencyResolver()

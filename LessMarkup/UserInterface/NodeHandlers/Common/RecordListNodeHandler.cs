@@ -14,7 +14,6 @@ using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
@@ -60,7 +59,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected IRecordModelDefinition RecordModel { get { return _recordModel; } }
 
-        public RecordListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public RecordListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
@@ -427,16 +426,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             var records = GetCollection().Read(domainModel, ids).ToList();
 
-            foreach (var record in records)
-            {
-                PostProcessRecord(record);
-            }
+            PostProcessRecords(records);
 
             values["records"] = records;
         }
 
-        protected virtual void PostProcessRecord(T record)
+        protected virtual void PostProcessRecords(List<T> records)
         {
+            
         }
 
         protected Dictionary<string, object> ReturnRemovedResult()
@@ -458,7 +455,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected Dictionary<string, object> ReturnRecordResult(T record, bool isNew = false, int index = -1)
         {
-            PostProcessRecord(record);
+            PostProcessRecords(new List<T> {record});
 
             return new Dictionary<string, object>
             {

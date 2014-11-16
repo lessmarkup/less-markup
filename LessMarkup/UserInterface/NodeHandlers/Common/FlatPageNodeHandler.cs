@@ -126,7 +126,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             if (ObjectId.HasValue)
             {
                 var currentNode = nodeCache.GetNode(ObjectId.Value);
-                FillFlatAndTreeList(currentNode, _flatNodeList, _treeRoot, "", 1, settingsModel.LevelToLoad != 0 ? settingsModel.LevelToLoad : 2);
+                FillFlatAndTreeList(currentNode, _flatNodeList, _treeRoot, "", 1, (settingsModel != null && settingsModel.LevelToLoad != 0) ? settingsModel.LevelToLoad : 2);
             }
 
             if (settingsModel == null || settingsModel.LoadOnShow)

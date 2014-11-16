@@ -7,7 +7,6 @@ using System.Linq;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
@@ -19,7 +18,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     {
         private readonly IDomainModelProvider _domainModelProvider;
 
-        public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             _domainModelProvider = domainModelProvider;
         }

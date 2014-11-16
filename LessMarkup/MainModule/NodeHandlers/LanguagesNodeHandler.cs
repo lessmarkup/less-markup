@@ -7,7 +7,6 @@ using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.MainModule.Model;
 using LessMarkup.UserInterface;
@@ -20,7 +19,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.Languages)]
     public class LanguagesNodeHandler : RecordListLinkNodeHandler<LanguageModel>
     {
-        public LanguagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache, currentUser)
+        public LanguagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             AddCellLink<TranslationsNodeHandler>(UserInterfaceTextIds.Translations, "translations");
             AddRecordLink(MainModuleTextIds.Export, "export/{id}", true);
