@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 
@@ -33,19 +32,26 @@ namespace LessMarkup.Forum.Model
         private readonly Dictionary<long, ThreadUsers> _users = new Dictionary<long, ThreadUsers>();
         private readonly object _syncObject = new object();
 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public ThreadsActiveUsersCache(IDomainModelProvider domainModelProvider) : base(new Type[0])
+        public ThreadsActiveUsersCache(ILightDomainModelProvider domainModelProvider) : base(new Type[0])
         {
             _domainModelProvider = domainModelProvider;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
+        }
+
+        class ThreadUser
+        {
+            public long ThreadId { get; set; }
+            public long UserId { get; set; }
+            public string Name { get; set; }
         }
 
         public Dictionary<long, List<ActiveUser>> GetThreadUsers(List<long> threadIds)
@@ -80,16 +86,18 @@ namespace LessMarkup.Forum.Model
 
                     using (var domainModel = _domainModelProvider.Create())
                     {
-                        foreach (var thread in domainModel.GetSiteCollection<ThreadView>()
-                            .Where(tv => newUsers.Contains(tv.ThreadId) && tv.LastSeen >= lastSeenCheck && tv.UserId.HasValue)
-                            .Select(tv => new { tv.ThreadId, tv.User.Name, UserId = tv.UserId.Value })
-                            .GroupBy(tv => tv.ThreadId))
+                        var queryText = string.Format("SELECT tu.ThreadId, tu.UserId, u.Name " +
+                            "FROM (SELECT DISTINCT ThreadId, UserId FROM ThreadViews WHERE LastSeen > $ AND UserId IS NOT NULL AND ThreadId IN ({0})) tu " +
+                            "JOIN Users u ON u.Id = tu.UserId", string.Join(",", newUsers));
+
+                        foreach (var thread in domainModel
+                            .Query().Execute<ThreadUser>(queryText, lastSeenCheck).GroupBy(tu => tu.ThreadId))
                         {
                             var users = new ThreadUsers
                             {
                                 ThreadId = thread.Key,
                                 LastUpdate = DateTime.Now,
-                                Users = thread.Distinct().Select(tu => new ActiveUser(tu.UserId, tu.Name)).ToList()
+                                Users = thread.Select(tu => new ActiveUser(tu.UserId, tu.Name)).ToList()
                             };
 
                             _users[thread.Key] = users;

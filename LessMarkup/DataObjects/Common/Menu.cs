@@ -3,12 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class Menu : SiteDataObject
+    public class Menu : DataObject
     {
         public string Text { get; set; }
         public string Description { get; set; }
@@ -20,8 +19,6 @@ namespace LessMarkup.DataObjects.Common
         public bool Visible { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
-        [ForeignKey("Image")]
         public long? ImageId { get; set; }
-        public Image Image { get; set; }
     }
 }

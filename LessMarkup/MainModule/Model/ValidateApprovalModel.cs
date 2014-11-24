@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Cache;
@@ -15,14 +14,14 @@ namespace LessMarkup.MainModule.Model
     public class ValidateApprovalModel
     {
         private readonly IUserSecurity _userSecurity;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IMailSender _mailSender;
         private readonly IDataCache _dataCache;
 
         public bool Success { get; set; }
 
-        public ValidateApprovalModel(IUserSecurity userSecurity, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IMailSender mailSender, IDataCache dataCache)
+        public ValidateApprovalModel(IUserSecurity userSecurity, ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IMailSender mailSender, IDataCache dataCache)
         {
             _userSecurity = userSecurity;
             _domainModelProvider = domainModelProvider;
@@ -43,7 +42,7 @@ namespace LessMarkup.MainModule.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<User>().FirstOrDefault(u => u.Id == request.UserId && !u.IsBlocked);
+                var user = domainModel.Query().From<User>().Where("Id = $ AND IsBlocked = $", request.UserId, false).FirstOrDefault<User>();
 
                 if (user == null)
                 {
@@ -66,9 +65,9 @@ namespace LessMarkup.MainModule.Model
                     user.IsBlocked = true;
                 }
 
-                _changeTracker.AddChange(user, EntityChangeType.Updated, domainModel);
+                domainModel.Update(user);
 
-                domainModel.SaveChanges();
+                _changeTracker.AddChange(user, EntityChangeType.Updated, domainModel);
 
                 if (user.IsApproved)
                 {

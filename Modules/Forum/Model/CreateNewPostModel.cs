@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
@@ -28,7 +27,7 @@ namespace LessMarkup.Forum.Model
         public long? UserId { get; set; }
         public long PostId { get; set; }
 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
@@ -36,7 +35,7 @@ namespace LessMarkup.Forum.Model
         private readonly IUserSecurity _userSecurity;
         private readonly ISiteConfiguration _siteConfiguration;
 
-        public CreateNewPostModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
+        public CreateNewPostModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
@@ -64,7 +63,7 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == threadId);
+                var thread = domainModel.Query().Find<Thread>(threadId);
 
                 var post = new Post
                 {
@@ -75,8 +74,7 @@ namespace LessMarkup.Forum.Model
                     IpAddress = HttpContext.Current.Request.UserHostAddress
                 };
 
-                domainModel.AddSiteObject(post);
-                domainModel.SaveChanges();
+                domainModel.Create(post);
                 _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
 
                 if (Attachments != null)
@@ -96,14 +94,14 @@ namespace LessMarkup.Forum.Model
                             PostId = post.Id,
                         };
 
-                        domainModel.AddSiteObject(attachment);
+                        domainModel.Create(attachment);
                     }
                 }
 
                 thread.Updated = post.Created;
+                domainModel.Update(thread);
 
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Updated, domainModel);
-                domainModel.SaveChanges();
 
                 PostId = post.Id;
                 UserId = post.UserId;

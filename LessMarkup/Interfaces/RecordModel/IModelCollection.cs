@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using System.Linq;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Structure;
 
@@ -11,9 +10,9 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IModelCollection<out TR>
     {
-        IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder);
+        IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder);
         int CollectionId { get; }
-        IQueryable<TR> Read(IDomainModel domainModel, List<long> ids);
+        IReadOnlyCollection<TR> Read(ILightQueryBuilder queryBuilder, List<long> ids);
         void Initialize(long? objectId, NodeAccessType nodeAccessType);
     }
 }

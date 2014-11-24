@@ -104,12 +104,12 @@ namespace LessMarkup.Framework.NodeHandlers
 
         public object Context { get; set; }
 
-        protected virtual bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
+        protected virtual bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
         {
             return false;
         }
 
-        bool INodeHandler.ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
+        bool INodeHandler.ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
         {
             return ProcessUpdates(fromVersion, toVersion, returnValues, domainModel, arguments);
         }

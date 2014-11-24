@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class SiteCustomization : SiteDataObject
+    public class SiteCustomization : DataObject
     {
         public string Path { get; set; }
         public bool IsBinary { get; set; }

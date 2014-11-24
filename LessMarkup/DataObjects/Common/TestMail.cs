@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class TestMail : SiteDataObject
+    public class TestMail : DataObject
     {
         public string From { get; set; }
         public string To { get; set; }

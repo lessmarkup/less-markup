@@ -22,7 +22,6 @@ namespace LessMarkup.Engine.Language
             public string Text { get; set; }
         }
 
-        public List<Translation> Translations { get; set; }
         public Dictionary<string, string> TranslationsMap { get; set; }
 
         public string GetText(string id, bool throwIfNotFound = true)

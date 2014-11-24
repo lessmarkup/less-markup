@@ -13,7 +13,6 @@ using System.Web.Configuration;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
 using LessMarkup.Framework.Helpers;
-using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Exceptions;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
@@ -319,7 +318,7 @@ namespace LessMarkup.Engine.Build.View
             }
         }
 
-        public void ImportTemplates(IDomainModelProvider domainModelProvider)
+        public void ImportTemplates()
         {
             var viewImport = new ViewImport();
 

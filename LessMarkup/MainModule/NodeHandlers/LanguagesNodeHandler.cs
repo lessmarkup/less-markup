@@ -19,7 +19,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.Languages)]
     public class LanguagesNodeHandler : RecordListLinkNodeHandler<LanguageModel>
     {
-        public LanguagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public LanguagesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             AddCellLink<TranslationsNodeHandler>(UserInterfaceTextIds.Translations, "translations");
             AddRecordLink(MainModuleTextIds.Export, "export/{id}", true);

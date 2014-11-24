@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangeType.cs" />
+    <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PostAttachment.cs" />
     <Compile Include="PostHistory.cs" />

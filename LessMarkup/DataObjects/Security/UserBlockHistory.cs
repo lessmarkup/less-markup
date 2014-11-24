@@ -3,18 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class UserBlockHistory : NonSiteDataObject
+    public class UserBlockHistory : DataObject
     {
-        public User User { get; set; }
-        [ForeignKey("User")]
         public long UserId { get; set; }
-        public User BlockedByUser { get; set; }
-        [ForeignKey("BlockedByUser")]
         public long BlockedByUserId { get; set; }
         public DateTime Created { get; set; }
         public DateTime? BlockedToTime { get; set; }

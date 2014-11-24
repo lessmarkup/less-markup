@@ -6,7 +6,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class File : SiteDataObject
+    public class File : DataObject
     {
         public string UniqueId { get; set; }
         public string FileName { get; set; }

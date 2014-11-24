@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 
@@ -9,89 +8,78 @@ namespace LessMarkup.Forum.Model
 {
     public class ForumStatisticsCache : AbstractCacheHandler
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public ForumStatisticsCache(IDomainModelProvider domainModelProvider) : base(new[] { typeof(Thread)})
+        public ForumStatisticsCache(ILightDomainModelProvider domainModelProvider) : base(new Type[0])
         {
             _domainModelProvider = domainModelProvider;
         }
 
-        public int Posts { get; private set; }
-        public int Threads { get; private set; }
-        public string LastAuthor { get; set; }
-        public long? LastAuthorId;
-        public DateTime? LastCreated;
-        public long? LastPostId { get; set; }
-        public long? LastThreadId { get; set; }
-        public string LastThreadPath { get; set; }
-        public string LastThreadTitle { get; set; }
-
-        private List<long> _threadIds;
-        private long _forumId;
-
-        protected override void Initialize(long? siteId, long? objectId)
+        public class ForumStatistics
         {
-            if (!objectId.HasValue)
-            {
-                throw new ArgumentOutOfRangeException("objectId");
-            }
-
-            _forumId = objectId.Value;
-
-            using (var domainModel = _domainModelProvider.Create())
-            {
-                var statistics = domainModel.GetSiteCollection<Post>().Where(p => p.Thread.ForumId == _forumId)
-                    .GroupBy(p => p.Thread.ForumId)
-                    .Select(g => new
-                    {
-                        Posts = g.Count(p => !p.Removed),
-                        Threads = g.GroupBy(p => p.ThreadId),
-                        LastPost = g.OrderByDescending(p => p.Created).FirstOrDefault()
-                    })
-                    .Select(f => new
-                    {
-                        f.Posts,
-                        Threads = f.Threads.Count(),
-                        ThreadIds = f.Threads.Select(t => t.Key).ToList(),
-                        LastAuthor = f.LastPost != null ? f.LastPost.User.Name : null,
-                        LastAuthorId = f.LastPost != null ? f.LastPost.UserId : null,
-                        LastCreated = f.LastPost != null ? f.LastPost.Created : (DateTime?)null,
-                        LastPostId = f.LastPost != null ? f.LastPost.Id : (long?)null,
-                        LastThreadId = f.LastPost != null ? f.LastPost.ThreadId : (long?)null,
-                        LastThreadTitle = f.LastPost != null ? f.LastPost.Thread.Name : null,
-                        LastThreadPath = f.LastPost != null ? f.LastPost.Thread.Path : null
-                    }).FirstOrDefault();
-
-                if (statistics == null)
-                {
-                    return;
-                }
-
-                Posts = statistics.Posts;
-                Threads = statistics.Threads;
-                _threadIds = statistics.ThreadIds;
-                LastAuthor = statistics.LastAuthor;
-                LastAuthorId = statistics.LastAuthorId;
-                LastCreated = statistics.LastCreated;
-                LastPostId = statistics.LastPostId;
-                LastThreadId = statistics.LastThreadId;
-                LastThreadTitle = statistics.LastThreadTitle;
-                LastThreadPath = statistics.LastThreadPath;
-            }
+            public long ForumId { get; set; }
+            public int Posts { get; set; }
+            public int Threads { get; set; }
+            public string LastAuthor { get; set; }
+            public long? LastAuthorId { get; set; }
+            public DateTime? LastCreated { get; set; }
+            public long? LastPostId { get; set; }
+            public long? LastThreadId { get; set; }
+            public string LastThreadPath { get; set; }
+            public string LastThreadTitle { get; set; }
+            public DateTime ValidUntil { get; set; }
         }
 
-        protected override bool Expires(int collectionId, long entityId, EntityChangeType changeType)
+        private readonly Dictionary<long, ForumStatistics> _forumStatistics = new Dictionary<long, ForumStatistics>();
+        private readonly object _forumStatisticsLock = new object();
+
+        public List<ForumStatistics> GetStatistics(List<long> forumIds)
         {
-            if (changeType == EntityChangeType.Added)
+            var ret = new List<ForumStatistics>();
+
+            lock (_forumStatisticsLock)
+            {
+                var currentTime = DateTime.UtcNow;
+                ret.AddRange(_forumStatistics.Values.Where(s => forumIds.Contains(s.ForumId) && s.ValidUntil >= currentTime));
+            }
+
+            var foundIds = ret.Select(s => s.ForumId).ToList();
+
+            var missingIds = forumIds.Where(id => !foundIds.Contains(id)).ToList();
+
+            if (missingIds.Any())
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var forumId = domainModel.GetSiteCollection<Thread>().First(t => t.Id == entityId).ForumId;
-                    return forumId == _forumId;
+                    var queryText = string.Format(
+                            "SELECT s.[ForumId], s.[Posts], s.[Threads], s.[LastCreated], u.[Name] [LastAuthor], u.[Id] [LastAuthorId], p1.[Id] [LastPostId], t1.[Id] [LastThreadId], " +
+                            "t1.[Name] [LastThreadTitle], t1.[Path] [LastThreadPath] FROM (" +
+                            "SELECT t.[ForumId], COUNT(p.Id) [Posts], COUNT(t.[Id]) [Threads], MAX(p.[Created]) [LastCreated] FROM [Posts] p JOIN [Threads] t ON t.[Id] = p.[ThreadId] " +
+                            "WHERE t.[ForumId] IN ({0}) GROUP BY t.[ForumId]) s LEFT JOIN [Posts] p1 ON p1.[Created] = s.[LastCreated] LEFT JOIN [Threads] t1 ON p1.[ThreadId] = t1.[Id] " +
+                            "LEFT JOIN [Users] u ON u.[Id] = p1.[UserId]",
+                            string.Join(",", missingIds));
+                    var statisticsList = domainModel.Query().Execute<ForumStatistics>(queryText);
+
+                    var validUntil = DateTime.UtcNow.AddMinutes(5);
+
+                    lock (_forumStatisticsLock)
+                    {
+                        foreach (var stat in statisticsList)
+                        {
+                            _forumStatistics[stat.ForumId] = stat;
+                            stat.ValidUntil = validUntil;
+                        }
+
+                        ret.AddRange(statisticsList);
+                    }
                 }
             }
 
-            return _threadIds != null && _threadIds.Contains(entityId);
+            return ret;
+        }
+
+        protected override void Initialize(long? objectId)
+        {
         }
     }
 }

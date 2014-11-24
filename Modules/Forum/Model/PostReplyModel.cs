@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
@@ -19,14 +18,14 @@ namespace LessMarkup.Forum.Model
     [RecordModel(TitleTextId = ForumTextIds.Reply)]
     public class PostReplyModel
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
         private readonly IUserSecurity _userSecurity;
         private readonly ISiteConfiguration _siteConfiguration;
 
-        public PostReplyModel(IDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
+        public PostReplyModel(ILightDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
         {
             _domainModelProvider = domainModelProvider;
             _htmlSanitizer = htmlSanitizer;
@@ -49,8 +48,7 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
-
+                var post = domainModel.Query().From<Post>().Where("ThreadId = $ AND Id = $ AND Removed = $", threadId, postId, false).First<Post>("Text");
                 ReplyTo = post.Text;
             }
 
@@ -77,9 +75,9 @@ namespace LessMarkup.Forum.Model
                     throw new Exception(LanguageHelper.GetText(Constants.ModuleType.Forum, ForumTextIds.CannotCreatePost));
                 }
 
-                var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == threadId);
+                var thread = domainModel.Query().Find<Thread>(threadId);
 
-                var sourcePost = domainModel.GetSiteCollection<Post>().First(p => p.ThreadId == threadId && p.Id == postId && !p.Removed);
+                var sourcePost = domainModel.Query().From<Post>().Where("ThreadId = $ AND Id = $ AND Removed = $", threadId, postId, false).First<Post>();
 
                 var textToQuote = _htmlSanitizer.Sanitize(sourcePost.Text, null, navigable =>
                 {
@@ -109,8 +107,7 @@ namespace LessMarkup.Forum.Model
                     IpAddress = HttpContext.Current.Request.UserHostAddress
                 };
 
-                domainModel.GetSiteCollection<Post>().Add(newPost);
-                domainModel.SaveChanges();
+                domainModel.Create(newPost);
                 _changeTracker.AddChange(newPost, EntityChangeType.Added, domainModel);
 
                 if (Attachments != null)
@@ -130,14 +127,13 @@ namespace LessMarkup.Forum.Model
                             PostId = newPost.Id,
                         };
 
-                        domainModel.AddSiteObject(attachment);
+                        domainModel.Create(attachment);
                     }
                 }
 
                 thread.Updated = newPost.Created;
-
+                domainModel.Update(thread);
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Updated, domainModel);
-                domainModel.SaveChanges();
                 PostId = newPost.Id;
                 UserId = newPost.UserId;
             }

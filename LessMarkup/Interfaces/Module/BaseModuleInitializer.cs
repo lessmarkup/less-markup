@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Reflection;
 
 namespace LessMarkup.Interfaces.Module
 {
@@ -27,5 +28,6 @@ namespace LessMarkup.Interfaces.Module
         public abstract string Name { get; }
         public abstract string ModuleType { get; }
         public abstract Type[] ModelTypes { get; }
+        public virtual Assembly DataObjectsAssembly { get { return null; } }
     }
 }

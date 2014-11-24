@@ -9,6 +9,6 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IFilteredCollection<in TR>
     {
-        IQueryable<int> ReadIdsFiltered(IDomainModel domainModel, object filter);
+        IQueryable<int> ReadIdsFiltered(ILightDomainModel domainModel, object filter);
     }
 }

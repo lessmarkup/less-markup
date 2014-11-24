@@ -25,9 +25,16 @@ namespace LessMarkup.Forum.Model
             _currentUser = currentUser;
         }
 
-        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
+        class PostAndThread
         {
-            var post = domainModel.GetSiteCollection<Post>().Where(p => p.Id == entityId).Select(p => new { p.Thread.ForumId, p.Thread.Path, p.ThreadId }).FirstOrDefault();
+            public long ForumId { get; set; }
+            public string Path { get; set; }
+            public long ThreadId { get; set; }
+        }
+
+        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
+        {
+            var post = domainModel.Query().From<Post>("p").Join<Thread>("t", "p.ThreadId = t.Id").Where("p.Id = $", entityId).FirstOrDefault<PostAndThread>("t.ForumId, t.Path, p.ThreadId");
             if (post == null)
             {
                 return null;
@@ -52,14 +59,14 @@ namespace LessMarkup.Forum.Model
 
             var url = string.Format("{0}/{1}", node.FullPath, post.Path);
 
-            var postsQuery = domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == post.ThreadId);
-
+            var postsQuery = domainModel.Query().From<Post>().Where("ThreadId = $", post.ThreadId);
+            
             if (rights != NodeAccessType.Manage)
             {
-                postsQuery = postsQuery.Where(p => !p.Removed);
+                postsQuery = postsQuery.Where("Removed = $", false);
             }
-
-            var posts = postsQuery.Select(p => p.Id).ToList();
+            
+            var posts = postsQuery.ToIdList().ToList();
 
             var recordsPerPage = _dataCache.Get<ISiteConfiguration>().RecordsPerPage;
 

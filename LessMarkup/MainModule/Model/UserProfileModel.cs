@@ -22,13 +22,13 @@ namespace LessMarkup.MainModule.Model
     public class UserProfileModel
     {
         private readonly ICurrentUser _currentUser;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IUserSecurity _userSecurity;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
         private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
+        public UserProfileModel(ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
         {
             _currentUser = currentUser;
             _domainModelProvider = domainModelProvider;
@@ -69,7 +69,7 @@ namespace LessMarkup.MainModule.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<User>().Single(u => u.Id == _currentUser.UserId.Value);
+                var user = domainModel.Query().Find<User>(_currentUser.UserId.Value);
 
                 Name = user.Name;
                 Avatar = user.AvatarImageId;
@@ -82,7 +82,7 @@ namespace LessMarkup.MainModule.Model
                     properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties);
                 }
 
-                foreach (var propertyDefinition in domainModel.GetSiteCollection<UserPropertyDefinition>())
+                foreach (var propertyDefinition in domainModel.Query().From<UserPropertyDefinition>().ToList<UserPropertyDefinition>())
                 {
                     var property = new DynamicInputProperty
                     {
@@ -137,7 +137,7 @@ namespace LessMarkup.MainModule.Model
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var user = domainModel.GetCollection<User>().Single(u => u.Id == _currentUser.UserId.Value);
+                var user = domainModel.Query().Find<User>(_currentUser.UserId.Value);
 
                 user.Name = Name;
                 user.Signature = _htmlSanitizer.Sanitize(Signature);
@@ -156,7 +156,6 @@ namespace LessMarkup.MainModule.Model
                     user.Password = encodedPassword;
                 }
 
-
                 if (Properties != null)
                 {
                     Dictionary<string, object> properties = null;
@@ -165,7 +164,7 @@ namespace LessMarkup.MainModule.Model
                         properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties);
                     }
 
-                    foreach (var propertyDefinition in domainModel.GetSiteCollection<UserPropertyDefinition>())
+                    foreach (var propertyDefinition in domainModel.Query().From<UserPropertyDefinition>().ToList<UserPropertyDefinition>())
                     {
                         var property = Properties.FirstOrDefault(p => p.Field != null && p.Field.Property == propertyDefinition.Name);
 
@@ -212,9 +211,8 @@ namespace LessMarkup.MainModule.Model
                     }
                 }
 
+                domainModel.Update(user);
                 _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);
-
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
         }

@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using System.Linq;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
@@ -18,29 +17,23 @@ namespace LessMarkup.MainModule.Model
     {
         public class Collection : IEditableModelCollection<SmileModel>
         {
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
 
-            public Collection(IDomainModelProvider domainModelProvider)
+            public Collection(ILightDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<Smile>(), filter, typeof (SmileModel)).Select(s => s.Id);
+                return query.From<Smile>().ToIdList();
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Smile>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<Smile>(); } }
 
-            public IQueryable<SmileModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<SmileModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<Smile>().Where(s => ids.Contains(s.Id)).Select(s => new SmileModel
-                    {
-                        Code = s.Code,
-                        Name = s.Name,
-                        Id = s.Id
-                    });
+                return query.From<Smile>().WhereIds(ids).ToList<SmileModel>();
             }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
@@ -64,8 +57,7 @@ namespace LessMarkup.MainModule.Model
                         Data = record.Image.File,
                     };
 
-                    domainModel.AddSiteObject(smile);
-                    domainModel.SaveChanges();
+                    domainModel.Create(smile);
                 }
             }
 
@@ -73,7 +65,7 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var smile = domainModel.GetSiteCollection<Smile>().First(s => s.Id == record.Id);
+                    var smile = domainModel.Query().Find<Smile>(record.Id);
 
                     smile.Code = record.Code;
                     smile.Name = record.Name;
@@ -84,7 +76,7 @@ namespace LessMarkup.MainModule.Model
                         smile.ContentType = record.Image.Type;
                     }
 
-                    domainModel.SaveChanges();
+                    domainModel.Update(smile);
                 }
             }
 
@@ -92,12 +84,10 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var smile in domainModel.GetSiteCollection<Smile>().Where(s => recordIds.Contains(s.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.RemoveSiteObject(smile);
+                        domainModel.Delete<Smile>(id);
                     }
-
-                    domainModel.SaveChanges();
 
                     return true;
                 }

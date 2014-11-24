@@ -129,12 +129,10 @@
     <Compile Include="Model\Global\CustomizationModel.cs" />
     <Compile Include="Model\Global\EngineConfigurationModel.cs" />
     <Compile Include="Model\ErrorModel.cs" />
-    <Compile Include="Model\Global\GlobalAdministratorModel.cs" />
     <Compile Include="Model\Global\ModuleModel.cs" />
     <Compile Include="Model\Global\UserBlockModel.cs" />
     <Compile Include="Model\Global\UserGroupModel.cs" />
     <Compile Include="Model\RecordModel\InputFormDefinitionModel.cs" />
-    <Compile Include="Model\Global\SiteModel.cs" />
     <Compile Include="Model\Structure\ExecuteActionModel.cs" />
     <Compile Include="Model\Structure\LoadNodeViewModel.cs" />
     <Compile Include="Model\Structure\LoadUpdatesModel.cs" />
@@ -176,13 +174,11 @@
     <Compile Include="NodeHandlers\GlobalConfiguration\EngineNodeHandler.cs" />
     <Compile Include="Model\Structure\NodeCache.cs" />
     <Compile Include="NodeHandlers\Configuration\NodeListNodeHandler.cs" />
-    <Compile Include="NodeHandlers\GlobalConfiguration\GlobalAdministratorsNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\ModulesNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteGroupsNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SitePropertiesNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteUsersNodeHandler.cs" />
     <Compile Include="NodeHandlers\GlobalConfiguration\SiteCustomizeNodeHandler.cs" />
-    <Compile Include="NodeHandlers\GlobalConfiguration\SiteNodeHandler.cs" />
     <Compile Include="NodeHandlers\User\ForgotPasswordPageHandler.cs" />
     <Compile Include="NodeHandlers\User\ResetPasswordPageHandler.cs" />
     <Compile Include="NodeHandlers\User\UserCardNodeHandler.cs" />

@@ -9,6 +9,6 @@ namespace LessMarkup.Engine.TextAndSearch
 {
     public interface ITextTagHandler
     {
-        string GetTagHtml(string name, string argument, string contents, bool isClose, IDomainModel domainModel, UrlHelper urlHelper);
+        string GetTagHtml(string name, string argument, string contents, bool isClose, ILightDomainModel domainModel, UrlHelper urlHelper);
     }
 }

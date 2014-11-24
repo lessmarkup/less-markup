@@ -25,7 +25,7 @@ namespace LessMarkup.Engine.FileSystem
 {
     class ResourceCache : AbstractCacheHandler, IResourceCache
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly ISpecialFolder _specialFolder;
         private readonly IModuleProvider _moduleProvider;
         private readonly object _loadLock = new object();
@@ -35,8 +35,8 @@ namespace LessMarkup.Engine.FileSystem
         private readonly Dictionary<string, ResourceReference> _resourceReferences = new Dictionary<string, ResourceReference>();
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
-        public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
-            : base(new[] { typeof(SiteCustomization), typeof(Interfaces.Data.Site), typeof(DataObjects.Common.Language) })
+        public ResourceCache(ILightDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
+            : base(new[] { typeof(SiteCustomization), typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;
             _specialFolder = specialFolder;
@@ -261,13 +261,11 @@ namespace LessMarkup.Engine.FileSystem
             ImportTemplateRecord(contentTemplate.Name, contentTemplate.Name, contentTemplate.Binary, false, contentTemplate.ModuleType);
         }
 
-        private void LoadDatabaseResources(long siteId)
+        private void LoadDatabaseResources()
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                IQueryable<SiteCustomization> collection = domainModel.GetSiteCollection<SiteCustomization>(siteId);
-
-                foreach (var record in collection)
+                foreach (var record in domainModel.Query().From<SiteCustomization>().ToList<SiteCustomization>())
                 {
                     var recordPath = record.Path.ToLower();
 
@@ -293,7 +291,7 @@ namespace LessMarkup.Engine.FileSystem
             }
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             _globalAssembly = Assembly.LoadFile(_specialFolder.GeneratedViewAssembly);
 
@@ -313,10 +311,7 @@ namespace LessMarkup.Engine.FileSystem
                 ImportContentTemplate(resource.Value);
             }
 
-            if (siteId.HasValue)
-            {
-                LoadDatabaseResources(siteId.Value);
-            }
+            LoadDatabaseResources();
 
             var resourceTemplateParser = DependencyResolver.Resolve<ResourceTemplateParser>();
             var results = new Dictionary<ResourceReference, string>();

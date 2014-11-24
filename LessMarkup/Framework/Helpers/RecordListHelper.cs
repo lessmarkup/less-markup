@@ -8,6 +8,7 @@ using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using Newtonsoft.Json;
 
@@ -104,6 +105,64 @@ namespace LessMarkup.Framework.Helpers
             method = method.MakeGenericMethod(typeof(TR), property.PropertyType);
 
             return (IQueryable<TR>)method.Invoke(null, new object[] { sourceQuery, ascending, propertyExpression, parameter });
+        }
+
+        public static ILightQueryBuilder ApplyFilterAndOrderBy(ILightQueryBuilder queryBuilder, string filter, Type modelType)
+        {
+            var searchProperties = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+
+            object searchObject;
+            if (searchProperties.TryGetValue("search", out searchObject))
+            {
+                var filterParams = new List<object>();
+
+                var searchText = "%" + searchObject.ToString().Trim() + "%";
+
+                var filterText = "";
+
+                foreach (var property in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    if (property.PropertyType != typeof (string))
+                    {
+                        continue;
+                    }
+
+                    if (filterText.Length > 0)
+                    {
+                        filterText += " AND ";
+                    }
+
+                    filterText += string.Format("[{0}] LIKE ($)", property.Name);
+                    filterParams.Add(searchText);
+                }
+
+                queryBuilder = queryBuilder.Where(filterText, filterParams);
+            }
+
+            object orderByObject;
+            object directionObject;
+            if (searchProperties.TryGetValue("orderBy", out orderByObject) && searchProperties.TryGetValue("direction", out directionObject))
+            {
+                var orderBy = orderByObject.ToString();
+
+                var parameter = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(p => string.Compare(p.Name, orderBy, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+                if (parameter != null)
+                {
+                    var ascending = directionObject.ToString() == "asc";
+
+                    if (ascending)
+                    {
+                        queryBuilder = queryBuilder.OrderBy(string.Format("[{0}]", parameter.Name));
+                    }
+                    else
+                    {
+                        queryBuilder = queryBuilder.OrderBy(string.Format("[{0}]", parameter.Name));
+                    }
+                }
+            }
+
+            return queryBuilder;
         }
 
         public static IQueryable<TR> GetFilterAndOrderQuery<TR>(IQueryable<TR> sourceQuery, string filter, Type modelType)

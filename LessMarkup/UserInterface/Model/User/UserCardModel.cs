@@ -3,13 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using System.Linq;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.User
 {
@@ -18,55 +15,22 @@ namespace LessMarkup.UserInterface.Model.User
     {
         public class Collection : IModelCollection<UserCardModel>
         {
-            private readonly ISiteMapper _siteMapper;
-
-            public Collection(ISiteMapper siteMapper)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                _siteMapper = siteMapper;
-            }
-
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
-            {
-                var siteId = _siteMapper.SiteId;
-
-                if (!siteId.HasValue)
-                {
-                    return new EnumerableQuery<long>(new long[0]);
-                }
-
-                var collection = RecordListHelper.GetFilterAndOrderQuery(domainModel.GetCollection<DataObjects.Security.User>(), filter, typeof (UserCardModel));
-
-                return collection
-                        .Where(u => !u.IsRemoved && u.SiteId == siteId.Value)
-                        .Select(u => u.Id);
+                return query.Where("IsRemoved = $", false).ToIdList();
             }
 
             public int CollectionId
             {
                 get
                 {
-                    return AbstractDomainModel.GetCollectionIdVerified<DataObjects.Security.User>();
+                    return DataHelper.GetCollectionId<DataObjects.Security.User>();
                 }
             }
 
-            public IQueryable<UserCardModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<UserCardModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                var siteId = _siteMapper.SiteId;
-
-                if (!siteId.HasValue)
-                {
-                    return new EnumerableQuery<UserCardModel>(new UserCardModel[0]);
-                }
-
-                return domainModel.GetCollection<DataObjects.Security.User>()
-                    .Where(u => !u.IsRemoved && u.SiteId == siteId.Value && ids.Contains(u.Id))
-                    .Select(u => new UserCardModel
-                    {
-                        Name = u.Name,
-                        Signature = u.Signature,
-                        Title = u.Title, 
-                        UserId = u.Id
-                    });
+                return query.Where("IsRemoved = $", false).WhereIds(ids).ToList<UserCardModel>();
             }
 
             public bool Filtered { get { return false; } }

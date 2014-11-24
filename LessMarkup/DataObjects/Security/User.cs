@@ -3,16 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class User : NonSiteDataObject
+    public class User : DataObject
     {
         public bool IsRemoved { get; set; }
         public bool IsBlocked { get; set; }
@@ -39,32 +36,18 @@ namespace LessMarkup.DataObjects.Security
         public string LockReason { get; set; }
         public string ValidateSecret { get; set; }
         public bool RequiresPasswordReset { get; set; }
-        public Image AvatarImage { get; set; }
-        [ForeignKey("AvatarImage")]
         public long? AvatarImageId { get; set; }
-        public Image UserImage { get; set; }
-        [ForeignKey("UserImage")]
         public long? UserImageId { get; set; }
         [TextSearch]
         public string Title { get; set; }
         [TextSearch]
         public string Signature { get; set; }
         public bool ShowEmail { get; set; }
-        [Timestamp]
-        public byte[] Version { get; set; }
         public MultiFactorAuthorization MultiFactorAuthorization { get; set; }
         public string AuthProvider { get; set; }
         public string AuthProviderUserId { get; set; }
-        [ForeignKey("Site")]
-        public long? SiteId { get; set; }
-        public Site Site { get; set; }
         public string Settings { get; set; }
         public bool SaveViewHistory { get; set; }
         public string Properties { get; set; }
-
-        public List<UserAddress> Addresses { get; set; }
-        public List<UserGroupMembership> Groups { get; set; }
-        public List<UserLoginIpAddress> IpAddresses { get; set; }
-        public List<UserBlockHistory> BlockHistories { get; set; } 
     }
 }

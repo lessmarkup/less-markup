@@ -13,7 +13,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Customize)]
     public class SiteCustomizeNodeHandler : RecordListNodeHandler<CustomizationModel>
     {
-        public SiteCustomizeNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SiteCustomizeNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

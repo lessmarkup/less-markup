@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -17,12 +17,6 @@ namespace LessMarkup.Engine.Cache
         private readonly object _itemsLock = new object();
         private readonly Dictionary<int, List<CacheItem>> _handledCollectionIds = new Dictionary<int, List<CacheItem>>();
         private readonly Dictionary<Tuple<Type, long?>, CacheItem> _items = new Dictionary<Tuple<Type, long?>, CacheItem>();
-        private readonly long? _siteId;
-
-        public SiteDataCache(long? siteId)
-        {
-            _siteId = siteId;
-        }
 
         public DateTime LastAccess { get; set; }
 
@@ -48,17 +42,14 @@ namespace LessMarkup.Engine.Cache
                 {
                     foreach (var type in collectionTypes)
                     {
-                        var collectionId = AbstractDomainModel.GetCollectionId(type);
-                        if (collectionId.HasValue)
+                        var collectionId = LightDomainModel.GetCollectionId(type);
+                        List<CacheItem> items;
+                        if (!_handledCollectionIds.TryGetValue(collectionId, out items))
                         {
-                            List<CacheItem> items;
-                            if (!_handledCollectionIds.TryGetValue(collectionId.Value, out items))
-                            {
-                                items = new List<CacheItem>();
-                                _handledCollectionIds.Add(collectionId.Value, items);
-                            }
-                            items.Add(cacheItem);
+                            items = new List<CacheItem>();
+                            _handledCollectionIds.Add(collectionId, items);
                         }
+                        items.Add(cacheItem);
                     }
                 }
             }
@@ -87,18 +78,13 @@ namespace LessMarkup.Engine.Cache
                     return default(T);
                 }
 
-                this.LogDebug(string.Format("Cache for site {0}: creating item for type {1}, id {2}", _siteId, typeof(T).Name, objectId ?? (object)"(null)"));
+                this.LogDebug(string.Format("Cache: creating item for type {0}, id {1}", typeof(T).Name, objectId ?? (object)"(null)"));
                 var newObject = DependencyResolver.Resolve<T>();
-                newObject.Initialize(_siteId, objectId);
+                newObject.Initialize(objectId);
                 Set(newObject, objectId);
                 ret = _items[key];
                 return (T)ret.CachedObject;
             }
-        }
-
-        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : ICacheHandler
-        {
-            throw new MemberAccessException();
         }
 
         public void Expired<T>(long? objectId = null) where T : ICacheHandler
@@ -107,11 +93,6 @@ namespace LessMarkup.Engine.Cache
             {
                 Remove(Tuple.Create(typeof(T), objectId));
             }
-        }
-
-        public void ExpiredGlobal<T>(long? objectId = null) where T : ICacheHandler
-        {
-            throw new MemberAccessException();
         }
 
         public T CreateWithUniqueId<T>() where T : ICacheHandler
@@ -137,11 +118,6 @@ namespace LessMarkup.Engine.Cache
             }
         }
 
-        public T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler
-        {
-            throw new MemberAccessException();
-        }
-
         public void Reset()
         {
             throw new MemberAccessException();
@@ -161,13 +137,9 @@ namespace LessMarkup.Engine.Cache
 
             foreach (var type in cacheItem.CachedObject.HandledCollectionTypes)
             {
-                var collectionId = AbstractDomainModel.GetCollectionId(type);
-                if (!collectionId.HasValue)
-                {
-                    continue;
-                }
+                var collectionId = LightDomainModel.GetCollectionId(type);
                 List<CacheItem> items;
-                if (_handledCollectionIds.TryGetValue(collectionId.Value, out items))
+                if (_handledCollectionIds.TryGetValue(collectionId, out items))
                 {
                     items.Remove(cacheItem);
                 }
@@ -203,7 +175,7 @@ namespace LessMarkup.Engine.Cache
 
             foreach (var item in itemsToRemove)
             {
-                this.LogDebug(string.Format("Cache for site {0}: removing item of type {1}, id {2}", _siteId, item.Type.Name, item.ObjectId ?? (object)"(null)"));
+                this.LogDebug(string.Format("Cache: removing item of type {0}, id {1}", item.Type.Name, item.ObjectId ?? (object)"(null)"));
                 Remove(Tuple.Create(item.Type, item.ObjectId));
             }
         }

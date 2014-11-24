@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using Autofac;
-using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataFramework
@@ -12,7 +12,9 @@ namespace LessMarkup.DataFramework
     {
         public static void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<DomainModelProvider>().As<IDomainModelProvider>().SingleInstance();
+            builder.RegisterType<LightDomainModelProvider>().As<ILightDomainModelProvider>().SingleInstance();
+            builder.RegisterType<LightDomainModel>().As<ILightDomainModel>();
+            builder.RegisterType<QueryBuilder>().As<ILightQueryBuilder>();
         }
     }
 }

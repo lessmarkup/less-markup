@@ -14,9 +14,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         private long _threadId;
         private long _postId;
         private long _attachmentId;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public PostAttachmentsNodeHandler(IDomainModelProvider domainModelProvider)
+        public PostAttachmentsNodeHandler(ILightDomainModelProvider domainModelProvider)
         {
             _domainModelProvider = domainModelProvider;
         }

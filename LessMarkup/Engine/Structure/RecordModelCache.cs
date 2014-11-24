@@ -68,7 +68,7 @@ namespace LessMarkup.Engine.Structure
             return idString;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             using (var hashAlgorithm = HashAlgorithm.Create("SHA512"))
             {

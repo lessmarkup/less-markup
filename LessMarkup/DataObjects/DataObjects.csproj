@@ -41,7 +41,9 @@
     <Compile Include="Common\Language.cs" />
     <Compile Include="Common\Menu.cs" />
     <Compile Include="Common\Currency.cs" />
+    <Compile Include="Common\MigrationHistory.cs" />
     <Compile Include="Common\SiteCustomization.cs" />
+    <Compile Include="Common\SiteProperties.cs" />
     <Compile Include="Common\Smile.cs" />
     <Compile Include="Common\TestMail.cs" />
     <Compile Include="Common\Translation.cs" />
@@ -49,6 +51,7 @@
     <Compile Include="Gallery\Gallery.cs" />
     <Compile Include="Gallery\GalleryImage.cs" />
     <Compile Include="Gallery\GalleryType.cs" />
+    <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Security\FailedLoginHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\SuccessfulLoginHistory.cs" />

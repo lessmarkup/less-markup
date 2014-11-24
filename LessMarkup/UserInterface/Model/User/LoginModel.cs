@@ -19,9 +19,7 @@ namespace LessMarkup.UserInterface.Model.User
     public class LoginModel
     {
         private readonly ICurrentUser _currentUser;
-        private readonly ISiteMapper _siteMapper;
         private readonly IDataCache _dataCache;
-        private readonly IEngineConfiguration _engineConfiguration;
 
         [InputField(InputFieldType.Email, UserInterfaceTextIds.Email, Required = true)]
         public string Email { get; set; }
@@ -29,12 +27,10 @@ namespace LessMarkup.UserInterface.Model.User
         [InputField(InputFieldType.Password, UserInterfaceTextIds.Password, Required = true)]
         public string Password { get; set; }
 
-        public LoginModel(ICurrentUser currentUser, ISiteMapper siteMapper, IDataCache dataCache, IEngineConfiguration engineConfiguration)
+        public LoginModel(ICurrentUser currentUser, IDataCache dataCache)
         {
             _currentUser = currentUser;
-            _siteMapper = siteMapper;
             _dataCache = dataCache;
-            _engineConfiguration = engineConfiguration;
         }
 
         public object HandleStage1Request(Dictionary<string, object> data)
@@ -68,17 +64,8 @@ namespace LessMarkup.UserInterface.Model.User
                 administratorKey = temp != null ? temp.ToString() : null;
             }
 
-            string adminLoginPage;
-
-            if (_siteMapper.SiteId.HasValue)
-            {
-                var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
-                adminLoginPage = siteConfiguration.AdminLoginPage;
-            }
-            else
-            {
-                adminLoginPage = _engineConfiguration.AdminLoginPage;
-            }
+            var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
+            var adminLoginPage = siteConfiguration.AdminLoginPage;
 
             var allowAdministrator = string.IsNullOrWhiteSpace(adminLoginPage) || administratorKey == adminLoginPage;
 

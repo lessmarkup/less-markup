@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Framework.Helpers;
@@ -19,14 +20,13 @@ namespace LessMarkup.Engine.Security
     {
         private long? _userId;
         private readonly int _userCollectionId;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private List<long> _groups;
 
         public bool IsRemoved { get; private set; }
         public bool IsAdministrator { get; private set; }
         public bool IsApproved { get; set; }
-        public bool IsGlobalAdministrator { get; private set; }
         public IReadOnlyList<long> Groups { get { return _groups; } }
         public bool IsValidated { get; private set; }
         public string Email { get; private set; }
@@ -40,36 +40,19 @@ namespace LessMarkup.Engine.Security
         public string Name { get; private set; }
         public IReadOnlyList<Tuple<ICachedNodeInformation, NodeAccessType>> Nodes { get; private set; }
 
-        public UserCache(IDomainModelProvider domainModelProvider, IDataCache dataCache)
-            : base(new[] { typeof(User), typeof(Node), typeof(NodeAccess), typeof(Interfaces.Data.Site) })
+        public UserCache(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
+            : base(new[] { typeof(User), typeof(Node), typeof(NodeAccess), typeof(SiteProperties) })
         {
             _domainModelProvider = domainModelProvider;
-            _userCollectionId = DataHelper.GetCollectionIdVerified<User>();
+            _userCollectionId = DataHelper.GetCollectionId<User>();
             _dataCache = dataCache;
         }
 
-        private void InitializeUser(long? siteId)
+        private void InitializeUser()
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<User>().Where(u => u.Id == _userId)
-                    .Select(u => new
-                    {
-                        u.Name,
-                        u.Email,
-                        u.IsAdministrator,
-                        u.SiteId,
-                        u.Title,
-                        u.IsValidated,
-                        u.IsBlocked,
-                        u.UnblockTime,
-                        u.IsApproved,
-                        u.Properties,
-                        u.AvatarImageId,
-                        u.UserImageId,
-                        Groups = u.Groups.Select(g => g.UserGroupId)
-
-                    }).FirstOrDefault();
+                var user = domainModel.Query().From<User>().Where("Id = $", _userId).FirstOrDefault<User>();
 
                 if (user == null)
                 {
@@ -77,15 +60,8 @@ namespace LessMarkup.Engine.Security
                     return;
                 }
 
-                if (siteId.HasValue && (user.SiteId.HasValue && user.SiteId.Value != siteId.Value))
-                {
-                    _userId = null;
-                    return;
-                }
-
                 IsAdministrator = user.IsAdministrator;
-                IsGlobalAdministrator = IsAdministrator && !user.SiteId.HasValue;
-                _groups = user.Groups.ToList();
+                _groups = domainModel.Query().From<UserGroupMembership>().Where("UserId = $", _userId).ToList<UserGroupMembership>("UserGroupId").Select(g => g.UserGroupId).ToList();
                 Email = user.Email;
                 Title = user.Title;
                 IsValidated = user.IsValidated;
@@ -104,14 +80,13 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             _userId = objectId;
-            SiteId = siteId;
 
             if (_userId.HasValue)
             {
-                InitializeUser(siteId);
+                InitializeUser();
             }
 
             if (IsBlocked || IsRemoved)

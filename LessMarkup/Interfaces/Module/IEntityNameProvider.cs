@@ -9,8 +9,8 @@ namespace LessMarkup.Interfaces.Module
 {
     public interface IEntityNameProvider
     {
-        string Read(IDomainModel domainModel, int collectionId, long entityId);
+        string Read(ILightDomainModel domainModel, int collectionId, long entityId);
         string GetEntityTypeName(int collectionId);
-        string EntityLink(UrlHelper urlHelper, int collectionId, long entityId, IDomainModel domainModel);
+        string EntityLink(UrlHelper urlHelper, int collectionId, long entityId, ILightDomainModel domainModel);
     }
 }

@@ -13,9 +13,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using LessMarkup.DataFramework;
-using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Engine.Security.Models;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
@@ -35,11 +34,10 @@ namespace LessMarkup.Engine.Security
         private const int SaltLength = 16;
         // ReSharper disable once InconsistentNaming
         private static readonly int HashSize;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
         private readonly IMailSender _mailSender;
-        private readonly ISiteMapper _siteMapper;
         private readonly IChangeTracker _changeTracker;
         private const string HexCodes = "0123456789abcdef";
 
@@ -55,13 +53,12 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        public UserSecurity(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, ISiteMapper siteMapper, IChangeTracker changeTracker)
+        public UserSecurity(ILightDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _engineConfiguration = engineConfiguration;
             _dataCache = dataCache;
             _mailSender = mailSender;
-            _siteMapper = siteMapper;
             _changeTracker = changeTracker;
         }
 
@@ -72,7 +69,7 @@ namespace LessMarkup.Engine.Security
         public string CreatePasswordChangeToken(long? userId)
         {
             this.LogDebug("Creating password validation token for user " + (userId.HasValue ? userId.Value.ToString(CultureInfo.InvariantCulture) : "(null)"));
-            var collectionId = AbstractDomainModel.GetCollectionIdVerified<User>();
+            var collectionId = LightDomainModel.GetCollectionId<User>();
             var ret = CreateAccessToken(collectionId, 0, EntityAccessType.Read, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
             this.LogDebug("Created password validation token " + ret);
             return ret;
@@ -117,11 +114,6 @@ namespace LessMarkup.Engine.Security
 
         public long CreateUser(string username, string password, string email, string address, UrlHelper urlHelper, bool preApproved, bool generatePassword)
         {
-            if (!_siteMapper.SiteId.HasValue && !preApproved)
-            {
-                throw new Exception("Cannot create user for global site");
-            }
-
             ValidateNewUserProperties(username, password, email, generatePassword);
 
             User user;
@@ -142,8 +134,7 @@ namespace LessMarkup.Engine.Security
 
                 try
                 {
-                    domainModel.GetCollection<User>().Add(user);
-                    domainModel.SaveChanges();
+                    domainModel.Create(user);
                 }
                 catch (SqlException e)
                 {
@@ -157,12 +148,7 @@ namespace LessMarkup.Engine.Security
 
                 _changeTracker.AddChange<User>(user.Id, EntityChangeType.Added, domainModel);
 
-                if (_siteMapper.SiteId.HasValue)
-                {
-                    AddToDefaultGroup(domainModel, user);
-                }
-
-                domainModel.SaveChanges();
+                AddToDefaultGroup(domainModel, user);
 
                 if (generatePassword)
                 {
@@ -176,7 +162,7 @@ namespace LessMarkup.Engine.Security
                     // means the user is created manually by the administrator
                     user.IsValidated = true;
                     user.IsApproved = true;
-                    domainModel.SaveChanges();
+                    domainModel.Update(user);
                     UserNotifyCreated(user, password);
                 }
                 else
@@ -188,7 +174,7 @@ namespace LessMarkup.Engine.Security
                     SendConfirmationLink(urlHelper, user);
                 }
 
-                if (_siteMapper.SiteId.HasValue && siteConfiguration.AdminNotifyNewUsers)
+                if (siteConfiguration.AdminNotifyNewUsers)
                 {
                     AdminNotifyNewUsers(user, domainModel);
                 }
@@ -460,7 +446,7 @@ namespace LessMarkup.Engine.Security
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var user = domainModel.GetCollection<User>().FirstOrDefault(u => u.ValidateSecret == validateSecret && !u.IsValidated && u.SiteId.HasValue && u.SiteId.Value == _siteMapper.SiteId);
+                var user = domainModel.Query().From<User>().Where("ValidateSecret = $ AND IsValidated = $", validateSecret, false).FirstOrDefault<User>();
                 if (user == null)
                 {
                     userId = 0;
@@ -475,7 +461,7 @@ namespace LessMarkup.Engine.Security
                 }
 
                 _changeTracker.AddChange<User>(user.Id, EntityChangeType.Updated, domainModel);
-                domainModel.SaveChanges();
+                domainModel.Update(user);
                 domainModel.CompleteTransaction();
                 userId = user.Id;
                 return true;
@@ -562,8 +548,7 @@ namespace LessMarkup.Engine.Security
                 LastLogin = DateTime.UtcNow,
                 LastBlock = null,
                 LastActivity = DateTime.UtcNow,
-                ValidateSecret = Guid.NewGuid().ToString(),
-                SiteId = _siteMapper.SiteId
+                ValidateSecret = Guid.NewGuid().ToString()
             };
 
             return user;
@@ -615,34 +600,32 @@ namespace LessMarkup.Engine.Security
             return password;
         }
 
-        private void CheckUserExistence(string email, IDomainModel domainModel)
+        private void CheckUserExistence(string email, ILightDomainModel domainModel)
         {
-            if (domainModel.GetCollection<User>().Any(c => c.Email == email && !c.IsRemoved && c.SiteId == _siteMapper.SiteId))
+            var user = domainModel.Query().From<User>().Where("Email = $ AND IsRemoved = $", email, false).FirstOrDefault<User>("Id");
+
+            if (user == null)
             {
                 throw new Exception("User with specified e-mail already exists");
             }
         }
 
-        private void AddToDefaultGroup(IDomainModel domainModel, User user)
+        private void AddToDefaultGroup(ILightDomainModel domainModel, User user)
         {
             var defaultGroup = _dataCache.Get<ISiteConfiguration>().DefaultUserGroup;
 
             if (!string.IsNullOrEmpty(defaultGroup))
             {
-                var group = domainModel.GetSiteCollection<UserGroup>().SingleOrDefault(g => g.Name == defaultGroup);
+                var group = domainModel.Query().From<UserGroup>().Where("Name = $", defaultGroup).FirstOrDefault<UserGroup>();
 
                 if (group == null)
                 {
-                    group = domainModel.GetSiteCollection<UserGroup>().Create();
-                    group.Name = defaultGroup;
-                    domainModel.GetSiteCollection<UserGroup>().Add(group);
-                    domainModel.SaveChanges();
+                    group = new UserGroup {Name = defaultGroup};
+                    domainModel.Create(group);
                 }
 
-                var membership = domainModel.GetSiteCollection<UserGroupMembership>().Create();
-                membership.UserId = user.Id;
-                membership.UserGroupId = group.Id;
-                domainModel.GetSiteCollection<UserGroupMembership>().Add(membership);
+                var membership = new UserGroupMembership {UserId = user.Id, UserGroupId = @group.Id};
+                domainModel.Create(membership);
             }
         }
 
@@ -668,7 +651,7 @@ namespace LessMarkup.Engine.Security
                 Constants.MailTemplates.PasswordGeneratedNotification, notificationModel);
         }
 
-        private void AdminNotifyNewUsers(User user, IDomainModel domainModel)
+        private void AdminNotifyNewUsers(User user, ILightDomainModel domainModel)
         {
             var model = new NewUserCreatedModel
             {
@@ -677,10 +660,10 @@ namespace LessMarkup.Engine.Security
                 Email = user.Email
             };
 
-            var administrators = domainModel.GetCollection<User>().Where(u => u.IsAdministrator && u.SiteId == _siteMapper.SiteId && !u.IsRemoved && !u.IsBlocked);
-            foreach (var admin in administrators.Select(a => a.Id))
+            var administrators = domainModel.Query().From<User>().Where("IsAdministrator = $ AND IsRemoved = $ AND IsBlocked = $", true, false, false).ToList<User>("Id");
+            foreach (var admin in administrators)
             {
-                _mailSender.SendMail(null, admin, null, Constants.MailTemplates.AdminNewUserCreated, model);
+                _mailSender.SendMail(null, admin.Id, null, Constants.MailTemplates.AdminNewUserCreated, model);
             }
         }
 

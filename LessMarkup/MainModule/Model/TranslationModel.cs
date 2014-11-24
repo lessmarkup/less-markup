@@ -4,10 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework;
-using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -21,32 +19,25 @@ namespace LessMarkup.MainModule.Model
         public class Collection : IEditableModelCollection<TranslationModel>
         {
             private long _languageId;
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<Translation>().Where(t => t.LanguageId == _languageId), filter, typeof (TranslationModel)).Select(t => t.Id);
+                return query.From<Translation>().Where("LanguageId = $", _languageId).ToIdList();
             }
 
             public int CollectionId { get; private set; }
-            public IQueryable<TranslationModel> Read(IDomainModel domainModel, List<long> ids)
+
+            public IReadOnlyCollection<TranslationModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<Translation>()
-                        .Where(t => ids.Contains(t.Id))
-                        .Select(t => new TranslationModel
-                        {
-                            Id = t.Id,
-                            Key = t.Key,
-                            Text = t.Text
-                        });
+                return query.From<Translation>().WhereIds(ids).ToList<TranslationModel>();
             }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
@@ -75,9 +66,8 @@ namespace LessMarkup.MainModule.Model
                         LanguageId = _languageId
                     };
 
-                    domainModel.GetSiteCollection<Translation>().Add(translation);
+                    domainModel.Create(translation);
                     _changeTracker.AddChange<Language>(_languageId, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                 }
             }
 
@@ -85,11 +75,11 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var translation = domainModel.GetSiteCollection<Translation>().First(t => t.Id == record.Id && t.LanguageId == _languageId);
+                    var translation = domainModel.Query().From<Translation>().Where("LanguageId = $ AND Id = $", _languageId, record.Id).First<Translation>();
                     translation.Key = record.Key;
                     translation.Text = record.Text;
+                    domainModel.Update(translation);
                     _changeTracker.AddChange<Language>(_languageId, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                 }
             }
 
@@ -97,12 +87,12 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var translation in domainModel.GetSiteCollection<Translation>().Where(t => recordIds.Contains(t.Id)))
+                    foreach (var recordId in recordIds)
                     {
-                        domainModel.GetSiteCollection<Translation>().Remove(translation);
+                        domainModel.Delete<Translation>(recordId);
                     }
+
                     _changeTracker.AddChange<Language>(_languageId, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                     return true;
                 }
             }

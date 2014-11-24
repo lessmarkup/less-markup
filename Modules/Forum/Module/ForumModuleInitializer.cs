@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
+using System.Reflection;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Forum.Model;
 using LessMarkup.Forum.Module.NodeHandlers;
@@ -33,6 +34,11 @@ namespace LessMarkup.Forum.Module
         public override Type[] ModelTypes
         {
             get { return typeof(ForumTextIds).Assembly.GetTypes(); }
+        }
+
+        public override Assembly DataObjectsAssembly
+        {
+            get { return typeof(Thread).Assembly; }
         }
 
         public override void InitializeDatabase()

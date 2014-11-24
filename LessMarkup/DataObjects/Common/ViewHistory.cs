@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class ViewHistory : NonSiteDataObject
+    public class ViewHistory : DataObject
     {
         public long UserId { get; set; }
 

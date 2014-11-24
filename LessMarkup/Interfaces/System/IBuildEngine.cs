@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.System
 {
@@ -13,7 +12,7 @@ namespace LessMarkup.Interfaces.System
         void Activate();
         bool IsActive { get; }
         bool IsRecent { get; }
-        void RefreshTemplateList(IDomainModelProvider domainModelProvider);
+        void RefreshTemplateList();
         DateTime LastBuildTime { get; }
     }
 }

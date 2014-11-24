@@ -4,8 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -16,12 +15,12 @@ namespace LessMarkup.Framework.RecordModel
     {
         protected AbstractModelCollection(Type dataType)
         {
-            CollectionId = AbstractDomainModel.GetCollectionIdVerified(dataType);
-        } 
+            CollectionId = LightDomainModel.GetCollectionId(dataType);
+        }
 
-        public abstract IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder);
+        public abstract IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder);
         public int CollectionId { get; private set; }
-        public abstract IQueryable<T> Read(IDomainModel domainModel, List<long> ids);
+        public abstract IReadOnlyCollection<T> Read(ILightQueryBuilder queryBuilder, List<long> ids);
         public abstract bool Filtered { get; }
         public abstract void Initialize(long? objectId, NodeAccessType nodeAccessType);
     }

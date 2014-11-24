@@ -62,8 +62,8 @@ namespace LessMarkup.Engine.TextAndSearch
                     }
                 }
 
-                Query = Query + string.Format(" from containstable({0}, *, @{2}) s, {0} t where s.[key] = t.{1} and t.[SiteId] = @{3}", TableName, IdColumn,
-                    SearchModelCache.FulltextSearchParameter, SearchModelCache.SiteIdSearchParameter);
+                Query = Query + string.Format(" from containstable({0}, *, @{2}) s, {0} t where s.[key] = t.{1}", TableName, IdColumn,
+                    SearchModelCache.FulltextSearchParameter);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace LessMarkup.Engine.TextAndSearch
                     }
                 }
 
-                Query = Query + string.Format(" from {0} t where t.[SiteId] = @{1} and (", TableName, SearchModelCache.SiteIdSearchParameter);
+                Query = Query + string.Format(" from {0} t where (", TableName);
 
                 for (var i = 0; i < Columns.Count; i++)
                 {

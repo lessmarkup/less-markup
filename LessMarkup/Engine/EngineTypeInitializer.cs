@@ -14,7 +14,6 @@ using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Language;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Security;
-using LessMarkup.Engine.Site;
 using LessMarkup.Engine.Structure;
 using LessMarkup.Engine.TextAndSearch;
 using LessMarkup.Interfaces.Cache;
@@ -36,7 +35,6 @@ namespace LessMarkup.Engine
             builder.RegisterType<SearchModelCache>().As<ITextSearch>().SingleInstance();
             builder.RegisterType<DataCache>().As<IDataCache>().SingleInstance();
             builder.RegisterType<UserSecurity>().As<IUserSecurity>();
-            builder.RegisterType<SiteMapper>().As<ISiteMapper>().As<IRequestMapper>().SingleInstance();
             builder.RegisterType<BuildEngine>().As<IBuildEngine>();
             builder.RegisterType<ControllerFactory>().As<IControllerFactory>();
             builder.RegisterType<MailSender>().As<IMailSender>();

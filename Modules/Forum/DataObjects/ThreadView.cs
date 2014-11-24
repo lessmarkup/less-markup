@@ -3,24 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Forum.DataObjects
 {
-    public class ThreadView : SiteDataObject
+    public class ThreadView : DataObject
     {
-        [ForeignKey("Thread")]
         public long ThreadId { get; set; }
-        public Thread Thread { get; set; }
-
         public int Views { get; set; }
-
-        [ForeignKey("User")]
         public long? UserId { get; set; }
-        public User User { get; set; }
-
         public DateTime? Updated { get; set; }
         public DateTime LastSeen { get; set; }
     }

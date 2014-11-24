@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class UserPropertyDefinition : SiteDataObject
+    public class UserPropertyDefinition : DataObject
     {
         public string Name { get; set; }
         public string Title { get; set; }

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Web;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
@@ -18,10 +17,10 @@ namespace LessMarkup.Engine.Currencies
         private const string CookieCurrencyName = "currency";
         private readonly Dictionary<long, CurrencyCacheItem> _currencies = new Dictionary<long, CurrencyCacheItem>();
         private readonly List<CurrencyCacheItem> _currencyList = new List<CurrencyCacheItem>(); 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private long? _baseCurrencyId;
 
-        public CurrencyCache(IDomainModelProvider domainModelProvider) : base(new[]{typeof(Currency)})
+        public CurrencyCache(ILightDomainModelProvider domainModelProvider) : base(new[]{typeof(Currency)})
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -95,7 +94,7 @@ namespace LessMarkup.Engine.Currencies
             return (value / shopCurrencyRate) * userCurrencyRate;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId.HasValue)
             {
@@ -104,7 +103,7 @@ namespace LessMarkup.Engine.Currencies
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                foreach (var source in domainModel.GetSiteCollection<Currency>().Where(c => c.Enabled))
+                foreach (var source in domainModel.Query().From<Currency>().Where("Enabled = $", true).ToList<Currency>())
                 {
                     var currency = new CurrencyCacheItem(source.Id, source.Name, source.Code, source.Rate, source.IsBase);
                     _currencies.Add(currency.CurrencyId, currency);

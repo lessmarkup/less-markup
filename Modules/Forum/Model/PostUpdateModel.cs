@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
@@ -33,7 +34,7 @@ namespace LessMarkup.Forum.Model
                 _currentUser = currentUser;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
                 var userId = _currentUser.UserId;
 
@@ -41,7 +42,8 @@ namespace LessMarkup.Forum.Model
 
                 if (userId.HasValue)
                 {
-                    var nodeUserData = domainModel.GetSiteCollection<NodeUserData>().FirstOrDefault(d => d.NodeId == _nodeId && d.UserId == userId.Value);
+                    var nodeUserData = query.New().From<NodeUserData>().Where("NodeId = $ AND UserId = $", _nodeId, userId.Value).FirstOrDefault<NodeUserData>();
+                        
                     if (nodeUserData != null && !string.IsNullOrEmpty(nodeUserData.Settings))
                     {
                         var nodeSettings = JsonConvert.DeserializeObject<PostUpdatesUserSettingsModel>(nodeUserData.Settings);
@@ -51,59 +53,50 @@ namespace LessMarkup.Forum.Model
                             selectedForumIds = nodeSettings.ForumIds;
                         }
                     }
+
                     if (selectedForumIds == null || selectedForumIds.Count == 0)
                     {
-                        return new EnumerableQuery<long>(new long[0]);
+                        return new List<long>();
                     }
                 }
 
                 var nodeCache = _dataCache.Get<INodeCache>();
                 var collectionId = DataHelper.GetCollectionId<Post>();
-                if (!collectionId.HasValue)
-                {
-                    return new EnumerableQuery<long>(new long[0]);
-                }
 
                 var changesCache = _dataCache.Get<IChangesCache>();
                 var changesQuery = userId.HasValue ? 
-                    changesCache.GetCollectionChanges(collectionId.Value, null, null, f => f.Type != EntityChangeType.Removed && f.UserId != userId) : 
-                    changesCache.GetCollectionChanges(collectionId.Value, null, null, f => f.Type != EntityChangeType.Removed);
+                    changesCache.GetCollectionChanges(collectionId, null, null, f => f.Type != EntityChangeType.Removed && f.UserId != userId) : 
+                    changesCache.GetCollectionChanges(collectionId, null, null, f => f.Type != EntityChangeType.Removed);
+
                 if (changesQuery == null)
                 {
-                    return new EnumerableQuery<long>(new long[0]);
+                    return new List<long>();
                 }
+
                 var changesIds = changesQuery.Select(c => c.EntityId).ToList();
                 var nodeIds = nodeCache.Nodes.Where(n => n.CheckRights(_currentUser) != NodeAccessType.NoAccess ).Select(n => n.NodeId).ToList();
 
-                var query = domainModel.GetSiteCollection<Post>().Where(p => !p.Removed && nodeIds.Contains(p.Thread.ForumId) && changesIds.Contains(p.Id));
+                query = query.From<Post>("p").Join<Thread>("t", "p.ThreadId = t.Id").Where("p.Removed = $ AND t.ForumId IN ($) AND p.Id IN ($)", false, string.Join(",", nodeIds),
+                            string.Join(",", changesIds));
 
                 if (selectedForumIds != null)
                 {
-                    query = query.Where(p => selectedForumIds.Contains(p.Thread.ForumId));
+                    query = query.Where("t.ForumId IN ($)", string.Join(",", selectedForumIds));
                 }
 
-                query = query.OrderByDescending(p => p.Created);
+                query = query.OrderByDescending("Created");
 
-                return query.Select(p => p.Id);
+                return query.ToList<Post>("p.Id").Select(p => p.Id).ToList();
             }
 
-            public IQueryable<PostUpdateModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<PostUpdateModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<Post>()
-                        .Where(p => ids.Contains(p.Id))
-                        .Select(p => new PostUpdateModel
-                        {
-                            PostId = p.Id,
-                            UserId = p.UserId,
-                            Author = p.User.Name,
-                            Text = p.Text,
-                            ThreadId = p.ThreadId,
-                            ThreadName = p.Thread.Name,
-                            Created = p.Created,
-                            ForumId = p.Thread.ForumId,
-                            ThreadPath = p.Thread.Path
-                        });
+                return query.From<Post>("p")
+                    .Join<Thread>("t", "t.Id = p.ThreadId")
+                    .Join<User>("u", "u.Id = p.UserId")
+                    .Where("p.Id IN ($)", string.Join(",", ids))
+                    .ToList<PostUpdateModel>(
+                        "p.Id PostId, p.UserId, u.Name Author, p.Text, p.ThreadId, t.Name ThreadName, p.Created, t.ForumId, t.Path ThreadPath");
             }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
@@ -116,7 +109,7 @@ namespace LessMarkup.Forum.Model
                 _nodeId = objectId.Value;
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Post>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<Post>(); } }
             public bool Filtered { get { return false; } }
         }
 
@@ -144,20 +137,24 @@ namespace LessMarkup.Forum.Model
 
         public string ThreadPath { get; set; }
 
-        public void PostProcess(IDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public void PostProcess(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
         {
             using (var domainModel = domainModelProvider.Create())
             {
-                var posts = domainModel.GetSiteCollection<Post>().Where(p => p.ThreadId == ThreadId);
                 var value = dataCache.Get<IUserCache>().Nodes.FirstOrDefault(n => n.Item1.NodeId == ForumId);
                 if (value == null)
                 {
                     return;
                 }
+
+                var query = domainModel.Query().From<Post>().Where("ThreadId = $", ThreadId);
+
                 if (value.Item2 != NodeAccessType.Manage)
                 {
-                    posts = posts.Where(p => !p.Removed);
+                    query = query.Where("Removed = $", false);
                 }
+                
+                var posts = query.ToList<Post>();
 
                 var postIds = posts.OrderBy(p => p.Created).Select(p => p.Id).ToList();
 

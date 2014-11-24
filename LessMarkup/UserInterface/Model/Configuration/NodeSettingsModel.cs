@@ -25,11 +25,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IModuleProvider _moduleProvider;
         private readonly List<NodeSettingsModel> _children = new List<NodeSettingsModel>();
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private readonly IChangeTracker _changeTracker;
 
-        public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider, IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
+        public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider, ILightDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
         {
             _moduleIntegration = moduleIntegration;
             _moduleProvider = moduleProvider;
@@ -90,51 +90,46 @@ namespace LessMarkup.UserInterface.Model.Configuration
             }
         }
 
-        public object CreateNode(long siteId)
+        public object CreateNode()
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof(NodeSettingsModel));
             definition.ValidateInput(this, true, null);
 
+            var target = new Node
+            {
+                Enabled = Enabled,
+                HandlerId = HandlerId,
+                ParentId = ParentId,
+                Order = Order,
+                Path = Path,
+                AddToMenu = AddToMenu,
+                Settings = Settings != null ? JsonConvert.SerializeObject(Settings) : null,
+                Title = Title
+            };
+
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var target = new Node
-                {
-                    Enabled = Enabled,
-                    HandlerId = HandlerId,
-                    ParentId = ParentId,
-                    Order = Order,
-                    Path = Path,
-                    AddToMenu = AddToMenu,
-                    Settings = Settings != null ? JsonConvert.SerializeObject(Settings) : null,
-                    Title = Title
-                };
-
-                var collection = domainModel.GetSiteCollection<Node>(siteId);
-
-                collection.Add(target);
-                domainModel.SaveChanges();
-                _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
+                domainModel.Create(target);
                 _changeTracker.AddChange(target, EntityChangeType.Added, domainModel);
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
-
-                NodeId = target.Id;
-
-                var handler = (INodeHandler)DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(HandlerId).Item1);
-
-                Customizable = handler.SettingsModel != null;
-
-                if (Customizable)
-                {
-                    SettingsModelId = modelCache.GetDefinition(handler.SettingsModel).Id;
-                }
-
-                return this;
             }
+
+            NodeId = target.Id;
+
+            var handler = (INodeHandler)DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(HandlerId).Item1);
+
+            Customizable = handler.SettingsModel != null;
+
+            if (Customizable)
+            {
+                SettingsModelId = modelCache.GetDefinition(handler.SettingsModel).Id;
+            }
+
+            return this;
         }
 
-        public object UpdateNode(long siteId)
+        public object UpdateNode()
         {
             var modelCache = _dataCache.Get<IRecordModelCache>();
             var definition = modelCache.GetDefinition(typeof(NodeSettingsModel));
@@ -142,7 +137,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var record = domainModel.GetSiteCollection<Node>(siteId).Single(p => p.Id == NodeId);
+                var record = domainModel.Query().Find<Node>(NodeId);
 
                 record.Title = Title;
                 record.ParentId = ParentId;
@@ -150,47 +145,43 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 record.Enabled = Enabled;
                 record.AddToMenu = AddToMenu;
 
-                _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
+                domainModel.Update(record);
                 _changeTracker.AddChange(record, EntityChangeType.Updated, domainModel);
 
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
 
             return this;
         }
 
-        public object DeleteNode(long siteId)
+        public object DeleteNode()
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var node = domainModel.GetSiteCollection<Node>(siteId).First(n => n.Id == NodeId);
+                var node = domainModel.Query().Find<Node>(NodeId);
                 var parentId = node.ParentId;
-                domainModel.GetSiteCollection<Node>(siteId).Remove(node);
+                domainModel.Delete<Node>(node.Id);
                 _changeTracker.AddChange(node, EntityChangeType.Removed, domainModel);
-                domainModel.SaveChanges();
 
-                var nodes = domainModel.GetSiteCollection<Node>(siteId).Where(p => p.ParentId == parentId).OrderBy(p => p.Order).ToList();
+                var nodes = domainModel.Query().From<Node>().Where("ParentId = $", parentId).ToList<Node>();
 
                 for (int i = 0; i < nodes.Count; i++)
                 {
                     if (nodes[i].Order != i)
                     {
                         nodes[i].Order = i;
+                        domainModel.Update(nodes[i]);
                         _changeTracker.AddChange(nodes[i], EntityChangeType.Updated, domainModel);
                     }
                 }
 
-                _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
-
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
 
             return null;
         }
 
-        private void NormalizeTree(List<NodeSettingsModel> nodes, NodeSettingsModel rootNode, IDomainModel domainModel, HashSet<long> changedNodes, long siteId)
+        private void NormalizeTree(List<NodeSettingsModel> nodes, NodeSettingsModel rootNode, ILightDomainModel domainModel, HashSet<long> changedNodes)
         {
             foreach (var node in nodes)
             {
@@ -203,8 +194,13 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 {
                     rootNode.Children.Add(node);
                     node.ParentId = rootNode.NodeId;
-                    var record = domainModel.GetSiteCollection<Node>(siteId).First(n => n.Id == node.NodeId);
-                    record.ParentId = node.ParentId;
+                    var record = domainModel.Query().Find<Node>(node.NodeId);
+                    if (record.ParentId != node.ParentId)
+                    {
+                        record.ParentId = node.ParentId;
+                        domainModel.Update(record);
+                    }
+
                     changedNodes.Add(node.NodeId);
                 }
             }
@@ -218,15 +214,20 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     if (child.Order != i)
                     {
                         child.Order = i;
-                        var record = domainModel.GetSiteCollection<Node>(siteId).First(n => n.Id == child.NodeId);
-                        record.Order = i;
+                        var record = domainModel.Query().Find<Node>(child.NodeId);
+                        if (record.Order != i)
+                        {
+                            record.Order = i;
+                            domainModel.Update(record);
+                        }
+
                         changedNodes.Add(record.Id);
                     }
                 }
             }
         }
 
-        public NodeSettingsModel GetRootNode(long siteId)
+        public NodeSettingsModel GetRootNode()
         {
             NodeSettingsModel rootNode;
             var modelCache = _dataCache.Get<IRecordModelCache>();
@@ -235,9 +236,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var collection = domainModel.GetSiteCollection<Node>(siteId);
-
-                foreach (var source in collection.Select(n => new
+                foreach (var source in domainModel.Query().From<Node>().ToList<Node>().Select(n => new
                 {
                     n.Enabled,
                     n.HandlerId,
@@ -283,8 +282,9 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     if (!nodeIds.TryGetValue(node.ParentId.Value, out parent))
                     {
                         node.ParentId = null;
-                        var record = collection.First(n => n.Id == node.NodeId);
+                        var record = domainModel.Query().Find<Node>(node.NodeId);
                         record.ParentId = null;
+                        domainModel.Update(record);
                         changedNodes.Add(node.NodeId);
                     }
                     else
@@ -295,7 +295,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
                 rootNode = nodes.FirstOrDefault(n => !n.ParentId.HasValue);
 
-                NormalizeTree(nodes, rootNode, domainModel, changedNodes, siteId);
+                NormalizeTree(nodes, rootNode, domainModel, changedNodes);
 
                 if (changedNodes.Count > 0)
                 {
@@ -303,7 +303,6 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     {
                         _changeTracker.AddChange<Node>(nodeId, EntityChangeType.Updated, domainModel);
                     }
-                    domainModel.SaveChanges();
                 }
             }
 
@@ -311,31 +310,28 @@ namespace LessMarkup.UserInterface.Model.Configuration
         }
 
 
-        public object ChangeSettings(long siteId)
+        public object ChangeSettings()
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var node = domainModel.GetSiteCollection<Node>(siteId).Single(p => p.Id == NodeId);
+                var node = domainModel.Query().Find<Node>(NodeId);
 
                 node.Settings = Settings != null ? JsonConvert.SerializeObject(Settings) : null;
 
-                _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
+                domainModel.Update(node);
                 _changeTracker.AddChange(node, EntityChangeType.Updated, domainModel);
 
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
 
             return Settings;
         }
 
-        public object UpdateParent(long siteId)
+        public object UpdateParent()
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var collection = domainModel.GetSiteCollection<Node>(siteId);
-
-                var node = collection.First(n => n.Id == NodeId);
+                var node = domainModel.Query().Find<Node>(NodeId);
 
                 var changedNodes = new HashSet<long>();
 
@@ -347,12 +343,12 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     if (node.ParentId.HasValue)
                     {
                         newRootNode = node;
-                        oldRootNode = collection.First(n => !n.ParentId.HasValue);
+                        oldRootNode = domainModel.Query().From<Node>().Where("ParentId IS NULL").First<Node>();
                     }
                     else
                     {
                         oldRootNode = node;
-                        newRootNode = collection.First(n => n.Id == ParentId.Value);
+                        newRootNode = domainModel.Query().Find<Node>(ParentId.Value);
                     }
 
                     if (!newRootNode.ParentId.HasValue)
@@ -360,9 +356,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
                         throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.CannotHaveTwoRootNodes));
                     }
 
-                    foreach (var neighbor in collection.Where(n => n.ParentId == newRootNode.ParentId.Value && n.Order > newRootNode.Order))
+                    foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Order > $", newRootNode.ParentId.Value, newRootNode.Order).ToList<Node>())
                     {
                         neighbor.Order--;
+                        domainModel.Update(neighbor);
                         changedNodes.Add(neighbor.Id);
                     }
 
@@ -370,9 +367,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     newRootNode.ParentId = null;
                     changedNodes.Add(newRootNode.Id);
 
-                    foreach (var neighbor in collection.Where(n => n.ParentId == newRootNode.Id && n.Order >= 0 && n.Id != NodeId))
+                    foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Id != $ AND Order > 0", newRootNode.Id, NodeId).ToList<Node>())
                     {
                         neighbor.Order++;
+                        domainModel.Update(neighbor);
                         changedNodes.Add(neighbor.Id);
                     }
 
@@ -386,32 +384,36 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     {
                         if (Order > node.Order)
                         {
-                            foreach (var neighbor in collection.Where(n => n.ParentId == ParentId && n.Id != NodeId && n.Order > node.Order && n.Order <= Order))
+                            foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Id != $ AND Order > $ AND Order <= $", ParentId, NodeId, node.Order, Order).ToList<Node>())
                             {
                                 neighbor.Order--;
+                                domainModel.Update(neighbor);
                                 changedNodes.Add(neighbor.Id);
                             }
                         }
                         else if (Order < node.Order)
                         {
-                            foreach (var neighbor in collection.Where(n => n.ParentId == ParentId && n.Id != NodeId && n.Order >= Order && n.Order < node.Order))
+                            foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Id != $ AND Order >= $ AND Order < $", ParentId, NodeId, Order, node.Order).ToList<Node>())
                             {
                                 neighbor.Order++;
+                                domainModel.Update(neighbor);
                                 changedNodes.Add(neighbor.Id);
                             }
                         }
                     }
                     else
                     {
-                        foreach (var neighbor in collection.Where(n => n.ParentId == node.ParentId && n.Order > node.Order && n.Id != NodeId))
+                        foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Order > $ AND Id != $", node.ParentId, node.Order, NodeId).ToList<Node>())
                         {
                             neighbor.Order--;
+                            domainModel.Update(neighbor);
                             changedNodes.Add(neighbor.Id);
                         }
 
-                        foreach (var neighbor in collection.Where(n => n.ParentId == ParentId && n.Order >= Order && n.Id != NodeId))
+                        foreach (var neighbor in domainModel.Query().From<Node>().Where("ParentId = $ AND Order >= $ AND Id != $", ParentId, Order, NodeId).ToList<Node>())
                         {
                             neighbor.Order++;
+                            domainModel.Update(neighbor);
                             changedNodes.Add(neighbor.Id);
                         }
                     }
@@ -426,14 +428,12 @@ namespace LessMarkup.UserInterface.Model.Configuration
                     _changeTracker.AddChange<Node>(id, EntityChangeType.Updated, domainModel);
                 }
 
-                _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
-                domainModel.SaveChanges();
                 domainModel.CompleteTransaction();
             }
 
             return new
             {
-                Root = GetRootNode(siteId)
+                Root = GetRootNode()
             };
         }
     }

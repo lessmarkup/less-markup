@@ -6,13 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.Model.Global
@@ -22,45 +21,25 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class CollectionManager : IEditableModelCollection<CustomizationModel>
         {
-            private long? _siteId;
-
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
-            private readonly ISiteMapper _siteMapper;
 
-            private long SiteId
+            public CollectionManager(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
-                get
-                {
-                    var ret = _siteId ?? _siteMapper.SiteId;
-                    if (!ret.HasValue)
-                    {
-                        throw new ArgumentOutOfRangeException();
-                    }
-                    return ret.Value;
-                }
-            }
-
-
-            public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
-            {
-                _siteMapper = siteMapper;
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return domainModel.GetSiteCollection<SiteCustomization>(SiteId).Select(c => c.Id);
+                return query.From<SiteCustomization>().ToIdList();
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<SiteCustomization>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<SiteCustomization>(); } }
 
-            public IQueryable<CustomizationModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<CustomizationModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<SiteCustomization>(SiteId)
-                        .Where(c => ids.Contains(c.Id))
+                return query.From<SiteCustomization>().ToList<SiteCustomization>()
                         .Select(c => new CustomizationModel
                         {
                             Id = c.Id,
@@ -69,14 +48,13 @@ namespace LessMarkup.UserInterface.Model.Global
                             Body = c.Body,
                             Append = c.Append,
                             TypeDefined = true
-                        });
+                        }).ToList();
             }
 
             public bool Filtered { get { return false; } }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
             {
-                _siteId = objectId;
             }
 
             public CustomizationModel CreateRecord()
@@ -97,11 +75,8 @@ namespace LessMarkup.UserInterface.Model.Global
                         Append = record.Append
                     };
 
-                    domainModel.GetSiteCollection<SiteCustomization>(SiteId).Add(customization);
-                    domainModel.SaveChanges();
-                    _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                    domainModel.Create(customization);
                     _changeTracker.AddChange(customization, EntityChangeType.Added, domainModel);
-                    domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                     record.Id = customization.Id;
                 }
@@ -111,16 +86,15 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var customization = domainModel.GetSiteCollection<SiteCustomization>(SiteId).Single(c => c.Id == record.Id);
+                    var customization = domainModel.Query().Find<SiteCustomization>(record.Id);
                     customization.Path = record.Path;
                     customization.Append = record.Append;
                     if (record.Body != null)
                     {
                         customization.Body = record.Body;
                     }
-                    _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
+                    domainModel.Update(customization);
                     _changeTracker.AddChange(customization, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                 }
             }
@@ -129,14 +103,12 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    foreach (var customization in domainModel.GetSiteCollection<SiteCustomization>(SiteId).Where(c => recordIds.Contains(c.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.GetSiteCollection<SiteCustomization>(SiteId).Remove(customization);
-                        _changeTracker.AddChange(customization, EntityChangeType.Removed, domainModel);
+                        domainModel.Delete<SiteCustomization>(id);
+                        _changeTracker.AddChange<SiteCustomization>(id, EntityChangeType.Removed, domainModel);
                     }
 
-                    _changeTracker.AddChange<Site>(SiteId, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                     return true;
                 }

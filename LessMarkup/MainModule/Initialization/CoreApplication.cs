@@ -17,11 +17,11 @@ using LessMarkup.Engine;
 using LessMarkup.Engine.Build.View;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Engine.Migrate;
 using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Response;
 using LessMarkup.Engine.Routing;
 using LessMarkup.Engine.Scripting;
-using LessMarkup.Engine.Site;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -207,8 +207,6 @@ namespace LessMarkup.MainModule.Initialization
 
                 this.LogDebug("Engine: " + (isBuildEngineActive ? "Active" : "Not Active") + ", " + (isBuildEngineRecent ? "Up to date" : "Requires rebuild"));
 
-                var lastDatabaseUpdate = engineConfiguration.LastDatabaseUpdate;
-
                 if (!buildEngine.IsActive || (!isBuildEngineRecent && engineConfiguration.AutoRefresh))
                 {
                     this.LogDebug("Building new engine");
@@ -218,8 +216,6 @@ namespace LessMarkup.MainModule.Initialization
                     buildEngine.Activate();
 
                     this.LogDebug("Build finished, took " + (Environment.TickCount-startTime) + " ms");
-
-                    lastDatabaseUpdate = null;
                 }
 
                 NewJsonValueProviderFactory.Initialize();
@@ -227,30 +223,30 @@ namespace LessMarkup.MainModule.Initialization
                 ViewEngines.Engines.Clear();
                 ViewEngines.Engines.Add(DependencyResolver.Resolve<CompiledViewEngine>());
 
-                var databaseConfigurationUpToDate = lastDatabaseUpdate.HasValue &&
-                                                    lastDatabaseUpdate.Value > buildEngine.LastBuildTime;
+                var domainModelProvider = DependencyResolver.Resolve<ILightDomainModelProvider>();
 
-                if (!string.IsNullOrWhiteSpace(engineConfiguration.Database))
+                ((IInitialize)domainModelProvider).Initialize();
+
+                if (string.IsNullOrWhiteSpace(engineConfiguration.Database))
+                {
+                    this.LogWarning("Database is not configured");
+                    moduleProvider.UpdateModuleDatabase(null);
+                }
+                else
                 {
                     this.LogDebug("Initializing domain provider");
-                    var startTime = Environment.TickCount;
-                    var domainModelProvider = DependencyResolver.Resolve<IDomainModelProvider>();
-                    ((IInitialize) domainModelProvider).Initialize(databaseConfigurationUpToDate);
-                    this.LogDebug("Domain provider initialization took " + (Environment.TickCount - startTime) + " ms");
+
+                    var migrator = DependencyResolver.Resolve<MigrateEngine>();
+                    migrator.Execute();
 
                     this.LogDebug("Updating modules database");
                     moduleProvider.UpdateModuleDatabase(domainModelProvider);
 
                     this.LogDebug("Refreshing template list");
-                    buildEngine.RefreshTemplateList(domainModelProvider);
+                    buildEngine.RefreshTemplateList();
 
                     engineConfiguration.LastDatabaseUpdate = DateTime.UtcNow;
                     engineConfiguration.Save();
-                }
-                else
-                {
-                    this.LogWarning("Database is not configured");
-                    moduleProvider.UpdateModuleDatabase(null);
                 }
 
                 this.LogDebug("Initializing modules with database");
@@ -267,9 +263,6 @@ namespace LessMarkup.MainModule.Initialization
 
                 this.LogDebug("Initializing custom routes");
                 DependencyResolver.Resolve<RouteConfiguration>().Create(RouteTable.Routes);
-
-                this.LogDebug("Initializing site mapper");
-                ((IInitialize)DependencyResolver.Resolve<ISiteMapper>()).Initialize();
             }
             catch (Exception e)
             {
@@ -305,8 +298,6 @@ namespace LessMarkup.MainModule.Initialization
 
         private void OnBeginRequest(object sender, EventArgs eventArgs)
         {
-            SiteMapperScope.ResetMapping();
-
             lock (_initializeLock)
             {
                 if (!_initialized)
@@ -347,54 +338,28 @@ namespace LessMarkup.MainModule.Initialization
                 return;
             }
 
-            var requestMapper = DependencyResolver.Resolve<IRequestMapper>();
-            var dataCache = DependencyResolver.Resolve<IDataCache>();
             var currentUser = DependencyResolver.Resolve<ICurrentUser>();
-
-            if (!requestMapper.MapRequest(dataCache))
-            {
-                Context.Response.StatusCode = 404;
-                Context.Response.StatusDescription = Resources.NotFoundStatusCode;
-                Context.ApplicationInstance.CompleteRequest();
-                Context.Response.End();
-                return;
-            }
-
             currentUser.MapCurrentUser();
         }
 
         private void OnError(object sender, EventArgs eventArgs)
         {
-            try
+            var exception = Server.GetLastError();
+            if (exception != null)
             {
-                var exception = Server.GetLastError();
-                if (exception != null)
+                if (exception.GetType() == typeof (HttpException))
                 {
-                    if (exception.GetType() == typeof (HttpException))
-                    {
-                        return;
-                    }
-                    this.LogException(exception);
+                    return;
                 }
-            }
-            finally
-            {
-                SiteMapperScope.ResetMapping();
+                this.LogException(exception);
             }
         }
 
         private void OnEndRequest(object sender, EventArgs e)
         {
-            try
-            {
-                var startedTime = Context.Items[RequestStartedKey];
-                int tookMs = startedTime != null ? (Environment.TickCount - (int) startedTime) : -1;
-                this.LogDebug("EndRequest; request from '" + Request.UserHostAddress + "' for '" + Request.Path + "', took " + tookMs + " ms");
-            }
-            finally
-            {
-                SiteMapperScope.ResetMapping();
-            }
+            var startedTime = Context.Items[RequestStartedKey];
+            int tookMs = startedTime != null ? (Environment.TickCount - (int) startedTime) : -1;
+            this.LogDebug("EndRequest; request from '" + Request.UserHostAddress + "' for '" + Request.Path + "', took " + tookMs + " ms");
         }
     }
 }

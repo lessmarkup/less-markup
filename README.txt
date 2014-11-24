@@ -16,7 +16,6 @@ Used Technologies
 
 * AngularJS + Angular UI on the client side
 * ASP.NET MVC on the server side
-* Microsoft Entity Framework with merge functionality
 
 Main Features
 =============
@@ -24,10 +23,8 @@ Main Features
 * Testability near to 100% as we use less markup than usual solutions, both on the client and server sides.
 * Server modularity. Usual ASP.NET MVC application loads views only from main solution. We have fixed this problem - you can pack your views inside your assemblies. We use Inversion of control over all our code to achieve higher modularity, and it also improves testability of the code.
 * Client modularity. We support AngularJS & RequireJS to create client-side modularity: only minimal set of javascript modules will be loaded on startup. All other javascript modules will be loaded by demand.
-* Automatic mapping of data structure to database with automatic merging of changes. You can define your own data model and it will be accurately integrated into existing engine model. Each module can have its own independent data model.
 * Scalability. The engine can work on multiple hosts as it supports distributed caching.
 * Callbacks. Changed data will be automatically pushed to the client page without any action from the client.
-* No SQL coding. You do not need to write any SQL code directly - use LINQ for SQL.
 * Highly customizable. The engine does not make restrictions to you. You can use normal Razor views with any standard ASP.NET MVC functionality.
 * Integrated language support.
 * Two-stage login: the engine never sends your password during login.

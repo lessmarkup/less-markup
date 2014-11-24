@@ -3,16 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class UserLoginIpAddress : NonSiteDataObject
+    public class UserLoginIpAddress : DataObject
     {
-        [ForeignKey("User")]
         public long UserId { get; set; }
-        public User User { get; set; }
         public string IpAddress { get; set; }
         public DateTime Created { get; set; }
     }

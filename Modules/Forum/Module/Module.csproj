@@ -104,10 +104,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj">
-      <Project>{cfdc0c8b-a405-45ac-80d2-5d5bddf02fea}</Project>
-      <Name>DataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataObjects\DataObjects.csproj">
       <Project>{8090915b-2e43-4387-8990-75f2aba47b17}</Project>
       <Name>DataObjects</Name>

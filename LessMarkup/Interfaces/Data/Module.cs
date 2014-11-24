@@ -4,7 +4,7 @@
 
 namespace LessMarkup.Interfaces.Data
 {
-    public class Module : NonSiteDataObject
+    public class Module : DataObject
     {
         public string Name { get; set; }
         public string Path { get; set; }

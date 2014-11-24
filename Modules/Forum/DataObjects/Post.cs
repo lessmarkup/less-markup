@@ -3,34 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.Forum.DataObjects
 {
-    public class Post : SiteDataObject
+    public class Post : DataObject
     {
         public bool Removed { get; set; }
-
-        [ForeignKey("Thread")]
         public long ThreadId { get; set; }
-        public Thread Thread { get; set; }
-
         public string IpAddress { get; set; }
-        
         public DateTime Created { get; set; }
-
-        [ForeignKey("User")]
         public long? UserId { get; set; }
-        public User User { get; set; }
-
         [TextSearch]
         public string Text { get; set; }
-
-        public List<PostAttachment> Attachments { get; set; }
-        public List<PostHistory> Histories { get; set; } 
     }
 }

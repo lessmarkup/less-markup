@@ -22,11 +22,11 @@ namespace LessMarkup.UserInterface.Model.Structure
             public int Count { get; set; }
         }
 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
 
-        public UserInteraceElementsModel(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public UserInteraceElementsModel(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;

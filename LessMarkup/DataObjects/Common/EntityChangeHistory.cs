@@ -7,14 +7,13 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class EntityChangeHistory : NonSiteDataObject
+    public class EntityChangeHistory : DataObject
     {
         public long? UserId { get; set; }
         public long EntityId { get; set; }
         public int CollectionId { get; set; }
         public int ChangeType { get; set; } // EntityChangeType
         public DateTime Created { get; set; }
-        public long? SiteId { get; set; }
         public long Parameter1 { get; set; }
         public long Parameter2 { get; set; }
         public long Parameter3 { get; set; }

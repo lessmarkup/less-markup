@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Linq;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -24,9 +23,9 @@ namespace LessMarkup.Forum.Model
             _currentUser = currentUser;
         }
 
-        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
+        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
         {
-            var thread = domainModel.GetSiteCollection<Thread>().Where(t => t.Id == entityId).Select(t => new { t.ForumId, t.Path }).FirstOrDefault();
+            var thread = domainModel.Query().Find<Thread>(entityId);
             if (thread == null)
             {
                 return null;

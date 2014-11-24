@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -19,38 +19,29 @@ namespace LessMarkup.Engine.Configuration
     {
         #region Private Fields
 
-        private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ISiteMapper _siteMapper;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
         #endregion
 
         #region Initialization
 
-        public SiteConfigurationCache(IDomainModelProvider domainModelProvider, ISiteMapper siteMapper)
-            : base(new[] { typeof(Interfaces.Data.Site) })
+        public SiteConfigurationCache(ILightDomainModelProvider domainModelProvider)
+            : base(new[] { typeof(SiteProperties) })
         {
             _domainModelProvider = domainModelProvider;
-            _siteMapper = siteMapper;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
-            if (!siteId.HasValue)
-            {
-                siteId = _siteMapper.SiteId;
-            }
-
             Dictionary<string, object> properties = null;
 
-            if (siteId.HasValue)
+            using (var domainModel = _domainModelProvider.Create())
             {
-                using (var domainModel = _domainModelProvider.Create(siteId.Value))
+                var site = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>("Properties");
+
+                if (site != null && !string.IsNullOrWhiteSpace(site.Properties))
                 {
-                    var site = domainModel.GetCollection<Interfaces.Data.Site>().First(s => s.Id == siteId.Value);
-                    if (!string.IsNullOrWhiteSpace(site.Properties))
-                    {
-                        properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
-                    }
+                    properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
                 }
             }
 

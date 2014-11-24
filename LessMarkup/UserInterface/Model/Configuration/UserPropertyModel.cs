@@ -15,37 +15,37 @@ namespace LessMarkup.UserInterface.Model.Configuration
     {
         public class Collection : IEditableModelCollection<UserPropertyModel>
         {
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _changeTracker = changeTracker;
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<UserPropertyDefinition>(), filter, typeof (UserPropertyModel)).Select(d => d.Id);
+                return query.ToIdList();
             }
 
             public int CollectionId
             {
-                get { return DataHelper.GetCollectionIdVerified<UserPropertyDefinition>(); }
+                get { return DataHelper.GetCollectionId<UserPropertyDefinition>(); }
             }
 
-            public IQueryable<UserPropertyModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<UserPropertyModel> Read(ILightQueryBuilder queryBuilder, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<UserPropertyDefinition>()
-                        .Where(d => ids.Contains(d.Id))
+                return queryBuilder
+                    .WhereIds(ids)
+                    .ToList<UserPropertyDefinition>()
                         .Select(d => new UserPropertyModel
                         {
                             Id = d.Id,
                             Name = d.Name,
                             Title = d.Title,
                             Type = d.Type
-                        });
+                        }).ToList();
             }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
@@ -68,11 +68,8 @@ namespace LessMarkup.UserInterface.Model.Configuration
                         Type = record.Type
                     };
 
-                    domainModel.GetSiteCollection<UserPropertyDefinition>().Add(definition);
-                    domainModel.SaveChanges();
-
+                    domainModel.Create(definition);
                     _changeTracker.AddChange(definition, EntityChangeType.Added, domainModel);
-                    domainModel.SaveChanges();
 
                     record.Id = definition.Id;
                 }
@@ -82,14 +79,15 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var definition = domainModel.GetSiteCollection<UserPropertyDefinition>().First(d => d.Id == record.Id);
+                    var definition = domainModel.Query().Find<UserPropertyDefinition>(record.Id);
 
                     definition.Name = record.Name;
                     definition.Title = record.Title;
                     definition.Type = record.Type;
 
+                    domainModel.Update(definition);
+
                     _changeTracker.AddChange(definition, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
                 }
             }
 
@@ -97,12 +95,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var record in domainModel.GetSiteCollection<UserPropertyDefinition>().Where(d => recordIds.Contains(d.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.GetSiteCollection<UserPropertyDefinition>().Remove(record);
-                        _changeTracker.AddChange(record, EntityChangeType.Removed, domainModel);
+                        domainModel.Delete<UserPropertyDefinition>(id);
+                        _changeTracker.AddChange<UserPropertyDefinition>(id, EntityChangeType.Removed, domainModel);
                     }
-                    domainModel.SaveChanges();
                 }
                 return true;
             }

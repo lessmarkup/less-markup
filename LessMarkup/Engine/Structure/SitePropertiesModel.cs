@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
@@ -20,18 +20,16 @@ namespace LessMarkup.Engine.Structure
     [RecordModel]
     public class SitePropertiesModel : ISiteConfiguration
     {
-        private readonly ISiteMapper _siteMapper;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
 
-        public SitePropertiesModel(ISiteMapper siteMapper, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+        public SitePropertiesModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
         {
             _changeTracker = changeTracker;
-            _siteMapper = siteMapper;
             _domainModelProvider = domainModelProvider;
         }
 
-        void ICacheHandler.Initialize(long? siteId, long? objectId)
+        void ICacheHandler.Initialize(long? objectId)
         { throw new NotImplementedException(); }
 
         bool ICacheHandler.Expires(int collectionId, long entityId, EntityChangeType changeType)
@@ -110,25 +108,17 @@ namespace LessMarkup.Engine.Structure
         [InputField(InputFieldType.Text, MainModuleTextIds.ValidFileExtension)]
         public string ValidFileExtension { get; private set; }
 
-        public void Initialize(long? siteId)
+        public void Initialize()
         {
-            if (!siteId.HasValue)
-            {
-                siteId = _siteMapper.SiteId;
-            }
-
             Dictionary<string, object> properties = null;
 
-            if (siteId.HasValue)
+            using (var domainModel = _domainModelProvider.Create())
             {
-                using (var domainModel = _domainModelProvider.Create())
-                {
-                    var site = domainModel.GetCollection<Interfaces.Data.Site>().First(s => s.Id == siteId.Value);
+                var site = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>("Properties");
 
-                    if (!string.IsNullOrWhiteSpace(site.Properties))
-                    {
-                        properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
-                    }
+                if (!string.IsNullOrWhiteSpace(site.Properties))
+                {
+                    properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
                 }
             }
 
@@ -149,17 +139,8 @@ namespace LessMarkup.Engine.Structure
             }
         }
 
-        public void Save(long? siteId)
+        public void Save()
         {
-            if (!siteId.HasValue)
-            {
-                siteId = _siteMapper.SiteId;
-                if (!siteId.HasValue)
-                {
-                    throw new ArgumentOutOfRangeException("siteId");
-                }
-            }
-
             var properties = new Dictionary<string, object>();
             foreach (var property in typeof(ISiteConfiguration).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -177,10 +158,24 @@ namespace LessMarkup.Engine.Structure
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var site = domainModel.GetCollection<Interfaces.Data.Site>().First(s => s.Id == siteId.Value);
+                var site = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>();
+                bool isNew = false;
+                if (site == null)
+                {
+                    site = new SiteProperties();
+                    isNew = true;
+                }
                 site.Properties = JsonConvert.SerializeObject(properties);
-                _changeTracker.AddChange<Interfaces.Data.Site>(siteId.Value, EntityChangeType.Updated, domainModel);
-                domainModel.SaveChanges();
+                if (isNew)
+                {
+                    domainModel.Create(site);
+                    _changeTracker.AddChange<SiteProperties>(site.Id, EntityChangeType.Updated, domainModel);
+                }
+                else
+                {
+                    domainModel.Update(site);
+                    _changeTracker.AddChange<SiteProperties>(site.Id, EntityChangeType.Updated, domainModel);
+                }
             }
         }
     }

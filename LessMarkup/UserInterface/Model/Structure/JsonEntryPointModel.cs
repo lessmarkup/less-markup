@@ -104,6 +104,8 @@ namespace LessMarkup.UserInterface.Model.Structure
             }
             catch (Exception e)
             {
+                this.LogException(e);
+
                 while (e.InnerException != null)
                 {
                     e = e.InnerException;

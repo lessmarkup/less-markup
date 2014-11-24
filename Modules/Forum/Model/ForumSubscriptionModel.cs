@@ -18,10 +18,10 @@ namespace LessMarkup.Forum.Model
         public List<string> Forums { get; set; }
 
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
 
-        public ForumSubscriptionModel(IDataCache dataCache, IDomainModelProvider domainModelProvider, ICurrentUser currentUser)
+        public ForumSubscriptionModel(IDataCache dataCache, ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
@@ -41,7 +41,7 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var nodeUserData = domainModel.GetSiteCollection<NodeUserData>().FirstOrDefault(n => n.NodeId == nodeId && n.UserId == userId.Value);
+                var nodeUserData = domainModel.Query().From<NodeUserData>().Where("NodeId = $ AND UserId = $", nodeId, userId.Value).FirstOrDefault<NodeUserData>();
                 if (nodeUserData == null || string.IsNullOrEmpty(nodeUserData.Settings))
                 {
                     return;
@@ -69,9 +69,11 @@ namespace LessMarkup.Forum.Model
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var nodeUserData = domainModel.GetSiteCollection<NodeUserData>().FirstOrDefault(n => n.NodeId == nodeId && n.UserId == userId.Value);
+                var nodeUserData = domainModel.Query().From<NodeUserData>().Where("NodeId = $ AND UserId = $", nodeId, userId.Value).FirstOrDefault<NodeUserData>();
 
                 PostUpdatesUserSettingsModel settingsModel;
+
+                var isNew = false;
 
                 if (nodeUserData != null)
                 {
@@ -86,13 +88,13 @@ namespace LessMarkup.Forum.Model
                 }
                 else
                 {
+                    isNew = true;
                     settingsModel = new PostUpdatesUserSettingsModel();
                     nodeUserData = new NodeUserData
                     {
                         UserId = userId.Value,
                         NodeId = nodeId
                     };
-                    domainModel.AddSiteObject(nodeUserData);
                 }
 
                 if (Forums == null)
@@ -105,7 +107,15 @@ namespace LessMarkup.Forum.Model
                 }
 
                 nodeUserData.Settings = JsonConvert.SerializeObject(settingsModel);
-                domainModel.SaveChanges();
+
+                if (isNew)
+                {
+                    domainModel.Create(nodeUserData);
+                }
+                else
+                {
+                    domainModel.Update(nodeUserData);
+                }
             }
         }
 

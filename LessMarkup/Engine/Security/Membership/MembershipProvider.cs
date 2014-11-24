@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Web.Configuration;
 using System.Web.Security;
 using LessMarkup.DataObjects.Security;
@@ -19,9 +17,9 @@ namespace LessMarkup.Engine.Security.Membership
     {
         public override int GetUserIdFromOAuth(string provider, string providerUserId)
         {
-            using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
+            using (var domainModel = DependencyResolver.Resolve<ILightDomainModelProvider>().Create())
             {
-                var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.AuthProvider == provider && u.AuthProviderUserId == providerUserId);
+                var user = domainModel.Query().From<User>().Where("AuthProvider = $ AND AuthProviderId = $", provider, providerUserId).FirstOrDefault<User>("Id");
                 return user != null ? (int)user.Id : -1;
             }
         }
@@ -38,9 +36,9 @@ namespace LessMarkup.Engine.Security.Membership
 
         public override string GetUserNameFromId(int userId)
         {
-            using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
+            using (var domainModel = DependencyResolver.Resolve<ILightDomainModelProvider>().Create())
             {
-                var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.Id == userId);
+                var user = domainModel.Query().From<User>().Where("Id = $", userId).FirstOrDefault<User>("Name");
                 return user != null ? user.Name : null;
             }
         }
@@ -98,11 +96,6 @@ namespace LessMarkup.Engine.Security.Membership
         public override bool HasLocalAccount(int userId)
         {
             throw new NotImplementedException();
-        }
-
-        public override void Initialize(string name, NameValueCollection config)
-        {
-            base.Initialize(name, config);
         }
 
         protected override void OnValidatingPassword(ValidatePasswordEventArgs e)

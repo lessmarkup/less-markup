@@ -12,7 +12,7 @@ namespace LessMarkup.MainModule.Initialization
 {
     public class UserSearch : IEntitySearch
     {
-        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
+        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
         {
             return UserHelper.GetUserProfileLink(entityId);
         }

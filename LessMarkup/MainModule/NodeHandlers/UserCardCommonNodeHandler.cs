@@ -20,10 +20,10 @@ namespace LessMarkup.MainModule.NodeHandlers
     public class UserCardCommonNodeHandler : PropertiesNodeHandler, IUserCardNodeHandler
     {
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
 
-        public UserCardCommonNodeHandler(IDataCache dataCache, IModuleProvider moduleProvider, IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration) : base(moduleProvider)
+        public UserCardCommonNodeHandler(IDataCache dataCache, IModuleProvider moduleProvider, ILightDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration) : base(moduleProvider)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
@@ -69,7 +69,7 @@ namespace LessMarkup.MainModule.NodeHandlers
 
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var definition in domainModel.GetSiteCollection<UserPropertyDefinition>())
+                    foreach (var definition in domainModel.Query().From<UserPropertyDefinition>().ToList<UserPropertyDefinition>())
                     {
                         object propertyValue;
                         if (properties.TryGetValue(definition.Name, out propertyValue))

@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Structure
 {
-    public class Node : SiteDataObject
+    public class Node : DataObject
     {
         public string Path { get; set; }
         [TextSearch]
@@ -21,10 +19,6 @@ namespace LessMarkup.DataObjects.Structure
         public bool Enabled { get; set; }
         public bool AddToMenu { get; set; }
         public int Order { get; set; }
-        [ForeignKey("Parent")]
         public long? ParentId { get; set; }
-        public Node Parent { get; set; }
-        public List<NodeAccess> NodeAccess { get; set; }
-        public List<NodeUserData> NodeUserData { get; set; } 
     }
 }

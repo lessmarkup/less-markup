@@ -25,6 +25,6 @@ namespace LessMarkup.Interfaces.Structure
         NodeAccessType AccessType { get; }
         ActionResult CreateResult(string path);
         object Context { get; set; }
-        bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments);
+        bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments);
     }
 }

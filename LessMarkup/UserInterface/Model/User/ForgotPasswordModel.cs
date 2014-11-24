@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Web;
 using LessMarkup.DataFramework;
+using LessMarkup.Engine.Site;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Security;
@@ -26,16 +27,16 @@ namespace LessMarkup.UserInterface.Model.User
         public string Email { get; set; }
 
         private readonly IUserSecurity _userSecurity;
-        private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ISiteMapper _siteMapper;
+        private readonly IDataCache _dataCache;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IMailSender _mailSender;
 
-        public ForgotPasswordModel(IUserSecurity userSecurity, IDomainModelProvider domainModelProvider, ISiteMapper siteMapper, IMailSender mailSender)
+        public ForgotPasswordModel(IUserSecurity userSecurity, ILightDomainModelProvider domainModelProvider, IMailSender mailSender, IDataCache dataCache)
         {
             _userSecurity = userSecurity;
             _domainModelProvider = domainModelProvider;
-            _siteMapper = siteMapper;
             _mailSender = mailSender;
+            _dataCache = dataCache;
         }
 
         public void Initialize()
@@ -46,12 +47,6 @@ namespace LessMarkup.UserInterface.Model.User
 
         public void Submit(INodeHandler nodeHandler, string fullPath)
         {
-            var siteId = _siteMapper.SiteId;
-            if (!siteId.HasValue)
-            {
-                return;
-            }
-
             var hostName = HttpContext.Current.Request.Headers["host"];
 
             if (string.IsNullOrWhiteSpace(hostName))
@@ -61,7 +56,7 @@ namespace LessMarkup.UserInterface.Model.User
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<DataObjects.Security.User>().FirstOrDefault(u => u.SiteId == siteId && u.Email == Email);
+                var user = domainModel.Query().From<DataObjects.Security.User>().Where("Email = $", Email).First<DataObjects.Security.User>();
 
                 if (user == null)
                 {
@@ -74,7 +69,7 @@ namespace LessMarkup.UserInterface.Model.User
                 _mailSender.SendMail(null, user.Id, Email, "ResetPassword", new ResetPasswordEmailModel
                 {
                     ResetUrl = string.Format("http://{0}/{1}/ticket/{2}", hostName, fullPath.TrimStart(new []{'/'}), ticket),
-                    SiteName = _siteMapper.Title,
+                    SiteName = _dataCache.Get<SiteCache>().Title,
                     HostName = hostName,
                     Subject = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.RestorePassword)
                 });

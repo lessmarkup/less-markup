@@ -23,10 +23,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     public class ThreadNodeHandler : RecordListNodeHandler<PostModel>
     {
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
 
-        public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public ThreadNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
@@ -88,7 +88,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    newObject = GetCollection().Read(domainModel, new List<long> {recordId}).First();
+                    newObject = GetCollection().Read(domainModel.Query(), new List<long> {recordId}).First();
                     return ReturnRecordResult(newObject);
                 }
             }
@@ -206,7 +206,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var post = domainModel.GetSiteCollection<Post>().Single(p => p.Id == recordId);
+                var post = domainModel.Query().Find<Post>(recordId);
 
                 if (!post.UserId.HasValue)
                 {
@@ -216,7 +216,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                 userId = post.UserId.Value;
             }
 
-            newObject.BlockUser(null, userId);
+            newObject.BlockUser(userId);
 
             return null;
         }
@@ -234,7 +234,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             }
         }
 
-        protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
+        protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, ILightDomainModel domainModel)
         {
             base.ReadRecords(values, ids, domainModel);
             UserModel.FillUsersFromPosts(values, _dataCache, domainModel, ids);
@@ -290,7 +290,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var properties = domainModel.GetSiteCollection<UserPropertyDefinition>().Select(p => new UserPropertyModel
+                    var properties = domainModel.Query().From<UserPropertyDefinition>().ToList<UserPropertyDefinition>().Select(p => new UserPropertyModel
                         {
                             Name = p.Name,
                             Title = p.Title,
@@ -304,26 +304,22 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                         property.Name = property.Name.ToJsonCase();
                     }
 
-                    var lastRead = domainModel.GetSiteCollection<Thread>()
-                        .Where(t => t.Id == ObjectId)
-                        .Select(t => t.Views.Where(v => v.UserId == userId.Value).Max(v => v.Updated))
-                        .First();
+                    var lastRead = domainModel.Query().From<ThreadView>().Where("UserId = $", userId.Value).OrderByDescending("Updated").FirstOrDefault<ThreadView>();
 
-                    result["lastRead"] = lastRead;
+                    result["lastRead"] = lastRead != null ? lastRead.Updated : null;
 
-                    var view = domainModel.GetSiteCollection<ThreadView>()
-                        .Where(v => v.UserId == userId.Value && v.ThreadId == ObjectId.Value)
-                        .OrderByDescending(v => v.LastSeen)
-                        .FirstOrDefault(v => v.UserId == userId);
+                    var view = domainModel.Query().From<ThreadView>().Where("UserId = $ AND ThreadId = $", userId.Value, ObjectId.Value).OrderByDescending("LastSeen").FirstOrDefault<ThreadView>();
+                        
                     if (view == null)
                     {
                         view = new ThreadView
                         {
                             ThreadId = ObjectId.Value, 
                             UserId = userId.Value,
-                            Views = 1
+                            Views = 1,
+                            LastSeen = DateTime.UtcNow
                         };
-                        domainModel.GetSiteCollection<ThreadView>().Add(view);
+                        domainModel.Create(view);
                     }
                     else
                     {
@@ -331,11 +327,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                         {
                             view.Views++;
                         }
+                        view.LastSeen = DateTime.UtcNow;
+                        domainModel.Update(view);
                     }
-
-                    view.LastSeen = DateTime.UtcNow;
-
-                    domainModel.SaveChanges();
                 }
             }
 
@@ -353,7 +347,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var view = domainModel.GetSiteCollection<ThreadView>().FirstOrDefault(u => u.UserId == userId.Value && u.ThreadId == ObjectId.Value);
+                var view = domainModel.Query().From<ThreadView>().Where("UserId = $ AND ThreadId = $", userId.Value, ObjectId.Value).FirstOrDefault<ThreadView>();
+
+                var isNew = false;
 
                 if (view == null)
                 {
@@ -362,12 +358,20 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                         ThreadId = ObjectId.Value,
                         UserId = userId.Value
                     };
-                    domainModel.GetSiteCollection<ThreadView>().Add(view);
+                    isNew = true;
                 }
 
                 view.LastSeen = DateTime.UtcNow;
                 view.Updated = lastRead;
-                domainModel.SaveChanges();
+
+                if (isNew)
+                {
+                    domainModel.Create(view);
+                }
+                else
+                {
+                    domainModel.Update(view);
+                }
             }
 
             return null;

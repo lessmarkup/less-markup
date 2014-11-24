@@ -19,9 +19,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     {
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public PostUpdatesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public PostUpdatesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)
         {
             _dataCache = dataCache;
@@ -64,7 +64,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return null;
         }
 
-        public override int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel)
+        public override int GetValueChange(long? fromVersion, long? toVersion, ILightDomainModel domainModel)
         {
             if (!fromVersion.HasValue)
             {
@@ -97,7 +97,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 
             var changeIds = changes.Select(c => c.EntityId).Distinct().ToList();
 
-            return collection.ReadIds(domainModel, null, true).Count(r => changeIds.Contains(r));
+            return collection.ReadIds(domainModel.Query(), true).Count(changeIds.Contains);
         }
 
         protected override void PostProcessRecords(List<PostUpdateModel> records)

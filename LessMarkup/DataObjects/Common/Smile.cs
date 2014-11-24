@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class Smile : SiteDataObject
+    public class Smile : DataObject
     {
         public string ContentType { get; set; }
         public byte[] Data { get; set; }

@@ -13,7 +13,6 @@ using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Configuration;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
@@ -29,26 +28,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IDataCache _dataCache;
-        private readonly ISiteMapper _siteMapper;
 
-        private long SiteId
-        {
-            get
-            {
-                var ret = ObjectId ?? _siteMapper.SiteId;
-                if (!ret.HasValue)
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-                return ret.Value;
-            }
-        }
-
-        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache, ISiteMapper siteMapper)
+        public NodeListNodeHandler(IModuleIntegration moduleIntegration, IDataCache dataCache)
         {
             _moduleIntegration = moduleIntegration;
             _dataCache = dataCache;
-            _siteMapper = siteMapper;
             AddScript("controllers/nodelist");
         }
 
@@ -70,7 +54,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             return new Dictionary<string, object>
             {
-                { "Root", node.GetRootNode(SiteId) },
+                { "Root", node.GetRootNode() },
                 { "NodeSettingsModelId", modelCache.GetDefinition(typeof(NodeSettingsModel)).Id },
                 { "NodeHandlers", _moduleIntegration.GetNodeHandlers().Select(id => new { Id = id, Handler = _moduleIntegration.GetNodeHandler(id )}).Select(h => new
                 {
@@ -86,12 +70,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             node.NodeId = nodeId;
             node.ParentId = parentId;
             node.Order = order;
-            return node.UpdateParent(SiteId);
+            return node.UpdateParent();
         }
 
         public object CreateNode(NodeSettingsModel node)
         {
-            return node.CreateNode(SiteId);
+            return node.CreateNode();
         }
 
         public object DeleteNode(long id)
@@ -99,12 +83,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             var node = DependencyResolver.Resolve<NodeSettingsModel>();
             node.NodeId = id;
 
-            return node.DeleteNode(SiteId);
+            return node.DeleteNode();
         }
 
         public object UpdateNode(NodeSettingsModel node)
         {
-            return node.UpdateNode(SiteId);
+            return node.UpdateNode();
         }
 
         public object ChangeSettings(long nodeId, object settings)
@@ -112,7 +96,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             var node = DependencyResolver.Resolve<NodeSettingsModel>();
             node.Settings = settings;
             node.NodeId = nodeId;
-            return node.ChangeSettings(SiteId);
+            return node.ChangeSettings();
         }
 
         protected override bool HasChildren
@@ -131,7 +115,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
             var handler = DependencyResolver.Resolve<NodeAccessNodeHandler>();
 
-            handler.Initialize(SiteId, nodeId);
+            handler.Initialize(nodeId);
 
             ((INodeHandler) handler).Initialize(nodeId, null, null, path, FullPath + "/" + path, AccessType);
 

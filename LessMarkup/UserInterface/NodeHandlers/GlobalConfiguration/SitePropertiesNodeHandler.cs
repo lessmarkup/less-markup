@@ -20,13 +20,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
         protected override SitePropertiesModel LoadObject()
         {
             var model = DependencyResolver.Resolve<SitePropertiesModel>();
-            model.Initialize(ObjectId);
+            model.Initialize();
             return model;
         }
 
         protected override string SaveObject(SitePropertiesModel changedObject)
         {
-            changedObject.Save(ObjectId);
+            changedObject.Save();
             return null;
         }
     }

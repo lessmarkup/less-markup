@@ -3,15 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Security;
-using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.User;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -21,15 +18,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
     {
         private string _ticket;
 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IUserSecurity _userSecurity;
-        private readonly ISiteMapper _siteMapper;
 
-        public ResetPasswordPageHandler(IDomainModelProvider domainModelProvider, IUserSecurity userSecurity, IDataCache dataCache, ISiteMapper siteMapper) : base(dataCache)
+        public ResetPasswordPageHandler(ILightDomainModelProvider domainModelProvider, IUserSecurity userSecurity, IDataCache dataCache) : base(dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _userSecurity = userSecurity;
-            _siteMapper = siteMapper;
         }
 
         public void Initialize(string ticket)
@@ -44,13 +39,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 return null;
             }
 
-            var siteId = _siteMapper.SiteId;
-
-            if (!siteId.HasValue)
-            {
-                return new HttpNotFoundResult();
-            }
-
             var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
 
             if (!userId.HasValue)
@@ -60,7 +48,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                if (!domainModel.GetCollection<DataObjects.Security.User>().Any(u => u.Id == userId && u.SiteId == siteId))
+                if (domainModel.Query().From<DataObjects.Security.User>().FindOrDefault<DataObjects.Security.User>(userId.Value) == null)
                 {
                     return new HttpNotFoundResult();
                 }
@@ -76,14 +64,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
         protected override string SaveObject(ChangePasswordModel changedObject)
         {
-            var siteId = _siteMapper.SiteId;
-
-            if (!siteId.HasValue)
-            {
-                this.LogDebug("Cannot change password: unknown site id");
-                return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChangeError);
-            }
-
             var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
 
             if (!userId.HasValue)
@@ -94,7 +74,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.GetCollection<DataObjects.Security.User>().FirstOrDefault(u => u.Id == userId && u.SiteId == siteId);
+                var user = domainModel.Query().FindOrDefault<DataObjects.Security.User>(userId.Value);
 
                 if (user == null)
                 {
@@ -111,7 +91,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 user.LastPasswordChanged = DateTime.UtcNow;
                 user.EmailConfirmed = true;
 
-                domainModel.SaveChanges();
+                domainModel.Update(user);
 
                 return LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.PasswordChanged);
             }

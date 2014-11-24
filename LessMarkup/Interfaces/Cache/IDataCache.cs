@@ -7,11 +7,8 @@ namespace LessMarkup.Interfaces.Cache
     public interface IDataCache
     {
         T Get<T>(long? objectId = null, bool create = true) where T : ICacheHandler;
-        T GetGlobal<T>(long? objectId = null, bool create = true) where T : ICacheHandler;
         void Expired<T>(long? objectId = null) where T : ICacheHandler;
-        void ExpiredGlobal<T>(long? objectId = null) where T : ICacheHandler;
         T CreateWithUniqueId<T>() where T : ICacheHandler;
-        T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler;
         void Reset();
     }
 }

@@ -12,9 +12,7 @@ using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
-using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 {
@@ -39,14 +37,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         private readonly Dictionary<string, ConfigurationHandler> _configurationHandlers = new Dictionary<string, ConfigurationHandler>();
         private readonly IDataCache _dataCache;
 
-        public ConfigurationRootNodeHandler(IModuleProvider moduleProvider, IDataCache dataCache, ISiteMapper siteMapper, ICurrentUser currentUser)
+        public ConfigurationRootNodeHandler(IModuleProvider moduleProvider, IDataCache dataCache)
         {
             AddScript("controllers/configuration");
 
             _dataCache = dataCache;
-
-            bool addSiteHandlers = siteMapper.SiteId.HasValue;
-            bool addGlobalHandlers = currentUser.IsGlobalAdministrator;
 
             long idCounter = 1;
 
@@ -87,18 +82,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                                 break;
                             default:
                                 continue;
-                        }
-
-                        if (!addGlobalHandlers)
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (!addSiteHandlers)
-                        {
-                            continue;
                         }
                     }
 

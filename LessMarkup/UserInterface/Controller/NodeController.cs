@@ -4,7 +4,6 @@
 
 using System;
 using System.Web.Mvc;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.System;

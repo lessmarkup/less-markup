@@ -3,17 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class UserAddress : SiteDataObject
+    public class UserAddress : DataObject
     {
         public bool IsRemoved { get; set; }
-        [ForeignKey("User")]
         public long? UserId { get; set; }
-        public User User { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }

@@ -3,13 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web.Mail;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -23,12 +21,12 @@ namespace LessMarkup.Engine.Email
 {
     public class MailSender : IMailSender
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IMailTemplateProvider _mailTemplateProvider;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
 
-        public MailSender(IDomainModelProvider domainModelProvider, IMailTemplateProvider mailTemplateProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache)
+        public MailSender(ILightDomainModelProvider domainModelProvider, IMailTemplateProvider mailTemplateProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _mailTemplateProvider = mailTemplateProvider;
@@ -108,11 +106,11 @@ namespace LessMarkup.Engine.Email
                 {
                     if (userIdTo.HasValue)
                     {
-                        userTo = domainModel.GetCollection<User>().Single(u => u.Id == userIdTo);
+                        userTo = domainModel.Query().From<User>().Where("Id = $", userIdTo).First<User>();
                     }
                     if (userIdFrom.HasValue)
                     {
-                        userFrom = domainModel.GetCollection<User>().Single(u => u.Id == userIdFrom.Value);
+                        userFrom = domainModel.Query().From<User>().Where("Id = $", userIdFrom.Value).First<User>();
                     }
                 }
 
@@ -224,7 +222,7 @@ namespace LessMarkup.Engine.Email
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var testEmail = domainModel.GetSiteCollection<TestMail>().Create();
+                    var testEmail = new TestMail();
                     testEmail.Body = body;
                     testEmail.From = ComposeAddress(fromAddress, fromName);
                     testEmail.Template = viewPath;
@@ -232,9 +230,7 @@ namespace LessMarkup.Engine.Email
                     testEmail.Subject = subject;
                     testEmail.To = ComposeAddress(toAddress, toName);
                     testEmail.Views = 0;
-
-                    domainModel.GetSiteCollection<TestMail>().Add(testEmail);
-                    domainModel.SaveChanges();
+                    domainModel.Create(testEmail);
                 }
                 return;
             }

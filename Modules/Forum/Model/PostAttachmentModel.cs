@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using LessMarkup.Forum.DataObjects;
 using LessMarkup.Interfaces.Data;
 
@@ -11,11 +10,11 @@ namespace LessMarkup.Forum.Model
         public long Id { get; set; }
         public string Url { get; set; }
 
-        public static ActionResult CreateResult(long threadId, long postId, long attachmentId, IDomainModelProvider domainModelProvider)
+        public static ActionResult CreateResult(long threadId, long postId, long attachmentId, ILightDomainModelProvider domainModelProvider)
         {
             using (var domainModel = domainModelProvider.Create())
             {
-                var attachment = domainModel.GetSiteCollection<PostAttachment>().FirstOrDefault(a => a.Id == attachmentId && a.PostId == postId && a.Post.ThreadId == threadId);
+                var attachment = domainModel.Query().From<PostAttachment>().Where("Id = $ AND PostId = $").FirstOrDefault<PostAttachment>();
 
                 if (attachment == null)
                 {

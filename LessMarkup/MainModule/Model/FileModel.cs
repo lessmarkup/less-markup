@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
@@ -18,9 +17,9 @@ namespace LessMarkup.MainModule.Model
     [RecordModel(TitleTextId = MainModuleTextIds.EditFile, CollectionType = typeof(Collection))]
     public class FileModel
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public FileModel(IDomainModelProvider domainModelProvider)
+        public FileModel(ILightDomainModelProvider domainModelProvider)
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -31,26 +30,23 @@ namespace LessMarkup.MainModule.Model
 
         public class Collection : IEditableModelCollection<FileModel>
         {
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
 
-            public Collection(IDomainModelProvider domainModelProvider)
+            public Collection(ILightDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return RecordListHelper.GetFilterAndOrderQuery(domainModel.GetSiteCollection<File>(), filter, typeof(FileModel)).Select(f => f.Id);
+                return query.From<File>().ToIdList();
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<File>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<File>(); } }
 
-            public IQueryable<FileModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<FileModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<File>()
-                        .Where(f => ids.Contains(f.Id))
-                        .Select(f => new FileModel { FileId = f.Id, UniqueId = f.UniqueId, FileName = f.FileName });
+                return query.From<File>().WhereIds(ids).ToList<File>().Select(f => new FileModel { FileId = f.Id, UniqueId = f.UniqueId, FileName = f.FileName }).ToList();
             }
 
             public bool Filtered { get { return false; } }
@@ -81,9 +77,7 @@ namespace LessMarkup.MainModule.Model
                         file.FileName = record.File.Name;
                     }
 
-                    domainModel.GetSiteCollection<File>().Add(file);
-
-                    domainModel.SaveChanges();
+                    domainModel.Create(file);
 
                     record.File = new InputFile();
                     record.FileName = file.FileName;
@@ -95,7 +89,7 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var file = domainModel.GetSiteCollection<File>().Single(f => f.Id == record.FileId);
+                    var file = domainModel.Query().Find<File>(record.FileId);
 
                     file.UniqueId = record.UniqueId;
                     file.FileName = record.FileName;
@@ -111,7 +105,7 @@ namespace LessMarkup.MainModule.Model
                         }
                     }
 
-                    domainModel.SaveChanges();
+                    domainModel.Update(file);
 
                     record.File = new InputFile();
                     record.FileName = file.FileName;
@@ -122,11 +116,10 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var file in domainModel.GetSiteCollection<File>().Where(f => recordIds.Contains(f.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.GetSiteCollection<File>().Remove(file);
+                        domainModel.Delete<File>(id);
                     }
-                    domainModel.SaveChanges();
                 }
                 return true;
             }
@@ -148,7 +141,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var file = domainModel.GetSiteCollection<File>().FirstOrDefault(f => f.UniqueId == id);
+                var file = domainModel.Query().From<File>().Where("UniqueId = $", id).FirstOrDefault<File>();
 
                 if (file == null)
                 {

@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Security
 {
-    public class FailedLoginHistory : NonSiteDataObject
+    public class FailedLoginHistory : DataObject
     {
         public long? UserId { get; set; }
         public string Address { get; set; }

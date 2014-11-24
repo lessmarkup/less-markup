@@ -175,23 +175,25 @@ namespace LessMarkup.Forum.Model
                 InitializeNode(null, child, forumHandlerType);
             }
 
-            foreach (var forum in _idToForum.Values)
+            var forumCache = _dataCache.Get<ForumStatisticsCache>();
+
+            foreach (var statistics in forumCache.GetStatistics(_idToForum.Keys.ToList()))
             {
-                var forumCache = _dataCache.Get<ForumStatisticsCache>(forum.Id);
+                var forum = _idToForum[statistics.ForumId];
 
-                forum.Posts = forumCache.Posts;
-                forum.Threads = forumCache.Threads;
-                forum.LastAuthorId = forumCache.LastAuthorId;
-                forum.LastAuthorName = forumCache.LastAuthor;
-                forum.LastCreated = forumCache.LastCreated;
-                forum.LastPostId = forumCache.LastPostId;
-                forum.LastThreadId = forumCache.LastThreadId;
-                forum.LastThreadTitle = forumCache.LastThreadTitle;
+                forum.Posts = statistics.Posts;
+                forum.Threads = statistics.Threads;
+                forum.LastAuthorId = statistics.LastAuthorId;
+                forum.LastAuthorName = statistics.LastAuthor;
+                forum.LastCreated = statistics.LastCreated;
+                forum.LastPostId = statistics.LastPostId;
+                forum.LastThreadId = statistics.LastThreadId;
+                forum.LastThreadTitle = statistics.LastThreadTitle;
 
-                if (forumCache.LastPostId.HasValue)
+                if (statistics.LastPostId.HasValue)
                 {
                     forum.LastNodeId = forum.Id;
-                    forum.LastThreadUrl = string.Format("{0}/{1}", forum.Path, forumCache.LastThreadPath);
+                    forum.LastThreadUrl = string.Format("{0}/{1}", forum.Path, statistics.LastThreadPath);
                 }
             }
 

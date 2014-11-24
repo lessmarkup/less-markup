@@ -9,7 +9,9 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine.Logging;
+using LessMarkup.Engine.Site;
 using LessMarkup.Framework.Helpers;
+using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 using DependencyResolver = LessMarkup.Interfaces.DependencyResolver;
@@ -19,10 +21,12 @@ namespace LessMarkup.Engine.Build
     class ControllerFactory : DefaultControllerFactory, Interfaces.System.IControllerFactory
     {
         private readonly IModuleProvider _moduleProvider;
+        private readonly IDataCache _dataCache;
 
-        public ControllerFactory(IModuleProvider moduleProvider)
+        public ControllerFactory(IModuleProvider moduleProvider, IDataCache dataCache)
         {
             _moduleProvider = moduleProvider;
+            _dataCache = dataCache;
         }
 
         public ControllerFactory(IControllerActivator controllerActivator) : base(controllerActivator)
@@ -93,12 +97,13 @@ namespace LessMarkup.Engine.Build
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "NotSubclassOfIController", new object[] { controllerType }), "controllerType");
             }
 
-            var siteMapper = DependencyResolver.Resolve<ISiteMapper>();
             var engineConfiguration = DependencyResolver.Resolve<IEngineConfiguration>();
 
             if ((!engineConfiguration.SafeMode || engineConfiguration.DisableSafeMode) && !string.IsNullOrWhiteSpace(engineConfiguration.Database))
             {
-                if (!siteMapper.ModuleEnabled(moduleType))
+                var siteCache = _dataCache.Get<SiteCache>();
+
+                if (!siteCache.ModuleTypes.Contains(moduleType))
                 {
                     throw new HttpException(404, string.Format(CultureInfo.CurrentCulture, "NoControllerFound", new object[] { requestContext.HttpContext.Request.Path }));
                 }

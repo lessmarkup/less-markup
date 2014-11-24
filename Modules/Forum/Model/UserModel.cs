@@ -45,9 +45,19 @@ namespace LessMarkup.Forum.Model
             Properties = !string.IsNullOrWhiteSpace(user.Properties) ? JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties) : new Dictionary<string, object>();
         }
 
-        public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)
+        public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, ILightDomainModel domainModel, List<long> postIds)
         {
-            FillUsers(values, dataCache, domainModel.GetSiteCollection<Post>().Where(p => p.UserId.HasValue && postIds.Contains(p.Id)).GroupBy(p => p.UserId).Select(p => p.Key.Value).ToArray());
+            var userIds =
+                domainModel.Query()
+                    .From<Post>()
+                    .Where(string.Format("UserId IS NOT NULL AND Id IN ({0})", string.Join(",", postIds)))
+                    .ToList<Post>("UserId")
+                    .Where(p => p.UserId.HasValue)
+                    .Select(p => p.UserId.Value)
+                    .Distinct()
+                    .ToArray();
+
+            FillUsers(values, dataCache, userIds);
         }
 
         public static void FillUsers(Dictionary<string, object> values, IDataCache dataCache, params long[] userIds)

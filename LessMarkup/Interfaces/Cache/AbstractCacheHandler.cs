@@ -15,12 +15,12 @@ namespace LessMarkup.Interfaces.Cache
             _handledCollectionTypes = handledCollectionTypes;
         }
 
-        void ICacheHandler.Initialize(long? siteId, long? objectId)
+        void ICacheHandler.Initialize(long? objectId)
         {
-            Initialize(siteId, objectId);
+            Initialize(objectId);
         }
 
-        protected abstract void Initialize(long? siteId, long? objectId);
+        protected abstract void Initialize(long? objectId);
 
         bool ICacheHandler.Expires(int collectionId, long entityId, EntityChangeType changeType)
         {

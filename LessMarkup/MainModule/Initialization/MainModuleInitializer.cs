@@ -40,6 +40,14 @@ namespace LessMarkup.MainModule.Initialization
             }
         }
 
+        public override Assembly DataObjectsAssembly
+        {
+            get
+            {
+                return typeof(DataObjects.Migrations.Initial).Assembly;
+            }
+        }
+
         public override void InitializeDatabase()
         {
             base.InitializeDatabase();

@@ -5,7 +5,6 @@
 using System;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
@@ -16,10 +15,9 @@ namespace LessMarkup.Framework.Helpers
 {
     public static class ImageUploader
     {
-        public static void DeleteImage(IDomainModel domainModel, long imageId)
+        public static void DeleteImage(ILightDomainModel domainModel, long imageId)
         {
-            var image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId);
-            domainModel.GetSiteCollection<Image>().Remove(image);
+            domainModel.Delete<Image>(imageId);
         }
 
         public static void ReduceToAllowedImageSize(InputFile file, ISiteConfiguration siteConfiguration)
@@ -67,7 +65,7 @@ namespace LessMarkup.Framework.Helpers
             }
         }
 
-        public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
+        public static long SaveImage(ILightDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
         {
             if (file.File.Length > siteConfiguration.MaximumFileSize)
             {
@@ -160,14 +158,15 @@ namespace LessMarkup.Framework.Helpers
 
             if (imageId.HasValue)
             {
-                image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId.Value);
+                image = domainModel.Query().From<Image>().Where("Id = $", imageId.Value).First<Image>();
             }
+
+            var newImage = false;
 
             if (image == null)
             {
-                image = domainModel.GetSiteCollection<Image>().Create();
-                domainModel.GetSiteCollection<Image>().Add(image);
-                image.Created = DateTime.UtcNow;
+                newImage = true;
+                image = new Image {Created = DateTime.UtcNow};
             }
             else
             {
@@ -183,12 +182,19 @@ namespace LessMarkup.Framework.Helpers
             image.Thumbnail = thumbnailBytes;
             image.ThumbnailContentType = "image/png";
 
-            domainModel.SaveChanges();
- 
+            if (newImage)
+            {
+                domainModel.Create(image);
+            }
+            else
+            {
+                domainModel.Update(image);
+            }
+
             return image.Id;
         }
 
-        public static void LimitImageSize(long imageId, IDomainModel domainModel, int width, int height)
+        public static void LimitImageSize(long imageId, ILightDomainModel domainModel, int width, int height)
         {
             if (width <= 0)
             {
@@ -200,7 +206,7 @@ namespace LessMarkup.Framework.Helpers
                 throw new ArgumentOutOfRangeException("height");
             }
 
-            var image = domainModel.GetSiteCollection<Image>().Single(i => i.Id == imageId);
+            var image = domainModel.Query().From<Image>().Where("Id = $", imageId).First<Image>();
 
             if (image.Width <= width && image.Height <= height)
             {

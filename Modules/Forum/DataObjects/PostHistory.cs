@@ -3,22 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using LessMarkup.DataObjects.Security;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Forum.DataObjects
 {
-    public class PostHistory : SiteDataObject
+    public class PostHistory : DataObject
     {
-        [ForeignKey("Post")]
         public long PostId { get; set; }
-        public Post Post { get; set; }
         public string Reason { get; set; }
         public DateTime Created { get; set; }
         public string Text { get; set; }
-        [ForeignKey("User")]
         public long UserId { get; set; }
-        public User User { get; set; }
     }
 }

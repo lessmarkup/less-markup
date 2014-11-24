@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Security;
@@ -18,13 +17,13 @@ namespace LessMarkup.MainModule.Model
     {
         private readonly IUserSecurity _userSecurity;
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IMailSender _mailSender;
 
         public bool Success { get; set; }
         public bool ApproveRequired { get; set; }
 
-        public UserValidateModel(IUserSecurity userSecurity, IDataCache dataCache, IDomainModelProvider domainModelProvider, IMailSender mailSender)
+        public UserValidateModel(IUserSecurity userSecurity, IDataCache dataCache, ILightDomainModelProvider domainModelProvider, IMailSender mailSender)
         {
             _userSecurity = userSecurity;
             _dataCache = dataCache;
@@ -57,16 +56,20 @@ namespace LessMarkup.MainModule.Model
                     UserId = userId
                 };
 
-                List<long> administrators;
+                IReadOnlyCollection<long> administrators;
 
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var user = domainModel.GetCollection<User>().First(u => u.Id == userId);
+                    var user = domainModel.Query().Find<User>(userId);
 
                     approveModel.UserName = user.Name;
                     approveModel.Email = user.Email;
 
-                    administrators = domainModel.GetCollection<User>().Where(u => u.IsAdministrator && u.SiteId == user.SiteId && !u.IsRemoved && !u.IsBlocked).Select(u => u.Id).ToList();
+                    administrators =
+                        domainModel.Query()
+                            .From<User>()
+                            .Where("IsAdministrator = $ AND IsRemoved = $ AND IsBlocked = $", true, false, false)
+                            .ToIdList();
                 }
 
                 approveModel.ConfirmLink = urlHelper.Action("Approve", "Account", new { secret = _userSecurity.EncryptObject(new ApproveRequestModel

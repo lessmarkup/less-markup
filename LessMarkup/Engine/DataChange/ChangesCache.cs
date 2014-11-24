@@ -26,36 +26,28 @@ namespace LessMarkup.Engine.DataChange
             public long Parameter3 { get; set; }
         }
 
-        private long? _siteId;
         private long? _lastUpdateId;
         private long _lastUpdateTime;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private const int UpdateInterval = 500;
         private readonly Dictionary<int, List<Change>> _changes = new Dictionary<int, List<Change>>();
 
-        public ChangesCache(IDomainModelProvider domainModelProvider) : base(null)
+        public ChangesCache(ILightDomainModelProvider domainModelProvider) : base(null)
         {
             _domainModelProvider = domainModelProvider;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentException("objectId");
             }
-
-            _siteId = siteId;
         }
 
         private void UpdateIfRequired()
         {
-            if (!_siteId.HasValue)
-            {
-                return;
-            }
-
             if (Environment.TickCount - _lastUpdateTime <= UpdateInterval)
             {
                 return;
@@ -75,12 +67,19 @@ namespace LessMarkup.Engine.DataChange
                 using (var domainModel = _domainModelProvider.Create())
                 {
                     var dateFrame = DateTime.UtcNow.AddHours(-24);
-                    var query = domainModel.GetCollection<EntityChangeHistory>().Where(c => c.SiteId.HasValue && c.SiteId.Value == _siteId.Value && c.Created >= dateFrame);
-                    if (_lastUpdateId.HasValue)
+
+                    var query = domainModel.Query().From<EntityChangeHistory>();
+
+                    if (!_lastUpdateId.HasValue)
                     {
-                        query = query.Where(c => c.Id > _lastUpdateId.Value);
+                        query = query.Where("Created >= $", dateFrame);
                     }
-                    foreach (var item in query)
+                    else
+                    {
+                        query = query.Where("Created >= $ AND Id > $", dateFrame, _lastUpdateId.Value);
+                    }
+
+                    foreach (var item in query.ToList<EntityChangeHistory>())
                     {
                         _lastUpdateId = item.Id;
                         List<Change> collection;
@@ -115,11 +114,6 @@ namespace LessMarkup.Engine.DataChange
 
         public IEnumerable<IDataChange> GetCollectionChanges(int collectionId, long? fromId, long? toId, Func<IDataChange, bool> filterFunc = null)
         {
-            if (!_siteId.HasValue)
-            {
-                return null;
-            }
-
             UpdateIfRequired();
 
             _lock.EnterReadLock();

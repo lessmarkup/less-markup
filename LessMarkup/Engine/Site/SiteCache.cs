@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -13,25 +14,27 @@ namespace LessMarkup.Engine.Site
 {
     public class SiteCache : AbstractCacheHandler
     {
-        private readonly IDomainModelProvider _domainModelProvider;
-        private readonly List<SiteCacheItem> _sites = new List<SiteCacheItem>();
-        private readonly Dictionary<string, SiteCacheItem> _sitesByHost = new Dictionary<string, SiteCacheItem>();
-        private readonly Dictionary<long, SiteCacheItem> _sitesById = new Dictionary<long, SiteCacheItem>();
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
 
-        public SiteCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
-            : base(new[] { typeof(Interfaces.Data.Site) })
+        public string Title { get; private set; }
+        public bool Enabled { get; private set; }
+        public string Properties { get; private set; }
+        public HashSet<string> ModuleTypes { get; private set; }
+
+        public SiteCache(ILightDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+            : base(new[] { typeof(SiteProperties)})
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
         }
 
-        private List<string> GetSystemModuleTypes()
+        private IEnumerable<string> GetSystemModuleTypes()
         {
             return _moduleProvider.Modules.Where(m => m.System).Select(m => m.ModuleType).ToList();
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId.HasValue)
             {
@@ -40,78 +43,27 @@ namespace LessMarkup.Engine.Site
 
             var systemModuleTypes = GetSystemModuleTypes();
 
-            using (var domainModel = _domainModelProvider.Create(null))
+            using (var domainModel = _domainModelProvider.Create())
             {
-                foreach (var site in domainModel.GetCollection<Interfaces.Data.Site>().Select(s => new
+                var siteProperties = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>();
+
+                if (siteProperties != null)
                 {
-                    SiteId = s.Id,
-                    s.Host,
-                    s.Title,
-                    s.Enabled,
-                    ModuleTypes = s.Modules.Select(m => m.Module.ModuleType),
-                    s.Properties
-                }))
+                    Title = siteProperties.Title;
+                    Enabled = siteProperties.Enabled;
+                    Properties = siteProperties.Properties;
+                }
+
+                ModuleTypes = new HashSet<string>(domainModel.Query().From<Interfaces.Data.Module>().Where("Enabled = $", true).ToList<Interfaces.Data.Module>().Select(m => m.ModuleType));
+
+                foreach (var moduleType in systemModuleTypes)
                 {
-                    var cacheItem = new SiteCacheItem
+                    if (!ModuleTypes.Contains(moduleType))
                     {
-                        Enabled = site.Enabled,
-                        Hosts = new HashSet<string>((site.Host ?? "").ToLower().Split(new []{' '})),
-                        SiteId = site.SiteId,
-                        Title = site.Title,
-                        Properties = site.Properties,
-                        ModuleTypes = new HashSet<string>(site.ModuleTypes)
-                    };
-
-                    // System modules shoule be always enabled
-
-                    foreach (var moduleType in systemModuleTypes)
-                    {
-                        if (!cacheItem.ModuleTypes.Contains(moduleType))
-                        {
-                            cacheItem.ModuleTypes.Add(moduleType);
-                        }
+                        ModuleTypes.Add(moduleType);
                     }
-
-                    if (cacheItem.Hosts.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    _sites.Add(cacheItem);
-
-                    foreach (var host in cacheItem.Hosts)
-                    {
-                        _sitesByHost[host] = cacheItem;
-                    }
-
-                    _sitesById[site.SiteId] = cacheItem;
                 }
             }
-        }
-
-        public SiteCacheItem GetByHostName(string hostName)
-        {
-            SiteCacheItem item;
-            if (!_sitesByHost.TryGetValue(hostName.ToLower(), out item))
-            {
-                return null;
-            }
-            return item;
-        }
-
-        public bool HasAnySite
-        {
-            get { return _sites.Any(); }
-        }
-
-        public SiteCacheItem GetBySiteId(long siteId)
-        {
-            SiteCacheItem item;
-            if (!_sitesById.TryGetValue(siteId, out item))
-            {
-                return null;
-            }
-            return item;
         }
     }
 }

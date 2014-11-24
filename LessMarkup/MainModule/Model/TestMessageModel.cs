@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
@@ -19,30 +19,28 @@ namespace LessMarkup.MainModule.Model
     {
         public class Collection : IEditableModelCollection<TestMessageModel>
         {
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
 
-            public Collection(IDomainModelProvider domainModelProvider)
+            public Collection(ILightDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                var query = (IQueryable<TestMail>) domainModel.GetSiteCollection<TestMail>();
-
                 if (!ignoreOrder)
                 {
-                    query = query.OrderByDescending(e => e.Sent);
+                    query = query.OrderByDescending("Sent");
                 }
 
-                return query.Select(e => e.Id);
+                return query.ToIdList();
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<TestMail>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<TestMail>(); } }
 
-            public IQueryable<TestMessageModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<TestMessageModel> Read(ILightQueryBuilder queryBuilder, List<long> ids)
             {
-                return domainModel.GetSiteCollection<TestMail>().Where(e => ids.Contains(e.Id)).Select(e => new TestMessageModel
+                return queryBuilder.WhereIds(ids).ToList<TestMail>().Select(e => new TestMessageModel
                 {
                     Body = e.Body,
                     From = e.From,
@@ -51,7 +49,7 @@ namespace LessMarkup.MainModule.Model
                     Template = e.Template,
                     To = e.To,
                     TestMailId = e.Id
-                });
+                }).ToList();
             }
 
             public bool Filtered { get { return false; } }
@@ -79,12 +77,11 @@ namespace LessMarkup.MainModule.Model
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    foreach (var record in domainModel.GetSiteCollection<TestMail>().Where(m => recordIds.Contains(m.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.GetSiteCollection<TestMail>().Remove(record);
+                        domainModel.Delete<TestMail>(id);
                     }
 
-                    domainModel.SaveChanges();
                     return true;
                 }
             }

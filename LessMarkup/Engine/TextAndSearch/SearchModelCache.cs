@@ -5,10 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
+using System.Data.Entity.Design.PluralizationServices;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -24,25 +26,22 @@ namespace LessMarkup.Engine.TextAndSearch
         private readonly List<TableSearchModel> _tableModels = new List<TableSearchModel>();
         private int _textFieldsCount;
 
-        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
-        private readonly ISiteMapper _siteMapper;
         private readonly IHtmlSanitizer _htmlSanitizer;
+        private readonly IEngineConfiguration _engineConfiguration;
         private static readonly char[] _excludedChars = { '%', '*', ' ', '.', ';', '-', '+', ',', ':', '(', ')', '[', ']', '?', '=', '<', '>', '\r', '\n', '\t' };
 
         public const string FulltextSearchParameter = "param1";
         public const string LikeSearchParameter = "param2";
-        public const string SiteIdSearchParameter = "siteid";
 
-        public SearchModelCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, ISiteMapper siteMapper, IHtmlSanitizer htmlSanitizer) : base(new []{typeof(Interfaces.Data.Module)})
+        public SearchModelCache(IModuleIntegration moduleIntegration, IHtmlSanitizer htmlSanitizer, IEngineConfiguration engineConfiguration) : base(new []{typeof(Interfaces.Data.Module)})
         {
-            _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
-            _siteMapper = siteMapper;
             _htmlSanitizer = htmlSanitizer;
+            _engineConfiguration = engineConfiguration;
         }
 
-        private void HandleCollection(Type dataType, SqlConnection connection, PropertyInfo collectionProperty)
+        private void HandleCollection(Type dataType, SqlConnection connection, string tableName)
         {
             var allProperties = dataType.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
 
@@ -69,7 +68,7 @@ namespace LessMarkup.Engine.TextAndSearch
                 return;
             }
 
-            var collectionId = DataHelper.GetCollectionIdVerified(dataType);
+            var collectionId = DataHelper.GetCollectionId(dataType);
 
             var entitySearch = _moduleIntegration.GetEntitySearch(dataType);
 
@@ -81,7 +80,7 @@ namespace LessMarkup.Engine.TextAndSearch
             var searchModel = new TableSearchModel
             {
                 Name = entitySearch.GetFriendlyName(collectionId),
-                TableName = collectionProperty.Name,
+                TableName = tableName,
                 FullTextEnabled = true,
                 Columns = properties,
                 IdColumn = idProperty.Name,
@@ -120,16 +119,9 @@ namespace LessMarkup.Engine.TextAndSearch
             }
         }
 
-        public SearchResults Search(string text, int startRecord, int recordCount, IDomainModel domainModel)
+        public SearchResults Search(string text, int startRecord, int recordCount, ILightDomainModel domainModel)
         {
             if (_tableModels.Count == 0)
-            {
-                return null;
-            }
-
-            var siteId = _siteMapper.SiteId;
-
-            if (!siteId.HasValue)
             {
                 return null;
             }
@@ -166,7 +158,7 @@ namespace LessMarkup.Engine.TextAndSearch
                 "select * from (select *, row_number() over (order by a.rank desc, a.updated desc) as rownum from ({0}) a) b where b.rownum >= {1} and b.rownum <= {2} order by rownum desc",
                 query, startRecord+1, startRecord+1+recordCount);
 
-            using (var connection = domainModel.Database.Connection)
+            using (var connection = new SqlConnection(_engineConfiguration.Database))
             using (var command = connection.CreateCommand())
             {
                 connection.Open();
@@ -182,10 +174,6 @@ namespace LessMarkup.Engine.TextAndSearch
                 parameter = command.CreateParameter();
                 parameter.ParameterName = LikeSearchParameter;
                 parameter.Value = "%" + text.ToUpper() + "%";
-                command.Parameters.Add(parameter);
-                parameter = command.CreateParameter();
-                parameter.ParameterName = SiteIdSearchParameter;
-                parameter.Value = siteId.Value;
                 command.Parameters.Add(parameter);
 
                 using (var reader = command.ExecuteReader())
@@ -261,39 +249,17 @@ namespace LessMarkup.Engine.TextAndSearch
             }
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
-            using (var model = _domainModelProvider.Create())
+            var pluralizationService = PluralizationService.CreateService(new CultureInfo("en-us"));
+
+            using (var connection = new SqlConnection(_engineConfiguration.Database))
             {
-                using (var connection = (SqlConnection) model.Database.Connection)
+                connection.Open();
+
+                foreach (var collectionProperty in LightDomainModel.GetDataTypes())
                 {
-                    connection.Open();
-
-                    foreach (var collectionProperty in model.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                    {
-                        var propertyType = collectionProperty.PropertyType;
-
-                        if (!propertyType.IsGenericType || propertyType.GetGenericTypeDefinition() != typeof (DbSet<>))
-                        {
-                            continue;
-                        }
-
-                        var collectionTypes = propertyType.GenericTypeArguments;
-
-                        if (collectionTypes.Length != 1)
-                        {
-                            continue;
-                        }
-
-                        var type = collectionTypes[0];
-
-                        if (!typeof (IDataObject).IsAssignableFrom(type))
-                        {
-                            continue;
-                        }
-
-                        HandleCollection(type, connection, collectionProperty);
-                    }
+                    HandleCollection(collectionProperty, connection, pluralizationService.Pluralize(collectionProperty.Name));
                 }
             }
 

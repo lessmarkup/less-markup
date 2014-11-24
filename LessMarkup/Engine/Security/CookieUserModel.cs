@@ -16,7 +16,6 @@ namespace LessMarkup.Engine.Security
         public bool IsAdministrator { get; set; }
         public bool IsApproved { get; set; }
         public bool IsValidated { get; set; }
-        public bool IsGlobalAdministrator { get; set; }
         public bool IsFakeUser { get; set; }
     }
 }

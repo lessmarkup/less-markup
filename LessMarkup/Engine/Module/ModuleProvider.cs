@@ -12,7 +12,6 @@ using System.Web.Mvc;
 using Autofac;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.FileSystem;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
@@ -182,7 +181,7 @@ namespace LessMarkup.Engine.Module
             assemblies.Add(assembly);
         }
 
-        public void UpdateModuleDatabase(IDomainModelProvider domainModelProvider)
+        public void UpdateModuleDatabase(ILightDomainModelProvider domainModelProvider)
         {
             if (domainModelProvider == null)
             {
@@ -192,7 +191,7 @@ namespace LessMarkup.Engine.Module
             using (var domainModel = domainModelProvider.Create())
             {
                 var existingModules = new List<ModuleConfiguration>();
-                foreach (var module in domainModel.GetCollection<Interfaces.Data.Module>().Where(m => !m.Removed))
+                foreach (var module in domainModel.Query().From<Interfaces.Data.Module>().Where("Removed = $", false).ToList<Interfaces.Data.Module>())
                 {
                     var reference = _moduleConfigurations.FirstOrDefault(m => m.Path == module.Path);
                     if (reference == null)
@@ -205,6 +204,7 @@ namespace LessMarkup.Engine.Module
                         module.System = reference.System;
                         module.ModuleType = reference.ModuleType;
                     }
+                    domainModel.Update(module);
                 }
 
                 foreach (var source in _moduleConfigurations.Where(m => !existingModules.Contains(m)))
@@ -219,11 +219,8 @@ namespace LessMarkup.Engine.Module
                         ModuleType = source.ModuleType
                     };
 
-                    domainModel.GetCollection<Interfaces.Data.Module>().Add(module);
-                    domainModel.SaveChanges();
+                    domainModel.Create(module);
                 }
-
-                domainModel.SaveChanges();
             }
         }
 

@@ -2,18 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
-using LessMarkup.DataFramework.DataAccess;
+using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
@@ -22,58 +18,36 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class Collection : IEditableModelCollection<UserGroupModel>
         {
-            private long? _siteId;
-
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
-            private readonly ISiteMapper _siteMapper;
 
-            private long SiteId
-            {
-                get
-                {
-                    var siteId = _siteId ?? _siteMapper.SiteId;
-
-                    if (siteId.HasValue)
-                    {
-                        return siteId.Value;
-                    }
-
-                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
-                }
-            }
-
-            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ISiteMapper siteMapper)
+            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _changeTracker = changeTracker;
                 _domainModelProvider = domainModelProvider;
-                _siteMapper = siteMapper;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return domainModel.GetSiteCollection<UserGroup>(SiteId).Select(g => g.Id);
+                return query.ToIdList();
             }
 
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<UserGroup>(); } }
+            public int CollectionId { get { return LightDomainModel.GetCollectionId<UserGroup>(); } }
 
-            public IQueryable<UserGroupModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<UserGroupModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return
-                    domainModel.GetSiteCollection<UserGroup>(SiteId)
-                        .Where(g => ids.Contains(g.Id))
+                return query.WhereIds(ids).ToList<UserGroup>()
                         .Select(g => new UserGroupModel
                         {
                             GroupId = g.Id,
                             Name = g.Name,
                             Description = g.Description
-                        });
+                        }).ToList();
             }
 
             public bool Filtered { get { return false; } }
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
             {
-                _siteId = objectId;
             }
 
             public UserGroupModel CreateRecord()
@@ -91,10 +65,8 @@ namespace LessMarkup.UserInterface.Model.Global
                         Description = record.Description,
                     };
 
-                    domainModel.GetSiteCollection<UserGroup>(SiteId).Add(group);
-                    domainModel.SaveChanges();
+                    domainModel.Create(group);
                     _changeTracker.AddChange(group, EntityChangeType.Added, domainModel);
-                    domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
 
                     record.GroupId = group.Id;
@@ -105,13 +77,13 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    var group = domainModel.GetSiteCollection<UserGroup>(SiteId).Single(g => g.Id == record.GroupId);
+                    var group = domainModel.Query().Find<UserGroup>(record.GroupId);
 
                     group.Name = record.Name;
                     group.Description = record.Description;
 
                     _changeTracker.AddChange(group, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
+                    domainModel.Update(group);
                     domainModel.CompleteTransaction();
                 }
             }
@@ -120,13 +92,11 @@ namespace LessMarkup.UserInterface.Model.Global
             {
                 using (var domainModel = _domainModelProvider.CreateWithTransaction())
                 {
-                    foreach (var group in domainModel.GetSiteCollection<UserGroup>(SiteId).Where(g => recordIds.Contains(g.Id)))
+                    foreach (var id in recordIds)
                     {
-                        domainModel.GetSiteCollection<UserGroup>(SiteId).Remove(group);
-                        _changeTracker.AddChange(group, EntityChangeType.Removed, domainModel);
+                        domainModel.Delete<UserGroup>(id);
                     }
 
-                    domainModel.SaveChanges();
                     domainModel.CompleteTransaction();
                     return true;
                 }

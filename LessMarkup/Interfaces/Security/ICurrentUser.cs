@@ -14,7 +14,6 @@ namespace LessMarkup.Interfaces.Security
         IReadOnlyList<long> Groups { get; }
         IReadOnlyDictionary<string, string> Properties { get; }
         bool IsAdministrator { get; }
-        bool IsGlobalAdministrator { get; }
         bool IsValidated { get; }
         bool IsApproved { get; }
         bool IsFakeUser { get; }
@@ -25,7 +24,7 @@ namespace LessMarkup.Interfaces.Security
         bool LoginWithPassword(string email, string password, bool savePassword, bool allowAdmin, bool allowRegular, string address, string encodedPassword);
         bool LoginWithOAuth(string provider, string providerUserId, bool savePassword, bool allowAdmin, bool allowRegular, string address);
         void DeleteSelf(string password);
-        bool CheckPassword(IDomainModel domainModel, string password, string address);
+        bool CheckPassword(ILightDomainModel domainModel, string password, string address);
         Tuple<string, string> LoginHash(string userName);
     }
 }

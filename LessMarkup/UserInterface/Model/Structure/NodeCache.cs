@@ -8,7 +8,6 @@ using System.Linq;
 using System.Web;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Structure;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
@@ -28,12 +27,11 @@ namespace LessMarkup.UserInterface.Model.Structure
 {
     public class NodeCache : AbstractCacheHandler, INodeCache
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
-        private long? _siteId;
 
         private readonly List<ICachedNodeInformation> _cachedNodes = new List<ICachedNodeInformation>();
         private readonly Dictionary<long, ICachedNodeInformation> _idToNode = new Dictionary<long, ICachedNodeInformation>();
@@ -42,8 +40,8 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
         public IReadOnlyList<ICachedNodeInformation> Nodes { get { return _cachedNodes; } }
 
-        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ICurrentUser currentUser)
-            : base(new[] { typeof(Node), typeof(Site) })
+        public NodeCache(ILightDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ICurrentUser currentUser)
+            : base(new[] { typeof(Node) })
         {
             _domainModelProvider = domainModelProvider;
             _moduleIntegration = moduleIntegration;
@@ -143,7 +141,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             if (node.LoggedIn && !_currentUser.UserId.HasValue)
             {
-                this.LogDebug("This node requires logged in user");
+                this.LogDebug("This node requires user to be logged in");
                 return null;
             }
 
@@ -162,7 +160,12 @@ namespace LessMarkup.UserInterface.Model.Structure
                 TraverseParents(node.Parent, preprocessFunc);
             }
 
-            var nodeHandler = (INodeHandler)DependencyResolver.Resolve(node.HandlerType);
+            if (node.HandlerType == null)
+            {
+                this.LogError("Node handler is not set for node path '" + path + "', id " + node.NodeId);
+            }
+
+            var nodeHandler = (INodeHandler) DependencyResolver.Resolve(node.HandlerType);
 
             if (nodeHandler == null)
             {
@@ -291,41 +294,42 @@ namespace LessMarkup.UserInterface.Model.Structure
             return node;
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId.HasValue)
             {
                 throw new ArgumentOutOfRangeException("objectId");
             }
 
-            _siteId = siteId;
-
             var cachedNodes = new List<CachedNodeInformation>();
 
-            if (_siteId.HasValue)
-            { 
-                using (var domainModel = _domainModelProvider.Create())
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                cachedNodes.AddRange(domainModel.Query().From<Node>().OrderBy("Order").ToList<Node>().Select(p => new CachedNodeInformation
                 {
-                    cachedNodes.AddRange(domainModel.GetSiteCollection<Node>().OrderBy(p => p.Order).Select(p => new CachedNodeInformation
+                    NodeId = p.Id,
+                    Enabled = p.Enabled,
+                    HandlerId = p.HandlerId,
+                    ParentNodeId = p.ParentId,
+                    Order = p.Order,
+                    Path = p.Path,
+                    Title = p.Title,
+                    Description = p.Description,
+                    Settings = p.Settings,
+                    Visible = true,
+                    AddToMenu = p.AddToMenu
+                }).ToList());
+
+                var nodeMap = cachedNodes.ToDictionary(n => n.NodeId, n => n);
+
+                foreach (var nodeAccess in domainModel.Query().From<NodeAccess>().ToList<NodeAccess>().GroupBy(na => na.NodeId))
+                {
+                    nodeMap[nodeAccess.Key].AccessList = nodeAccess.Select(a => new CachedNodeAccess
                     {
-                        NodeId = p.Id,
-                        Enabled = p.Enabled,
-                        HandlerId = p.HandlerId,
-                        ParentNodeId = p.ParentId,
-                        Order = p.Order,
-                        Path = p.Path,
-                        Title = p.Title,
-                        Description = p.Description,
-                        Settings = p.Settings,
-                        Visible = true,
-                        AddToMenu = p.AddToMenu,
-                        AccessList = p.NodeAccess.Select(a => new CachedNodeAccess
-                        {
-                            AccessType = a.AccessType,
-                            GroupId = a.GroupId,
-                            UserId = a.UserId
-                        }).ToList()
-                    }).ToList());
+                        AccessType = a.AccessType,
+                        GroupId = a.GroupId,
+                        UserId = a.UserId
+                    }).ToList();
                 }
             }
 
@@ -354,19 +358,10 @@ namespace LessMarkup.UserInterface.Model.Structure
                 LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.Configuration),
                 Constants.ModuleType.UserInterface, NodeAccessType.NoAccess);
 
-            string adminLoginPage;
-
             var siteConfiguration = _dataCache.Get<ISiteConfiguration>();
 
-            if (_siteId.HasValue)
-            {
-                adminLoginPage = siteConfiguration.AdminLoginPage;
-                if (string.IsNullOrWhiteSpace(adminLoginPage))
-                {
-                    adminLoginPage = _engineConfiguration.AdminLoginPage;
-                }
-            }
-            else
+            var adminLoginPage = siteConfiguration.AdminLoginPage;
+            if (string.IsNullOrWhiteSpace(adminLoginPage))
             {
                 adminLoginPage = _engineConfiguration.AdminLoginPage;
             }
@@ -378,22 +373,19 @@ namespace LessMarkup.UserInterface.Model.Structure
                     Constants.ModuleType.UserInterface, NodeAccessType.Read);
             }
 
-            if (_siteId.HasValue)
-            {
-                var node = AddVirtualNode<UserProfileNodeHandler>(Constants.NodePath.Profile,
-                    LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserProfile),
-                    Constants.ModuleType.UserInterface, NodeAccessType.Read);
-                node.LoggedIn = true;
+            var node = AddVirtualNode<UserProfileNodeHandler>(Constants.NodePath.Profile,
+                LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserProfile),
+                Constants.ModuleType.UserInterface, NodeAccessType.Read);
+            node.LoggedIn = true;
 
-                if (siteConfiguration.HasUsers)
-                {
-                    AddVirtualNode<UserCardsNodeHandler>(Constants.NodePath.UserCards,
-                        LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserCards),
-                        Constants.ModuleType.UserInterface, NodeAccessType.Read);
-                    AddVirtualNode<ForgotPasswordPageHandler>(Constants.NodePath.ForgotPassword,
-                        LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.ForgotPassword),
-                        Constants.ModuleType.UserInterface, NodeAccessType.Read);
-                }
+            if (siteConfiguration.HasUsers)
+            {
+                AddVirtualNode<UserCardsNodeHandler>(Constants.NodePath.UserCards,
+                    LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UserCards),
+                    Constants.ModuleType.UserInterface, NodeAccessType.Read);
+                AddVirtualNode<ForgotPasswordPageHandler>(Constants.NodePath.ForgotPassword,
+                    LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.ForgotPassword),
+                    Constants.ModuleType.UserInterface, NodeAccessType.Read);
             }
         }
     }

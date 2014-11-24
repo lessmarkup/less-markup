@@ -17,7 +17,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
     {
         private readonly IDataCache _dataCache;
 
-        public UserCardsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public UserCardsNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
         }

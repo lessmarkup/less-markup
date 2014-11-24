@@ -8,7 +8,6 @@ using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -27,8 +26,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
         private readonly IEngineConfiguration _engineConfiguration;
-        private readonly ISiteMapper _siteMapper;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
         public string Title { get; set; }
         public string LogoImageUrl { get; set; }
@@ -36,11 +34,10 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
         public ActionResult Result { get; set; }
 
-        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ISiteMapper siteMapper, IDomainModelProvider domainModelProvider)
+        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ILightDomainModelProvider domainModelProvider)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;
-            _siteMapper = siteMapper;
             _engineConfiguration = engineConfiguration;
             _domainModelProvider = domainModelProvider;
         }
@@ -77,14 +74,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var initialValues = new Dictionary<string, object>();
 
-            if (_siteMapper.SiteId.HasValue)
-            {
-                InitializeSiteProperties(controller, initialValues);
-            }
-            else
-            {
-                initialValues["hasLogin"] = string.IsNullOrWhiteSpace(_engineConfiguration.AdminLoginPage);
-            }
+            InitializeSiteProperties(controller, initialValues);
 
             initialValues["rootPath"] = rootNode.FullPath;
             initialValues["path"] = path ?? "";
@@ -143,7 +133,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                initialValues["smiles"] = domainModel.GetSiteCollection<Smile>().Select(s => new {s.Id, s.Code}).ToList();
+                initialValues["smiles"] = domainModel.Query().From<Smile>().ToList<Smile>().Select(s => new {s.Id, s.Code}).ToList();
                 initialValues["smilesBase"] = "/Image/Smile/";
             }
 

@@ -175,10 +175,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj">
-      <Project>{1e27e40a-523a-46b1-a778-c252bf338152}</Project>
-      <Name>DataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MainModule\MainModule.csproj">
       <Project>{0f394873-f629-4f6f-b752-34b1f7e872a6}</Project>
       <Name>MainModule</Name>

@@ -31,89 +31,62 @@ namespace LessMarkup.Forum.Model
         {
             private long _forumId;
             private NodeAccessType _accessType;
-            private readonly IDomainModelProvider _domainModelProvider;
+            private readonly ILightDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
             private readonly ICurrentUser _currentUser;
 
-            public Collection(ICurrentUser currentUser, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(ICurrentUser currentUser, ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _currentUser = currentUser;
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                var query = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId == _forumId);
+                query = query.From<Thread>().Where("ForumId = $", _forumId);
 
                 if (_accessType != NodeAccessType.Manage)
                 {
-                    query = query.Where(t => !t.Removed && t.Posts.Any(p => !p.Removed));
+                    query = query.Where("Removed = $", false);
                 }
 
                 if (!ignoreOrder)
                 {
-                    query = query.OrderByDescending(t => t.Updated);
+                    query = query.OrderByDescending("Updated");
                 }
 
-                query = RecordListHelper.GetFilterAndOrderQuery(query, filter, typeof (ThreadModel));
-
-                return query.Select(t => t.Id);
+                return query.ToIdList();
             }
 
-            public IQueryable<ThreadModel> Read(IDomainModel domainModel, List<long> ids)
+            public IReadOnlyCollection<ThreadModel> Read(ILightQueryBuilder query, List<long> ids)
             {
+                if (ids.Count == 0)
+                {
+                    return new List<ThreadModel>();
+                }
+
                 var userId = _currentUser.UserId;
 
-                var query = domainModel.GetSiteCollection<Thread>()
-                    .Where(t => t.ForumId == _forumId && ids.Contains(t.Id))
-                    .Select(t => new
-                    {
-                        Thread = t,
-                        Posts = t.Posts.Where(p => !p.Removed),
-                        LastUpdate = userId.HasValue
-                                ? t.Views.Where(v => v.UserId == userId).Max(v => v.Updated)
-                                : (DateTime?) null
-                    }).Select(t => new
-                    {
-                        t.Thread,
-                        t.LastUpdate,
-                        Last = t.Posts.OrderByDescending(p => p.Created).FirstOrDefault(),
-                        PostCount = t.Posts.Count(),
-                        t.Posts
-                    }).Select(t => new
-                    {
-                        t.Thread,
-                        t.Last,
-                        t.PostCount,
-                        Unread = userId.HasValue ? (t.LastUpdate.HasValue ? t.Posts.Count(p => p.Created > t.LastUpdate) : t.PostCount) : 0
-                    });
+                var idsText = string.Join(",", ids);
+
+                var queryText = string.Format(
+                    "SELECT t.Id ThreadId, t.Name, t.Description, t.Created, t.Updated, t.Path, t.Removed, t.Closed, a.Name Author, " +
+                    "t.AuthorId, lu.Name LastUser, p.UserId LastUserId, p.Created LastCreated, ts.PostCount Posts, CASE WHEN tv.Unread IS NULL THEN ts.PostCount ELSE tv.Unread END Unread, v.Views " +
+                    "FROM (SELECT * FROM Threads WHERE Id IN ({0})) t " +
+                    "LEFT JOIN (SELECT ThreadId, COUNT(Id) PostCount, MAX(Created) LastCreated FROM Posts WHERE ThreadId IN ({0}) GROUP BY ThreadId) ts ON t.Id = ts.ThreadId " +
+                    "LEFT JOIN Posts p ON p.ThreadId = t.Id AND p.Created = ts.LastCreated " +
+                    "LEFT JOIN (SELECT tv1.ThreadId, COUNT(p1.Id) Unread FROM (SELECT ThreadId, MAX(Updated) Updated FROM ThreadViews WHERE ThreadId IN ({0}) AND UserId = $ GROUP BY ThreadId) tv1 LEFT JOIN Posts p1 ON p1.ThreadId = tv1.ThreadId AND p1.Created > tv1.Updated GROUP BY tv1.ThreadId) tv ON tv.ThreadId = t.Id " +
+                    "LEFT JOIN Users a on a.Id = t.AuthorId " +
+                    "LEFT JOIN Users lu ON lu.Id = p.UserId " +
+                    "LEFT JOIN (SELECT ThreadId, COUNT(Id) Views FROM ThreadViews WHERE ThreadId IN ({0}) GROUP BY ThreadId) v ON v.ThreadId = t.Id", idsText);
 
                 if (_accessType != NodeAccessType.Manage)
                 {
-                    query = query.Where(t => !t.Thread.Removed && t.PostCount > 0);
+                    queryText += " WHERE t.Removed = 0 AND ts.PostCount > 0";
                 }
 
-                return query
-                    .Select(t => new ThreadModel
-                        {
-                            ThreadId = t.Thread.Id,
-                            Name = t.Thread.Name,
-                            Description = t.Thread.Description,
-                            Created = t.Thread.Created,
-                            Updated = t.Thread.Updated,
-                            Path = t.Thread.Path,
-                            Removed = t.Thread.Removed,
-                            Closed = t.Thread.Closed,
-                            Author = t.Thread.Author.Name,
-                            AuthorId = t.Thread.AuthorId,
-                            LastUser = t.Last.User.Name,
-                            LastUserId = t.Last.UserId,
-                            LastCreated = t.Last.Created,
-                            Posts = t.PostCount,
-                            Unread = t.Unread,
-                            Views = t.Thread.Views.Sum(v => (int?)v.Views) ?? 0
-                        });
+                return query.Execute<ThreadModel>(queryText, userId);
             }
 
             public void Initialize(long? objectId, NodeAccessType accessType)
@@ -127,7 +100,7 @@ namespace LessMarkup.Forum.Model
                 _accessType = accessType;
             }
 
-            public int CollectionId { get { return DataHelper.GetCollectionIdVerified<Thread>(); } }
+            public int CollectionId { get { return DataHelper.GetCollectionId<Thread>(); } }
 
             public ThreadModel CreateRecord()
             {
@@ -148,7 +121,7 @@ namespace LessMarkup.Forum.Model
 
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var thread = domainModel.GetSiteCollection<Thread>().Single(t => t.Id == record.ThreadId && t.ForumId == _forumId);
+                    var thread = domainModel.Query().From<Thread>().Where("Id = $ AND ForumId = $", record.ThreadId, _forumId).First<Thread>();
 
                     thread.Description = record.Description;
 
@@ -158,11 +131,7 @@ namespace LessMarkup.Forum.Model
 
                         var generatedPath = TextToUrl.Generate(thread.Name);
 
-                        var paths =
-                            new HashSet<string>(
-                                domainModel.GetSiteCollection<Thread>()
-                                    .Where(t => t.Id != record.ThreadId && t.ForumId == _forumId)
-                                    .Select(t => t.Path));
+                        var paths = new HashSet<string>(domainModel.Query().From<Thread>().Where("Id != $ AND ForumId = $", record.ThreadId, _forumId).ToList<Thread>("Path").Select(t => t.Path));
 
                         var index = 1;
 
@@ -181,8 +150,8 @@ namespace LessMarkup.Forum.Model
                         thread.Path = path;
                     }
 
+                    domainModel.Update(thread);
                     _changeTracker.AddChange(thread, EntityChangeType.Updated, domainModel);
-                    domainModel.SaveChanges();
 
                     record.Path = thread.Path;
                 }
@@ -196,28 +165,30 @@ namespace LessMarkup.Forum.Model
             public bool DeleteOnly { get { return false; } }
         }
 
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
 
         ThreadModel()
         {
         }
 
-        public ThreadModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+        public ThreadModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
         }
 
-        public static ThreadModel GetByPath(long forumId, string path, IDomainModelProvider domainModelProvider)
+        public static ThreadModel GetByPath(long forumId, string path, ILightDomainModelProvider domainModelProvider)
         {
             using (var domainModel = domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().FirstOrDefault(t => t.ForumId == forumId && t.Path == path);
+                var thread = domainModel.Query().From<Thread>().Where("ForumId = $ AND Path = $", forumId, path).FirstOrDefault<Thread>();
+
                 if (thread == null)
                 {
                     return null;
                 }
+
                 return new ThreadModel
                 {
                     ThreadId = thread.Id,
@@ -279,10 +250,10 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId && t.ForumId == forumId);
+                var thread = domainModel.Query().From<Thread>().Where("Id = $ AND ForumId = $", threadId, forumId).First<Thread>();
                 thread.Removed = true;
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Removed, domainModel);
-                domainModel.SaveChanges();
+                domainModel.Update(thread);
 
                 _changeTracker.Invalidate();
 
@@ -294,7 +265,7 @@ namespace LessMarkup.Forum.Model
                 var collection = DependencyResolver.Resolve<Collection>();
                 collection.Initialize(forumId, accessType);
 
-                var model = collection.Read(domainModel, new List<long> {threadId}).First();
+                var model = collection.Read(domainModel.Query(), new List<long> {threadId}).First();
 
                 return new {record = model};
             }
@@ -304,17 +275,17 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
+                var thread = domainModel.Query().Find<Thread>(threadId);
                 thread.Removed = false;
+                domainModel.Update(thread);
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
-                domainModel.SaveChanges();
 
                 _changeTracker.Invalidate();
 
                 var collection = DependencyResolver.Resolve<Collection>();
                 collection.Initialize(forumId, accessType);
 
-                var model = collection.Read(domainModel, new List<long> { threadId }).First();
+                var model = collection.Read(domainModel.Query(), new List<long> { threadId }).First();
 
                 return new { record = model };
             }
@@ -324,15 +295,15 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
+                var thread = domainModel.Query().Find<Thread>(threadId);
                 thread.Closed = true;
+                domainModel.Update(thread);
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
-                domainModel.SaveChanges();
 
                 var collection = DependencyResolver.Resolve<Collection>();
                 collection.Initialize(forumId, accessType);
 
-                var model = collection.Read(domainModel, new List<long> { threadId }).First();
+                var model = collection.Read(domainModel.Query(), new List<long> { threadId }).First();
 
                 return new { record = model };
             }
@@ -342,15 +313,15 @@ namespace LessMarkup.Forum.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var thread = domainModel.GetSiteCollection<Thread>().First(t => t.Id == threadId);
+                var thread = domainModel.Query().Find<Thread>(threadId);
                 thread.Closed = false;
+                domainModel.Update(thread);
                 _changeTracker.AddChange<Thread>(threadId, EntityChangeType.Added, domainModel);
-                domainModel.SaveChanges();
 
                 var collection = DependencyResolver.Resolve<Collection>();
                 collection.Initialize(forumId, accessType);
 
-                var model = collection.Read(domainModel, new List<long> { threadId }).First();
+                var model = collection.Read(domainModel.Query(), new List<long> { threadId }).First();
 
                 return new { record = model };
             }

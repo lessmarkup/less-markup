@@ -2,16 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
-using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Global;
 using LessMarkup.UserInterface.NodeHandlers.Common;
 
@@ -21,14 +17,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>
     {
         private readonly IChangeTracker _changeTracker;
-        private readonly IDomainModelProvider _domainModelProvider;
-        private readonly ISiteMapper _siteMapper;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public ModulesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker, ISiteMapper siteMapper) : base(domainModelProvider, dataCache)
+        public ModulesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker) : base(domainModelProvider, dataCache)
         {
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;
-            _siteMapper = siteMapper;
         }
 
         [RecordAction(UserInterfaceTextIds.Enable, Visible = "!enabled")]
@@ -45,52 +39,17 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 
         protected object EnableModule(long moduleId, bool enable)
         {
-            long siteId;
-            if (ObjectId.HasValue)
-            {
-                siteId = ObjectId.Value;
-            }
-            else
-            {
-                if (!_siteMapper.SiteId.HasValue)
-                {
-                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
-                }
-                siteId = _siteMapper.SiteId.Value;
-            }
-
             using (var domainModel = _domainModelProvider.Create())
             {
-                var siteModule = domainModel.GetCollection<SiteModule>().FirstOrDefault(m => m.SiteId == ObjectId && m.ModuleId == moduleId);
+                var siteModule = domainModel.Query().Find<Module>(moduleId);
 
-                if (enable)
-                {
-                    if (siteModule == null)
-                    {
-                        siteModule = new SiteModule
-                        {
-                            ModuleId = moduleId, 
-                            SiteId = siteId
-                        };
-                        domainModel.GetCollection<SiteModule>().Add(siteModule);
-                        _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
-                        domainModel.SaveChanges();
-                    }
-                }
-                else
-                {
-                    if (siteModule != null)
-                    {
-                        domainModel.GetCollection<SiteModule>().Remove(siteModule);
-                        _changeTracker.AddChange<Site>(siteId, EntityChangeType.Updated, domainModel);
-                        domainModel.SaveChanges();
-                    }
-                }
+                siteModule.Enabled = enable;
+                domainModel.Update(siteModule);
 
                 var collectionManager = DependencyResolver.Resolve<ModuleModel.Collection>();
                 collectionManager.Initialize(ObjectId, AccessType);
 
-                var record = collectionManager.Read(domainModel, new List<long> {moduleId}).ToList()[0];
+                var record = collectionManager.Read(domainModel.Query(), new List<long> {moduleId}).ToList()[0];
 
                 return new
                 {

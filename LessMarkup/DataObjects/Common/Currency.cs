@@ -7,7 +7,7 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.DataObjects.Common
 {
-    public class Currency : SiteDataObject
+    public class Currency : DataObject
     {
         public string Name { get; set; }
 

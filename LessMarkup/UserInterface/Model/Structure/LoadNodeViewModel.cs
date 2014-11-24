@@ -89,6 +89,8 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         public bool Initialize(string path, List<string> cachedTemplates, System.Web.Mvc.Controller controller, bool initializeUiElements, bool tryCreateResult)
         {
+            this.LogDebug("Load view for path '" + path + "'");
+
             path = HttpUtility.UrlDecode(path);
 
             if (path != null)

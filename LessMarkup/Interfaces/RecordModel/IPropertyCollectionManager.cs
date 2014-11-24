@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Linq;
+using System.Collections.Generic;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IPropertyCollectionManager
     {
-        IQueryable<string> GetCollection(IDomainModel domainModel, string property, string searchText);
+        IReadOnlyCollection<string> GetCollection(ILightDomainModel domainModel, string property, string searchText);
     }
 }

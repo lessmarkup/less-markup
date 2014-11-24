@@ -53,13 +53,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private IEditableModelCollection<T> _editableCollection;
         private readonly IRecordModelDefinition _recordModel;
         private readonly IDataCache _dataCache;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
         protected PropertyInfo IdProperty { get { return _idProperty; } }
 
         protected IRecordModelDefinition RecordModel { get { return _recordModel; } }
 
-        public RecordListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public RecordListNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
@@ -283,9 +283,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
         }
 
-        protected int GetIndex(T modifiedObject, string filter, IDomainModel domainModel)
+        protected int GetIndex(T modifiedObject, string filter, ILightDomainModel domainModel)
         {
-            var recordIds = GetCollection().ReadIds(domainModel, filter, false).ToList();
+            var recordIds = GetCollection().ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof (T)), false).ToList();
             var recordId = (long)_idProperty.GetValue(modifiedObject);
             return recordIds.IndexOf(recordId);
         }
@@ -345,7 +345,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                recordIds = collection.ReadIds(domainModel, filter, false).ToList();
+                recordIds = collection.ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof(T)), false).ToList();
             }
 
             return new Dictionary<string, object>
@@ -354,7 +354,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             };
         }
 
-        protected override bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
+        protected override bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
         {
             var collection = GetCollection();
             var changesCache = _dataCache.Get<IChangesCache>();
@@ -381,7 +381,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             {
                 if (recordIds == null)
                 {
-                    recordIds = collection.ReadIds(domainModel, filter, false).ToList();
+                    recordIds = collection.ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof(T)), false).ToList();
                 }
 
                 if (!recordIds.Contains(change.EntityId))
@@ -407,11 +407,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return removed.Count > 0 || updated.Count > 0;
         }
 
-        private void ReadRecordsAndIds(Dictionary<string, object> values, IDomainModel domainModel, int recordsPerPage)
+        private void ReadRecordsAndIds(Dictionary<string, object> values, ILightDomainModel domainModel, int recordsPerPage)
         {
             var collection = GetCollection();
 
-            var recordIds = collection.ReadIds(domainModel, null, false).ToList();
+            var recordIds = collection.ReadIds(domainModel.Query(), false).ToList();
 
             values["recordIds"] = recordIds;
 
@@ -422,12 +422,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
         }
 
-        protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
+        protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, ILightDomainModel domainModel)
         {
-            var records = GetCollection().Read(domainModel, ids).ToList();
-
+            var records = GetCollection().Read(domainModel.Query(), ids).ToList();
             PostProcessRecords(records);
-
             values["records"] = records;
         }
 
@@ -448,7 +446,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var record = GetCollection().Read(domainModel, new List<long> {recordId}).First();
+                var record = GetCollection().Read(domainModel.Query(), new List<long> { recordId }).First();
                 return ReturnRecordResult(record, isNew, index);
             }
         }

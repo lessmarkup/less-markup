@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using LessMarkup.Forum.DataObjects;
@@ -18,11 +17,11 @@ namespace LessMarkup.Forum.Model
     [RecordModel(TitleTextId = ForumTextIds.NewThread)]
     public class NewThreadModel
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
 
-        public NewThreadModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IChangeTracker changeTracker)
+        public NewThreadModel(ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _currentUser = currentUser;
@@ -57,7 +56,7 @@ namespace LessMarkup.Forum.Model
 
                 var basePathName = TextToUrl.Generate(thread.Name);
 
-                var siblingNames = domainModel.GetSiteCollection<Thread>().Where(t => t.ForumId != forumId).Select(t => t.Path).ToList();
+                var siblingNames = domainModel.Query().From<Thread>().Where("ForumId != $").ToList<Thread>("Path").Select(t => t.Path).ToList();
 
                 for (int i = 1; ; i++)
                 {
@@ -68,25 +67,22 @@ namespace LessMarkup.Forum.Model
                     }
                 }
 
-                thread.Posts = new List<Post>();
+                domainModel.Create(thread);
 
-                var post = domainModel.GetSiteCollection<Post>().Create();
+                var post = new Post
+                {
+                    Created = thread.Created,
+                    Text = Post,
+                    Removed = false,
+                    UserId = _currentUser.UserId,
+                    IpAddress = HttpContext.Current.Request.UserHostAddress,
+                    ThreadId = thread.Id
+                };
 
-                post.Created = thread.Created;
-                post.Text = Post;
-                post.Removed = false;
-                post.UserId = _currentUser.UserId;
-                post.IpAddress = HttpContext.Current.Request.UserHostAddress;
-
-                thread.Posts.Add(post);
-
-                domainModel.GetSiteCollection<Thread>().Add(thread);
-
-                domainModel.SaveChanges();
+                domainModel.Create(post);
 
                 _changeTracker.AddChange(thread, EntityChangeType.Added, domainModel);
                 _changeTracker.AddChange(post, EntityChangeType.Added, domainModel);
-                domainModel.SaveChanges();
 
                 domainModel.CompleteTransaction();
 

@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Module", "Module\Module.csproj", "{E37C085C-78D3-4948-BEA9-A5594931D417}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{CFDC0C8B-A405-45AC-80D2-5D5BDDF02FEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataObjects", "DataObjects\DataObjects.csproj", "{8090915B-2E43-4387-8990-75F2ABA47B17}"
 EndProject
@@ -21,10 +19,6 @@ Global
 		{E37C085C-78D3-4948-BEA9-A5594931D417}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E37C085C-78D3-4948-BEA9-A5594931D417}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E37C085C-78D3-4948-BEA9-A5594931D417}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFDC0C8B-A405-45AC-80D2-5D5BDDF02FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFDC0C8B-A405-45AC-80D2-5D5BDDF02FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFDC0C8B-A405-45AC-80D2-5D5BDDF02FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFDC0C8B-A405-45AC-80D2-5D5BDDF02FEA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8090915B-2E43-4387-8990-75F2ABA47B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8090915B-2E43-4387-8990-75F2ABA47B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8090915B-2E43-4387-8990-75F2ABA47B17}.Release|Any CPU.ActiveCfg = Release|Any CPU

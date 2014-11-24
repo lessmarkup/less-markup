@@ -16,9 +16,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Users)]
     public class SiteUsersNodeHandler : RecordListNodeHandler<UserModel>
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public SiteUsersNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SiteUsersNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -26,11 +26,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
         [RecordAction(UserInterfaceTextIds.BlockUser, Visible = "!isBlocked", CreateType = typeof(UserBlockModel))]
         public object Block(long recordId, UserBlockModel newObject)
         {
-            newObject.BlockUser(ObjectId, recordId);
+            newObject.BlockUser(recordId);
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var users = GetCollection().Read(domainModel, new List<long> {recordId});
+                var users = GetCollection().Read(domainModel.Query(), new List<long> {recordId});
                 return ReturnRecordResult(users.Single());
             }
         }
@@ -39,11 +39,11 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
         public object Unblock(long recordId)
         {
             var model = DependencyResolver.Resolve<UserBlockModel>();
-            model.UnblockUser(ObjectId, recordId);
+            model.UnblockUser(recordId);
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var users = GetCollection().Read(domainModel, new List<long> { recordId });
+                var users = GetCollection().Read(domainModel.Query(), new List<long> { recordId });
                 return ReturnRecordResult(users.Single());
             }
         }

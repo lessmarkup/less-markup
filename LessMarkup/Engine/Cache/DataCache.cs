@@ -3,13 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using System.Collections.Generic;
-using LessMarkup.DataFramework.DataAccess;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
-using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.Cache
 {
@@ -18,18 +14,14 @@ namespace LessMarkup.Engine.Cache
         #region Private Fields
 
         private readonly object _siteCachesLock = new object();
-        private readonly Dictionary<long, SiteDataCache> _siteCaches = new Dictionary<long, SiteDataCache>();
-        private SiteDataCache _nullCache;
-        private SiteDataCache _globalCache;
-        private readonly ISiteMapper _siteMapper;
         private readonly IChangeTracker _changeTracker;
         private bool _subscribedToChanges;
+        private SiteDataCache _siteDataCache;
 
         #endregion
 
-        public DataCache(ISiteMapper siteMapper, IChangeTracker changeTracker)
+        public DataCache(IChangeTracker changeTracker)
         {
-            _siteMapper = siteMapper;
             _changeTracker = changeTracker;
         }
 
@@ -57,46 +49,21 @@ namespace LessMarkup.Engine.Cache
             {
                 CheckSubscribeToChanges();
 
-                var siteId = _siteMapper.SiteId;
-
-                lock (_siteCachesLock)
+                if (_siteDataCache == null)
                 {
-                    SiteDataCache ret;
-                    if (siteId.HasValue)
+                    lock (_siteCachesLock)
                     {
-                        if (!_siteCaches.TryGetValue(siteId.Value, out ret))
+                        if (_siteDataCache == null)
                         {
-                            ret = new SiteDataCache(siteId.Value);
-                            _siteCaches[siteId.Value] = ret;
+                            _siteDataCache = new SiteDataCache();
                         }
+
                     }
-                    else
-                    {
-                        if (_nullCache == null)
-                        {
-                            _nullCache = new SiteDataCache(null);
-                        }
-                        ret = _nullCache;
-                    }
-                    ret.LastAccess = DateTime.UtcNow;
-                    return ret;
                 }
+
+                _siteDataCache.LastAccess = DateTime.UtcNow;
+                return _siteDataCache;
             }
-        }
-
-        private SiteDataCache GlobalCache
-        {
-            get
-            {
-                CheckSubscribeToChanges();
-
-                if (_globalCache == null)
-                {
-                    _globalCache = new SiteDataCache(null);
-                }
-                _globalCache.LastAccess = DateTime.UtcNow;
-                return _globalCache;
-            }            
         }
 
         public void Expired<T>(long? objectId = null) where T : ICacheHandler
@@ -104,28 +71,16 @@ namespace LessMarkup.Engine.Cache
             SiteCache.Expired<T>(objectId);
         }
 
-        public void ExpiredGlobal<T>(long? objectId = null) where T : ICacheHandler
-        {
-            GlobalCache.Expired<T>(objectId);
-        }
-
         public T CreateWithUniqueId<T>() where T : ICacheHandler
         {
             return SiteCache.CreateWithUniqueId<T>();
-        }
-
-        public T CreateWithUniqueIdGlobal<T>() where T : ICacheHandler
-        {
-            return GlobalCache.CreateWithUniqueId<T>();
         }
 
         public void Reset()
         {
             lock (_siteCachesLock)
             {
-                _globalCache = null;
-                _nullCache = null;
-                _siteCaches.Clear();
+                _siteDataCache = null;
             }
         }
 
@@ -134,44 +89,13 @@ namespace LessMarkup.Engine.Cache
             return SiteCache.Get<T>(objectId, create);
         }
 
-        public T GetGlobal<T>(long? objectId = null, bool create = true) where T : ICacheHandler
+        private void UpdateCacheItem(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange)
         {
-            return GlobalCache.Get<T>(objectId, create);
-        }
+            this.LogDebug(string.Format("Handled data change item for site id={0}", recordId));
 
-        private void UpdateCacheItem(long recordId, long? userId, long entityId, int collectionId, EntityChangeType entityChange, long? siteId)
-        {
-            if (_globalCache != null)
-            {
-                this.LogDebug(string.Format("Handling data change item for global site, id={0}", recordId));
-                _globalCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
-            }
+            var siteDataCache = SiteCache;
 
-            if (!siteId.HasValue)
-            {
-                this.LogDebug(string.Format("Handling data change item for null site, id={0}", recordId));
-
-                if (_nullCache != null)
-                {
-                    _nullCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
-                }
-
-                return;
-            }
-
-            if (collectionId == AbstractDomainModel.GetCollectionId<Interfaces.Data.Site>())
-            {
-                this.LogDebug(string.Format("Detected site change, removing complete site configuration for site {0}", entityId));
-                lock (_siteCachesLock)
-                {
-                    _siteCaches.Remove(entityId);
-                }
-                return;
-            }
-
-            this.LogDebug(string.Format("Handled data change item for site id={0}, siteid={1}", recordId, siteId.Value));
-            SiteDataCache siteDataCache;
-            if (_siteCaches.TryGetValue(siteId.Value, out siteDataCache))
+            if (siteDataCache != null)
             {
                 siteDataCache.UpdateCacheItem(recordId, userId, entityId, collectionId, entityChange);
             }

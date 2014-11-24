@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -13,7 +12,6 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 using LessMarkup.DataObjects.Security;
-using LessMarkup.Engine.Logging;
 using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
@@ -31,15 +29,13 @@ namespace LessMarkup.Engine.Security
 
         private const string AuthContextItem = "LessMarkupAuthUser";
         private const int TicketVersion = 1;
-        private readonly ISiteMapper _siteMapper;
         private readonly IEngineConfiguration _engineConfiguration;
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
         #endregion
 
-        public CurrentUser(ISiteMapper siteMapper, IEngineConfiguration engineConfiguration, IDomainModelProvider domainModelProvider)
+        public CurrentUser(IEngineConfiguration engineConfiguration, ILightDomainModelProvider domainModelProvider)
         {
-            _siteMapper = siteMapper;
             _engineConfiguration = engineConfiguration;
             _domainModelProvider = domainModelProvider;
         }
@@ -118,7 +114,7 @@ namespace LessMarkup.Engine.Security
             {
                 var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-                if (!contextUser.IsAdministrator && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
+                if (!contextUser.IsAdministrator && !dataCache.Get<ISiteConfiguration>().HasUsers)
                 {
                     this.LogDebug("Users functionality is disabled");
                     contextUser = null;
@@ -184,15 +180,6 @@ namespace LessMarkup.Engine.Security
             {
                 var user = GetCurrentUser();
                 return user != null && user.IsAdministrator;
-            }
-        }
-
-        public bool IsGlobalAdministrator
-        {
-            get
-            {
-                var user = GetCurrentUser();
-                return user != null && user.IsGlobalAdministrator;
             }
         }
 
@@ -283,7 +270,6 @@ namespace LessMarkup.Engine.Security
                             Email = ticket.Name,
                             Groups = new List<long>(),
                             IsAdministrator = true,
-                            IsGlobalAdministrator = true,
                             IsFakeUser = true,
                             IsValidated = true,
                             IsApproved = true,
@@ -310,12 +296,6 @@ namespace LessMarkup.Engine.Security
                     this.LogDebug("User is blocked");
                     return null;
                 }
-            }
-
-            if (!currentUser.IsAdministrator && _siteMapper.SiteId != currentUser.SiteId)
-            {
-                this.LogDebug("User site id is invalid");
-                return null;
             }
 
             if (!currentUser.IsAdministrator && !dataCache.Get<ISiteConfiguration>().HasUsers)
@@ -360,7 +340,6 @@ namespace LessMarkup.Engine.Security
                 Name = currentUser.Name,
                 Groups = currentUser.Groups,
                 IsAdministrator = currentUser.IsAdministrator,
-                IsGlobalAdministrator = currentUser.IsGlobalAdministrator,
                 IsValidated = currentUser.IsValidated,
                 IsApproved = currentUser.IsApproved,
                 UserId = userId,
@@ -404,7 +383,7 @@ namespace LessMarkup.Engine.Security
 
             var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
+            if (!allowAdmin && !dataCache.Get<ISiteConfiguration>().HasUsers)
             {
                 this.LogDebug("Users functionality is disabled");
                 return false;
@@ -412,15 +391,7 @@ namespace LessMarkup.Engine.Security
 
             using (var model = _domainModelProvider.Create())
             {
-                var siteId = _siteMapper.SiteId;
-
-                var collection = model.GetCollection<User>().Where(u => u.AuthProvider == provider && u.AuthProviderUserId == providerUserId);
-
-                collection = siteId.HasValue ?
-                    collection.Where(u => (!u.SiteId.HasValue) || (u.SiteId.HasValue && u.SiteId == siteId)) :
-                    collection.Where(u => !u.SiteId.HasValue);
-
-                var user = collection.Include(u => u.Groups).SingleOrDefault();
+                var user = model.Query().From<User>().Where("AuthProvider = $ AND AuthProviderUserId = $", provider, providerUserId).FirstOrDefault<User>();
 
                 if (user != null && user.IsBlocked)
                 {
@@ -429,10 +400,8 @@ namespace LessMarkup.Engine.Security
                         user.IsBlocked = false;
                         user.BlockReason = null;
                         user.UnblockTime = null;
-
+                        model.Update(user);
                         DependencyResolver.Resolve<IChangeTracker>().AddChange<User>(user.Id, EntityChangeType.Updated, model);
-
-                        model.SaveChanges();
                     }
                     else
                     {
@@ -470,8 +439,6 @@ namespace LessMarkup.Engine.Security
 
                 AddSuccessfulLoginHistory(address, model, user.Id);
 
-                model.SaveChanges();
-
                 HasContextUser = false;
 
                 return true;
@@ -484,7 +451,7 @@ namespace LessMarkup.Engine.Security
 
             var dataCache = DependencyResolver.Resolve<IDataCache>();
 
-            if (!allowAdmin && (!_siteMapper.SiteId.HasValue || !dataCache.Get<ISiteConfiguration>().HasUsers))
+            if (!allowAdmin && !dataCache.Get<ISiteConfiguration>().HasUsers)
             {
                 this.LogDebug("Users functionality is disabled");
                 return false;
@@ -504,8 +471,6 @@ namespace LessMarkup.Engine.Security
 
             using (var model = _domainModelProvider.Create())
             {
-                var siteId = _siteMapper.SiteId;
-
                 if (allowAdmin && email.Equals(_engineConfiguration.NoAdminName, StringComparison.InvariantCultureIgnoreCase) && NoGlobalAdminUser(model))
                 {
                     this.LogDebug("No admin defined and user email is equal to NoAdminName");
@@ -515,26 +480,11 @@ namespace LessMarkup.Engine.Security
                         return false;
                     }
 
-                    model.GetCollection<SuccessfulLoginHistory>().Add(new SuccessfulLoginHistory { Address = address, Time = DateTime.UtcNow, UserId = -2 });
-                    model.SaveChanges();
+                    model.Create(new SuccessfulLoginHistory {Address = address, Time = DateTime.UtcNow, UserId = -2});
                     return true;
                 }
 
-                var collection = model.GetCollection<User>().Where(u => u.Email == email);
-
-                if (allowRegular && allowAdmin)
-                {
-                    if (siteId.HasValue)
-                    {
-                        collection = collection.Where(u => (u.SiteId.HasValue && u.SiteId == siteId) || !u.SiteId.HasValue);
-                    }
-                }
-                else if (allowRegular)
-                {
-                    collection = collection.Where(u => u.SiteId.HasValue && u.SiteId == siteId);
-                }
-
-                var user = collection.Include(u => u.Groups).SingleOrDefault();
+                var user = model.Query().From<User>().Where("Email = $", email).FirstOrDefault<User>();
 
                 if (user != null && user.IsBlocked)
                 {
@@ -549,10 +499,8 @@ namespace LessMarkup.Engine.Security
                     user.IsBlocked = false;
                     user.BlockReason = null;
                     user.UnblockTime = null;
-
+                    model.Update(user);
                     DependencyResolver.Resolve<IChangeTracker>().AddChange<User>(user.Id, EntityChangeType.Updated, model);
-
-                    model.SaveChanges();
                 }
 
                 if (user == null)
@@ -596,7 +544,7 @@ namespace LessMarkup.Engine.Security
 
                 AddSuccessfulLoginHistory(address, model, user.Id);
 
-                model.SaveChanges();
+                model.Update(user);
 
                 HasContextUser = false;
 
@@ -619,26 +567,31 @@ namespace LessMarkup.Engine.Security
             HasContextUser = true;
         }
 
-        private bool NoGlobalAdminUser(IDomainModel model)
+        private bool NoGlobalAdminUser(ILightDomainModel model)
         {
-            return !model.GetCollection<User>().Any(u => u.IsAdministrator && !u.SiteId.HasValue && !u.IsRemoved && (!u.IsBlocked || (u.UnblockTime.HasValue && u.UnblockTime.Value < DateTime.UtcNow)));
+            var user = model.Query().From<User>().Where("IsAdministrator = $ AND IsRemoved = $ AND (IsBlocked = $ OR UnblockTime < $)", true, false, false, DateTime.Now).FirstOrDefault<User>("Id");
+            return user == null;
         }
 
-        private static void AddSuccessfulLoginHistory(string address, IDomainModel domainModel, long userId)
+        private static void AddSuccessfulLoginHistory(string address, ILightDomainModel domainModel, long userId)
         {
-            domainModel.GetCollection<SuccessfulLoginHistory>().Add(new SuccessfulLoginHistory
+            var history = new SuccessfulLoginHistory
             {
                 Address = address,
                 Time = DateTime.UtcNow,
                 UserId = userId
-            });
+            };
 
-            domainModel.GetCollection<UserLoginIpAddress>().Add(new UserLoginIpAddress
+            domainModel.Create(history);
+
+            var loginIpaddress = new UserLoginIpAddress
             {
                 UserId = userId,
                 Created = DateTime.UtcNow,
                 IpAddress = HttpContext.Current.Request.UserHostAddress
-            });
+            };
+
+            domainModel.Create(loginIpaddress);
         }
 
         public void DeleteSelf(string password)
@@ -652,7 +605,7 @@ namespace LessMarkup.Engine.Security
 
             using (var model = _domainModelProvider.Create())
             {
-                var user = model.GetCollection<User>().SingleOrDefault(u => u.Id == currentUser.UserId && !u.IsRemoved);
+                var user = model.Query().From<User>().Where("Id = $ AND IsRemoved = $", currentUser.UserId, false).FirstOrDefault<User>();
 
                 if (user == null)
                 {
@@ -665,21 +618,20 @@ namespace LessMarkup.Engine.Security
                 }
 
                 user.IsRemoved = true;
-
-                model.SaveChanges();
+                model.Update(user);
 
                 Logout();
             }
         }
 
-        public bool CheckPassword(IDomainModel domainModel, string password, string address)
+        public bool CheckPassword(ILightDomainModel domainModel, string password, string address)
         {
             if (!UserId.HasValue)
             {
                 return false;
             }
 
-            var user = domainModel.GetCollection<User>().SingleOrDefault(u => u.Id == UserId.Value && u.SiteId == _siteMapper.SiteId && !u.IsRemoved);
+            var user = domainModel.Query().From<User>().Where("Id = $ AND IsRemoved = $", UserId.Value, false).FirstOrDefault<User>();
 
             if (user == null)
             {
@@ -693,8 +645,6 @@ namespace LessMarkup.Engine.Security
         {
             email = email.Trim();
 
-            var siteId = _siteMapper.SiteId;
-
             string hash1 = "";
             string hash2 = UserSecurity.GenerateSalt();
 
@@ -702,15 +652,8 @@ namespace LessMarkup.Engine.Security
             {
                 using (var domainModel = _domainModelProvider.Create())
                 {
-                    var user = siteId.HasValue ?
-                        domainModel.GetCollection<User>().SingleOrDefault(u => u.Email == email && u.SiteId == siteId.Value) :
-                        domainModel.GetCollection<User>().SingleOrDefault(u => u.Email == email && !u.SiteId.HasValue);
-
-                    if (user == null && siteId.HasValue)
-                    {
-                        user = domainModel.GetCollection<User>().SingleOrDefault(u => u.Email == email && !u.SiteId.HasValue);
-                    }
-
+                    var user = domainModel.Query().From<User>().Where("Email = $ AND IsRemoved = $", email, false).FirstOrDefault<User>("Salt");
+                        
                     if (user != null)
                     {
                         hash1 = user.Salt;
@@ -758,23 +701,24 @@ namespace LessMarkup.Engine.Security
 
             using (var model = _domainModelProvider.Create())
             {
-                var failedAttempt = model.GetCollection<FailedLoginHistory>().SingleOrDefault(f => !f.UserId.HasValue && f.Address == remoteAddress);
+                var failedAttempt = model.Query().From<FailedLoginHistory>().Where("UserId IS NULL AND Address = $", remoteAddress).FirstOrDefault<FailedLoginHistory>();
 
                 if (failedAttempt != null && failedAttempt.LastAccess >= timeLimit && failedAttempt.AttemptCount >= maxAttemptCount)
                 {
                     this.LogDebug("User is exceeded failed attempt limit for remote address '" + remoteAddress + "'");
                     failedAttempt.LastAccess = DateTime.UtcNow;
-                    model.SaveChanges();
+                    model.Update(failedAttempt);
                     return false;
                 }
 
                 if (!userId.HasValue)
                 {
                     this.LogDebug("User is not found, logging failed attempt from address '" + remoteAddress + "'");
+                    var isNew = false;
                     if (failedAttempt == null)
                     {
                         failedAttempt = new FailedLoginHistory { Address = remoteAddress, AttemptCount = 0, UserId = null };
-                        model.GetCollection<FailedLoginHistory>().Add(failedAttempt);
+                        isNew = true;
                     }
                     else if (failedAttempt.LastAccess < timeLimit)
                     {
@@ -783,28 +727,35 @@ namespace LessMarkup.Engine.Security
 
                     failedAttempt.LastAccess = DateTime.UtcNow;
                     failedAttempt.AttemptCount++;
-                    model.SaveChanges();
+                    if (isNew)
+                    {
+                        model.Create(failedAttempt);
+                    }
+                    else
+                    {
+                        model.Update(failedAttempt);
+                    }
                     return false;
                 }
 
                 if (registrationExpires.HasValue && DateTime.UtcNow >= registrationExpires.Value)
                 {
                     this.LogDebug("User registration is expired, removing the user from users list");
-                    var u = model.GetCollection<User>().Single(u1 => u1.Id == userId.Value);
+                    var u = model.Query().From<User>().Where("Id = $", userId.Value).First<User>();
                     u.IsRemoved = true;
-                    model.SaveChanges();
+                    model.Update(u);
                     return false;
                 }
 
                 var addressFailedAttempt = failedAttempt;
 
-                failedAttempt = model.GetCollection<FailedLoginHistory>().SingleOrDefault(f => f.UserId.HasValue && f.UserId.Value == userId.Value);
+                failedAttempt = model.Query().From<FailedLoginHistory>().Where("UserId = $", userId.Value).FirstOrDefault<FailedLoginHistory>();
 
                 if (failedAttempt != null && failedAttempt.LastAccess >= timeLimit && failedAttempt.AttemptCount >= maxAttemptCount)
                 {
                     this.LogDebug("Found failed attempts for specified user which exceed maximum attempt count");
                     failedAttempt.LastAccess = DateTime.UtcNow;
-                    model.SaveChanges();
+                    model.Update(failedAttempt);
                     return false;
                 }
 
@@ -839,31 +790,32 @@ namespace LessMarkup.Engine.Security
                     {
                         if (failedAttempt != null)
                         {
-                            model.GetCollection<FailedLoginHistory>().Remove(failedAttempt);
+                            model.Delete<FailedLoginHistory>(failedAttempt.Id);
                         }
+
                         if (addressFailedAttempt != null && addressFailedAttempt != failedAttempt)
                         {
-                            model.GetCollection<FailedLoginHistory>().Remove(addressFailedAttempt);
+                            model.Delete<FailedLoginHistory>(addressFailedAttempt.Id);
                         }
                     }
 
                     if (registrationExpires.HasValue)
                     {
-                        var u = model.GetCollection<User>().Single(u1 => u1.Id == userId.Value);
+                        var u = model.Query().From<User>().Where("Id = $", userId.Value).First<User>();
                         u.RegistrationExpires = null;
+                        model.Update(u);
                     }
-
-                    model.SaveChanges();
 
                     return true;
                 }
 
                 this.LogDebug("Password is invalid, logging new failed attempt for the user");
 
+                var isNew1 = false;
                 if (failedAttempt == null)
                 {
                     failedAttempt = new FailedLoginHistory { Address = remoteAddress, UserId = userId.Value, AttemptCount = 0 };
-                    model.GetCollection<FailedLoginHistory>().Add(failedAttempt);
+                    isNew1 = true;
                 }
                 else if (failedAttempt.LastAccess < timeLimit)
                 {
@@ -872,7 +824,14 @@ namespace LessMarkup.Engine.Security
 
                 failedAttempt.LastAccess = DateTime.UtcNow;
                 failedAttempt.AttemptCount++;
-                model.SaveChanges();
+                if (isNew1)
+                {
+                    model.Create(failedAttempt);
+                }
+                else
+                {
+                    model.Update(failedAttempt);
+                }
                 return false;
             }
         }

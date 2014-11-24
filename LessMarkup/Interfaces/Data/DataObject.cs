@@ -4,11 +4,8 @@
 
 namespace LessMarkup.Interfaces.Data
 {
-    public abstract class DataObject : IDataObject
+    public class DataObject : IDataObject
     {
-        internal DataObject()
-        {}
-
         public long Id { get; set; }
     }
 }

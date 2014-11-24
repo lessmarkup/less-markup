@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
-using LessMarkup.Engine.Logging;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -24,18 +24,19 @@ namespace LessMarkup.Engine.Language
 {
     public class LanguageCache : AbstractCacheHandler, ILanguageCache
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
         private Dictionary<long, CachedLanguage> _languagesMap;
         private const string CookieLanguage = "lang";
         private long? _defaultLanguageId;
         private List<CachedLanguage> _languagesList;
+        private readonly object _translationsLock = new object();
 
         private readonly Dictionary<string, string> _defaultTranslations = new Dictionary<string, string>();
 
         public IReadOnlyDictionary<string, string> DefaultTranslations { get { return _defaultTranslations; } }
 
-        public LanguageCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+        public LanguageCache(ILightDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
             : base(new[] { typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;
@@ -78,7 +79,7 @@ namespace LessMarkup.Engine.Language
             }
         }
 
-        protected override void Initialize(long? siteId, long? objectId)
+        protected override void Initialize(long? objectId)
         {
             if (objectId != null)
             {
@@ -92,7 +93,7 @@ namespace LessMarkup.Engine.Language
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                _languagesMap = domainModel.GetSiteCollection<DataObjects.Common.Language>().Where(l => l.Visible)
+                _languagesMap = domainModel.Query().From<DataObjects.Common.Language>().Where("Visible = $", true).ToList<DataObjects.Common.Language>()
                     .Select(l => new CachedLanguage
                     {
                         Name = l.Name,
@@ -100,16 +101,8 @@ namespace LessMarkup.Engine.Language
                         IconId = l.IconId,
                         LanguageId = l.Id,
                         ShortName = l.ShortName,
-                        Translations = l.Translations.Select(t => new CachedLanguage.Translation { Reference = t.Key, Text = t.Text}).ToList()
                     })
                     .ToDictionary(l => l.LanguageId, l => l);
-
-                foreach (var language in _languagesMap.Values)
-                {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    language.TranslationsMap = language.Translations.ToDictionary(t => t.Reference, t => t.Text);
-                    language.Translations = null;
-                }
             }
 
             var defaultLanguage = _languagesMap.Values.FirstOrDefault(l => l.IsDefault) ?? _languagesMap.Values.FirstOrDefault();
@@ -190,6 +183,18 @@ namespace LessMarkup.Engine.Language
 
             if (language != null)
             {
+                if (language.TranslationsMap == null)
+                {
+                    lock (_translationsLock)
+                    {
+                        using (var domainModel = _domainModelProvider.Create())
+                        {
+                            var translations = domainModel.Query().From<Translation>().Where("LanguageId = $", language.LanguageId).ToList<Translation>();
+                            language.TranslationsMap = translations.ToDictionary(t => t.Key, t => t.Text);
+                        }
+                    }
+                }
+
                 translation = language.GetText(id, false);
                 if (translation != null)
                 {

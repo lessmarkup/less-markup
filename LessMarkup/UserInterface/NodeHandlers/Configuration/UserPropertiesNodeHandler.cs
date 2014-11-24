@@ -13,7 +13,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
     [ConfigurationHandler(UserInterfaceTextIds.UserProperties)]
     public class UserPropertiesNodeHandler : RecordListLinkNodeHandler<UserPropertyModel>
     {
-        public UserPropertiesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public UserPropertiesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

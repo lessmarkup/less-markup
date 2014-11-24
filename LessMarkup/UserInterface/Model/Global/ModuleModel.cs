@@ -2,16 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework;
-using LessMarkup.DataFramework.DataAccess;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
-using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
@@ -20,62 +16,28 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class Collection : IModelCollection<ModuleModel>
         {
-            private long? _siteId;
-            private readonly ISiteMapper _siteMapper;
-
-            public Collection(ISiteMapper siteMapper)
+            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                _siteMapper = siteMapper;
+                query = query.Where("Removed = $ AND System = $", false, false);
+                return query.ToIdList();
             }
 
-            private long SiteId
+            public int CollectionId { get { return DataHelper.GetCollectionId<Module>(); } }
+
+            public IReadOnlyCollection<ModuleModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                get
-                {
-                    var siteId = _siteId ?? _siteMapper.SiteId;
-
-                    if (siteId.HasValue)
-                    {
-                        return siteId.Value;
-                    }
-
-                    throw new Exception(LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.UnknownSite));
-                }
-            }
-
-            public IQueryable<long> ReadIds(IDomainModel domainModel, string filter, bool ignoreOrder)
-            {
-                return domainModel.GetCollection<Module>().Where(m => !m.Removed && !m.System && m.Enabled).Select(m => m.Id);
-            }
-
-            public int CollectionId { get { return AbstractDomainModel.GetCollectionIdVerified<Module>(); } }
-
-            public IQueryable<ModuleModel> Read(IDomainModel domainModel, List<long> ids)
-            {
-                var modules =
-                    domainModel.GetCollection<Module>()
-                        .Where(m => ids.Contains(m.Id) && !m.Removed && !m.System && m.Enabled)
+                return query.Where("Removed = $ AND System = $", false, false).WhereIds(ids).ToList<Module>()
                         .Select(m => new ModuleModel
                         {
                             Name = m.Name,
                             ModuleId = m.Id,
                         }).ToList();
-
-                foreach (var moduleId in domainModel.GetCollection<SiteModule>().Where(s => s.SiteId == SiteId && ids.Contains(s.ModuleId)).Select(s => s.ModuleId))
-                {
-                    long id = moduleId;
-                    var module = modules.First(m => m.ModuleId == id);
-                    module.Enabled = true;
-                }
-
-                return modules.AsQueryable();
             }
 
             public bool Filtered { get { return false; } }
 
             public void Initialize(long? objectId, NodeAccessType nodeAccessType)
             {
-                _siteId = objectId;
             }
         }
 

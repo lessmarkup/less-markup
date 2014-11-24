@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-using System.Linq;
 using System.Web.Mvc;
 using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Data;
@@ -11,9 +10,9 @@ namespace LessMarkup.MainModule.Model
 {
     public class ImageModel
     {
-        private readonly IDomainModelProvider _domainModelProvider;
+        private readonly ILightDomainModelProvider _domainModelProvider;
 
-        public ImageModel(IDomainModelProvider domainModelProvider)
+        public ImageModel(ILightDomainModelProvider domainModelProvider)
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -22,7 +21,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.Id == imageId);
+                var image = domainModel.Query().Find<Image>(imageId);
 
                 if (image == null)
                 {
@@ -37,7 +36,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var image = domainModel.GetSiteCollection<Image>().FirstOrDefault(i => i.Id == imageId);
+                var image = domainModel.Query().Find<Image>(imageId);
 
                 if (image == null)
                 {
@@ -52,7 +51,7 @@ namespace LessMarkup.MainModule.Model
         {
             using (var domainModel = _domainModelProvider.Create())
             {
-                var smile = domainModel.GetSiteCollection<Smile>().FirstOrDefault(s => s.Id == smileId);
+                var smile = domainModel.Query().Find<Smile>(smileId);
 
                 if (smile == null)
                 {
