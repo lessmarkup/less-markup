@@ -82,7 +82,7 @@ namespace LessMarkup.DataFramework
 
         public static class EventLog
         {
-            public const string Source = "LessMarkup";
+            public const string Source = "Application";
         }
 
         public static class Routes

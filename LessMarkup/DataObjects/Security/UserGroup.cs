@@ -3,12 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Security
 {
     public class UserGroup : DataObject
     {
+        [TextSearch]
         public string Name { get; set; }
+        [TextSearch]
         public string Description { get; set; }
     }
 }

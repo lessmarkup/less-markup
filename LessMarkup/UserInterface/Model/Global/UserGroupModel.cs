@@ -13,7 +13,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(Collection))]
+    [RecordModel(CollectionType = typeof(Collection), DataType = typeof(UserGroup))]
     public class UserGroupModel
     {
         public class Collection : IEditableModelCollection<UserGroupModel>
@@ -29,14 +29,14 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return query.ToIdList();
+                return query.From<UserGroup>().ToIdList();
             }
 
             public int CollectionId { get { return LightDomainModel.GetCollectionId<UserGroup>(); } }
 
             public IReadOnlyCollection<UserGroupModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return query.WhereIds(ids).ToList<UserGroup>()
+                return query.From<UserGroup>().WhereIds(ids).ToList<UserGroup>()
                         .Select(g => new UserGroupModel
                         {
                             GroupId = g.Id,

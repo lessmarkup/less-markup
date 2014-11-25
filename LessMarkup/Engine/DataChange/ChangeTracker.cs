@@ -156,16 +156,23 @@ namespace LessMarkup.Engine.DataChange
         {
             _timerStarted = false;
 
-            using (var model = _domainModelProvider.Create())
-            {
-                foreach (var change in model.Query().From<EntityChangeHistory>().Where("Id > $", _lastUpdateId).OrderBy("Id").ToList<EntityChangeHistory>("Id"))
+            try
+            { 
+                using (var model = _domainModelProvider.Create())
                 {
-                    _lastUpdateId = change.Id;
-                    lock (_syncChangeQueue)
+                    foreach (var change in model.Query().From<EntityChangeHistory>().Where("Id > $", _lastUpdateId).OrderBy("Id").ToList<EntityChangeHistory>("Id"))
                     {
-                        _changeQueue.Enqueue(change);
+                        _lastUpdateId = change.Id;
+                        lock (_syncChangeQueue)
+                        {
+                            _changeQueue.Enqueue(change);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                this.LogException(e);
             }
         }
 

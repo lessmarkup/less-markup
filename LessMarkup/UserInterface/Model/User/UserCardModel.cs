@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
+using System.Linq;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -17,7 +18,7 @@ namespace LessMarkup.UserInterface.Model.User
         {
             public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return query.Where("IsRemoved = $", false).ToIdList();
+                return query.From<DataObjects.Security.User>().Where("IsRemoved = $", false).ToIdList();
             }
 
             public int CollectionId
@@ -30,7 +31,17 @@ namespace LessMarkup.UserInterface.Model.User
 
             public IReadOnlyCollection<UserCardModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return query.Where("IsRemoved = $", false).WhereIds(ids).ToList<UserCardModel>();
+                return query.From<DataObjects.Security.User>()
+                    .Where("IsRemoved = $", false)
+                    .WhereIds(ids)
+                    .ToList<DataObjects.Security.User>()
+                    .Select(u => new UserCardModel
+                    {
+                        Name = u.Name,
+                        UserId = u.Id,
+                        Signature = u.Signature,
+                        Title = u.Title
+                    }).ToList();
             }
 
             public bool Filtered { get { return false; } }

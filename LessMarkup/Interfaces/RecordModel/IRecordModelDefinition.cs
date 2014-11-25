@@ -12,6 +12,7 @@ namespace LessMarkup.Interfaces.RecordModel
         Type CollectionType { get; }
         object TitleTextId { get; }
         string ModuleType { get; }
+        Type ModelType { get; }
         Type DataType { get; }
         string Id { get; }
         IReadOnlyList<InputFieldDefinition> Fields { get; }

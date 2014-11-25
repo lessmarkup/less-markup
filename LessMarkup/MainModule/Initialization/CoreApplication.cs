@@ -11,7 +11,6 @@ using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
-using Autofac.Integration.Mvc;
 using LessMarkup.DataFramework;
 using LessMarkup.Engine;
 using LessMarkup.Engine.Build.View;
@@ -93,7 +92,7 @@ namespace LessMarkup.MainModule.Initialization
             DataFrameworkTypeInitializer.Load(builder);
             EngineTypeInitializer.Load(builder);
             UserInterfaceModuleInitializer.Load(builder);
-            builder.RegisterFilterProvider();
+            //builder.RegisterFilterProvider();
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly());
 
             foreach (var reference in Assembly.GetExecutingAssembly().GetReferencedAssemblies())
@@ -121,7 +120,7 @@ namespace LessMarkup.MainModule.Initialization
             }
 
             var container = builder.Build();
-            System.Web.Mvc.DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            //System.Web.Mvc.DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             DependencyResolver.SetResolver(new ResolverCallback(container));
         }
 
@@ -274,11 +273,19 @@ namespace LessMarkup.MainModule.Initialization
                 try
                 {
                     EventLog.WriteEntry(Constants.EventLog.Source, string.Format(Resources.FatalStartupException, FatalExceptionMessage), EventLogEntryType.Error);
+                }
+                catch (Exception e1)
+                {
+                    this.LogException(e1);
+                }
+
+                try
+                {
                     SendFatalExceptionNotification();
                 }
-                catch (Exception e2)
+                catch (Exception e1)
                 {
-                    EventLog.WriteEntry(Constants.EventLog.Source, string.Format(Resources.FatalStartupLoggingException, e2.Message), EventLogEntryType.Error);
+                    this.LogException(e1);
                 }
             }
 

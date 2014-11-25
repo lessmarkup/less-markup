@@ -43,9 +43,9 @@ namespace LessMarkup.UserInterface.Model.Configuration
 
             public IReadOnlyCollection<NodeAccessModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return query.From<NodeAccess>("na").Where("na.NodeId = $ AND na.Id IN ($)", _nodeId, string.Join(",", ids))
+                return query.From<NodeAccess>("na").Where(string.Format("na.NodeId = $ AND na.Id IN ({0})", string.Join(",", ids)), _nodeId)
                     .LeftJoin<DataObjects.Security.User>("u", "u.Id = na.UserId")
-                    .LeftJoin<UserGroup>("g", "g.Id = na.UserGroupId")
+                    .LeftJoin<UserGroup>("g", "g.Id = na.GroupId")
                     .ToList<NodeAccessModel>("na.AccessType, u.Email, g.Name, na.Id AccessId");
             }
 

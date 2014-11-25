@@ -14,7 +14,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.MainModule.Model
 {
-    [RecordModel(CollectionType = typeof(Collection), TitleTextId = MainModuleTextIds.ViewTestMessage)]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = MainModuleTextIds.ViewTestMessage, DataType = typeof(TestMail))]
     public class TestMessageModel
     {
         public class Collection : IEditableModelCollection<TestMessageModel>

@@ -13,7 +13,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.MainModule.Model
 {
-    [RecordModel(TitleTextId = MainModuleTextIds.Translation, CollectionType = typeof(Collection))]
+    [RecordModel(TitleTextId = MainModuleTextIds.Translation, CollectionType = typeof(Collection), DataType = typeof(Translation))]
     public class TranslationModel
     {
         public class Collection : IEditableModelCollection<TranslationModel>

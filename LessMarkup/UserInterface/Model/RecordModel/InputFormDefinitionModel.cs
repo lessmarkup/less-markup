@@ -97,9 +97,9 @@ namespace LessMarkup.UserInterface.Model.RecordModel
                 }
                 else if (source.Type == InputFieldType.Select || source.Type == InputFieldType.SelectText || source.Type == InputFieldType.MultiSelect)
                 {
-                    if (inputSource == null && typeof(IInputSource).IsAssignableFrom(definition.DataType))
+                    if (inputSource == null && typeof(IInputSource).IsAssignableFrom(definition.ModelType))
                     {
-                        inputSource = (IInputSource) DependencyResolver.Resolve(definition.DataType);
+                        inputSource = (IInputSource) DependencyResolver.Resolve(definition.ModelType);
                     }
 
                     if (inputSource != null)

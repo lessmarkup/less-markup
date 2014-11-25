@@ -116,7 +116,7 @@ namespace LessMarkup.Engine.Structure
             {
                 var site = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>("Properties");
 
-                if (!string.IsNullOrWhiteSpace(site.Properties))
+                if (site != null && !string.IsNullOrWhiteSpace(site.Properties))
                 {
                     properties = JsonConvert.DeserializeObject<Dictionary<string, object>>(site.Properties);
                 }

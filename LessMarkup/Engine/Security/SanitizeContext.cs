@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
-using DotNetOpenAuth.Messaging;
 using HtmlAgilityPack;
 
 namespace LessMarkup.Engine.Security
@@ -27,13 +26,16 @@ namespace LessMarkup.Engine.Security
             "style"
         };
 
-        private Func<IXPathNavigable, bool?> _validateFunc;
+        private readonly Func<IXPathNavigable, bool?> _validateFunc;
 
         public SanitizeContext(IEnumerable<string> tagsToRemove = null, Func<IXPathNavigable, bool?> validateFunc = null)
         {
             if (tagsToRemove != null)
             {
-                _blackList.AddRange(tagsToRemove);
+                foreach (var item in tagsToRemove)
+                {
+                    _blackList.Add(item);
+                }
             }
 
             _validateFunc = validateFunc;

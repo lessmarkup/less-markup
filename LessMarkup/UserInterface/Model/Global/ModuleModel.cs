@@ -11,14 +11,14 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(Collection))]
+    [RecordModel(CollectionType = typeof(Collection), DataType = typeof(Module))]
     public class ModuleModel
     {
         public class Collection : IModelCollection<ModuleModel>
         {
             public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                query = query.Where("Removed = $ AND System = $", false, false);
+                query = query.From<Module>().Where("Removed = $ AND System = $", false, false);
                 return query.ToIdList();
             }
 
@@ -26,11 +26,12 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IReadOnlyCollection<ModuleModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return query.Where("Removed = $ AND System = $", false, false).WhereIds(ids).ToList<Module>()
+                return query.From<Module>().Where("Removed = $ AND System = $", false, false).WhereIds(ids).ToList<Module>()
                         .Select(m => new ModuleModel
                         {
                             Name = m.Name,
                             ModuleId = m.Id,
+                            Enabled = m.Enabled
                         }).ToList();
             }
 

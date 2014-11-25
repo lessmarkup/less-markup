@@ -59,7 +59,7 @@ namespace LessMarkup.Engine.Structure
 
         private static string CreateDefinitionId(RecordModelDefinition definition, int index, HashAlgorithm hashAlgorithm)
         {
-            var idString = definition.DataType.AssemblyQualifiedName + index;
+            var idString = definition.ModelType.AssemblyQualifiedName + index;
 
             var bytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(idString));
 

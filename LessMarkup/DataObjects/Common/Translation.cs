@@ -3,13 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using LessMarkup.Interfaces.Data;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Common
 {
     public class Translation : DataObject
     {
         public long LanguageId { get; set; }
+        [TextSearch]
         public string Key { get; set; }
+        [TextSearch]
         public string Text { get; set; }
     }
 }

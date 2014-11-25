@@ -14,7 +14,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.MainModule.Model
 {
-    [RecordModel(TitleTextId = MainModuleTextIds.EditFile, CollectionType = typeof(Collection))]
+    [RecordModel(TitleTextId = MainModuleTextIds.EditFile, CollectionType = typeof(Collection), DataType = typeof(File))]
     public class FileModel
     {
         private readonly ILightDomainModelProvider _domainModelProvider;

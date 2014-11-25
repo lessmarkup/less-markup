@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Reflection;
 using LessMarkup.Interfaces.Data;
+
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace LessMarkup.DataFramework.Light
 {
@@ -25,17 +28,19 @@ namespace LessMarkup.DataFramework.Light
 
         private IDataReader ExecuteReader()
         {
+#if DEBUG
             try
             {
                 return _command.ExecuteReader();
             }
             catch (Exception e)
             {
-#if DEBUG
                 Trace.WriteLine(e.Message);
-#endif
                 throw;
             }
+#else
+            return _command.ExecuteReader();
+#endif
         }
 
         private IDbCommand GetCommand()
@@ -136,26 +141,7 @@ namespace LessMarkup.DataFramework.Light
 
         public ILightQueryBuilder Where(string filter, params object[] args)
         {
-            foreach (var arg in args)
-            {
-                var pos = filter.IndexOf('$');
-                if (pos < 0)
-                {
-                    break;
-                }
-                var name = string.Format("@_p{0}", _parameterIndex++);
-                var command = GetCommand();
-                var parameter = command.CreateParameter();
-                parameter.DbType = GetDbType(arg.GetType());
-                if (parameter.DbType == DbType.String || parameter.DbType == (DbType) SqlDbType.VarBinary)
-                {
-                    parameter.Size = -1;
-                }
-                parameter.Value = arg;
-                parameter.ParameterName = name;
-                command.Parameters.Add(parameter);
-                filter = filter.Substring(0, pos) + name + filter.Substring(pos + 1);
-            }
+            filter = ProcessStringWithParameters(filter, args);
 
             if (_where.Length > 0)
             {
@@ -191,7 +177,7 @@ namespace LessMarkup.DataFramework.Light
         {
             if (_orderBy.Length > 0)
             {
-                _orderBy = string.Format(", [{0}] DESC", column);
+                _orderBy += string.Format(", [{0}] DESC", column);
             }
             else
             {
@@ -206,7 +192,7 @@ namespace LessMarkup.DataFramework.Light
             return this;
         }
 
-        public T Find<T>(long id) where T : IDataObject
+        public T Find<T>(long id) where T : class, IDataObject
         {
             if (string.IsNullOrEmpty(_commandText))
             {
@@ -216,7 +202,7 @@ namespace LessMarkup.DataFramework.Light
             return Where("Id = $", id).First<T>();
         }
 
-        public T FindOrDefault<T>(long id) where T : IDataObject
+        public T FindOrDefault<T>(long id) where T : class, IDataObject
         {
             if (string.IsNullOrEmpty(_commandText))
             {
@@ -226,31 +212,72 @@ namespace LessMarkup.DataFramework.Light
             return Where("Id = $", id).FirstOrDefault<T>();
         }
 
-        private List<T> ExecuteWithLimit<T>(string sql, int? limit, params object[] args)
+        private IDbDataParameter CreateParameter(object value)
         {
             var command = GetCommand();
+            var name = string.Format("@_p{0}", _parameterIndex++);
+            var parameter = command.CreateParameter();
+            parameter.DbType = value != null ? GetDbType(value.GetType()) : DbType.Int32;
+            if (parameter.DbType == DbType.String || parameter.DbType == (DbType)SqlDbType.VarBinary)
+            {
+                parameter.Size = -1;
+            }
+            parameter.Value = value ?? DBNull.Value;
+            parameter.ParameterName = name;
+            command.Parameters.Add(parameter);
+
+            return parameter;
+        }
+
+        private string ProcessStringWithParameters(string sql, object[] args)
+        {
+            if (args.Length == 0)
+            {
+                return sql;
+            }
+
+            var names = new List<string>();
 
             foreach (var arg in args)
             {
-                var pos = sql.IndexOf('$');
+                names.Add(CreateParameter(arg).ParameterName);
+            }
+
+            var argIndex = 0;
+
+            for (;;)
+            {
+                int pos = sql.IndexOf('$');
                 if (pos < 0)
                 {
                     break;
                 }
-                var name = string.Format("@_x{0}", _parameterIndex++);
-                var parameter = command.CreateParameter();
-                parameter.DbType = GetDbType(arg.GetType());
-                if (parameter.DbType == DbType.String || parameter.DbType == (DbType)SqlDbType.VarBinary)
+
+                string name;
+                int len = 1;
+
+                if (pos + 1 < sql.Length && char.IsDigit(sql[pos + 1]))
                 {
-                    parameter.Size = -1;
+                    var digitLen = 1;
+                    for (; pos + digitLen < sql.Length && char.IsDigit(sql[pos]); digitLen++)
+                    { }
+                    len = digitLen + 1;
+                    name = names[int.Parse(sql.Substring(pos + 1, digitLen))];
                 }
-                parameter.Value = arg;
-                parameter.ParameterName = name;
-                command.Parameters.Add(parameter);
-                sql = sql.Substring(0, pos) + name + sql.Substring(pos + 1);
+                else
+                {
+                    name = names[argIndex++];
+                }
+
+                sql = sql.Remove(pos, len).Insert(pos, name);
             }
 
-            command.CommandText = sql;
+            return sql;
+        }
+
+        private List<T> ExecuteWithLimit<T>(string sql, int? limit, params object[] args) where T : class
+        {
+            GetCommand().CommandText = ProcessStringWithParameters(sql, args);
 
             using (var reader = ExecuteReader())
             {
@@ -270,7 +297,8 @@ namespace LessMarkup.DataFramework.Light
 
                 while (reader.Read())
                 {
-                    var obj = Interfaces.DependencyResolver.Resolve<T>();
+                    var obj = Interfaces.DependencyResolver.TryResolve<T>() ?? Activator.CreateInstance<T>();
+
                     foreach (var property in properties)
                     {
                         if (reader.IsDBNull(property.Value))
@@ -318,7 +346,7 @@ namespace LessMarkup.DataFramework.Light
             }
         }
 
-        public List<T> Execute<T>(string sql, params object[] args)
+        public List<T> Execute<T>(string sql, params object[] args) where T : class
         {
             return ExecuteWithLimit<T>(sql, null, args);
         }
@@ -345,7 +373,7 @@ namespace LessMarkup.DataFramework.Light
             return ret;
         }
 
-        public List<T> ToList<T>(string selectText = null)
+        public List<T> ToList<T>(string selectText = null) where T : class
         {
             if (!string.IsNullOrEmpty(selectText))
             {
@@ -378,7 +406,7 @@ namespace LessMarkup.DataFramework.Light
             }
         }
 
-        public T First<T>(string selectText = null)
+        public T First<T>(string selectText = null) where T : class
         {
             if (!string.IsNullOrEmpty(selectText))
             {
@@ -395,7 +423,7 @@ namespace LessMarkup.DataFramework.Light
             return ret[0];
         }
 
-        public T FirstOrDefault<T>(string selectText = null)
+        public T FirstOrDefault<T>(string selectText = null) where T : class
         {
             if (!string.IsNullOrEmpty(selectText))
             {

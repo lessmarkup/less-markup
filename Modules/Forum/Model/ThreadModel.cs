@@ -17,7 +17,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Forum.Model
 {
-    [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Threads)]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Threads, DataType = typeof(Thread))]
     public class ThreadModel
     {
         public class WhoViews
@@ -48,7 +48,7 @@ namespace LessMarkup.Forum.Model
 
                 if (_accessType != NodeAccessType.Manage)
                 {
-                    query = query.Where("Removed = $", false);
+                    query = query.Where("Removed = 0");
                 }
 
                 if (!ignoreOrder)
@@ -72,11 +72,11 @@ namespace LessMarkup.Forum.Model
 
                 var queryText = string.Format(
                     "SELECT t.Id ThreadId, t.Name, t.Description, t.Created, t.Updated, t.Path, t.Removed, t.Closed, a.Name Author, " +
-                    "t.AuthorId, lu.Name LastUser, p.UserId LastUserId, p.Created LastCreated, ts.PostCount Posts, CASE WHEN tv.Unread IS NULL THEN ts.PostCount ELSE tv.Unread END Unread, v.Views " +
+                    "t.AuthorId, lu.Name LastUser, p.UserId LastUserId, p.Created LastCreated, ts.PostCount Posts, CASE WHEN tv.Unread IS NULL AND $0 IS NOT NULL THEN ts.PostCount ELSE tv.Unread END Unread, v.Views " +
                     "FROM (SELECT * FROM Threads WHERE Id IN ({0})) t " +
                     "LEFT JOIN (SELECT ThreadId, COUNT(Id) PostCount, MAX(Created) LastCreated FROM Posts WHERE ThreadId IN ({0}) GROUP BY ThreadId) ts ON t.Id = ts.ThreadId " +
                     "LEFT JOIN Posts p ON p.ThreadId = t.Id AND p.Created = ts.LastCreated " +
-                    "LEFT JOIN (SELECT tv1.ThreadId, COUNT(p1.Id) Unread FROM (SELECT ThreadId, MAX(Updated) Updated FROM ThreadViews WHERE ThreadId IN ({0}) AND UserId = $ GROUP BY ThreadId) tv1 LEFT JOIN Posts p1 ON p1.ThreadId = tv1.ThreadId AND p1.Created > tv1.Updated GROUP BY tv1.ThreadId) tv ON tv.ThreadId = t.Id " +
+                    "LEFT JOIN (SELECT tv1.ThreadId, COUNT(p1.Id) Unread FROM (SELECT ThreadId, MAX(Updated) Updated FROM ThreadViews WHERE ThreadId IN ({0}) AND $0 IS NOT NULL AND UserId = $0 GROUP BY ThreadId) tv1 LEFT JOIN Posts p1 ON $0 IS NOT NULL AND p1.ThreadId = tv1.ThreadId AND p1.Created > tv1.Updated WHERE tv1.Updated IS NOT NULL GROUP BY tv1.ThreadId) tv ON tv.ThreadId = t.Id " +
                     "LEFT JOIN Users a on a.Id = t.AuthorId " +
                     "LEFT JOIN Users lu ON lu.Id = p.UserId " +
                     "LEFT JOIN (SELECT ThreadId, COUNT(Id) Views FROM ThreadViews WHERE ThreadId IN ({0}) GROUP BY ThreadId) v ON v.ThreadId = t.Id", idsText);

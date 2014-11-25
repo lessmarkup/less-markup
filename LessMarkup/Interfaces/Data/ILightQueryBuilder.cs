@@ -14,13 +14,13 @@ namespace LessMarkup.Interfaces.Data
         ILightQueryBuilder OrderByDescending(string column);
         ILightQueryBuilder GroupBy(string name);
         ILightQueryBuilder Limit(int from, int count);
-        T Find<T>(long id) where T : IDataObject;
-        T FindOrDefault<T>(long id) where T : IDataObject;
-        List<T> Execute<T>(string sql, params object[] args);
-        List<T> ToList<T>(string selectText = null);
+        T Find<T>(long id) where T : class, IDataObject;
+        T FindOrDefault<T>(long id) where T : class, IDataObject;
+        List<T> Execute<T>(string sql, params object[] args) where T : class;
+        List<T> ToList<T>(string selectText = null) where T : class;
         IReadOnlyCollection<long> ToIdList();
-        T First<T>(string selectText = null);
-        T FirstOrDefault<T>(string selectText = null);
+        T First<T>(string selectText = null) where T : class;
+        T FirstOrDefault<T>(string selectText = null) where T : class;
         ILightQueryBuilder New();
     }
 }

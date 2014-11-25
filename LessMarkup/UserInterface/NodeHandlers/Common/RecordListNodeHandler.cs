@@ -16,6 +16,8 @@ using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
 using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
+using LessMarkup.Interfaces.Text;
+using Newtonsoft.Json;
 
 namespace LessMarkup.UserInterface.NodeHandlers.Common
 {
@@ -285,7 +287,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected int GetIndex(T modifiedObject, string filter, ILightDomainModel domainModel)
         {
-            var recordIds = GetCollection().ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof (T)), false).ToList();
+            var query = domainModel.Query();
+            if (_recordModel != null && _recordModel.DataType != null)
+            {
+                query = ApplyFilterAndOrderBy(domainModel.Query(), filter, _recordModel.DataType);
+            }
+            var recordIds = GetCollection().ReadIds(query, false).ToList();
             var recordId = (long)_idProperty.GetValue(modifiedObject);
             return recordIds.IndexOf(recordId);
         }
@@ -345,7 +352,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                recordIds = collection.ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof(T)), false).ToList();
+                var query = domainModel.Query();
+                if (_recordModel != null && _recordModel.DataType != null)
+                {
+                    query = ApplyFilterAndOrderBy(domainModel.Query(), filter, _recordModel.DataType);
+                }
+                recordIds = collection.ReadIds(query, false).ToList();
             }
 
             return new Dictionary<string, object>
@@ -381,7 +393,12 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             {
                 if (recordIds == null)
                 {
-                    recordIds = collection.ReadIds(RecordListHelper.ApplyFilterAndOrderBy(domainModel.Query(), filter, typeof(T)), false).ToList();
+                    var query = domainModel.Query();
+                    if (_recordModel != null && _recordModel.DataType != null)
+                    {
+                        query = ApplyFilterAndOrderBy(query, filter, _recordModel.DataType);
+                    }
+                    recordIds = collection.ReadIds(query, false).ToList();
                 }
 
                 if (!recordIds.Contains(change.EntityId))
@@ -424,8 +441,16 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, ILightDomainModel domainModel)
         {
-            var records = GetCollection().Read(domainModel.Query(), ids).ToList();
-            PostProcessRecords(records);
+            List<T> records;
+            if (ids.Count > 0)
+            {
+                records = GetCollection().Read(domainModel.Query(), ids).ToList();
+                PostProcessRecords(records);
+            }
+            else
+            {
+                records = new List<T>();
+            }
             values["records"] = records;
         }
 
@@ -506,5 +531,74 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         }
 
         protected virtual string ExtensionScript { get { return null; } }
+
+        public ILightQueryBuilder ApplyFilterAndOrderBy(ILightQueryBuilder queryBuilder, string filter, Type modelType)
+        {
+            if (string.IsNullOrEmpty(filter))
+            {
+                return queryBuilder;
+            }
+
+            var searchProperties = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+
+            object searchObject;
+            if (searchProperties.TryGetValue("search", out searchObject))
+            {
+                var filterParams = new List<object>();
+
+                var searchText = "%" + searchObject.ToString().Trim() + "%";
+
+                var filterText = "";
+
+                foreach (var property in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    if (property.PropertyType != typeof(string))
+                    {
+                        continue;
+                    }
+
+                    if (!_dataCache.Get<IUserCache>().IsAdministrator && property.GetCustomAttribute<TextSearchAttribute>() == null)
+                    {
+                        continue;
+                    }
+
+                    if (filterText.Length > 0)
+                    {
+                        filterText += " OR ";
+                    }
+
+                    filterText += string.Format("[{0}] LIKE ($)", property.Name);
+                    filterParams.Add(searchText);
+                }
+
+                queryBuilder = queryBuilder.Where("(" + filterText + ")", filterParams.ToArray());
+            }
+
+            object orderByObject;
+            object directionObject;
+            if (searchProperties.TryGetValue("orderBy", out orderByObject) && searchProperties.TryGetValue("direction", out directionObject))
+            {
+                var orderBy = orderByObject.ToString();
+
+                var parameter = modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(p => string.Compare(p.Name, orderBy, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+                if (parameter != null)
+                {
+                    var ascending = directionObject.ToString() == "asc";
+
+                    if (ascending)
+                    {
+                        queryBuilder = queryBuilder.OrderBy(string.Format("[{0}]", parameter.Name));
+                    }
+                    else
+                    {
+                        queryBuilder = queryBuilder.OrderBy(string.Format("[{0}]", parameter.Name));
+                    }
+                }
+            }
+
+            return queryBuilder;
+        }
+
     }
 }

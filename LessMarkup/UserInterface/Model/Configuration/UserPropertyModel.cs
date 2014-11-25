@@ -10,7 +10,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Configuration
 {
-    [RecordModel(TitleTextId = UserInterfaceTextIds.UserProperty, CollectionType = typeof(Collection))]
+    [RecordModel(TitleTextId = UserInterfaceTextIds.UserProperty, CollectionType = typeof(Collection), DataType = typeof(UserPropertyDefinition))]
     public class UserPropertyModel
     {
         public class Collection : IEditableModelCollection<UserPropertyModel>

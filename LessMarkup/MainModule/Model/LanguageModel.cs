@@ -20,7 +20,7 @@ using LessMarkup.MainModule.Model.Xml;
 
 namespace LessMarkup.MainModule.Model
 {
-    [RecordModel(CollectionType = typeof(Collection), TitleTextId = MainModuleTextIds.Language)]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = MainModuleTextIds.Language, DataType = typeof(Language))]
     public class LanguageModel
     {
         public class Collection : IEditableModelCollection<LanguageModel>

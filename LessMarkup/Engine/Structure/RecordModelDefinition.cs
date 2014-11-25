@@ -26,6 +26,7 @@ namespace LessMarkup.Engine.Structure
         public Type CollectionType { get; set; }
         public object TitleTextId { get; set; }
         public string ModuleType { get; set; }
+        public Type ModelType { get; set; }
         public Type DataType { get; set; }
         public string Id { get; set; }
         public bool SubmitWithCaptcha { get; set; }
@@ -47,7 +48,8 @@ namespace LessMarkup.Engine.Structure
         {
             TitleTextId = formType.TitleTextId;
             ModuleType = moduleType;
-            DataType = type;
+            ModelType = type;
+            DataType = formType.DataType;
             CollectionType = formType.CollectionType;
             CollectionType = formType.CollectionType;
             SubmitWithCaptcha = formType.SubmitWithCaptcha;

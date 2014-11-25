@@ -4,12 +4,15 @@
 
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
+using LessMarkup.Interfaces.Text;
 
 namespace LessMarkup.DataObjects.Security
 {
     public class UserPropertyDefinition : DataObject
     {
+        [TextSearch]
         public string Name { get; set; }
+        [TextSearch]
         public string Title { get; set; }
         public UserPropertyType Type { get; set; }
         public bool Required { get; set; }

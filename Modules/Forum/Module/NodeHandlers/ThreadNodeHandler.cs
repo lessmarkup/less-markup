@@ -304,12 +304,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
                         property.Name = property.Name.ToJsonCase();
                     }
 
-                    var lastRead = domainModel.Query().From<ThreadView>().Where("UserId = $", userId.Value).OrderByDescending("Updated").FirstOrDefault<ThreadView>();
-
-                    result["lastRead"] = lastRead != null ? lastRead.Updated : null;
-
                     var view = domainModel.Query().From<ThreadView>().Where("UserId = $ AND ThreadId = $", userId.Value, ObjectId.Value).OrderByDescending("LastSeen").FirstOrDefault<ThreadView>();
-                        
+
+                    result["lastRead"] = view != null ? view.Updated : null;
+
                     if (view == null)
                     {
                         view = new ThreadView
@@ -336,7 +334,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return result;
         }
 
-        public object UpdateRead(long threadId, DateTime lastRead)
+        public object UpdateRead(DateTime lastRead)
         {
             var userId = _currentUser.UserId;
 

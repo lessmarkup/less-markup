@@ -18,7 +18,7 @@ using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Forum.Model
 {
-    [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Edit)]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Edit, DataType = typeof(Post))]
     public class PostModel
     {
         private readonly ILightDomainModelProvider _domainModelProvider;
@@ -59,7 +59,7 @@ namespace LessMarkup.Forum.Model
                     return new List<PostModel>();
                 }
 
-                query = query.From<Post>("p").Join<User>("u", "u.Id = p.UserId").Where(string.Format("p.[ThreadId] = {0} AND p.Id IN ({1})", _threadId, string.Join(",", ids)));
+                query = query.From<Post>("p").LeftJoin<User>("u", "u.Id = p.UserId").Where(string.Format("p.[ThreadId] = {0} AND p.Id IN ({1})", _threadId, string.Join(",", ids)));
 
                 if (_accessType != NodeAccessType.Manage)
                 {
@@ -68,23 +68,27 @@ namespace LessMarkup.Forum.Model
 
                 var ret = query.ToList<PostModel>("p.Text, u.Name UserName, p.Id PostId, p.Removed, p.Created, p.UserId");
 
-                var attachments = query.New()
+                if (ret.Count > 0)
+                {
+                    var attachments = query.New()
                         .From<PostAttachment>()
                         .Where(string.Format("PostId IN ({0})", string.Join(",", ret.Select(p => p.PostId))))
                         .ToList<PostAttachment>()
                         .GroupBy(a => a.PostId)
-                        .ToDictionary(p => p.Key, p => p.Select(pa => new PostAttachmentModel { FileName = pa.FileName, Id = pa.Id }).ToList());
+                        .ToDictionary(p => p.Key,
+                            p => p.Select(pa => new PostAttachmentModel {FileName = pa.FileName, Id = pa.Id}).ToList());
 
-                foreach (var post in ret)
-                {
-                    List<PostAttachmentModel> list;
-                    if (attachments.TryGetValue(post.PostId, out list))
+                    foreach (var post in ret)
                     {
-                        post.Attachments = list;
-                    }
-                    else
-                    {
-                        post.Attachments = new List<PostAttachmentModel>();
+                        List<PostAttachmentModel> list;
+                        if (attachments.TryGetValue(post.PostId, out list))
+                        {
+                            post.Attachments = list;
+                        }
+                        else
+                        {
+                            post.Attachments = new List<PostAttachmentModel>();
+                        }
                     }
                 }
 

@@ -13,7 +13,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.UserInterface.Model.Global
 {
-    [RecordModel(CollectionType = typeof(Collection), TitleTextId = UserInterfaceTextIds.User)]
+    [RecordModel(CollectionType = typeof(Collection), TitleTextId = UserInterfaceTextIds.User, DataType = typeof(DataObjects.Security.User))]
     public class UserModel
     {
         public class Collection : IEditableModelCollection<UserModel>
@@ -31,14 +31,14 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
             {
-                return query.Where("IsRemoved = $", false).ToIdList();
+                return query.From<DataObjects.Security.User>().Where("IsRemoved = $", false).ToIdList();
             }
 
             public int CollectionId { get { return DataHelper.GetCollectionId<DataObjects.Security.User>(); } }
 
             public IReadOnlyCollection<UserModel> Read(ILightQueryBuilder query, List<long> ids)
             {
-                return query.Where("IsRemoved = $", false).WhereIds(ids).ToList<UserModel>();
+                return query.From<DataObjects.Security.User>().Where("IsRemoved = $", false).WhereIds(ids).ToList<UserModel>();
             }
 
             public bool Filtered { get { return false; } }

@@ -42,7 +42,6 @@ namespace LessMarkup.Engine.Build.View
         {
             _compileDirectory = Path.Combine(specialFolder.ApplicationData, "Compiled");
 
-            _referencedAssemblies.Add(typeof(DotNetOpenAuth.AspNet.IAuthenticationClient).Assembly);
             _referencedAssemblies.Add(typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly);
 
             _specialFolder = specialFolder;

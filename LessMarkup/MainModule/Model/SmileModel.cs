@@ -12,7 +12,7 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.MainModule.Model
 {
-    [RecordModel(TitleTextId = MainModuleTextIds.Smile, CollectionType = typeof(Collection))]
+    [RecordModel(TitleTextId = MainModuleTextIds.Smile, CollectionType = typeof(Collection), DataType = typeof(Smile))]
     public class SmileModel
     {
         public class Collection : IEditableModelCollection<SmileModel>
