@@ -27,7 +27,7 @@ namespace LessMarkup.Forum.Model
         public long? UserId { get; set; }
         public long PostId { get; set; }
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
@@ -35,7 +35,7 @@ namespace LessMarkup.Forum.Model
         private readonly IUserSecurity _userSecurity;
         private readonly ISiteConfiguration _siteConfiguration;
 
-        public CreateNewPostModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
+        public CreateNewPostModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, ICurrentUser currentUser, IHtmlSanitizer htmlSanitizer, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;

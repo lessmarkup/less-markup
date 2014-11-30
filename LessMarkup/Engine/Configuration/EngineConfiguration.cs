@@ -568,6 +568,18 @@ namespace LessMarkup.Engine.Configuration
             }
         }
 
+        public bool DisableCustomizations
+        {
+            get
+            {
+                return bool.Parse(GetProperty("DisableCustomizations", "false"));
+            }
+            set
+            {
+                SetProperty("DisableCustomizations", value.ToString());
+            }
+        }
+
         public void Save()
         {
             lock (_syncConfiguration)

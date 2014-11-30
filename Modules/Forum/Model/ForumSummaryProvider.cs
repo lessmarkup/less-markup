@@ -8,25 +8,25 @@ using LessMarkup.Interfaces.Structure;
 
 namespace LessMarkup.Forum.Model
 {
-    public class AllForumsStatistics
+    public class ForumSummaryProvider
     {
-        private readonly Dictionary<long, ForumStatisticsModel> _idToForum = new Dictionary<long, ForumStatisticsModel>();
-        private readonly List<ForumStatisticsModel> _forums = new List<ForumStatisticsModel>();
-        private readonly List<ForumStatisticsModel> _forumsFlat = new List<ForumStatisticsModel>();
+        private readonly Dictionary<long, ForumSummary> _idToForum = new Dictionary<long, ForumSummary>();
+        private readonly List<ForumSummary> _forums = new List<ForumSummary>();
+        private readonly List<ForumSummary> _forumsFlat = new List<ForumSummary>();
 
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
-        private readonly List<List<ForumStatisticsModel>> _groups = new List<List<ForumStatisticsModel>>();
+        private readonly List<List<ForumSummary>> _groups = new List<List<ForumSummary>>();
 
-        public List<List<ForumStatisticsModel>> Groups { get { return _groups; } }
+        public List<List<ForumSummary>> Groups { get { return _groups; } }
 
-        public AllForumsStatistics(IDataCache dataCache, ICurrentUser currentUser)
+        public ForumSummaryProvider(IDataCache dataCache, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;
         }
 
-        private void InitializeNode(ForumStatisticsModel parent, ICachedNodeInformation node, Type forumHandlerType)
+        private void InitializeNode(ForumSummary parent, ICachedNodeInformation node, Type forumHandlerType)
         {
             var accessType = node.CheckRights(_currentUser);
 
@@ -37,14 +37,14 @@ namespace LessMarkup.Forum.Model
 
             if (forumHandlerType.IsAssignableFrom(node.HandlerType))
             {
-                var statistics = new ForumStatisticsModel
+                var statistics = new ForumSummary
                 {
                     Id = node.NodeId,
                     Title = node.Title,
                     Description = node.Description,
                     Parent = parent,
                     Path = node.FullPath,
-                    Children = new List<ForumStatisticsModel>(),
+                    Children = new List<ForumSummary>(),
                     Level = parent != null ? parent.Level+1 : 0
                 };
 
@@ -69,7 +69,7 @@ namespace LessMarkup.Forum.Model
             }
         }
 
-        private void Summarize(ForumStatisticsModel forum)
+        private void Summarize(ForumSummary forum)
         {
             foreach (var child in forum.Children)
             {
@@ -120,7 +120,7 @@ namespace LessMarkup.Forum.Model
                 return;
             }
 
-            List<ForumStatisticsModel> group = null;
+            List<ForumSummary> group = null;
 
             foreach (var forum in _forumsFlat)
             {
@@ -130,7 +130,7 @@ namespace LessMarkup.Forum.Model
 
                     if (@group == null)
                     {
-                        @group = new List<ForumStatisticsModel>();
+                        @group = new List<ForumSummary>();
                         _groups.Add(@group);
                         @group.Add(forum);
                         forum.Children = null;
@@ -143,7 +143,7 @@ namespace LessMarkup.Forum.Model
                         continue;
                     }
 
-                    @group = new List<ForumStatisticsModel>();
+                    @group = new List<ForumSummary>();
                     _groups.Add(@group);
                     @group.Add(forum);
                     continue;
@@ -175,9 +175,9 @@ namespace LessMarkup.Forum.Model
                 InitializeNode(null, child, forumHandlerType);
             }
 
-            var forumCache = _dataCache.Get<ForumStatisticsCache>();
+            var forumCache = _dataCache.Get<ForumPropertiesCache>();
 
-            foreach (var statistics in forumCache.GetStatistics(_idToForum.Keys.ToList()))
+            foreach (var statistics in forumCache.GetPropertiesForForums(_idToForum.Keys.ToList()))
             {
                 var forum = _idToForum[statistics.ForumId];
 

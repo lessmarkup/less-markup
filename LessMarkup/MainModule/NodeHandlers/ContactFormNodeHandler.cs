@@ -16,6 +16,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     {
         public ContactFormNodeHandler(IDataCache dataCache) : base(dataCache)
         {
+            AddStylesheet("content/contact");
         }
 
         protected override SendContactModel LoadObject()

@@ -19,9 +19,9 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     {
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public PostUpdatesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public PostUpdatesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache, currentUser)
         {
             _dataCache = dataCache;
@@ -64,7 +64,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             return null;
         }
 
-        public override int GetValueChange(long? fromVersion, long? toVersion, ILightDomainModel domainModel)
+        public override int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel)
         {
             if (!fromVersion.HasValue)
             {

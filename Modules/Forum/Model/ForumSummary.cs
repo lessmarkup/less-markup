@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace LessMarkup.Forum.Model
 {
-    public class ForumStatisticsModel
+    public class ForumSummary
     {
-        internal ForumStatisticsModel Parent { get; set; }
-        public List<ForumStatisticsModel> Children { get; set; }
+        internal ForumSummary Parent { get; set; }
+        public List<ForumSummary> Children { get; set; }
 
         public string Title { get; set; }
         public string Description { get; set; }

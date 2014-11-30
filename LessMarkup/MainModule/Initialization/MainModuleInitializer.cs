@@ -54,6 +54,7 @@ namespace LessMarkup.MainModule.Initialization
 
             _moduleIntegration.RegisterNodeHandler<ArticleNodeHandler>("article");
             _moduleIntegration.RegisterNodeHandler<ContactFormNodeHandler>("contact");
+            _moduleIntegration.RegisterNodeHandler<HtmlPageNodeHandler>("htmlpage");
             _moduleIntegration.RegisterEntitySearch<Node>(DependencyResolver.Resolve<NodeSearch>());
             _moduleIntegration.RegisterEntitySearch<User>(DependencyResolver.Resolve<UserSearch>());
         }

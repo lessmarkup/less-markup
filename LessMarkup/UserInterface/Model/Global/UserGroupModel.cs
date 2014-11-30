@@ -4,8 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Security;
+using LessMarkup.Framework.Data;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -18,23 +18,23 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class Collection : IEditableModelCollection<UserGroupModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _changeTracker = changeTracker;
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<UserGroup>().ToIdList();
             }
 
-            public int CollectionId { get { return LightDomainModel.GetCollectionId<UserGroup>(); } }
+            public int CollectionId { get { return DomainModel.GetCollectionId<UserGroup>(); } }
 
-            public IReadOnlyCollection<UserGroupModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<UserGroupModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<UserGroup>().WhereIds(ids).ToList<UserGroup>()
                         .Select(g => new UserGroupModel

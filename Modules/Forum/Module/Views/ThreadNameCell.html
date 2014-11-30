@@ -8,8 +8,12 @@
 </div>
 <div ng-bind="data.description" class="thread-statistics">
 </div>
-<div ng-if="data.author" class="thread-statistics">
-    [[[translate Created]]] <span title="{{data.created | date:'medium'}}">{{data.created | relativeDate}}</span> [[[Translate LastPostBy]]] <a href="{{data.authorUrl}}" ng-click="navigateToView(data.authorUrl); $event.stopPropagation();">{{data.author}}</a>
+<div class="thread-statistics">
+    [[[translate Created]]]
+    <span title="{{data.created | date:'medium'}}">{{data.created | relativeDate}}</span>
+    [[[Translate LastPostBy]]]
+    <a ng-if="data.author" href="{{data.authorUrl}}" ng-click="navigateToView(data.authorUrl); $event.stopPropagation();">{{data.author}}</a>
+    <span ng-if="!data.author">[[[translate UserRemoved]]]</span>
 </div>
 <div ng-if="data.activeUsers && data.activeUsers.length" class="thread-active-users thread-statistics">
     <span>[[[translate CurrentlyViewing]]]:</span>

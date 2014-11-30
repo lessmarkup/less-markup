@@ -24,7 +24,7 @@ namespace LessMarkup.Engine.Language
 {
     public class LanguageCache : AbstractCacheHandler, ILanguageCache
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
         private Dictionary<long, CachedLanguage> _languagesMap;
         private const string CookieLanguage = "lang";
@@ -36,7 +36,7 @@ namespace LessMarkup.Engine.Language
 
         public IReadOnlyDictionary<string, string> DefaultTranslations { get { return _defaultTranslations; } }
 
-        public LanguageCache(ILightDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+        public LanguageCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
             : base(new[] { typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;

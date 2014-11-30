@@ -10,7 +10,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
-    [ConfigurationHandler(UserInterfaceTextIds.EmailConfiguration, IsGlobal = true)]
+    [ConfigurationHandler(UserInterfaceTextIds.EmailConfiguration)]
     public class EmailNodeHandler : DialogNodeHandler<EmailConfigurationModel>
     {
         public EmailNodeHandler(IDataCache dataCache) : base(dataCache)

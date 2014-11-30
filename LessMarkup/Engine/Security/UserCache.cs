@@ -20,15 +20,15 @@ namespace LessMarkup.Engine.Security
     {
         private long? _userId;
         private readonly int _userCollectionId;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private List<long> _groups;
 
         public bool IsRemoved { get; private set; }
         public bool IsAdministrator { get; private set; }
-        public bool IsApproved { get; set; }
+        public bool IsApproved { get; private set; }
+        public bool EmailConfirmed { get; private set; }
         public IReadOnlyList<long> Groups { get { return _groups; } }
-        public bool IsValidated { get; private set; }
         public string Email { get; private set; }
         public string Title { get; private set; }
         public bool IsBlocked { get; private set; }
@@ -40,7 +40,7 @@ namespace LessMarkup.Engine.Security
         public string Name { get; private set; }
         public IReadOnlyList<Tuple<ICachedNodeInformation, NodeAccessType>> Nodes { get; private set; }
 
-        public UserCache(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public UserCache(IDomainModelProvider domainModelProvider, IDataCache dataCache)
             : base(new[] { typeof(User), typeof(Node), typeof(NodeAccess), typeof(SiteProperties) })
         {
             _domainModelProvider = domainModelProvider;
@@ -64,7 +64,7 @@ namespace LessMarkup.Engine.Security
                 _groups = domainModel.Query().From<UserGroupMembership>().Where("UserId = $", _userId).ToList<UserGroupMembership>("UserGroupId").Select(g => g.UserGroupId).ToList();
                 Email = user.Email;
                 Title = user.Title;
-                IsValidated = user.IsValidated;
+                EmailConfirmed = user.EmailConfirmed;
                 IsBlocked = user.IsBlocked;
                 IsApproved = user.IsApproved;
                 UnblockTime = user.UnblockTime;

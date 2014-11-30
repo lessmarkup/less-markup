@@ -52,7 +52,7 @@ namespace LessMarkup.Engine.TextAndSearch
             return null;
         }
 
-        public static string Parse(string taggedText, ILightDomainModel domainModel, UrlHelper urlHelper, ITextTagHandler textTagHandler = null)
+        public static string Parse(string taggedText, IDomainModel domainModel, UrlHelper urlHelper, ITextTagHandler textTagHandler = null)
         {
             if (taggedText == null)
             {

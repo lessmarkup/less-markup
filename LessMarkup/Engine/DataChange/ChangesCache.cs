@@ -29,11 +29,11 @@ namespace LessMarkup.Engine.DataChange
         private long? _lastUpdateId;
         private long _lastUpdateTime;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private const int UpdateInterval = 500;
         private readonly Dictionary<int, List<Change>> _changes = new Dictionary<int, List<Change>>();
 
-        public ChangesCache(ILightDomainModelProvider domainModelProvider) : base(null)
+        public ChangesCache(IDomainModelProvider domainModelProvider) : base(null)
         {
             _domainModelProvider = domainModelProvider;
         }

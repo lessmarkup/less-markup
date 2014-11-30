@@ -9,6 +9,6 @@ namespace LessMarkup.Interfaces.Text
 {
     public interface ITextSearch : ICacheHandler
     {
-        SearchResults Search(string text, int startRecord, int recordCount, ILightDomainModel domainModel);
+        SearchResults Search(string text, int startRecord, int recordCount, IDomainModel domainModel);
     }
 }

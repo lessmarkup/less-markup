@@ -10,9 +10,9 @@ namespace LessMarkup.Engine.Migrate
     public class MigrateEngine
     {
         private readonly IModuleProvider _moduleProvider;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public MigrateEngine(IModuleProvider moduleProvider, ILightDomainModelProvider domainModelProvider)
+        public MigrateEngine(IModuleProvider moduleProvider, IDomainModelProvider domainModelProvider)
         {
             _moduleProvider = moduleProvider;
             _domainModelProvider = domainModelProvider;

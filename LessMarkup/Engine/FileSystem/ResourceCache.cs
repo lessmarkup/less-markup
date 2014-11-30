@@ -25,9 +25,10 @@ namespace LessMarkup.Engine.FileSystem
 {
     class ResourceCache : AbstractCacheHandler, IResourceCache
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly ISpecialFolder _specialFolder;
         private readonly IModuleProvider _moduleProvider;
+        private readonly IEngineConfiguration _engineConfiguration;
         private readonly object _loadLock = new object();
 
         private Assembly _globalAssembly;
@@ -35,12 +36,13 @@ namespace LessMarkup.Engine.FileSystem
         private readonly Dictionary<string, ResourceReference> _resourceReferences = new Dictionary<string, ResourceReference>();
         private readonly Dictionary<string, ViewReference> _viewReferences = new Dictionary<string, ViewReference>();
 
-        public ResourceCache(ILightDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider)
+        public ResourceCache(IDomainModelProvider domainModelProvider, ISpecialFolder specialFolder, IModuleProvider moduleProvider, IEngineConfiguration engineConfiguration)
             : base(new[] { typeof(SiteCustomization), typeof(DataObjects.Common.Language) })
         {
             _domainModelProvider = domainModelProvider;
             _specialFolder = specialFolder;
             _moduleProvider = moduleProvider;
+            _engineConfiguration = engineConfiguration;
         }
 
         private string ExtractPath(string path)
@@ -263,6 +265,11 @@ namespace LessMarkup.Engine.FileSystem
 
         private void LoadDatabaseResources()
         {
+            if (_engineConfiguration.DisableCustomizations)
+            {
+                return;
+            }
+
             using (var domainModel = _domainModelProvider.Create())
             {
                 foreach (var record in domainModel.Query().From<SiteCustomization>().ToList<SiteCustomization>())

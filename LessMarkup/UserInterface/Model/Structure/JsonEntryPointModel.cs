@@ -44,7 +44,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
         private bool IsUserVerified()
         {
-            return _currentUser.IsValidated && _currentUser.IsApproved;
+            return _currentUser.IsAdministrator || (_currentUser.EmailConfirmed && _currentUser.IsApproved);
         }
 
         private static Dictionary<string, object> GetRequestData()

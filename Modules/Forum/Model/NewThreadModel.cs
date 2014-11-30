@@ -17,11 +17,11 @@ namespace LessMarkup.Forum.Model
     [RecordModel(TitleTextId = ForumTextIds.NewThread)]
     public class NewThreadModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
 
-        public NewThreadModel(ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser, IChangeTracker changeTracker)
+        public NewThreadModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _currentUser = currentUser;

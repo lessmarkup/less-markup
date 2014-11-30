@@ -4,7 +4,7 @@ using System.Data.Entity.Design.PluralizationServices;
 using System.Globalization;
 using System.Reflection;
 
-namespace LessMarkup.DataFramework.Light
+namespace LessMarkup.Framework.Data
 {
     class TableMetadata
     {

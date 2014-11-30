@@ -17,19 +17,21 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
     public class ResetPasswordPageHandler : DialogNodeHandler<ChangePasswordModel>
     {
         private string _ticket;
+        private string _email;
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IUserSecurity _userSecurity;
 
-        public ResetPasswordPageHandler(ILightDomainModelProvider domainModelProvider, IUserSecurity userSecurity, IDataCache dataCache) : base(dataCache)
+        public ResetPasswordPageHandler(IDomainModelProvider domainModelProvider, IUserSecurity userSecurity, IDataCache dataCache) : base(dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _userSecurity = userSecurity;
         }
 
-        public void Initialize(string ticket)
+        public void Initialize(string email, string ticket)
         {
             _ticket = ticket;
+            _email = email;
         }
 
         protected override ActionResult CreateResult(string path)
@@ -39,7 +41,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 return null;
             }
 
-            var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
+            var userId = _userSecurity.ValidatePasswordChangeToken(_email, _ticket);
 
             if (!userId.HasValue)
             {
@@ -48,7 +50,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                if (domainModel.Query().From<DataObjects.Security.User>().FindOrDefault<DataObjects.Security.User>(userId.Value) == null)
+                var user = domainModel.Query().From<DataObjects.Security.User>().Where("Email = $ AND PasswordChangeToken = $", _email, _ticket).FirstOrDefault<DataObjects.Security.User>();
+
+                if (user == null || !user.PasswordChangeTokenExpires.HasValue ||
+                    user.PasswordChangeTokenExpires.Value >= DateTime.UtcNow)
                 {
                     return new HttpNotFoundResult();
                 }
@@ -64,7 +69,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
         protected override string SaveObject(ChangePasswordModel changedObject)
         {
-            var userId = _userSecurity.ValidatePasswordChangeToken(_ticket);
+            var userId = _userSecurity.ValidatePasswordChangeToken(_email, _ticket);
 
             if (!userId.HasValue)
             {
@@ -86,7 +91,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
                 string encodedPassword;
                 _userSecurity.ChangePassword(changedObject.Password, out salt, out encodedPassword);
 
+                user.PasswordChangeToken = null;
+                user.PasswordChangeTokenExpires = null;
                 user.Password = encodedPassword;
+                user.EmailConfirmed = true;
                 user.Salt = salt;
                 user.LastPasswordChanged = DateTime.UtcNow;
                 user.EmailConfirmed = true;

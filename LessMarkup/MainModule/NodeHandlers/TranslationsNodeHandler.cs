@@ -11,7 +11,7 @@ namespace LessMarkup.MainModule.NodeHandlers
 {
     public class TranslationsNodeHandler : RecordListNodeHandler<TranslationModel>
     {
-        public TranslationsNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public TranslationsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

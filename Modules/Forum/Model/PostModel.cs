@@ -21,7 +21,7 @@ namespace LessMarkup.Forum.Model
     [RecordModel(CollectionType = typeof(Collection), TitleTextId = ForumTextIds.Edit, DataType = typeof(Post))]
     public class PostModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
         private readonly IHtmlSanitizer _htmlSanitizer;
@@ -35,7 +35,7 @@ namespace LessMarkup.Forum.Model
             {
             }
 
-            public override IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public override IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 if (_accessType == NodeAccessType.NoAccess)
                 {
@@ -52,7 +52,7 @@ namespace LessMarkup.Forum.Model
                 return query.ToIdList();
             }
 
-            public override IReadOnlyCollection<PostModel> Read(ILightQueryBuilder query, List<long> ids)
+            public override IReadOnlyCollection<PostModel> Read(IQueryBuilder query, List<long> ids)
             {
                 if (_accessType == NodeAccessType.NoAccess)
                 {
@@ -81,14 +81,7 @@ namespace LessMarkup.Forum.Model
                     foreach (var post in ret)
                     {
                         List<PostAttachmentModel> list;
-                        if (attachments.TryGetValue(post.PostId, out list))
-                        {
-                            post.Attachments = list;
-                        }
-                        else
-                        {
-                            post.Attachments = new List<PostAttachmentModel>();
-                        }
+                        post.Attachments = attachments.TryGetValue(post.PostId, out list) ? list : new List<PostAttachmentModel>();
                     }
                 }
 
@@ -109,7 +102,7 @@ namespace LessMarkup.Forum.Model
             public override bool Filtered { get { return false; } }
         }
 
-        public PostModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
+        public PostModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
@@ -117,7 +110,7 @@ namespace LessMarkup.Forum.Model
             _htmlSanitizer = htmlSanitizer;
         }
 
-        private void OnDeletePost(long threadId, ILightDomainModel domainModel)
+        private void OnDeletePost(long threadId, IDomainModel domainModel)
         {
             var lastPost = domainModel.Query().From<Post>()
                 .Where("ThreadId = $ AND Removed = $", threadId, false)
@@ -139,7 +132,7 @@ namespace LessMarkup.Forum.Model
             domainModel.Update(thread);
         }
 
-        private void OnAddPost(long threadId, ILightDomainModel domainModel)
+        private void OnAddPost(long threadId, IDomainModel domainModel)
         {
             var lastPost = domainModel.Query().From<Post>()
                 .Where("ThreadId = $ AND Removed = $", threadId, false)

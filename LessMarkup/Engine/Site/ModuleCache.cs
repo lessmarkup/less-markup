@@ -5,25 +5,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 
 namespace LessMarkup.Engine.Site
 {
-    public class SiteCache : AbstractCacheHandler
+    public class ModuleCache : AbstractCacheHandler
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleProvider _moduleProvider;
 
-        public string Title { get; private set; }
-        public bool Enabled { get; private set; }
-        public string Properties { get; private set; }
         public HashSet<string> ModuleTypes { get; private set; }
 
-        public SiteCache(ILightDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
-            : base(new[] { typeof(SiteProperties)})
+        public ModuleCache(IDomainModelProvider domainModelProvider, IModuleProvider moduleProvider)
+            : base(new[] { typeof(DataObjects.Common.Module)})
         {
             _domainModelProvider = domainModelProvider;
             _moduleProvider = moduleProvider;
@@ -45,16 +41,7 @@ namespace LessMarkup.Engine.Site
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                var siteProperties = domainModel.Query().From<SiteProperties>().FirstOrDefault<SiteProperties>();
-
-                if (siteProperties != null)
-                {
-                    Title = siteProperties.Title;
-                    Enabled = siteProperties.Enabled;
-                    Properties = siteProperties.Properties;
-                }
-
-                ModuleTypes = new HashSet<string>(domainModel.Query().From<Interfaces.Data.Module>().Where("Enabled = $", true).ToList<Interfaces.Data.Module>().Select(m => m.ModuleType));
+                ModuleTypes = new HashSet<string>(domainModel.Query().From<DataObjects.Common.Module>().Where("Enabled = $", true).ToList<DataObjects.Common.Module>().Select(m => m.ModuleType));
 
                 foreach (var moduleType in systemModuleTypes)
                 {

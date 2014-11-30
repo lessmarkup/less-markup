@@ -14,7 +14,7 @@ namespace LessMarkup.Interfaces.Module
         IEnumerable<ModuleConfiguration> Modules { get; }
         void RegisterModule(Assembly moduleAssembly, bool systemModule, Type initializerType);
         IEnumerable<Assembly> DiscoverAndRegisterModules();
-        void UpdateModuleDatabase(ILightDomainModelProvider domainModelProvider);
+        void UpdateModuleDatabase(IDomainModelProvider domainModelProvider);
         void InitializeModules();
         void InitializeModulesDatabase();
         Type GetControllerType(string controllerName);

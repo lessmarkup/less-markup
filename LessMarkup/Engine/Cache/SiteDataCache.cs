@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LessMarkup.DataFramework.Light;
+using LessMarkup.Framework.Data;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
@@ -42,7 +42,7 @@ namespace LessMarkup.Engine.Cache
                 {
                     foreach (var type in collectionTypes)
                     {
-                        var collectionId = LightDomainModel.GetCollectionId(type);
+                        var collectionId = DomainModel.GetCollectionId(type);
                         List<CacheItem> items;
                         if (!_handledCollectionIds.TryGetValue(collectionId, out items))
                         {
@@ -137,7 +137,7 @@ namespace LessMarkup.Engine.Cache
 
             foreach (var type in cacheItem.CachedObject.HandledCollectionTypes)
             {
-                var collectionId = LightDomainModel.GetCollectionId(type);
+                var collectionId = DomainModel.GetCollectionId(type);
                 List<CacheItem> items;
                 if (_handledCollectionIds.TryGetValue(collectionId, out items))
                 {

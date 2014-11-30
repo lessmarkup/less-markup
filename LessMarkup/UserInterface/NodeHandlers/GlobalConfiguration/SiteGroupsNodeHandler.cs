@@ -13,7 +13,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     [ConfigurationHandler(UserInterfaceTextIds.Groups)]
     public class SiteGroupsNodeHandler: RecordListNodeHandler<UserGroupModel>
     {
-        public SiteGroupsNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SiteGroupsNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

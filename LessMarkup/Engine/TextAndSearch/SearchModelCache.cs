@@ -10,7 +10,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using LessMarkup.DataFramework.Light;
+using LessMarkup.Framework.Data;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -34,7 +34,8 @@ namespace LessMarkup.Engine.TextAndSearch
         public const string FulltextSearchParameter = "param1";
         public const string LikeSearchParameter = "param2";
 
-        public SearchModelCache(IModuleIntegration moduleIntegration, IHtmlSanitizer htmlSanitizer, IEngineConfiguration engineConfiguration) : base(new []{typeof(Interfaces.Data.Module)})
+        public SearchModelCache(IModuleIntegration moduleIntegration, IHtmlSanitizer htmlSanitizer, IEngineConfiguration engineConfiguration)
+            : base(new[] { typeof(DataObjects.Common.Module) })
         {
             _moduleIntegration = moduleIntegration;
             _htmlSanitizer = htmlSanitizer;
@@ -119,7 +120,7 @@ namespace LessMarkup.Engine.TextAndSearch
             }
         }
 
-        public SearchResults Search(string text, int startRecord, int recordCount, ILightDomainModel domainModel)
+        public SearchResults Search(string text, int startRecord, int recordCount, IDomainModel domainModel)
         {
             if (_tableModels.Count == 0)
             {
@@ -257,7 +258,7 @@ namespace LessMarkup.Engine.TextAndSearch
             {
                 connection.Open();
 
-                foreach (var collectionProperty in LightDomainModel.GetDataTypes())
+                foreach (var collectionProperty in DomainModel.GetDataTypes())
                 {
                     HandleCollection(collectionProperty, connection, pluralizationService.Pluralize(collectionProperty.Name));
                 }

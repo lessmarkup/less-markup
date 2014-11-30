@@ -59,5 +59,23 @@ namespace LessMarkup.DataFramework.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown Collection &apos;{0}&apos;.
+        /// </summary>
+        internal static string LightDomainModel_GetCollectionId_Unknown_Collection {
+            get {
+                return ResourceManager.GetString("LightDomainModel_GetCollectionId_Unknown_Collection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown Collection ID {0}.
+        /// </summary>
+        internal static string LightDomainModel_GetCollectionType_Unknown_Collection_ID {
+            get {
+                return ResourceManager.GetString("LightDomainModel_GetCollectionType_Unknown_Collection_ID", resourceCulture);
+            }
+        }
     }
 }

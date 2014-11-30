@@ -23,10 +23,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
     public class ThreadNodeHandler : RecordListNodeHandler<PostModel>
     {
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
 
-        public ThreadNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public ThreadNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
             : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
@@ -234,7 +234,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
             }
         }
 
-        protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, ILightDomainModel domainModel)
+        protected override void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
         {
             base.ReadRecords(values, ids, domainModel);
             UserModel.FillUsersFromPosts(values, _dataCache, domainModel, ids);

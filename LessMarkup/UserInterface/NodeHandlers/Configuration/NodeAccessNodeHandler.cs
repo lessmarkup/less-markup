@@ -18,7 +18,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
     {
         private long _nodeId;
 
-        public NodeAccessNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public NodeAccessNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
 
@@ -34,7 +34,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
             return collectionManager;
         }
 
-        public IReadOnlyCollection<string> GetCollection(ILightDomainModel domainModel, string property, string searchText)
+        public IReadOnlyCollection<string> GetCollection(IDomainModel domainModel, string property, string searchText)
         {
             if (string.IsNullOrWhiteSpace(searchText))
             {

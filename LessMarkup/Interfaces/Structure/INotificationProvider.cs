@@ -11,6 +11,6 @@ namespace LessMarkup.Interfaces.Structure
         string Title { get; }
         string Tooltip { get; }
         string Icon { get; }
-        int GetValueChange(long? fromVersion, long? toVersion, ILightDomainModel domainModel);
+        int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel);
     }
 }

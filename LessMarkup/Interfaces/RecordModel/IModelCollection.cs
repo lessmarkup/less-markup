@@ -10,9 +10,9 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IModelCollection<out TR>
     {
-        IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder);
+        IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder);
         int CollectionId { get; }
-        IReadOnlyCollection<TR> Read(ILightQueryBuilder queryBuilder, List<long> ids);
+        IReadOnlyCollection<TR> Read(IQueryBuilder queryBuilder, List<long> ids);
         void Initialize(long? objectId, NodeAccessType nodeAccessType);
     }
 }

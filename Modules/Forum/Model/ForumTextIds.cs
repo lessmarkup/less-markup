@@ -42,6 +42,17 @@ namespace LessMarkup.Forum.Model
         ReplyMoveLastMessage,
         Subscribe,
         Forums,
-        UserNotDefined
+        UserNotDefined,
+        ShowStatistics,
+        AllPosts,
+        AllThreads,
+        ThreadsToday,
+        PostsToday,
+        ThreadsYesterday,
+        PostsYesterday,
+        AllUsers,
+        ActiveUsers,
+        NoActiveUsers,
+        Statistics,
     }
 }

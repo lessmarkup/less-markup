@@ -25,11 +25,11 @@ namespace LessMarkup.Forum.Model
             public DateTime ValidUntil { get; set; }
         }
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly Dictionary<long, UserStatistics> _userPosts = new Dictionary<long, UserStatistics>();
         private readonly object _readLock = new object();
 
-        public PostStatisticsCache(ILightDomainModelProvider domainModelProvider)
+        public PostStatisticsCache(IDomainModelProvider domainModelProvider)
             : base(new[] { typeof(Post) })
         {
             _domainModelProvider = domainModelProvider;

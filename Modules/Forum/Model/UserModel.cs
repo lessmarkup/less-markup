@@ -45,7 +45,7 @@ namespace LessMarkup.Forum.Model
             Properties = !string.IsNullOrWhiteSpace(user.Properties) ? JsonConvert.DeserializeObject<Dictionary<string, object>>(user.Properties) : new Dictionary<string, object>();
         }
 
-        public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, ILightDomainModel domainModel, List<long> postIds)
+        public static void FillUsersFromPosts(Dictionary<string, object> values, IDataCache dataCache, IDomainModel domainModel, List<long> postIds)
         {
             var userIds =
                 domainModel.Query()

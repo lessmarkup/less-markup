@@ -34,7 +34,7 @@ namespace LessMarkup.Forum.Model
                 _currentUser = currentUser;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 var userId = _currentUser.UserId;
 
@@ -89,7 +89,7 @@ namespace LessMarkup.Forum.Model
                 return query.ToList<Post>("p.Id").Select(p => p.Id).ToList();
             }
 
-            public IReadOnlyCollection<PostUpdateModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<PostUpdateModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<Post>("p")
                     .Join<Thread>("t", "t.Id = p.ThreadId")
@@ -137,7 +137,7 @@ namespace LessMarkup.Forum.Model
 
         public string ThreadPath { get; set; }
 
-        public void PostProcess(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public void PostProcess(IDomainModelProvider domainModelProvider, IDataCache dataCache)
         {
             using (var domainModel = domainModelProvider.Create())
             {

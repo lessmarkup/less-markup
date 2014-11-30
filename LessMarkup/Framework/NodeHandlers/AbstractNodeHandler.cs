@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Web.Mvc;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Structure;
@@ -104,12 +106,27 @@ namespace LessMarkup.Framework.NodeHandlers
 
         public object Context { get; set; }
 
-        protected virtual bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
+        protected virtual bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
         {
             return false;
         }
 
-        bool INodeHandler.ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
+        protected virtual Tuple<object, MethodInfo> GetActionHandler(string name, Dictionary<string, object> data)
+        {
+            var method = GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault(m => string.Compare(m.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            if (method == null)
+            {
+                return null;
+            }
+            return Tuple.Create((object)this, method);
+        }
+
+        Tuple<object, MethodInfo> INodeHandler.GetActionHandler(string name, Dictionary<string, object> data)
+        {
+            return GetActionHandler(name, data);
+        }
+
+        bool INodeHandler.ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
         {
             return ProcessUpdates(fromVersion, toVersion, returnValues, domainModel, arguments);
         }

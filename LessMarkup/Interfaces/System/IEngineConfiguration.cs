@@ -43,5 +43,6 @@ namespace LessMarkup.Interfaces.System
         DateTime? LastDatabaseUpdate { get; set; }
         string ModuleSearchPath { get; set; }
         bool MigrateDataLossAllowed { get; set; }
+        bool DisableCustomizations { get; set; }
     }
 }

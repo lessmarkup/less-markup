@@ -24,7 +24,7 @@ namespace LessMarkup.MainModule.Initialization
             _currentUser = currentUser;
         }
 
-        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
+        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
         {
             var nodeCache = _dataCache.Get<INodeCache>();
 

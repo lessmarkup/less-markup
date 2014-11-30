@@ -21,12 +21,12 @@ namespace LessMarkup.Engine.Email
 {
     public class MailSender : IMailSender
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IMailTemplateProvider _mailTemplateProvider;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
 
-        public MailSender(ILightDomainModelProvider domainModelProvider, IMailTemplateProvider mailTemplateProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache)
+        public MailSender(IDomainModelProvider domainModelProvider, IMailTemplateProvider mailTemplateProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _mailTemplateProvider = mailTemplateProvider;

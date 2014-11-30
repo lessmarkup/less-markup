@@ -6,16 +6,16 @@ using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Forum.Model
 {
-    public class ForumStatisticsCache : AbstractCacheHandler
+    public class ForumPropertiesCache : AbstractCacheHandler
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public ForumStatisticsCache(ILightDomainModelProvider domainModelProvider) : base(new Type[0])
+        public ForumPropertiesCache(IDomainModelProvider domainModelProvider) : base(new Type[0])
         {
             _domainModelProvider = domainModelProvider;
         }
 
-        public class ForumStatistics
+        public class ForumProperties
         {
             public long ForumId { get; set; }
             public int Posts { get; set; }
@@ -30,17 +30,17 @@ namespace LessMarkup.Forum.Model
             public DateTime ValidUntil { get; set; }
         }
 
-        private readonly Dictionary<long, ForumStatistics> _forumStatistics = new Dictionary<long, ForumStatistics>();
-        private readonly object _forumStatisticsLock = new object();
+        private readonly Dictionary<long, ForumProperties> _forumProperties = new Dictionary<long, ForumProperties>();
+        private readonly object _forumPropertiesLock = new object();
 
-        public List<ForumStatistics> GetStatistics(List<long> forumIds)
+        public List<ForumProperties> GetPropertiesForForums(List<long> forumIds)
         {
-            var ret = new List<ForumStatistics>();
+            var ret = new List<ForumProperties>();
 
-            lock (_forumStatisticsLock)
+            lock (_forumPropertiesLock)
             {
                 var currentTime = DateTime.UtcNow;
-                ret.AddRange(_forumStatistics.Values.Where(s => forumIds.Contains(s.ForumId) && s.ValidUntil >= currentTime));
+                ret.AddRange(_forumProperties.Values.Where(s => forumIds.Contains(s.ForumId) && s.ValidUntil >= currentTime));
             }
 
             var foundIds = ret.Select(s => s.ForumId).ToList();
@@ -58,19 +58,20 @@ namespace LessMarkup.Forum.Model
                             "WHERE t.[ForumId] IN ({0}) GROUP BY t.[ForumId]) s LEFT JOIN [Posts] p1 ON p1.[Created] = s.[LastCreated] LEFT JOIN [Threads] t1 ON p1.[ThreadId] = t1.[Id] " +
                             "LEFT JOIN [Users] u ON u.[Id] = p1.[UserId]",
                             string.Join(",", missingIds));
-                    var statisticsList = domainModel.Query().Execute<ForumStatistics>(queryText);
+
+                    var properties = domainModel.Query().Execute<ForumProperties>(queryText);
 
                     var validUntil = DateTime.UtcNow.AddMinutes(5);
 
-                    lock (_forumStatisticsLock)
+                    lock (_forumPropertiesLock)
                     {
-                        foreach (var stat in statisticsList)
+                        foreach (var stat in properties)
                         {
-                            _forumStatistics[stat.ForumId] = stat;
+                            _forumProperties[stat.ForumId] = stat;
                             stat.ValidUntil = validUntil;
                         }
 
-                        ret.AddRange(statisticsList);
+                        ret.AddRange(properties);
                     }
                 }
             }

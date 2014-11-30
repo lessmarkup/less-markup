@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Interfaces;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -17,9 +18,9 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
     public class ModulesNodeHandler : RecordListNodeHandler<ModuleModel>
     {
         private readonly IChangeTracker _changeTracker;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public ModulesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker) : base(domainModelProvider, dataCache)
+        public ModulesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker) : base(domainModelProvider, dataCache)
         {
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;
@@ -45,6 +46,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 
                 siteModule.Enabled = enable;
                 domainModel.Update(siteModule);
+                _changeTracker.AddChange(siteModule, EntityChangeType.Updated, domainModel);
 
                 var collectionManager = DependencyResolver.Resolve<ModuleModel.Collection>();
                 collectionManager.Initialize(ObjectId, AccessType);

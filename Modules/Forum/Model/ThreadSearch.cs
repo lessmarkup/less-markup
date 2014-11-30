@@ -23,7 +23,7 @@ namespace LessMarkup.Forum.Model
             _currentUser = currentUser;
         }
 
-        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
+        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
         {
             var thread = domainModel.Query().Find<Thread>(entityId);
             if (thread == null)

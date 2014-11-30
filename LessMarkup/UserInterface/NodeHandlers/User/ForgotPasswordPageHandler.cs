@@ -58,7 +58,14 @@ namespace LessMarkup.UserInterface.NodeHandlers.User
 
             ((INodeHandler) handler).Initialize(null, null, null, null, null, NodeAccessType.Read);
 
-            handler.Initialize(path.Substring(pos+1));
+            var ticket = path.Substring(pos + 1).Split(new []{'/'});
+
+            if (ticket.Length != 2)
+            {
+                return null;
+            }
+
+            handler.Initialize(ticket[0], ticket[1]);
 
             return new ChildHandlerSettings
             {

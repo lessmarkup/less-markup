@@ -32,9 +32,9 @@ namespace LessMarkup.Forum.Model
         private readonly Dictionary<long, ThreadUsers> _users = new Dictionary<long, ThreadUsers>();
         private readonly object _syncObject = new object();
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public ThreadsActiveUsersCache(ILightDomainModelProvider domainModelProvider) : base(new Type[0])
+        public ThreadsActiveUsersCache(IDomainModelProvider domainModelProvider) : base(new Type[0])
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -47,6 +47,7 @@ namespace LessMarkup.Forum.Model
             }
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         class ThreadUser
         {
             public long ThreadId { get; set; }
@@ -59,7 +60,7 @@ namespace LessMarkup.Forum.Model
             var foundUsers = new List<ThreadUsers>();
             var newUsers = new List<long>();
 
-            var expired = DateTime.Now.AddMinutes(-ActiveUserThresholdMinutes);
+            var expired = DateTime.Now.AddSeconds(-30);
 
             lock (_syncObject)
             {

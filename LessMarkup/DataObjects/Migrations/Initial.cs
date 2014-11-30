@@ -2,6 +2,7 @@
 using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Structure;
 using LessMarkup.Interfaces.Data;
+using Module = LessMarkup.DataObjects.Common.Module;
 
 namespace LessMarkup.DataObjects.Migrations
 {

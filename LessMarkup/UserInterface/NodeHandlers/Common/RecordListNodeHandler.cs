@@ -55,13 +55,13 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private IEditableModelCollection<T> _editableCollection;
         private readonly IRecordModelDefinition _recordModel;
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
         protected PropertyInfo IdProperty { get { return _idProperty; } }
 
         protected IRecordModelDefinition RecordModel { get { return _recordModel; } }
 
-        public RecordListNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public RecordListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;
@@ -285,7 +285,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
         }
 
-        protected int GetIndex(T modifiedObject, string filter, ILightDomainModel domainModel)
+        protected int GetIndex(T modifiedObject, string filter, IDomainModel domainModel)
         {
             var query = domainModel.Query();
             if (_recordModel != null && _recordModel.DataType != null)
@@ -366,7 +366,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             };
         }
 
-        protected override bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, ILightDomainModel domainModel, Dictionary<string, object> arguments)
+        protected override bool ProcessUpdates(long? fromVersion, long toVersion, Dictionary<string, object> returnValues, IDomainModel domainModel, Dictionary<string, object> arguments)
         {
             var collection = GetCollection();
             var changesCache = _dataCache.Get<IChangesCache>();
@@ -424,7 +424,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return removed.Count > 0 || updated.Count > 0;
         }
 
-        private void ReadRecordsAndIds(Dictionary<string, object> values, ILightDomainModel domainModel, int recordsPerPage)
+        private void ReadRecordsAndIds(Dictionary<string, object> values, IDomainModel domainModel, int recordsPerPage)
         {
             var collection = GetCollection();
 
@@ -439,7 +439,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             }
         }
 
-        protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, ILightDomainModel domainModel)
+        protected virtual void ReadRecords(Dictionary<string, object> values, List<long> ids, IDomainModel domainModel)
         {
             List<T> records;
             if (ids.Count > 0)
@@ -532,7 +532,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected virtual string ExtensionScript { get { return null; } }
 
-        public ILightQueryBuilder ApplyFilterAndOrderBy(ILightQueryBuilder queryBuilder, string filter, Type modelType)
+        public IQueryBuilder ApplyFilterAndOrderBy(IQueryBuilder queryBuilder, string filter, Type modelType)
         {
             if (string.IsNullOrEmpty(filter))
             {

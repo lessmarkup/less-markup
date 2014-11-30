@@ -15,7 +15,7 @@ namespace LessMarkup.Framework.Helpers
 {
     public static class ImageUploader
     {
-        public static void DeleteImage(ILightDomainModel domainModel, long imageId)
+        public static void DeleteImage(IDomainModel domainModel, long imageId)
         {
             domainModel.Delete<Image>(imageId);
         }
@@ -65,7 +65,7 @@ namespace LessMarkup.Framework.Helpers
             }
         }
 
-        public static long SaveImage(ILightDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
+        public static long SaveImage(IDomainModel domainModel, long? imageId, InputFile file, long? userId, ISiteConfiguration siteConfiguration)
         {
             if (file.File.Length > siteConfiguration.MaximumFileSize)
             {
@@ -194,7 +194,7 @@ namespace LessMarkup.Framework.Helpers
             return image.Id;
         }
 
-        public static void LimitImageSize(long imageId, ILightDomainModel domainModel, int width, int height)
+        public static void LimitImageSize(long imageId, IDomainModel domainModel, int width, int height)
         {
             if (width <= 0)
             {

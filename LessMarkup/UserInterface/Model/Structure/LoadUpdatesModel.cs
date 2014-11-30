@@ -17,11 +17,11 @@ namespace LessMarkup.UserInterface.Model.Structure
 {
     class LoadUpdatesModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
 
-        public LoadUpdatesModel(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
+        public LoadUpdatesModel(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;

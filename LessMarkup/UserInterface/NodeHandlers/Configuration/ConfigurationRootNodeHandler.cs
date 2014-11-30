@@ -28,6 +28,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
         {
             public Type Type { get; set; }
             public object TitleTextId { get; set; }
+            public string Title { get; set; }
             public string ModuleType { get; set; }
             public long Id { get; set; }
             public string TypeName { get; set; }
@@ -53,12 +54,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                 Title = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.SiteConfiguration)
             };
 
-            var globalGroup = new ConfigurationGroup
-            {
-                Handlers = new List<ConfigurationHandler>(),
-                Title = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.GlobalConfiguration)
-            };
-
             foreach (var module in moduleProvider.Modules)
             {
                 foreach (var type in module.Assembly.GetTypes())
@@ -71,18 +66,6 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
                     if (!typeof (INodeHandler).IsAssignableFrom(type))
                     {
                         continue;
-                    }
-
-                    if (configurationHandlerAttribute.IsGlobal)
-                    {
-                        switch (module.ModuleType)
-                        {
-                            case Constants.ModuleType.MainModule:
-                            case Constants.ModuleType.UserInterface:
-                                break;
-                            default:
-                                continue;
-                        }
                     }
 
                     var typeName = type.Name.ToLower();
@@ -102,25 +85,23 @@ namespace LessMarkup.UserInterface.NodeHandlers.Configuration
 
                     _configurationHandlers[typeName] = handler;
 
-                    if (configurationHandlerAttribute.IsGlobal)
-                    {
-                        globalGroup.Handlers.Add(handler);
-                    }
-                    else
-                    {
-                        normalGroup.Handlers.Add(handler);
-                    }
+                    normalGroup.Handlers.Add(handler);
                 }
-            }
-
-            if (globalGroup.Handlers.Any())
-            {
-                _configurationGroups.Add(globalGroup);
             }
 
             if (normalGroup.Handlers.Any())
             {
                 _configurationGroups.Add(normalGroup);
+            }
+
+            foreach (var handler in _configurationHandlers.Values)
+            {
+                handler.Title = LanguageHelper.GetText(handler.ModuleType, handler.TitleTextId);
+            }
+
+            foreach (var group in _configurationGroups)
+            {
+                group.Handlers.Sort((h1, h2) => String.Compare(h1.Title, h2.Title, StringComparison.Ordinal));
             }
         }
 

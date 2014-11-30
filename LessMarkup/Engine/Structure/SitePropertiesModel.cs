@@ -20,10 +20,10 @@ namespace LessMarkup.Engine.Structure
     [RecordModel]
     public class SitePropertiesModel : ISiteConfiguration
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
 
-        public SitePropertiesModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+        public SitePropertiesModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
         {
             _changeTracker = changeTracker;
             _domainModelProvider = domainModelProvider;

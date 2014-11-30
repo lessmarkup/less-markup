@@ -14,7 +14,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.Smiles)]
     public class SmileNodeHandler : RecordListNodeHandler<SmileModel>
     {
-        public SmileNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public SmileNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

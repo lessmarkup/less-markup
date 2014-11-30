@@ -21,6 +21,7 @@ using LessMarkup.Engine.Module;
 using LessMarkup.Engine.Response;
 using LessMarkup.Engine.Routing;
 using LessMarkup.Engine.Scripting;
+using LessMarkup.Framework;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -222,7 +223,7 @@ namespace LessMarkup.MainModule.Initialization
                 ViewEngines.Engines.Clear();
                 ViewEngines.Engines.Add(DependencyResolver.Resolve<CompiledViewEngine>());
 
-                var domainModelProvider = DependencyResolver.Resolve<ILightDomainModelProvider>();
+                var domainModelProvider = DependencyResolver.Resolve<IDomainModelProvider>();
 
                 ((IInitialize)domainModelProvider).Initialize();
 

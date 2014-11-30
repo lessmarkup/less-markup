@@ -26,7 +26,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
         private readonly IEngineConfiguration _engineConfiguration;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
         public string Title { get; set; }
         public string LogoImageUrl { get; set; }
@@ -34,7 +34,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
         public ActionResult Result { get; set; }
 
-        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, ILightDomainModelProvider domainModelProvider)
+        public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, IDomainModelProvider domainModelProvider)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;
@@ -83,7 +83,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             initialValues["profilePath"] = "/" + Constants.NodePath.Profile;
             initialValues["forgotPasswordPath"] = "/" + Constants.NodePath.ForgotPassword;
             initialValues["loggedIn"] = _currentUser.UserId.HasValue;
-            initialValues["userNotVerified"] = !_currentUser.IsValidated || !_currentUser.IsApproved;
+            initialValues["userNotVerified"] = !_currentUser.IsApproved || !_currentUser.EmailConfirmed;
             initialValues["userName"] = _currentUser.Name ?? "";
             initialValues["viewData"] = viewData;
             initialValues["nodeLoadError"] = nodeLoadError;

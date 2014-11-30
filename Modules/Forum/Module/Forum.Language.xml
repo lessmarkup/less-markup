@@ -49,6 +49,17 @@
     <Translation Id="ReplyMoveLastMessage" Text="After reply, move to the latest message in the thread"/>
     <Translation Id="Subscribe" Text="Subscribe"/>
     <Translation Id="UserNotDefined" Text="User is not defined"/>
+    <Translation Id="ShowStatistics" Text="Show Statistics"/>
+    <Translation Id="AllPosts" Text="All Posts"/>
+    <Translation Id="AllThreads" Text="All Threads"/>
+    <Translation Id="ThreadsToday" Text="Threads Today"/>
+    <Translation Id="ThreadsYesterday" Text="Threads Yesterday"/>
+    <Translation Id="PostsToday" Text="Posts Today"/>
+    <Translation Id="PostsYesterday" Text="Posts Yesterday"/>
+    <Translation Id="AllUsers" Text="All Users"/>
+    <Translation Id="ActiveUsers" Text="Active Users"/>
+    <Translation Id="NoActiveUsers" Text="No Active Users"/>
+    <Translation Id="Statistics" Text="Statistics"/>
     <!--
     <Translation Id="" Text=""/>
     -->

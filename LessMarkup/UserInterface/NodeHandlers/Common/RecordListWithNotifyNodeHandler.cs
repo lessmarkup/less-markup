@@ -15,7 +15,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         private readonly IDataCache _dataCache;
         private readonly ICurrentUser _currentUser;
 
-        protected RecordListWithNotifyNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache)
+        protected RecordListWithNotifyNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser) : base(domainModelProvider, dataCache)
         {
             _dataCache = dataCache;
             _currentUser = currentUser;
@@ -25,7 +25,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
         public abstract string Tooltip { get; }
         public abstract string Icon { get; }
 
-        public virtual int GetValueChange(long? fromVersion, long? toVersion, ILightDomainModel domainModel)
+        public virtual int GetValueChange(long? fromVersion, long? toVersion, IDomainModel domainModel)
         {
             var changesCache = _dataCache.Get<IChangesCache>();
             var userId = _currentUser.UserId;

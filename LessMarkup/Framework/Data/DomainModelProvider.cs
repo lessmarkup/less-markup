@@ -1,27 +1,30 @@
 ﻿using System.Linq;
+using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.Module;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.DataFramework.Light
+namespace LessMarkup.Framework.Data
 {
-    public class LightDomainModelProvider : ILightDomainModelProvider, IInitialize
+    public class DomainModelProvider : IDomainModelProvider, IInitialize
     {
-        public ILightDomainModel Create()
+        public IDomainModel Create()
         {
-            var domainModel = Interfaces.DependencyResolver.Resolve<ILightDomainModel>();
+            var domainModel = Interfaces.DependencyResolver.Resolve<IDomainModel>();
             return domainModel;
         }
 
-        public ILightDomainModel CreateWithTransaction()
+        public IDomainModel CreateWithTransaction()
         {
-            var domainModel = (LightDomainModel) Interfaces.DependencyResolver.Resolve<ILightDomainModel>();
+            var domainModel = (DomainModel) Interfaces.DependencyResolver.Resolve<IDomainModel>();
             domainModel.CreateTransaction();
             return domainModel;
         }
 
         public void Initialize(params object[] arguments)
         {
+            this.LogDebug("Initializing Domain Model Provider");
+
             var moduleProvider = Interfaces.DependencyResolver.Resolve<IModuleProvider>();
 
             foreach (var module in moduleProvider.Modules.Where(m => m.Initializer != null))
@@ -35,7 +38,8 @@ namespace LessMarkup.DataFramework.Light
 
                 foreach (var dataType in assembly.GetTypes().Where(t => typeof (IDataObject).IsAssignableFrom(t)))
                 {
-                    LightDomainModel.RegisterDataType(dataType);
+                    this.LogDebug(string.Format("Registering data type '{0}'", dataType.FullName));
+                    DomainModel.RegisterDataType(dataType);
                 }
             }
         }

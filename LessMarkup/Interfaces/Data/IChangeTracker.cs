@@ -10,8 +10,8 @@ namespace LessMarkup.Interfaces.Data
 
     public interface IChangeTracker
     {
-        void AddChange<T>(long objectId, EntityChangeType changeType, ILightDomainModel domainModel) where T : IDataObject;
-        void AddChange<T>(T dataObject, EntityChangeType changeType, ILightDomainModel domainModel) where T : IDataObject;
+        void AddChange<T>(long objectId, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject;
+        void AddChange<T>(T dataObject, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject;
         void Invalidate();
         event RecordChangeHandler RecordChanged;
     }

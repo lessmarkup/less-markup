@@ -42,6 +42,7 @@
     <Compile Include="Common\Menu.cs" />
     <Compile Include="Common\Currency.cs" />
     <Compile Include="Common\MigrationHistory.cs" />
+    <Compile Include="Common\Module.cs" />
     <Compile Include="Common\SiteCustomization.cs" />
     <Compile Include="Common\SiteProperties.cs" />
     <Compile Include="Common\Smile.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Gallery\Gallery.cs" />
     <Compile Include="Gallery\GalleryImage.cs" />
     <Compile Include="Gallery\GalleryType.cs" />
+    <Compile Include="Migrations\AddedPasswordValidationToken.cs" />
     <Compile Include="Migrations\Initial.cs" />
     <Compile Include="Security\FailedLoginHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,17 +70,10 @@
     <Compile Include="Structure\NodeUserData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataFramework\DataFramework.csproj">
-      <Project>{B47A0F26-803C-4536-A6D8-4649C2DB011A}</Project>
-      <Name>DataFramework</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
-      <Project>{AF5FD7AE-34D2-4656-A051-0868B363485B}</Project>
+      <Project>{af5fd7ae-34d2-4656-a051-0868b363485b}</Project>
       <Name>Interfaces</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

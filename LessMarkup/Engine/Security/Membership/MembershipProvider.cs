@@ -17,7 +17,7 @@ namespace LessMarkup.Engine.Security.Membership
     {
         public override int GetUserIdFromOAuth(string provider, string providerUserId)
         {
-            using (var domainModel = DependencyResolver.Resolve<ILightDomainModelProvider>().Create())
+            using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
             {
                 var user = domainModel.Query().From<User>().Where("AuthProvider = $ AND AuthProviderId = $", provider, providerUserId).FirstOrDefault<User>("Id");
                 return user != null ? (int)user.Id : -1;
@@ -36,7 +36,7 @@ namespace LessMarkup.Engine.Security.Membership
 
         public override string GetUserNameFromId(int userId)
         {
-            using (var domainModel = DependencyResolver.Resolve<ILightDomainModelProvider>().Create())
+            using (var domainModel = DependencyResolver.Resolve<IDomainModelProvider>().Create())
             {
                 var user = domainModel.Query().From<User>().Where("Id = $", userId).FirstOrDefault<User>("Name");
                 return user != null ? user.Name : null;

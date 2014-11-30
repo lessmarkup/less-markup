@@ -98,7 +98,8 @@ namespace LessMarkup.Engine.Email
                     throw new Exception("Unknown property " + parameter);
                 }
 
-                var value = property.GetValue(model).ToString();
+                var valueObj = property.GetValue(model);
+                var value = valueObj != null ? valueObj.ToString() : "";
 
                 if (encodeHtml)
                 {

@@ -14,7 +14,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.ViewTestMessages)]
     public class TestMessagesNodeHandler : RecordListNodeHandler<TestMessageModel>
     {
-        public TestMessagesNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public TestMessagesNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

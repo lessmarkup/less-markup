@@ -10,7 +10,7 @@ namespace LessMarkup.Forum.Model
         public long Id { get; set; }
         public string Url { get; set; }
 
-        public static ActionResult CreateResult(long threadId, long postId, long attachmentId, ILightDomainModelProvider domainModelProvider)
+        public static ActionResult CreateResult(long threadId, long postId, long attachmentId, IDomainModelProvider domainModelProvider)
         {
             using (var domainModel = domainModelProvider.Create())
             {

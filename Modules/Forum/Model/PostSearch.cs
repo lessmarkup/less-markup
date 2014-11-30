@@ -32,7 +32,7 @@ namespace LessMarkup.Forum.Model
             public long ThreadId { get; set; }
         }
 
-        public string ValidateAndGetUrl(int collectionId, long entityId, ILightDomainModel domainModel)
+        public string ValidateAndGetUrl(int collectionId, long entityId, IDomainModel domainModel)
         {
             var post = domainModel.Query().From<Post>("p").Join<Thread>("t", "p.ThreadId = t.Id").Where("p.Id = $", entityId).FirstOrDefault<PostAndThread>("t.ForumId, t.Path, p.ThreadId");
             if (post == null)

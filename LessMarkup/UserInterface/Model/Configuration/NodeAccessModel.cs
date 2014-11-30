@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System.Collections.Generic;
-using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.DataObjects.Structure;
+using LessMarkup.Framework.Data;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -20,10 +20,10 @@ namespace LessMarkup.UserInterface.Model.Configuration
         {
             private long _nodeId;
 
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public CollectionManager(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
@@ -34,14 +34,14 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 _nodeId = nodeId;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<NodeAccess>().Where("NodeId = $", _nodeId).ToIdList();
             }
 
-            public int CollectionId { get { return LightDomainModel.GetCollectionId<NodeAccess>(); } }
+            public int CollectionId { get { return DomainModel.GetCollectionId<NodeAccess>(); } }
 
-            public IReadOnlyCollection<NodeAccessModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<NodeAccessModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<NodeAccess>("na").Where(string.Format("na.NodeId = $ AND na.Id IN ({0})", string.Join(",", ids)), _nodeId)
                     .LeftJoin<DataObjects.Security.User>("u", "u.Id = na.UserId")

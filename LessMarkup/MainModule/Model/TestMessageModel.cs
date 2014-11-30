@@ -19,15 +19,17 @@ namespace LessMarkup.MainModule.Model
     {
         public class Collection : IEditableModelCollection<TestMessageModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
 
-            public Collection(ILightDomainModelProvider domainModelProvider)
+            public Collection(IDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
+                query = query.From<TestMail>();
+
                 if (!ignoreOrder)
                 {
                     query = query.OrderByDescending("Sent");
@@ -38,9 +40,9 @@ namespace LessMarkup.MainModule.Model
 
             public int CollectionId { get { return DataHelper.GetCollectionId<TestMail>(); } }
 
-            public IReadOnlyCollection<TestMessageModel> Read(ILightQueryBuilder queryBuilder, List<long> ids)
+            public IReadOnlyCollection<TestMessageModel> Read(IQueryBuilder queryBuilder, List<long> ids)
             {
-                return queryBuilder.WhereIds(ids).ToList<TestMail>().Select(e => new TestMessageModel
+                return queryBuilder.From<TestMail>().WhereIds(ids).ToList<TestMail>().Select(e => new TestMessageModel
                 {
                     Body = e.Body,
                     From = e.From,

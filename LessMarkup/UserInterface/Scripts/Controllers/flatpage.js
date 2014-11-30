@@ -176,8 +176,9 @@
         function initializePageScope(scope, page) {
             scope.sendCommand = function (action, data, success, failure, path) {
                 if (!path) {
-                    path = page.Path;
+                    path = scope.Path;
                 }
+                data.flatNodeId = scope.nodeId;
                 return $scope.sendCommand(action, data, success, failure, path);
             }
 
@@ -187,9 +188,10 @@
 
             scope.toolbarButtons = [];
             scope.path = page.path;
+            scope.nodeId = page.nodeId;
 
             scope.getFullPath = function(path) {
-                return page.path + "/" + path;
+                return scope.path + "/" + path;
             }
         }
 

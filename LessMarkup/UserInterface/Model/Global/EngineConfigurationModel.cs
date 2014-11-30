@@ -67,6 +67,9 @@ namespace LessMarkup.UserInterface.Model.Global
         [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.MigrateDataLossAllowed)]
         public bool MigrateDataLossAllowed { get; set; }
 
+        [InputField(InputFieldType.CheckBox, UserInterfaceTextIds.DisableCustomizations)]
+        public bool DisableCustomizations { get; set; }
+
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
 
@@ -95,6 +98,7 @@ namespace LessMarkup.UserInterface.Model.Global
             AdminLoginPage = _engineConfiguration.AdminLoginPage;
             AdminLoginAddress = _engineConfiguration.AdminLoginAddress;
             MigrateDataLossAllowed = _engineConfiguration.MigrateDataLossAllowed;
+            DisableCustomizations = _engineConfiguration.DisableCustomizations;
         }
 
         public void Save()
@@ -127,6 +131,7 @@ namespace LessMarkup.UserInterface.Model.Global
             _engineConfiguration.AdminLoginPage = AdminLoginPage;
             _engineConfiguration.AdminLoginAddress = AdminLoginAddress;
             _engineConfiguration.MigrateDataLossAllowed = MigrateDataLossAllowed;
+            _engineConfiguration.DisableCustomizations = DisableCustomizations;
 
             _engineConfiguration.Save();
 

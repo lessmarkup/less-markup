@@ -10,9 +10,9 @@ namespace LessMarkup.MainModule.Model
 {
     public class ImageModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public ImageModel(ILightDomainModelProvider domainModelProvider)
+        public ImageModel(IDomainModelProvider domainModelProvider)
         {
             _domainModelProvider = domainModelProvider;
         }

@@ -1,8 +1,11 @@
 ﻿<div class="thread-statistics">
     <div ng-if="data.posts">[[[translate Posts]]]: {{data.posts}}</div>
-    <div ng-if="data.lastUser">
+    <div ng-if="data.posts">
         <a href="{{data.path + '?p=last'}}" ng-click="navigateToView(getFullPath(data.path)+'?p=last'); $event.stopPropagation();">[[[translate LastPost]]]</a>: 
-        <span title="{{data.lastCreated | date:'medium'}}">{{data.lastCreated | relativeDate}}</span> [[[translate LastPostBy]]] <a href="{{data.lastUserUrl}}" ng-click="navigateToView(data.lastUserUrl); $event.stopPropagation();">{{data.lastUser}}</a>
+        <span ng-if="data.lastCreated" title="{{data.lastCreated | date:'medium'}}">{{data.lastCreated | relativeDate}}</span>
+        [[[translate LastPostBy]]]
+        <a ng-if="data.lastUser" href="{{data.lastUserUrl}}" ng-click="navigateToView(data.lastUserUrl); $event.stopPropagation();">{{data.lastUser}}</a>
+        <span ng-if="!data.lastUser">[[[translate UserRemoved]]]</span>
     </div>
-    <div ng-if="!data.Posts">[[[translate ThreadIsEmpty]]]</div>
+    <div ng-if="!data.posts">[[[translate ThreadIsEmpty]]]</div>
 </div>

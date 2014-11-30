@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using LessMarkup.DataObjects.Common;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.RecordModel;
@@ -16,7 +17,7 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class Collection : IModelCollection<ModuleModel>
         {
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 query = query.From<Module>().Where("Removed = $ AND System = $", false, false);
                 return query.ToIdList();
@@ -24,7 +25,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public int CollectionId { get { return DataHelper.GetCollectionId<Module>(); } }
 
-            public IReadOnlyCollection<ModuleModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<ModuleModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<Module>().Where("Removed = $ AND System = $", false, false).WhereIds(ids).ToList<Module>()
                         .Select(m => new ModuleModel

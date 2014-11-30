@@ -10,7 +10,7 @@ using LessMarkup.UserInterface.NodeHandlers.Common;
 
 namespace LessMarkup.UserInterface.NodeHandlers.GlobalConfiguration
 {
-    [ConfigurationHandler(UserInterfaceTextIds.EngineConfiguration, IsGlobal = true)]
+    [ConfigurationHandler(UserInterfaceTextIds.EngineConfiguration)]
     public class EngineNodeHandler : DialogNodeHandler<EngineConfigurationModel>
     {
         public EngineNodeHandler(IDataCache dataCache) : base(dataCache)

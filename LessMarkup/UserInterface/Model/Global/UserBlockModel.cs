@@ -22,11 +22,11 @@ namespace LessMarkup.UserInterface.Model.Global
         [InputField(InputFieldType.Date, UserInterfaceTextIds.UnblockTime)]
         public DateTime? UnblockTime { get; set; }
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly ICurrentUser _currentUser;
 
-        public UserBlockModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ICurrentUser currentUser)
+        public UserBlockModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, ICurrentUser currentUser)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;

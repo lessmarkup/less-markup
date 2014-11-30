@@ -31,18 +31,18 @@ namespace LessMarkup.Forum.Model
         {
             private long _forumId;
             private NodeAccessType _accessType;
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
             private readonly ICurrentUser _currentUser;
 
-            public Collection(ICurrentUser currentUser, ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(ICurrentUser currentUser, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _currentUser = currentUser;
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 query = query.From<Thread>().Where("ForumId = $", _forumId);
 
@@ -59,7 +59,7 @@ namespace LessMarkup.Forum.Model
                 return query.ToIdList();
             }
 
-            public IReadOnlyCollection<ThreadModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<ThreadModel> Read(IQueryBuilder query, List<long> ids)
             {
                 if (ids.Count == 0)
                 {
@@ -165,20 +165,20 @@ namespace LessMarkup.Forum.Model
             public bool DeleteOnly { get { return false; } }
         }
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
 
         ThreadModel()
         {
         }
 
-        public ThreadModel(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+        public ThreadModel(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _changeTracker = changeTracker;
         }
 
-        public static ThreadModel GetByPath(long forumId, string path, ILightDomainModelProvider domainModelProvider)
+        public static ThreadModel GetByPath(long forumId, string path, IDomainModelProvider domainModelProvider)
         {
             using (var domainModel = domainModelProvider.Create())
             {

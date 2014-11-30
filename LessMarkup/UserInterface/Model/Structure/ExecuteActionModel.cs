@@ -40,18 +40,17 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var nodeCache = _dataCache.Get<INodeCache>();
             var handler = nodeCache.GetNodeHandler(path);
-            var handlerType = handler.GetType();
 
             var actionName = data["command"].ToString();
 
-            var method = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault(m => string.Compare(m.Name, actionName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            var actionMethod = handler.GetActionHandler(actionName, data);
 
-            if (method == null)
+            if (actionMethod == null)
             {
                 throw new UnknownActionException();
             }
 
-            var accessAttribute = method.GetCustomAttribute<ActionAccessAttribute>(true);
+            var accessAttribute = actionMethod.Item2.GetCustomAttribute<ActionAccessAttribute>(true);
 
             if (accessAttribute != null)
             {
@@ -61,7 +60,7 @@ namespace LessMarkup.UserInterface.Model.Structure
                 }
             }
 
-            var parameters = method.GetParameters();
+            var parameters = actionMethod.Item2.GetParameters();
 
             var arguments = new object[parameters.Length];
 
@@ -107,7 +106,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             this.LogDebug("BeginInvokeAction");
 
-            var ret = method.Invoke(handler, arguments);
+            var ret = actionMethod.Item2.Invoke(actionMethod.Item1, arguments);
 
             this.LogDebug("EndInvokeAction");
 

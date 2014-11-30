@@ -19,23 +19,23 @@ namespace LessMarkup.MainModule.Model
         public class Collection : IEditableModelCollection<TranslationModel>
         {
             private long _languageId;
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<Translation>().Where("LanguageId = $", _languageId).ToIdList();
             }
 
             public int CollectionId { get; private set; }
 
-            public IReadOnlyCollection<TranslationModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<TranslationModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<Translation>().WhereIds(ids).ToList<TranslationModel>();
             }

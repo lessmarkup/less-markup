@@ -14,9 +14,9 @@ namespace LessMarkup.Interfaces.System
         string Name { get; }
         bool IsRemoved { get; }
         bool IsAdministrator { get; }
-        bool IsApproved { get; set; }
+        bool IsApproved { get;  }
+        bool EmailConfirmed { get; }
         IReadOnlyList<long> Groups { get; }
-        bool IsValidated { get; }
         string Email { get; }
         string Title { get; }
         bool IsBlocked { get; }

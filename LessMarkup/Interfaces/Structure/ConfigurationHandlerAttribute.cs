@@ -11,8 +11,6 @@ namespace LessMarkup.Interfaces.Structure
     {
         public object TitleTextId { get; set; }
 
-        public bool IsGlobal { get; set; }
-
         public ConfigurationHandlerAttribute(object titleTextId)
         {
             TitleTextId = titleTextId;

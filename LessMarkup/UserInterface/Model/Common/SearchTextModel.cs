@@ -12,9 +12,9 @@ namespace LessMarkup.UserInterface.Model.Common
     public class SearchTextModel
     {
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public SearchTextModel(IDataCache dataCache, ILightDomainModelProvider domainModelProvider)
+        public SearchTextModel(IDataCache dataCache, IDomainModelProvider domainModelProvider)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;

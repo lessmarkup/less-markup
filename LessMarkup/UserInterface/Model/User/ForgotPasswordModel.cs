@@ -6,7 +6,6 @@ using System;
 using System.Threading;
 using System.Web;
 using LessMarkup.DataFramework;
-using LessMarkup.Engine.Site;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -28,10 +27,10 @@ namespace LessMarkup.UserInterface.Model.User
 
         private readonly IUserSecurity _userSecurity;
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IMailSender _mailSender;
 
-        public ForgotPasswordModel(IUserSecurity userSecurity, ILightDomainModelProvider domainModelProvider, IMailSender mailSender, IDataCache dataCache)
+        public ForgotPasswordModel(IUserSecurity userSecurity, IDomainModelProvider domainModelProvider, IMailSender mailSender, IDataCache dataCache)
         {
             _userSecurity = userSecurity;
             _domainModelProvider = domainModelProvider;
@@ -54,9 +53,16 @@ namespace LessMarkup.UserInterface.Model.User
                 return;
             }
 
+            var siteName = _dataCache.Get<ISiteConfiguration>().SiteName;
+
+            if (string.IsNullOrWhiteSpace(siteName))
+            {
+                return;
+            }
+
             using (var domainModel = _domainModelProvider.Create())
             {
-                var user = domainModel.Query().From<DataObjects.Security.User>().Where("Email = $", Email).First<DataObjects.Security.User>();
+                var user = domainModel.Query().From<DataObjects.Security.User>().Where("Email = $", Email).FirstOrDefault<DataObjects.Security.User>();
 
                 if (user == null)
                 {
@@ -64,12 +70,12 @@ namespace LessMarkup.UserInterface.Model.User
                     return;
                 }
 
-                var ticket = HttpUtility.UrlEncode(_userSecurity.CreatePasswordChangeToken(user.Id));
+                var ticket = HttpUtility.UrlEncode(user.Email + "/" + _userSecurity.CreatePasswordChangeToken(user.Id));
 
                 _mailSender.SendMail(null, user.Id, Email, "ResetPassword", new ResetPasswordEmailModel
                 {
                     ResetUrl = string.Format("http://{0}/{1}/ticket/{2}", hostName, fullPath.TrimStart(new []{'/'}), ticket),
-                    SiteName = _dataCache.Get<SiteCache>().Title,
+                    SiteName = _dataCache.Get<ISiteConfiguration>().SiteName,
                     HostName = hostName,
                     Subject = LanguageHelper.GetText(Constants.ModuleType.UserInterface, UserInterfaceTextIds.RestorePassword)
                 });

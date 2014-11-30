@@ -18,10 +18,10 @@ namespace LessMarkup.Forum.Model
         public List<string> Forums { get; set; }
 
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly ICurrentUser _currentUser;
 
-        public ForumSubscriptionModel(IDataCache dataCache, ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser)
+        public ForumSubscriptionModel(IDataCache dataCache, IDomainModelProvider domainModelProvider, ICurrentUser currentUser)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;
@@ -77,14 +77,9 @@ namespace LessMarkup.Forum.Model
 
                 if (nodeUserData != null)
                 {
-                    if (!string.IsNullOrEmpty(nodeUserData.Settings))
-                    {
-                        settingsModel = JsonConvert.DeserializeObject<PostUpdatesUserSettingsModel>(nodeUserData.Settings);
-                    }
-                    else
-                    {
-                        settingsModel = new PostUpdatesUserSettingsModel();
-                    }
+                    settingsModel = !string.IsNullOrEmpty(nodeUserData.Settings) ? 
+                        JsonConvert.DeserializeObject<PostUpdatesUserSettingsModel>(nodeUserData.Settings) : 
+                        new PostUpdatesUserSettingsModel();
                 }
                 else
                 {
@@ -97,14 +92,7 @@ namespace LessMarkup.Forum.Model
                     };
                 }
 
-                if (Forums == null)
-                {
-                    settingsModel.ForumIds = new List<long>();
-                }
-                else
-                {
-                    settingsModel.ForumIds = Forums.Select(long.Parse).ToList();
-                }
+                settingsModel.ForumIds = Forums == null ? new List<long>() : Forums.Select(long.Parse).ToList();
 
                 nodeUserData.Settings = JsonConvert.SerializeObject(settingsModel);
 

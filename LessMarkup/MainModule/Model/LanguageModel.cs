@@ -25,12 +25,12 @@ namespace LessMarkup.MainModule.Model
     {
         public class Collection : IEditableModelCollection<LanguageModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IDataCache _dataCache;
             private readonly ICurrentUser _currentUser;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser, IChangeTracker changeTracker)
+            public Collection(IDomainModelProvider domainModelProvider, IDataCache dataCache, ICurrentUser currentUser, IChangeTracker changeTracker)
             {
                 _domainModelProvider = domainModelProvider;
                 _dataCache = dataCache;
@@ -38,14 +38,14 @@ namespace LessMarkup.MainModule.Model
                 _changeTracker = changeTracker;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<Language>().ToIdList();
             }
 
             public int CollectionId { get { return DataHelper.GetCollectionId<Language>(); } }
 
-            public IReadOnlyCollection<LanguageModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<LanguageModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<Language>().ToList<LanguageModel>();
             }
@@ -138,7 +138,7 @@ namespace LessMarkup.MainModule.Model
             public bool DeleteOnly { get { return false; } }
         }
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private readonly IChangeTracker _changeTracker;
 
@@ -146,7 +146,7 @@ namespace LessMarkup.MainModule.Model
         {
         }
 
-        public LanguageModel(ILightDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
+        public LanguageModel(IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _dataCache = dataCache;

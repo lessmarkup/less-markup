@@ -34,7 +34,7 @@ namespace LessMarkup.Interfaces.Cache
 
         Type[] ICacheHandler.HandledCollectionTypes { get { return _handledCollectionTypes; } }
 
-        protected bool Expired { get; set; }
+        protected virtual bool Expired { get { return false; } }
 
         bool ICacheHandler.Expired { get { return Expired; } }
     }

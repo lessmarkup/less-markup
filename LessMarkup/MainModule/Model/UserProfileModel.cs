@@ -22,13 +22,13 @@ namespace LessMarkup.MainModule.Model
     public class UserProfileModel
     {
         private readonly ICurrentUser _currentUser;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IUserSecurity _userSecurity;
         private readonly IChangeTracker _changeTracker;
         private readonly IDataCache _dataCache;
         private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public UserProfileModel(ILightDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
+        public UserProfileModel(IDomainModelProvider domainModelProvider, ICurrentUser currentUser, IUserSecurity userSecurity, IChangeTracker changeTracker, IDataCache dataCache, IHtmlSanitizer htmlSanitizer)
         {
             _currentUser = currentUser;
             _domainModelProvider = domainModelProvider;

@@ -18,10 +18,10 @@ namespace LessMarkup.Forum.Module.NodeHandlers
 {
     public class ForumNodeHandler : RecordListNodeHandler<ThreadModel>
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
 
-        public ForumNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache)
+        public ForumNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache)
             : base(domainModelProvider, dataCache)
         {
             _domainModelProvider = domainModelProvider;
@@ -62,7 +62,7 @@ namespace LessMarkup.Forum.Module.NodeHandlers
         {
             var ret = base.GetViewData();
 
-            var statistics = DependencyResolver.Resolve<AllForumsStatistics>();
+            var statistics = DependencyResolver.Resolve<ForumSummaryProvider>();
 
             if (ObjectId.HasValue)
             {

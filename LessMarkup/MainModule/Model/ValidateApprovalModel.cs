@@ -14,14 +14,14 @@ namespace LessMarkup.MainModule.Model
     public class ValidateApprovalModel
     {
         private readonly IUserSecurity _userSecurity;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IChangeTracker _changeTracker;
         private readonly IMailSender _mailSender;
         private readonly IDataCache _dataCache;
 
         public bool Success { get; set; }
 
-        public ValidateApprovalModel(IUserSecurity userSecurity, ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IMailSender mailSender, IDataCache dataCache)
+        public ValidateApprovalModel(IUserSecurity userSecurity, IDomainModelProvider domainModelProvider, IChangeTracker changeTracker, IMailSender mailSender, IDataCache dataCache)
         {
             _userSecurity = userSecurity;
             _domainModelProvider = domainModelProvider;

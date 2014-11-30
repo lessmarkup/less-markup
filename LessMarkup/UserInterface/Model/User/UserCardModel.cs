@@ -16,7 +16,7 @@ namespace LessMarkup.UserInterface.Model.User
     {
         public class Collection : IModelCollection<UserCardModel>
         {
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<DataObjects.Security.User>().Where("IsRemoved = $", false).ToIdList();
             }
@@ -29,7 +29,7 @@ namespace LessMarkup.UserInterface.Model.User
                 }
             }
 
-            public IReadOnlyCollection<UserCardModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<UserCardModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<DataObjects.Security.User>()
                     .Where("IsRemoved = $", false)

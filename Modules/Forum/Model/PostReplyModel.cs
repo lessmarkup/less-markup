@@ -18,14 +18,14 @@ namespace LessMarkup.Forum.Model
     [RecordModel(TitleTextId = ForumTextIds.Reply)]
     public class PostReplyModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly ICurrentUser _currentUser;
         private readonly IChangeTracker _changeTracker;
         private readonly IUserSecurity _userSecurity;
         private readonly ISiteConfiguration _siteConfiguration;
 
-        public PostReplyModel(ILightDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
+        public PostReplyModel(IDomainModelProvider domainModelProvider, IHtmlSanitizer htmlSanitizer, ICurrentUser currentUser, IChangeTracker changeTracker, IUserSecurity userSecurity, ISiteConfiguration siteConfiguration)
         {
             _domainModelProvider = domainModelProvider;
             _htmlSanitizer = htmlSanitizer;

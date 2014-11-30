@@ -14,7 +14,7 @@ namespace LessMarkup.MainModule.NodeHandlers
     [ConfigurationHandler(MainModuleTextIds.Files)]
     public class FileListNodeHandler : RecordListNodeHandler<FileModel>
     {
-        public FileListNodeHandler(ILightDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
+        public FileListNodeHandler(IDomainModelProvider domainModelProvider, IDataCache dataCache) : base(domainModelProvider, dataCache)
         {
         }
     }

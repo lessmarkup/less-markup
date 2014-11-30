@@ -17,10 +17,10 @@ namespace LessMarkup.Engine.Currencies
         private const string CookieCurrencyName = "currency";
         private readonly Dictionary<long, CurrencyCacheItem> _currencies = new Dictionary<long, CurrencyCacheItem>();
         private readonly List<CurrencyCacheItem> _currencyList = new List<CurrencyCacheItem>(); 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private long? _baseCurrencyId;
 
-        public CurrencyCache(ILightDomainModelProvider domainModelProvider) : base(new[]{typeof(Currency)})
+        public CurrencyCache(IDomainModelProvider domainModelProvider) : base(new[]{typeof(Currency)})
         {
             _domainModelProvider = domainModelProvider;
         }

@@ -17,9 +17,9 @@ namespace LessMarkup.MainModule.Model
     [RecordModel(TitleTextId = MainModuleTextIds.EditFile, CollectionType = typeof(Collection), DataType = typeof(File))]
     public class FileModel
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public FileModel(ILightDomainModelProvider domainModelProvider)
+        public FileModel(IDomainModelProvider domainModelProvider)
         {
             _domainModelProvider = domainModelProvider;
         }
@@ -30,21 +30,21 @@ namespace LessMarkup.MainModule.Model
 
         public class Collection : IEditableModelCollection<FileModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
 
-            public Collection(ILightDomainModelProvider domainModelProvider)
+            public Collection(IDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<File>().ToIdList();
             }
 
             public int CollectionId { get { return DataHelper.GetCollectionId<File>(); } }
 
-            public IReadOnlyCollection<FileModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<FileModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<File>().WhereIds(ids).ToList<File>().Select(f => new FileModel { FileId = f.Id, UniqueId = f.UniqueId, FileName = f.FileName }).ToList();
             }

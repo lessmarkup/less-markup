@@ -2,5 +2,6 @@
 <Minify>
   <Resources>
     <Resource Plain="scripts/controllers/article" />
+    <Resource Plain="scripts/controllers/htmlpage" />
   </Resources>
 </Minify>

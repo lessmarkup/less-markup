@@ -15,16 +15,16 @@ namespace LessMarkup.UserInterface.Model.Configuration
     {
         public class Collection : IEditableModelCollection<UserPropertyModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public Collection(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public Collection(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _changeTracker = changeTracker;
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.ToIdList();
             }
@@ -34,7 +34,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 get { return DataHelper.GetCollectionId<UserPropertyDefinition>(); }
             }
 
-            public IReadOnlyCollection<UserPropertyModel> Read(ILightQueryBuilder queryBuilder, List<long> ids)
+            public IReadOnlyCollection<UserPropertyModel> Read(IQueryBuilder queryBuilder, List<long> ids)
             {
                 return queryBuilder
                     .WhereIds(ids)

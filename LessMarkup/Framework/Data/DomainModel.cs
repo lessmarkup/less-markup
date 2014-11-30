@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Transactions;
+using LessMarkup.Framework.Properties;
 using LessMarkup.Interfaces.Data;
 using LessMarkup.Interfaces.System;
 
-namespace LessMarkup.DataFramework.Light
+#if DEBUG
+using System.Diagnostics;
+#endif
+
+namespace LessMarkup.Framework.Data
 {
-    public class LightDomainModel : ILightDomainModel
+    public class DomainModel : IDomainModel
     {
         private IDbConnection _connnection;
         private TransactionScope _transactionScope;
@@ -21,7 +25,7 @@ namespace LessMarkup.DataFramework.Light
         private static readonly Dictionary<int, Type> _collectionIdToType = new Dictionary<int, Type>(); 
         private static int _collectionIdCounter = 1;
 
-        public LightDomainModel(IEngineConfiguration engineConfiguration)
+        public DomainModel(IEngineConfiguration engineConfiguration)
         {
             _engineConfiguration = engineConfiguration;
         }
@@ -46,12 +50,24 @@ namespace LessMarkup.DataFramework.Light
 
         public static int GetCollectionId(Type collectionType)
         {
-            return _collectionTypeToId[collectionType];
+            int collectionId;
+
+            if (!_collectionTypeToId.TryGetValue(collectionType, out collectionId))
+            {
+                throw new ArgumentOutOfRangeException("collectionType", string.Format(Resources.DomainModel_GetCollectionId_Unknown_Collection, collectionType.FullName));
+            }
+            return collectionId;
         }
 
         public static Type GetCollectionType(int collectionId)
         {
-            return _collectionIdToType[collectionId];
+            Type collectionType;
+            if (!_collectionIdToType.TryGetValue(collectionId, out collectionType))
+            {
+                throw new ArgumentOutOfRangeException("collectionId", string.Format(Resources.DomainModel_GetCollectionType_Unknown_CollectionID, collectionId));
+            }
+
+            return collectionType;
         }
 
         private IDbConnection CreateConnection()
@@ -84,7 +100,7 @@ namespace LessMarkup.DataFramework.Light
             return ret;
         }
 
-        public ILightQueryBuilder Query()
+        public IQueryBuilder Query()
         {
             return new QueryBuilder(this);
         }
@@ -143,7 +159,7 @@ namespace LessMarkup.DataFramework.Light
                     command.Parameters.Add(parameter);
                 }
 
-                text += string.Format(" WHERE Id = {0}", dataObject.Id);
+                text += string.Format(" WHERE [Id] = {0}", dataObject.Id);
 
                 command.CommandText = text;
                 command.CommandType = CommandType.Text;
@@ -177,7 +193,7 @@ namespace LessMarkup.DataFramework.Light
                         continue;
                     }
 
-                    names.Add(column.Key);
+                    names.Add("["+column.Key+"]");
                     values.Add(name);
 
                     var parameter = command.CreateParameter();
@@ -200,7 +216,7 @@ namespace LessMarkup.DataFramework.Light
 
             using (var command = Connection.CreateCommand())
             {
-                command.CommandText = string.Format("DELETE FROM [{0}] WHERE Id={1}", metadata.Name, id);
+                command.CommandText = string.Format("DELETE FROM [{0}] WHERE [Id]={1}", metadata.Name, id);
                 command.CommandType = CommandType.Text;
                 ExecuteNonQuery(command);
             }
@@ -223,32 +239,36 @@ namespace LessMarkup.DataFramework.Light
 
         private T ExecuteScalar<T>(IDbCommand command)
         {
+#if DEBUG
             try
             {
-                return (T) command.ExecuteScalar();
+#endif
+            return (T)command.ExecuteScalar();
+#if DEBUG
             }
             catch (Exception e)
             {
-#if DEBUG
                 Trace.WriteLine(e.Message);
-#endif
                 throw;
             }
+#endif
         }
 
         private void ExecuteNonQuery(IDbCommand command)
         {
+#if DEBUG
             try
             {
+#endif
                 command.ExecuteNonQuery();
+#if DEBUG
             }
             catch (Exception e)
             {
-#if DEBUG
                 Trace.WriteLine(e.Message);
-#endif
                 throw;
             }
+#endif
         }
     }
 }

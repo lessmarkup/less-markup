@@ -101,9 +101,9 @@ namespace LessMarkup.Engine.Build
 
             if ((!engineConfiguration.SafeMode || engineConfiguration.DisableSafeMode) && !string.IsNullOrWhiteSpace(engineConfiguration.Database))
             {
-                var siteCache = _dataCache.Get<SiteCache>();
+                var moduleCache = _dataCache.Get<ModuleCache>();
 
-                if (!siteCache.ModuleTypes.Contains(moduleType))
+                if (!moduleCache.ModuleTypes.Contains(moduleType))
                 {
                     throw new HttpException(404, string.Format(CultureInfo.CurrentCulture, "NoControllerFound", new object[] { requestContext.HttpContext.Request.Path }));
                 }

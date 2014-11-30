@@ -263,6 +263,7 @@
     <Translation Id="MaximumImageWidth" Text="Maximum Image Width"/>
     <Translation Id="MaximumImageHeight" Text="Maximum Image Height"/>
     <Translation Id="Caption" Text="Caption"/>
+    <Translation Id="EditPage" Text="Edit Page"/>
     <!--
     <Translation Id="" Text=""/>
     -->

@@ -19,13 +19,13 @@ namespace LessMarkup.Engine.Configuration
     {
         #region Private Fields
 
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
         #endregion
 
         #region Initialization
 
-        public SiteConfigurationCache(ILightDomainModelProvider domainModelProvider)
+        public SiteConfigurationCache(IDomainModelProvider domainModelProvider)
             : base(new[] { typeof(SiteProperties) })
         {
             _domainModelProvider = domainModelProvider;
@@ -110,5 +110,7 @@ namespace LessMarkup.Engine.Configuration
         public string ValidFileType { get; private set; }
 
         public string ValidFileExtension { get; private set; }
+
+        public HashSet<string> ModuleTypes { get; private set; }
     }
 }

@@ -21,25 +21,25 @@ namespace LessMarkup.UserInterface.Model.Global
     {
         public class CollectionManager : IEditableModelCollection<CustomizationModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
             private readonly IChangeTracker _changeTracker;
 
-            public CollectionManager(ILightDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
+            public CollectionManager(IDomainModelProvider domainModelProvider, IChangeTracker changeTracker)
             {
                 _domainModelProvider = domainModelProvider;
                 _changeTracker = changeTracker;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<SiteCustomization>().ToIdList();
             }
 
             public int CollectionId { get { return DataHelper.GetCollectionId<SiteCustomization>(); } }
 
-            public IReadOnlyCollection<CustomizationModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<CustomizationModel> Read(IQueryBuilder query, List<long> ids)
             {
-                return query.From<SiteCustomization>().ToList<SiteCustomization>()
+                return query.From<SiteCustomization>().ToList<SiteCustomization>("Id, Path, IsBinary, CASE IsBinary WHEN 0 THEN Body ELSE NULL Body, Append, TypeDefined")
                         .Select(c => new CustomizationModel
                         {
                             Id = c.Id,

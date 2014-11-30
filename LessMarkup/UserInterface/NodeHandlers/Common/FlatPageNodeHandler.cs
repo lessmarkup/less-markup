@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
@@ -212,15 +213,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             get { return true; }
         }
 
-        protected override ChildHandlerSettings GetChildHandler(string path)
+        private INodeHandler ConstructHandler(FlatNodeEntry node)
         {
-            var node = _flatNodeList.FirstOrDefault(n => n.Path == path);
-
-            if (node == null)
-            {
-                return null;
-            }
-
             var accessType = node.Source.CheckRights(_currentUser);
 
             if (accessType == NodeAccessType.NoAccess)
@@ -228,7 +222,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 return null;
             }
 
-            var handler = (INodeHandler) Interfaces.DependencyResolver.Resolve(node.HandlerType);
+            var handler = (INodeHandler)Interfaces.DependencyResolver.Resolve(node.HandlerType);
 
             object nodeSettings = null;
 
@@ -239,6 +233,20 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
             handler.Initialize(node.NodeId, nodeSettings, null, node.Path, node.FullPath, accessType);
 
+            return handler;
+        }
+
+        protected override ChildHandlerSettings GetChildHandler(string path)
+        {
+            var node = _flatNodeList.FirstOrDefault(n => n.Path == path);
+
+            if (node == null)
+            {
+                return null;
+            }
+
+            var handler = ConstructHandler(node);
+
             return new ChildHandlerSettings
             {
                 Handler = handler,
@@ -246,6 +254,22 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                 Path = path,
                 Title = node.Title
             };
+        }
+
+        protected override Tuple<object, MethodInfo> GetActionHandler(string name, Dictionary<string, object> data)
+        {
+            object nodeId;
+            if (data.TryGetValue("flatNodeId", out nodeId))
+            {
+                var node = _flatNodeList.FirstOrDefault(n => n.NodeId == (long) nodeId);
+                if (node != null)
+                {
+                    var handler = ConstructHandler(node);
+                    return handler.GetActionHandler(name, data);
+                }
+            }
+
+            return base.GetActionHandler(name, data);
         }
     }
 }

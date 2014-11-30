@@ -173,3 +173,35 @@ blockquote[data-from] {
     padding-bottom: 0.5em;
 }
 
+.allforums-statistics {
+    border: solid 1px #ccc;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.allforums-statistics td {
+    padding: 0.5em;
+    border-bottom: solid 1px #ccc;
+}
+
+.allforums-statistics .section-name {
+    font-weight: bold;
+}
+
+.allforums-statistics .active-user {
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.allforums-statistics .active-user:not(:first-child):before {
+    content: ",";
+}
+
+.allforums-statistics .entry-name {
+    font-weight: normal;
+}
+
+.allforums-statistics .entry-value {
+    font-weight: bold;
+    padding-right: 1em;
+}

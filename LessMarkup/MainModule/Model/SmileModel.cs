@@ -17,21 +17,21 @@ namespace LessMarkup.MainModule.Model
     {
         public class Collection : IEditableModelCollection<SmileModel>
         {
-            private readonly ILightDomainModelProvider _domainModelProvider;
+            private readonly IDomainModelProvider _domainModelProvider;
 
-            public Collection(ILightDomainModelProvider domainModelProvider)
+            public Collection(IDomainModelProvider domainModelProvider)
             {
                 _domainModelProvider = domainModelProvider;
             }
 
-            public IReadOnlyCollection<long> ReadIds(ILightQueryBuilder query, bool ignoreOrder)
+            public IReadOnlyCollection<long> ReadIds(IQueryBuilder query, bool ignoreOrder)
             {
                 return query.From<Smile>().ToIdList();
             }
 
             public int CollectionId { get { return DataHelper.GetCollectionId<Smile>(); } }
 
-            public IReadOnlyCollection<SmileModel> Read(ILightQueryBuilder query, List<long> ids)
+            public IReadOnlyCollection<SmileModel> Read(IQueryBuilder query, List<long> ids)
             {
                 return query.From<Smile>().WhereIds(ids).ToList<SmileModel>();
             }

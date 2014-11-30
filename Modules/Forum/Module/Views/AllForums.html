@@ -30,4 +30,22 @@
             </tr>
         </tbody>
     </table>
+    
+    <table class="allforums-statistics" ng-if="showStatistics">
+        <tr>
+            <td class="section-name">[[[translate ActiveUsers]]]</td>
+            <td>
+                <span ng-if="activeUsers.length == 0">[[[translate NoActiveUsers]]]</span>
+                <span ng-repeat="user in activeUsers" class="active-user">
+                    <a href="{{user.url}}" ng-click="navigateToView(user.url)">user.name</a>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="section-name">[[[translate Statistics]]]</td>
+            <td>
+                <span ng-repeat="entry in statistics"><span class="entry-name">{{entry.name}}</span>: <span class="entry-value">{{entry.value}}</span></span>
+            </td>
+        </tr>
+    </table>
 </div>

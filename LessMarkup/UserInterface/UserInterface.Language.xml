@@ -151,6 +151,7 @@
     <Translation Id="CannotRegisterNewUser" Text="Cannot register new user"/>
     <Translation Id="NodeAccess" Text="Node Access"/>
     <Translation Id="LevelToLoad" Text="Level To Load"/>
+    <Translation Id="DisableCustomizations" Text="Disable Customizations"/>
     <!--
     <Translation Id="" Text=""/>
     -->

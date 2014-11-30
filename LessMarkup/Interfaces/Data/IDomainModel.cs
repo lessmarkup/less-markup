@@ -2,9 +2,9 @@
 
 namespace LessMarkup.Interfaces.Data
 {
-    public interface ILightDomainModel : IDisposable
+    public interface IDomainModel : IDisposable
     {
-        ILightQueryBuilder Query();
+        IQueryBuilder Query();
         void CompleteTransaction();
         void Update<T>(T dataObject) where T : IDataObject;
         void Create<T>(T dataObject) where T : IDataObject;

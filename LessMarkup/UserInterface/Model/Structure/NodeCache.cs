@@ -27,7 +27,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 {
     public class NodeCache : AbstractCacheHandler, INodeCache
     {
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
@@ -40,7 +40,7 @@ namespace LessMarkup.UserInterface.Model.Structure
         public ICachedNodeInformation RootNode { get { return _rootNode; } }
         public IReadOnlyList<ICachedNodeInformation> Nodes { get { return _cachedNodes; } }
 
-        public NodeCache(ILightDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ICurrentUser currentUser)
+        public NodeCache(IDomainModelProvider domainModelProvider, IModuleIntegration moduleIntegration, IEngineConfiguration engineConfiguration, IDataCache dataCache, ICurrentUser currentUser)
             : base(new[] { typeof(Node) })
         {
             _domainModelProvider = domainModelProvider;
@@ -305,7 +305,7 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             using (var domainModel = _domainModelProvider.Create())
             {
-                cachedNodes.AddRange(domainModel.Query().From<Node>().OrderBy("Order").ToList<Node>().Select(p => new CachedNodeInformation
+                cachedNodes.AddRange(domainModel.Query().From<Node>().OrderBy("[Order]").ToList<Node>().Select(p => new CachedNodeInformation
                 {
                     NodeId = p.Id,
                     Enabled = p.Enabled,

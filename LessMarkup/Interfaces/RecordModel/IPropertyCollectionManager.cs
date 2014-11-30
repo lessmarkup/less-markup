@@ -9,6 +9,6 @@ namespace LessMarkup.Interfaces.RecordModel
 {
     public interface IPropertyCollectionManager
     {
-        IReadOnlyCollection<string> GetCollection(ILightDomainModel domainModel, string property, string searchText);
+        IReadOnlyCollection<string> GetCollection(IDomainModel domainModel, string property, string searchText);
     }
 }

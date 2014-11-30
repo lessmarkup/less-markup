@@ -92,7 +92,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             NodeAccessType? accessType = null;
             CheckRights(userId, userCache.Groups, ref accessType);
 
-            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!userCache.IsApproved || !userCache.IsValidated))
+            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!userCache.IsApproved || !userCache.EmailConfirmed))
             {
                 accessType = NodeAccessType.Read;
             }
@@ -110,7 +110,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             NodeAccessType? accessType = null;
             CheckRights(currentUser.UserId, currentUser.Groups, ref accessType);
 
-            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!currentUser.IsApproved || !currentUser.IsValidated))
+            if (accessType.HasValue && accessType.Value != NodeAccessType.NoAccess && (!currentUser.IsApproved || !currentUser.EmailConfirmed))
             {
                 accessType = NodeAccessType.Read;
             }

@@ -17,13 +17,13 @@ namespace LessMarkup.MainModule.Model
     {
         private readonly IUserSecurity _userSecurity;
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IMailSender _mailSender;
 
         public bool Success { get; set; }
         public bool ApproveRequired { get; set; }
 
-        public UserValidateModel(IUserSecurity userSecurity, IDataCache dataCache, ILightDomainModelProvider domainModelProvider, IMailSender mailSender)
+        public UserValidateModel(IUserSecurity userSecurity, IDataCache dataCache, IDomainModelProvider domainModelProvider, IMailSender mailSender)
         {
             _userSecurity = userSecurity;
             _dataCache = dataCache;

@@ -8,11 +8,11 @@ using LessMarkup.Interfaces.Data;
 using System.Diagnostics;
 #endif
 
-namespace LessMarkup.DataFramework.Light
+namespace LessMarkup.Framework.Data
 {
-    public class QueryBuilder : ILightQueryBuilder
+    public class QueryBuilder : IQueryBuilder
     {
-        private readonly LightDomainModel _domainModel;
+        private readonly DomainModel _domainModel;
         private IDbCommand _command;
         private string _commandText;
         private int _parameterIndex;
@@ -21,7 +21,7 @@ namespace LessMarkup.DataFramework.Light
         private string _orderBy = "";
         private string _limit = "";
 
-        internal QueryBuilder(LightDomainModel domainModel)
+        internal QueryBuilder(DomainModel domainModel)
         {
             _domainModel = domainModel;
         }
@@ -55,43 +55,43 @@ namespace LessMarkup.DataFramework.Light
             return _command;
         }
 
-        public ILightQueryBuilder From<T>(string name = null) where T : IDataObject
+        public IQueryBuilder From<T>(string name = null) where T : IDataObject
         {
-            var metadata = LightDomainModel.GetMetadata<T>();
+            var metadata = DomainModel.GetMetadata<T>();
 
             _commandText += string.Format(" FROM [{0}] {1}", metadata.Name, name ?? "");
 
             return this;
         }
 
-        public ILightQueryBuilder Join<T>(string name, string @on) where T : IDataObject
+        public IQueryBuilder Join<T>(string name, string @on) where T : IDataObject
         {
-            var metadata = LightDomainModel.GetMetadata<T>();
+            var metadata = DomainModel.GetMetadata<T>();
 
             _commandText += string.Format(" JOIN [{0}] {1} ON {2}", metadata.Name, name, @on);
 
             return this;
         }
 
-        public ILightQueryBuilder LeftJoin<T>(string name, string @on) where T : IDataObject
+        public IQueryBuilder LeftJoin<T>(string name, string @on) where T : IDataObject
         {
-            var metadata = LightDomainModel.GetMetadata<T>();
+            var metadata = DomainModel.GetMetadata<T>();
 
             _commandText += string.Format(" LEFT JOIN [{0}] {1} ON {2}", metadata.Name, name, @on);
 
             return this;
         }
 
-        public ILightQueryBuilder RightJoin<T>(string name, string @on) where T : IDataObject
+        public IQueryBuilder RightJoin<T>(string name, string @on) where T : IDataObject
         {
-            var metadata = LightDomainModel.GetMetadata<T>();
+            var metadata = DomainModel.GetMetadata<T>();
 
             _commandText += string.Format(" RIGHT JOIN [{0}] {1} ON {2}", metadata.Name, name, @on);
 
             return this;
         }
 
-        public ILightQueryBuilder GroupBy(string name)
+        public IQueryBuilder GroupBy(string name)
         {
             _commandText += string.Format(" GROUP BY {0} ", name);
             return this;
@@ -139,7 +139,7 @@ namespace LessMarkup.DataFramework.Light
             throw new ArgumentOutOfRangeException("parameterType");
         }
 
-        public ILightQueryBuilder Where(string filter, params object[] args)
+        public IQueryBuilder Where(string filter, params object[] args)
         {
             filter = ProcessStringWithParameters(filter, args);
 
@@ -155,38 +155,38 @@ namespace LessMarkup.DataFramework.Light
             return this;
         }
 
-        public ILightQueryBuilder WhereIds(IEnumerable<long> ids)
+        public IQueryBuilder WhereIds(IEnumerable<long> ids)
         {
-            return Where(string.Format("Id IN ({0})", string.Join(",", ids)));
+            return Where(string.Format("[Id] IN ({0})", string.Join(",", ids)));
         }
 
-        public ILightQueryBuilder OrderBy(string column)
+        public IQueryBuilder OrderBy(string column)
         {
             if (_orderBy.Length > 0)
             {
-                _orderBy += string.Format(", [{0}]", column);
+                _orderBy += string.Format(", {0}", column);
             }
             else
             {
-                _orderBy = string.Format("ORDER BY [{0}]", column);
+                _orderBy = string.Format("ORDER BY {0}", column);
             }
             return this;
         }
 
-        public ILightQueryBuilder OrderByDescending(string column)
+        public IQueryBuilder OrderByDescending(string column)
         {
             if (_orderBy.Length > 0)
             {
-                _orderBy += string.Format(", [{0}] DESC", column);
+                _orderBy += string.Format(", {0} DESC", column);
             }
             else
             {
-                _orderBy = string.Format("ORDER BY [{0}] DESC", column);
+                _orderBy = string.Format("ORDER BY {0} DESC", column);
             }
             return this;
         }
 
-        public ILightQueryBuilder Limit(int @from, int count)
+        public IQueryBuilder Limit(int @from, int count)
         {
             _limit = string.Format("OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", @from, count);
             return this;
@@ -199,7 +199,7 @@ namespace LessMarkup.DataFramework.Light
                 From<T>();
             }
 
-            return Where("Id = $", id).First<T>();
+            return Where("[Id] = $", id).First<T>();
         }
 
         public T FindOrDefault<T>(long id) where T : class, IDataObject
@@ -385,7 +385,7 @@ namespace LessMarkup.DataFramework.Light
 
         public IReadOnlyCollection<long> ToIdList()
         {
-            _select = "Id";
+            _select = "[Id]";
             GetCommand().CommandText = GetSql();
 
             using (var reader = ExecuteReader())
@@ -440,7 +440,7 @@ namespace LessMarkup.DataFramework.Light
             return ret[0];
         }
 
-        public ILightQueryBuilder New()
+        public IQueryBuilder New()
         {
             return new QueryBuilder(_domainModel);
         }

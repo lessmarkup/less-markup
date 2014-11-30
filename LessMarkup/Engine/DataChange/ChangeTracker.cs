@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading;
-using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Common;
+using LessMarkup.Framework.Data;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Data;
@@ -19,7 +19,7 @@ namespace LessMarkup.Engine.DataChange
     class ChangeTracker : IChangeTracker
     {
         private volatile bool _changeTrackingInitialized;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly object _syncLock = new object();
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly ICurrentUser _currentUser;
@@ -30,9 +30,8 @@ namespace LessMarkup.Engine.DataChange
         private bool _timerStarted;
 
         private readonly Queue<EntityChangeHistory> _changeQueue = new Queue<EntityChangeHistory>();
-        private readonly object _syncChangeQueue = new object();
 
-        public ChangeTracker(ILightDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, ICurrentUser currentUser)
+        public ChangeTracker(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, ICurrentUser currentUser)
         {
             _currentUser = currentUser;
             _domainModelProvider = domainModelProvider;
@@ -157,14 +156,14 @@ namespace LessMarkup.Engine.DataChange
             _timerStarted = false;
 
             try
-            { 
-                using (var model = _domainModelProvider.Create())
+            {
+                lock (_syncLock)
                 {
-                    foreach (var change in model.Query().From<EntityChangeHistory>().Where("Id > $", _lastUpdateId).OrderBy("Id").ToList<EntityChangeHistory>("Id"))
+                    using (var model = _domainModelProvider.Create())
                     {
-                        _lastUpdateId = change.Id;
-                        lock (_syncChangeQueue)
+                        foreach (var change in model.Query().From<EntityChangeHistory>().Where(string.Format("[Id] > {0}", _lastUpdateId)).OrderBy("[Id]").ToList<EntityChangeHistory>())
                         {
+                            _lastUpdateId = change.Id;
                             _changeQueue.Enqueue(change);
                         }
                     }
@@ -198,7 +197,7 @@ namespace LessMarkup.Engine.DataChange
                 {
                     EntityChangeHistory change;
 
-                    lock (_syncChangeQueue)
+                    lock (_syncLock)
                     {
                         if (_changeQueue.Count == 0)
                         {
@@ -220,9 +219,9 @@ namespace LessMarkup.Engine.DataChange
             _queueTimer.Change(200, Timeout.Infinite);
         }
 
-        public void AddChange<T>(long objectId, EntityChangeType changeType, ILightDomainModel domainModel) where T : IDataObject
+        public void AddChange<T>(long objectId, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject
         {
-            var collectionId = LightDomainModel.GetCollectionId<T>();
+            var collectionId = DomainModel.GetCollectionId<T>();
 
             this.LogDebug(string.Format("ChangeTracker: recorded {0}/{1}, change {2}", collectionId, objectId, changeType));
 
@@ -245,7 +244,7 @@ namespace LessMarkup.Engine.DataChange
             domainModel.Create(history);
         }
 
-        public void AddChange<T>(T dataObject, EntityChangeType changeType, ILightDomainModel domainModel) where T : IDataObject
+        public void AddChange<T>(T dataObject, EntityChangeType changeType, IDomainModel domainModel) where T : IDataObject
         {
             AddChange<T>(dataObject.Id, changeType, domainModel);
         }

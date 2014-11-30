@@ -25,11 +25,11 @@ namespace LessMarkup.UserInterface.Model.Configuration
         private readonly IModuleIntegration _moduleIntegration;
         private readonly IModuleProvider _moduleProvider;
         private readonly List<NodeSettingsModel> _children = new List<NodeSettingsModel>();
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IDataCache _dataCache;
         private readonly IChangeTracker _changeTracker;
 
-        public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider, ILightDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
+        public NodeSettingsModel(IModuleIntegration moduleIntegration, IModuleProvider moduleProvider, IDomainModelProvider domainModelProvider, IDataCache dataCache, IChangeTracker changeTracker)
         {
             _moduleIntegration = moduleIntegration;
             _moduleProvider = moduleProvider;
@@ -181,7 +181,7 @@ namespace LessMarkup.UserInterface.Model.Configuration
             return null;
         }
 
-        private void NormalizeTree(List<NodeSettingsModel> nodes, NodeSettingsModel rootNode, ILightDomainModel domainModel, HashSet<long> changedNodes)
+        private void NormalizeTree(List<NodeSettingsModel> nodes, NodeSettingsModel rootNode, IDomainModel domainModel, HashSet<long> changedNodes)
         {
             foreach (var node in nodes)
             {
@@ -251,8 +251,17 @@ namespace LessMarkup.UserInterface.Model.Configuration
                 {
                     var node = DependencyResolver.Resolve<NodeSettingsModel>();
 
-                    var handler = source.HandlerId != null ? (INodeHandler)DependencyResolver.Resolve(_moduleIntegration.GetNodeHandler(source.HandlerId).Item1) : null;
+                    INodeHandler handler = null;
 
+                    if (source.HandlerId != null)
+                    {
+                        var handlerReference = _moduleIntegration.GetNodeHandler(source.HandlerId);
+                        if (handlerReference != null)
+                        {
+                            handler = (INodeHandler) DependencyResolver.Resolve(handlerReference.Item1);
+                        }
+                    }
+                    
                     node.ParentId = source.ParentId;
                     node.Enabled = source.Enabled;
                     node.HandlerId = source.HandlerId;

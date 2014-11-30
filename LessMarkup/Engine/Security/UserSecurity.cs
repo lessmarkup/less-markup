@@ -13,7 +13,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using LessMarkup.DataFramework;
-using LessMarkup.DataFramework.Light;
 using LessMarkup.DataObjects.Security;
 using LessMarkup.Engine.Security.Models;
 using LessMarkup.Framework;
@@ -34,7 +33,7 @@ namespace LessMarkup.Engine.Security
         private const int SaltLength = 16;
         // ReSharper disable once InconsistentNaming
         private static readonly int HashSize;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDataCache _dataCache;
         private readonly IMailSender _mailSender;
@@ -53,7 +52,7 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        public UserSecurity(ILightDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, IChangeTracker changeTracker)
+        public UserSecurity(IDomainModelProvider domainModelProvider, IEngineConfiguration engineConfiguration, IDataCache dataCache, IMailSender mailSender, IChangeTracker changeTracker)
         {
             _domainModelProvider = domainModelProvider;
             _engineConfiguration = engineConfiguration;
@@ -66,16 +65,22 @@ namespace LessMarkup.Engine.Security
 
         #region IUserSecurity Implementation
 
-        public string CreatePasswordChangeToken(long? userId)
+        public string CreatePasswordChangeToken(long userId)
         {
-            this.LogDebug("Creating password validation token for user " + (userId.HasValue ? userId.Value.ToString(CultureInfo.InvariantCulture) : "(null)"));
-            var collectionId = LightDomainModel.GetCollectionId<User>();
-            var ret = CreateAccessToken(collectionId, 0, EntityAccessType.Read, userId, DateTime.UtcNow + TimeSpan.FromMinutes(10));
-            this.LogDebug("Created password validation token " + ret);
-            return ret;
+            this.LogDebug("Creating password validation token for user " + userId.ToString(CultureInfo.InvariantCulture));
+
+            using (var domainModel = _domainModelProvider.Create())
+            {
+                var user = domainModel.Query().From<User>().FindOrDefault<User>(userId);
+                user.PasswordChangeToken = GenerateUniqueId();
+                user.PasswordChangeTokenExpires = DateTime.UtcNow.AddMinutes(10);
+                domainModel.Update(user);
+                this.LogDebug("Created password validation token " + user.PasswordChangeToken);
+                return user.PasswordChangeToken;
+            }
         }
 
-        public long? ValidatePasswordChangeToken(string token)
+        public long? ValidatePasswordChangeToken(string email, string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -84,26 +89,23 @@ namespace LessMarkup.Engine.Security
 
             this.LogDebug("Validating password change token " + token);
 
-            var validation = DecryptObject<AccessToken>(token);
-
-            if (validation == null)
+            using (var domainModel = _domainModelProvider.Create())
             {
-                this.LogDebug("Cannot validate password - error while decrypting the token");
-                return null;
-            }
-
-            if (validation.Ticks.HasValue)
-            {
-                if (DateTime.UtcNow.Ticks > validation.Ticks.Value)
+                var user = domainModel.Query().From<User>().Where("Email = $ AND PasswordChangeToken = $", email, token).FirstOrDefault<User>();
+                if (user == null)
                 {
-                    this.LogDebug("Password change token error - date is expired");
+                    this.LogDebug(string.Format("Cannot validate password - cannot find user for email '{0}' and token '{1}'", email, token));
                     return null;
                 }
+                if (!user.PasswordChangeTokenExpires.HasValue || user.PasswordChangeTokenExpires.Value < DateTime.UtcNow)
+                {
+                    this.LogDebug(string.Format("Password change for user '{0}' token error - date is expired", email));
+                    return null;
+                }
+
+                this.LogDebug("Password validated ok");
+                return user.Id;
             }
-
-            this.LogDebug("Password validated ok");
-
-            return validation.UserId;
         }
 
         public void ChangePassword(string password, out string salt, out string encodedPassword)
@@ -126,8 +128,14 @@ namespace LessMarkup.Engine.Security
 
                 if (generatePassword)
                 {
-                    password = GenerateUserPassword(user);
+                    if (!_engineConfiguration.SmtpConfigured)
+                    {
+                        throw new Exception("SMTP is not configured");
+                    }
+
+                    user.Password = GeneratePassword();
                     user.PasswordAutoGenerated = true;
+                    user.RegistrationExpires = DateTime.UtcNow + TimeSpan.FromDays(1);
                 }
 
                 user.Password = EncodePassword(password, user.Salt);
@@ -160,7 +168,7 @@ namespace LessMarkup.Engine.Security
                 if (preApproved)
                 {
                     // means the user is created manually by the administrator
-                    user.IsValidated = true;
+                    user.EmailConfirmed = true;
                     user.IsApproved = true;
                     domainModel.Update(user);
                     UserNotifyCreated(user, password);
@@ -452,8 +460,9 @@ namespace LessMarkup.Engine.Security
                     userId = 0;
                     return false;
                 }
+
                 user.ValidateSecret = null;
-                user.IsValidated = true;
+                user.EmailConfirmed = true;
 
                 if (!_dataCache.Get<ISiteConfiguration>().AdminApproveNewUsers)
                 {
@@ -544,7 +553,7 @@ namespace LessMarkup.Engine.Security
                 Name = username,
                 Registered = DateTime.UtcNow,
                 IsBlocked = false,
-                IsValidated = false,
+                EmailConfirmed = false,
                 LastLogin = DateTime.UtcNow,
                 LastBlock = null,
                 LastActivity = DateTime.UtcNow,
@@ -582,25 +591,7 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        private string GenerateUserPassword(User user)
-        {
-            if (!_engineConfiguration.SmtpConfigured)
-            {
-                throw new Exception("SMTP is not configured");
-            }
-
-            var password = GeneratePassword();
-
-            user.IsValidated = true;
-            user.LastActivity = null;
-            user.LastLogin = null;
-            user.LastPasswordChanged = null;
-            user.ValidateSecret = null;
-            user.RegistrationExpires = DateTime.UtcNow + TimeSpan.FromDays(1);
-            return password;
-        }
-
-        private void CheckUserExistence(string email, ILightDomainModel domainModel)
+        private void CheckUserExistence(string email, IDomainModel domainModel)
         {
             var user = domainModel.Query().From<User>().Where("Email = $ AND IsRemoved = $", email, false).FirstOrDefault<User>("Id");
 
@@ -610,7 +601,7 @@ namespace LessMarkup.Engine.Security
             }
         }
 
-        private void AddToDefaultGroup(ILightDomainModel domainModel, User user)
+        private void AddToDefaultGroup(IDomainModel domainModel, User user)
         {
             var defaultGroup = _dataCache.Get<ISiteConfiguration>().DefaultUserGroup;
 
@@ -651,7 +642,7 @@ namespace LessMarkup.Engine.Security
                 Constants.MailTemplates.PasswordGeneratedNotification, notificationModel);
         }
 
-        private void AdminNotifyNewUsers(User user, ILightDomainModel domainModel)
+        private void AdminNotifyNewUsers(User user, IDomainModel domainModel)
         {
             var model = new NewUserCreatedModel
             {

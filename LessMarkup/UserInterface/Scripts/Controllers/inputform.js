@@ -243,10 +243,12 @@ function InputFormController($scope, $modalInstance, definition, object, success
 
                         var dynamicFields = changed[field.property];
 
-                        for (var j = 0; j < dynamicFields.length; j++) {
-                            var dynamicField = dynamicFields[j];
-                            dynamicField.field = {
-                                property: dynamicField.field.property
+                        if (dynamicFields != null) {
+                            for (var j = 0; j < dynamicFields.length; j++) {
+                                var dynamicField = dynamicFields[j];
+                                dynamicField.field = {
+                                    property: dynamicField.field.property
+                                }
                             }
                         }
                     }

@@ -96,6 +96,11 @@ namespace LessMarkup.Engine.Module
 
         private void DiscoverDirectory(string currentPath, HashSet<Assembly> assemblies)
         {
+            if (!Directory.Exists(currentPath))
+            {
+                return;
+            }
+
             FileInfo[] files;
 
             try
@@ -181,7 +186,7 @@ namespace LessMarkup.Engine.Module
             assemblies.Add(assembly);
         }
 
-        public void UpdateModuleDatabase(ILightDomainModelProvider domainModelProvider)
+        public void UpdateModuleDatabase(IDomainModelProvider domainModelProvider)
         {
             if (domainModelProvider == null)
             {
@@ -191,7 +196,7 @@ namespace LessMarkup.Engine.Module
             using (var domainModel = domainModelProvider.Create())
             {
                 var existingModules = new List<ModuleConfiguration>();
-                foreach (var module in domainModel.Query().From<Interfaces.Data.Module>().Where("Removed = $", false).ToList<Interfaces.Data.Module>())
+                foreach (var module in domainModel.Query().From<DataObjects.Common.Module>().Where("Removed = $", false).ToList<DataObjects.Common.Module>())
                 {
                     var reference = _moduleConfigurations.FirstOrDefault(m => m.Path == module.Path);
                     if (reference == null)
@@ -209,7 +214,7 @@ namespace LessMarkup.Engine.Module
 
                 foreach (var source in _moduleConfigurations.Where(m => !existingModules.Contains(m)))
                 {
-                    var module = new Interfaces.Data.Module
+                    var module = new DataObjects.Common.Module
                     {
                         Enabled = true,
                         Name = source.Name,

@@ -18,9 +18,9 @@ namespace LessMarkup.UserInterface.Model.Structure
         public List<string> Records { get; set; }
 
         private readonly IDataCache _dataCache;
-        private readonly ILightDomainModelProvider _domainModelProvider;
+        private readonly IDomainModelProvider _domainModelProvider;
 
-        public TypeaheadModel(IDataCache dataCache, ILightDomainModelProvider domainModelProvider)
+        public TypeaheadModel(IDataCache dataCache, IDomainModelProvider domainModelProvider)
         {
             _dataCache = dataCache;
             _domainModelProvider = domainModelProvider;

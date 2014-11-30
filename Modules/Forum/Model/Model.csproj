@@ -90,15 +90,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AllForumsStatistics.cs" />
+    <Compile Include="AllForumsSettingsModel.cs" />
+    <Compile Include="ForumSummaryProvider.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ForumConfigurationModel.cs" />
-    <Compile Include="ForumStatisticsCache.cs" />
+    <Compile Include="ForumPropertiesCache.cs" />
     <Compile Include="ForumSubscriptionModel.cs" />
     <Compile Include="ForumTextIds.cs" />
     <Compile Include="CreateNewPostModel.cs" />
+    <Compile Include="ModuleStatisticsCache.cs" />
     <Compile Include="NewThreadModel.cs" />
-    <Compile Include="ForumStatisticsModel.cs" />
+    <Compile Include="ForumSummary.cs" />
     <Compile Include="PostAttachmentModel.cs" />
     <Compile Include="PostModel.cs" />
     <Compile Include="PostReplyModel.cs" />

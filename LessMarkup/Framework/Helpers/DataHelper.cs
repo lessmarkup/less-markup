@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 using System;
-using LessMarkup.DataFramework.Light;
+using LessMarkup.Framework.Data;
 using LessMarkup.Interfaces.Data;
 
 namespace LessMarkup.Framework.Helpers
@@ -12,17 +12,17 @@ namespace LessMarkup.Framework.Helpers
     {
         public static int GetCollectionId(Type dataType)
         {
-            return LightDomainModel.GetCollectionId(dataType);
+            return DomainModel.GetCollectionId(dataType);
         }
 
         public static int GetCollectionId<T>() where T : IDataObject
         {
-            return LightDomainModel.GetCollectionId<T>();
+            return DomainModel.GetCollectionId<T>();
         }
 
         public static Type GetCollectionType(int collectionId)
         {
-            return LightDomainModel.GetCollectionType(collectionId);
+            return DomainModel.GetCollectionType(collectionId);
         }
     }
 }
