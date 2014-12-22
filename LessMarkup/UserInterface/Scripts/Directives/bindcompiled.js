@@ -9,14 +9,27 @@ app.directive("bindCompiledHtml", function ($compile, lazyLoad) {
             parameter: '=bindCompiledHtml',
         },
         link: function (scope, element) {
+
+            var scopeFunction = scope.parameter.scope;
+            if (typeof scopeFunction == "string") {
+                var s = scope;
+                while (s.$parent) {
+                    s = s.$parent;
+                    if (s[scopeFunction]) {
+                        scopeFunction = s[scopeFunction];
+                        break;
+                    }
+                }
+            }
+
             var applyFunction = function (value) {
                 element.contents().remove();
                 if (value) {
                     lazyLoad.loadModules();
-                    element.append($compile(value)(scope.parameter.scope(scope.parameter.context)));
+                    element.append($compile(value)(scopeFunction(scope.parameter.context)));
                 }
             };
-            scope.parameter.scope(scope.parameter.context)[scope.parameter.name] = applyFunction;
+            scopeFunction(scope.parameter.context)[scope.parameter.name] = applyFunction;
             if (scope.parameter.html && scope.parameter.html != null && scope.parameter.html.length > 0) {
                 applyFunction(scope.parameter.html);
             }

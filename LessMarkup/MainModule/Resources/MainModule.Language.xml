@@ -264,6 +264,7 @@
     <Translation Id="MaximumImageHeight" Text="Maximum Image Height"/>
     <Translation Id="Caption" Text="Caption"/>
     <Translation Id="EditPage" Text="Edit Page"/>
+    <Translation Id="ControllerCode" Text="Controller Code"/>
     <!--
     <Translation Id="" Text=""/>
     -->

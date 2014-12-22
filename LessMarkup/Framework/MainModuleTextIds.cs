@@ -267,6 +267,6 @@ namespace LessMarkup.Framework
         MaximumImageWidth,
         MaximumImageHeight,
         Caption,
-        EditPage
+        EditPage,
     }
 }

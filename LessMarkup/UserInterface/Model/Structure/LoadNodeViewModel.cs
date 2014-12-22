@@ -50,7 +50,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             return "~/Views/" + viewName;
         }
 
-        public static string GetViewContents(string viewName, object model, System.Web.Mvc.Controller controller)
+        public static string GetViewContents(string viewName, object model, ControllerBase controller)
         {
             using (var stringWriter = new StringWriter(CultureInfo.CurrentCulture))
             {

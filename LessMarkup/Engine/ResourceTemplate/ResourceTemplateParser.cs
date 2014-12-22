@@ -7,10 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using LessMarkup.DataFramework;
 using LessMarkup.Engine.Configuration;
 using LessMarkup.Engine.FileSystem;
 using LessMarkup.Framework.Helpers;
 using LessMarkup.Interfaces.Cache;
+using LessMarkup.Interfaces.Structure;
 using LessMarkup.Interfaces.System;
 
 namespace LessMarkup.Engine.ResourceTemplate
@@ -146,7 +148,7 @@ namespace LessMarkup.Engine.ResourceTemplate
                             var condition = directiveBody.Substring(pos).Trim();
                             directiveBody = directiveBody.Substring(pos + 1).Trim();
 
-                            var conditionParts = condition.Split(new[] {'-'});
+                            var conditionParts = condition.Split('-');
 
                             if (conditionParts.Length > 2)
                             {
@@ -231,12 +233,49 @@ namespace LessMarkup.Engine.ResourceTemplate
                         builder.Append(value);
                         break;
                     }
+                    case DirectiveType.Block:
+                    {
+                        GenerateBlock(directive.Body.ToLower(), builder);
+                        break;
+                    }
                 }
             }
 
             if (i < cacheItem.TextParts.Count)
             {
                 builder.Append(cacheItem.TextParts[i]);
+            }
+        }
+
+        private void GenerateMenuBlock(StringBuilder builder)
+        {
+            var nodeCache = _dataCache.Get<INodeCache>();
+
+            foreach (var menuNode in nodeCache.Nodes.Where(n => n.AddToMenu && n.Visible))
+            {
+                builder.AppendFormat(
+                    "<li ng-style=\"{{ active: path === '{1}' }}\"><a href=\"{1}\" ng-click=\"navigateToView('{1}')\">{0}</a></li>",
+                    menuNode.Title, menuNode.FullPath);
+            }
+        }
+
+        private void GenerateNoScriptBlock(StringBuilder builder)
+        {
+            builder.Append(Constants.Engine.NoScriptBlock);
+        }
+
+        private void GenerateBlock(string blockType, StringBuilder builder)
+        {
+            switch (blockType)
+            {
+                case "topmenu":
+                    GenerateMenuBlock(builder);
+                    break;
+                case "noscript":
+                    GenerateNoScriptBlock(builder);
+                    break;
+                default:
+                    throw new Exception("Unknown block type");
             }
         }
 

@@ -1,0 +1,23 @@
+﻿@using LessMarkup.UserInterface.NodeHandlers.Common
+@model dynamic
+<div class="flat-design">
+    @foreach (var page in Model.ViewData["Flat"])
+    {
+        <div class="flatpage">
+            <div ng-switch="page.level">
+                @switch ((int) page.Level)
+                {
+                    case 1:
+                        <h2 id="@page.Anchor">@page.Title</h2>
+                        break;
+                    case 2:
+                        <h3 id="@page.Anchor">@page.Title</h3>
+                        break;
+                }
+            </div>
+            <div>
+                @FlatPageNodeHandler.RenderStatic(Html, page.Handler, page.ViewData, page.Title)
+            </div>
+        </div>
+    }
+</div>

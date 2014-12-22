@@ -13,7 +13,8 @@ namespace LessMarkup.MainModule.NodeHandlers
 
             return new Dictionary<string, object>
             {
-                { "Body", settings != null ? settings.Body : "" }
+                { "Body", settings != null ? settings.Body : "" },
+                { "Code", settings != null ? settings.Code : "" }
             };
         }
 

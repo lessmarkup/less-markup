@@ -6,10 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web;
+using System.Web.Mvc;
 using LessMarkup.Framework.NodeHandlers;
 using LessMarkup.Interfaces.Cache;
 using LessMarkup.Interfaces.Security;
 using LessMarkup.Interfaces.Structure;
+using LessMarkup.Interfaces.System;
 using LessMarkup.UserInterface.Model.Common;
 using LessMarkup.UserInterface.Model.Structure;
 using Newtonsoft.Json;
@@ -178,6 +181,23 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
             return null;
         }
 
+        public static IHtmlString RenderStatic(HtmlHelper htmlHelper, string handler, object viewData, string title)
+        {
+            var viewPath = LoadNodeViewModel.GetViewPath(handler) + "NoScript";
+            var dataCache = Interfaces.DependencyResolver.Resolve<IDataCache>();
+            var resourceCache = dataCache.Get<IResourceCache>(dataCache.Get<ILanguageCache>().CurrentLanguageId);
+
+            var model = new
+            {
+                Title = title,
+                ViewData = viewData
+            };
+
+            var template = resourceCache.ReadText(viewPath + ".html") ?? LoadNodeViewModel.GetViewContents(viewPath + ".cshtml", model, htmlHelper.ViewContext.Controller);
+           
+            return new MvcHtmlString(template);
+        }
+
         protected override Dictionary<string, object> GetViewData()
         {
             var settingsModel = GetSettings<FlatPageSettingsModel>();
@@ -196,7 +216,8 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     f.Title, 
                     f.UniqueId, 
                     f.ViewBody, 
-                    f.ViewData
+                    f.ViewData,
+                    Handler = f.HandlerType.Name
                 }).ToList() },
                 { "Position", settingsModel != null ? settingsModel.Position : FlatPagePosition.Right },
                 { "Scripts", _scripts }

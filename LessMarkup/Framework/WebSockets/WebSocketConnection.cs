@@ -121,7 +121,7 @@ namespace LessMarkup.Framework.WebSockets
                 int pos = text.IndexOf(";", StringComparison.Ordinal);
                 if (pos <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("data");
+                    pos = text.Length;
                 }
                 var methodName = text.Substring(0, pos);
                 pos += 1;

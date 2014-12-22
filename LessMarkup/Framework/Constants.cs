@@ -111,6 +111,7 @@ namespace LessMarkup.DataFramework
         public static class Engine
         {
             public const int CheckConfigurationChangeMinutes = 2;
+            public const string NoScriptBlock = "<noscript><iframe style=\"width:100%;border:none;\" src=\"?noscript\"></iframe></noscript>";
         }
 
         public static class NodePath

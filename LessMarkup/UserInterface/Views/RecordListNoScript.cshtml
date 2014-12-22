@@ -1,0 +1,55 @@
+﻿@model dynamic
+@{
+    var totalRecords = Model.ViewData["recordIds"];
+    var displayRecords = Model.ViewData["records"];
+    var recordsPerPage = Model.ViewData["recordsPerPage"];
+    var pageCount = (totalRecords.Length + recordsPerPage - 1)/recordsPerPage;
+    var columns = Model.ViewData["columns"];
+    var rowIndex = 0;
+}
+<div>
+    @if (pageCount > 0)
+    {
+        <ul>
+            @for (var page = 1; page <= pageCount; page++)
+            {
+                <li><a href="?p=@page">@page</a></li>
+            }
+        </ul>
+    }
+
+    <table class="grid-control">
+        <tr>
+            @foreach (var column in columns)
+            {
+                <th width="@column.width" colspan="@column.colSpan" class="@column.headerClass">
+                    <span>@column.text</span>
+                </th>
+            }
+        </tr>
+        @foreach (var row in displayRecords)
+        {
+            <tr class="@((rowIndex%2 != 0) ? "odd" : "")">
+                @foreach (var column in columns)
+                {
+                    var property = ((Type)row.GetType()).GetProperties().First(p => string.Compare(p.Name, column.name, true) == 0);
+                    var value = property.GetValue(row);
+                    <td class="@column.cellClass">
+                        @value
+                    </td>
+                }
+            </tr>
+            rowIndex++;
+        }
+    </table>
+
+    @if (pageCount > 0)
+    {
+        <ul>
+            @for (var page = 1; page <= pageCount; page++)
+            {
+                <li><a href="?p=@page">@page</a></li>
+            }
+        </ul>
+    }
+</div>

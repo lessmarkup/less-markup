@@ -16,6 +16,7 @@
     <Resource Plain="scripts/filters/locale-date.js" />
     <Resource Plain="scripts/providers/lazyload" />
     <Resource Plain="scripts/directives/bindcompiled" />
+    <Resource Plain="scripts/directives/bind2" />
     <Resource Plain="scripts/providers/commandhandler" />
     <Resource Plain="scripts/providers/inputform" />
     <Resource Plain="scripts/directives/fileread" />

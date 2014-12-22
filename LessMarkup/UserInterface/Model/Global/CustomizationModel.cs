@@ -39,7 +39,7 @@ namespace LessMarkup.UserInterface.Model.Global
 
             public IReadOnlyCollection<CustomizationModel> Read(IQueryBuilder query, List<long> ids)
             {
-                return query.From<SiteCustomization>().ToList<SiteCustomization>("Id, Path, IsBinary, CASE IsBinary WHEN 0 THEN Body ELSE NULL Body, Append, TypeDefined")
+                return query.From<SiteCustomization>().ToList<SiteCustomization>("[Id], [Path], [IsBinary], CASE [IsBinary] WHEN 0 THEN [Body] ELSE NULL END [Body], [Append]")
                         .Select(c => new CustomizationModel
                         {
                             Id = c.Id,

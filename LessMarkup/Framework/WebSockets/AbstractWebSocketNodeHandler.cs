@@ -57,6 +57,11 @@ namespace LessMarkup.Framework.WebSockets
         {
         }
 
+        public void Disconnect()
+        {
+            _connection.Close();
+        }
+
         private async Task WebSocketHandler(AspNetWebSocketContext context)
         {
             _connection = new WebSocketConnection(this, context.WebSocket);

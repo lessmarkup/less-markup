@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using LessMarkup.DataFramework;
 using LessMarkup.DataObjects.Common;
@@ -27,12 +28,16 @@ namespace LessMarkup.UserInterface.Model.Structure
         private readonly ICurrentUser _currentUser;
         private readonly IEngineConfiguration _engineConfiguration;
         private readonly IDomainModelProvider _domainModelProvider;
+        private LoadNodeViewModel ViewData { get; set; }
 
         public string Title { get; set; }
+        public string Body { get; set; }
         public string LogoImageUrl { get; set; }
         public string InitialData { get; set; }
         public string ScriptInitialData { get { return string.Format("<script>window.viewInitialData = {0};</script>", InitialData); } }
         public ActionResult Result { get; set; }
+        public bool NoScript { get; set; }
+        public bool OnlyBody { get; set; }
 
         public NodeEntryPointModel(IDataCache dataCache, ICurrentUser currentUser, IEngineConfiguration engineConfiguration, IDomainModelProvider domainModelProvider)
         {
@@ -42,13 +47,60 @@ namespace LessMarkup.UserInterface.Model.Structure
             _domainModelProvider = domainModelProvider;
         }
 
+        private void CheckBrowser(System.Web.Mvc.Controller controller)
+        {
+            var browser = controller.Request.Browser;
+
+            if (browser == null || browser.EcmaScriptVersion == null || browser.EcmaScriptVersion.Major < 1 || browser.Crawler)
+            {
+                NoScript = true;
+                return;
+            }
+
+            if (browser.Browser != null)
+            {
+                switch (browser.Browser)
+                {
+                    case "InternetExplorer":
+                        if (browser.MajorVersion < 9)
+                        {
+                            NoScript = true;
+                        }
+                        break;
+                    case "Chrome":
+                        break;
+                    case "Firefox":
+                        break;
+                }
+            }
+        }
+
         public bool Initialize(string path, System.Web.Mvc.Controller controller)
         {
-            var viewData = DependencyResolver.Resolve<LoadNodeViewModel>();
+            CheckBrowser(controller);
+
+            if (!NoScript)
+            {
+                var noScriptCookie = controller.Request.Cookies.Get("noscript");
+                if (noScriptCookie != null && noScriptCookie.Value == "true")
+                {
+                    NoScript = true;
+                }
+            }
+
+            var queryString = controller.Request.RawUrl;
+            if (queryString != null && (queryString.EndsWith("?noscript") || queryString == "noscript"))
+            {
+                NoScript = true;
+                OnlyBody = true;
+            }
+
             string nodeLoadError = null;
+
+            ViewData = DependencyResolver.Resolve<LoadNodeViewModel>();
             try
             {
-                if (!viewData.Initialize(path, null, controller, true, true))
+                if (!ViewData.Initialize(path, null, controller, true, true))
                 {
                     return false;
                 }
@@ -59,11 +111,13 @@ namespace LessMarkup.UserInterface.Model.Structure
                 nodeLoadError = e.Message;
             }
 
-            if (viewData.Result != null)
+            if (ViewData.Result != null)
             {
-                Result = viewData.Result;
+                Result = ViewData.Result;
                 return true;
             }
+
+            Body = _dataCache.Get<IResourceCache>().ReadText("~/Views/Body.html");
 
             var nodeCache = _dataCache.Get<INodeCache>();
             var recordModelCache = _dataCache.Get<IRecordModelCache>();
@@ -76,6 +130,23 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             InitializeSiteProperties(controller, initialValues);
 
+            if (NoScript)
+            {
+                var pos = Body.IndexOf(Constants.Engine.NoScriptBlock, StringComparison.Ordinal);
+                if (pos <= 0)
+                {
+                    return true;
+                }
+
+                var viewPath = LoadNodeViewModel.GetViewPath(ViewData.NodeHandler.ViewType) + "NoScript";
+                var resourceCache = _dataCache.Get<IResourceCache>(_dataCache.Get<ILanguageCache>().CurrentLanguageId);
+                var template = resourceCache.ReadText(viewPath + ".html") ?? LoadNodeViewModel.GetViewContents(viewPath + ".cshtml", ViewData, controller);
+
+                Body = OnlyBody ? template : Body.Remove(pos, Constants.Engine.NoScriptBlock.Length).Insert(pos, template ?? "");
+
+                return true;
+            }
+
             initialValues["rootPath"] = rootNode.FullPath;
             initialValues["path"] = path ?? "";
             initialValues["showConfiguration"] = _currentUser.IsAdministrator;
@@ -85,7 +156,7 @@ namespace LessMarkup.UserInterface.Model.Structure
             initialValues["loggedIn"] = _currentUser.UserId.HasValue;
             initialValues["userNotVerified"] = !_currentUser.IsApproved || !_currentUser.EmailConfirmed;
             initialValues["userName"] = _currentUser.Name ?? "";
-            initialValues["viewData"] = viewData;
+            initialValues["viewData"] = ViewData;
             initialValues["nodeLoadError"] = nodeLoadError;
             initialValues["recaptchaPublicKey"] = _engineConfiguration.RecaptchaPublicKey;
             initialValues["loginModelId"] = recordModelCache.GetDefinition<LoginModel>().Id;
@@ -151,11 +222,19 @@ namespace LessMarkup.UserInterface.Model.Structure
 
             var result = new ViewResult();
             controller.ViewData.Model = this;
+            result.ViewName = OnlyBody ? "~/Views/BodyNoScript.cshtml" : "~/Views/EntryPoint.cshtml";
             result.ViewData = controller.ViewData;
             result.TempData = controller.TempData;
-            result.ViewName = "~/Views/EntryPoint.cshtml";
             result.MasterName = null;
             result.ViewEngineCollection = controller.ViewEngineCollection;
+
+            if (OnlyBody)
+            {
+                var cookie = new HttpCookie("noscript");
+                cookie.Value = "true";
+                controller.Response.Cookies.Add(cookie);
+            }
+
             return result;
         }
     }

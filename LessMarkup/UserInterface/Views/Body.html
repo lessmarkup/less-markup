@@ -10,51 +10,50 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand visible-xs" href="{{rootPath}}" ng-click="navigateToView(rootPath)" ng-bind="rootTitle"></a>
+                        <a class="navbar-brand visible-xs" href="/" ng-click="navigateToView(rootPath)">
+                            [[[include LogoXs.html]]]
+                        </a>
                         
-                        <div class="visible-xs navbar-notifications">
+                        <div class="visible-xs navbar-notifications scriptonly">
                             <a ng-repeat="notification in notifications" href="{{notification.path}}" ng-click="gotoNotification(notification)" ng-show="notification.count > 0">
                                 <span ng-if="notification.icon" class="glyphicon" ng-class="notification.icon"></span>
                                 <span class="badge" ng-bind="notification.count" ng-class="notificationClass(notification)"></span>
                             </a>
-                            <a href="#" ng-if="userNotVerified">
+                            <a href="#" ng-if="loggedIn && userNotVerified">
                                 <span>
                                     <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
                                 </span>
                             </a>
                         </div>
-
                     </div>
 
                     <nav class="hidden-xs">
                         <ul class="nav navbar-nav navbar-left" id="navbar-menu">
                             <li>
-                                <a href="{{rootPath}}" ng-if="navigationTree.length == 0" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
-                                    <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
+                                <a href="/" ng-if="navigationTree.length == 0" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
+                                    [[[include Logo.html]]]
                                 </a>
                             </li>
-                            <li class="dropdown" ng-if="navigationTree.length > 0">
+                            <li class="dropdown scriptonly" ng-if="navigationTree.length > 0">
                                 <a role="button" class="dropdown-toggle navbar-brand">
-                                    <span ng-bind="rootTitle"></span> <b class="caret"></b>
+                                    <span ng-bind="rootTitle">[[[parameter SiteName]]]</span> <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="{{rootPath}}" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
-                                            <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
+                                        <a href="/" ng-click="navigateToView(rootPath)" role="button" class="navbar-brand">
+                                            [[[include Logo.html]]]
                                         </a>
                                     </li>
-                                    <li ng-repeat="item in navigationTree" style="{{item.style}}">
+                                    <li class="scriptonly" ng-repeat="item in navigationTree" style="{{item.style}}">
                                         <a href="{{item.url}}" ng-click="navigateToView(item.url)" ng-bind="item.title"></a>
                                     </li>
                                 </ul>
                             </li>
 
-                            <li ng-repeat="menu in topMenu" ng-style="{ active: path === menu.url }">
-                                <a href="{{menu.url}}" ng-click="navigateToView(menu.url)" ng-bind="menu.title"></a>
-                            </li>
+                            [[[block TopMenu]]]
                         </ul>
 
-                        <form class="navbar-form navbar-left" role="search" ng-if="hasSearch">
+                        <form class="navbar-form navbar-left scriptonly" role="search" ng-if="hasSearch">
                             <div class="input-group search-panel">
                                 <input type="text" class="form-control" placeholder="Search" ng-model="getScope().searchText">
                                 <ul class="results" ng-show="searchText.length > 0">
@@ -70,7 +69,7 @@
                             </div>
                         </form>
                         
-                        <ul ng-if="languages && languages.length" class="nav navbar-nav navbar-right">
+                        <ul ng-if="languages && languages.length" class="nav navbar-nav navbar-right scriptonly">
                             <li class="dropdown">
                                 <a role="button" class="dropdown-toggle">
                                     <img ng-if="selectedLanguage.imageUrl" ng-src="{{selectedLanguage.imageUrl}}" class="language-icon" /> <span ng-bind="selectedLanguage.shortName"></span> <b class="caret"></b>
@@ -86,8 +85,10 @@
                         </ul>
 
                         <ul class="nav navbar-nav navbar-right">
-                            
-                            <li ng-repeat="notification in notifications" class="navbar-notification" ng-show="notification.count > 0">
+
+                            [[[include TopMenuPlugins.html]]]
+
+                            <li ng-repeat="notification in notifications" class="navbar-notification scriptonly" ng-show="notification.count > 0">
                                 <a href="{{notification.path}}" ng-click="gotoNotification(notification)">
                                     <span ng-if="notification.icon" class="glyphicon" ng-class="notification.icon"></span>
                                     <span ng-bind="notification.title"></span>
@@ -95,8 +96,8 @@
                                 </a>
                             </li>
 
-                            <li class="dropdown" ng-show="!loggedIn && hasLogin">
-                                <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]] <b class="caret"></b></a>
+                            <li class="dropdown scriptonly" ng-show="!loggedIn && hasLogin">
+                                <a role="button" class="dropdown-toggle"><span class="glyphicon glyphicon-user" style="font-size: small"></span> [[[translate User]]] <b class="caret"></b></a>
                                 <div class="dropdown-menu">
                                     <form role="form" class="login-form">
                                         [[[include Login.html]]]
@@ -104,13 +105,13 @@
                                 </div>
                             </li>
 
-                            <li class="dropdown" ng-show="loggedIn">
+                            <li class="dropdown scriptonly" ng-show="loggedIn">
                                 <a role="button" class="dropdown-toggle">
                                     <span ng-if="userNotVerified">
                                         <span class="badge" style="background-color: #a94442" data-toggle="tooltip" data-placement="bottom" title="[[[translate EmailNotVerified]]]">!</span>
                                         <span>&nbsp;</span>
                                     </span>
-                                    <span class="glyphicon glyphicon-user" style="font-size:small"></span> {{userName}} <b class="caret"></b>
+                                    <span class="glyphicon glyphicon-user" style="font-size: small"></span> {{userName}} <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{profilePath}}" ng-click="navigateToView(profilePath)">[[[translate Profile]]]</a></li>
@@ -118,43 +119,48 @@
                                 </ul>
                             </li>
 
-                            <li ng-if="showConfiguration"><a href="{{configurationPath}}" ng-click="navigateToView(configurationPath)"><span class="glyphicon glyphicon-cog"></span></a></li>
+                            <li ng-if="showConfiguration" class="scriptonly">
+                                <a href="{{configurationPath}}" ng-click="navigateToView(configurationPath)"><span class="glyphicon glyphicon-cog"></span></a>
+                            </li>
                         </ul>
                     </nav>
                     
                     <nav class="visible-xs" collapse="!showXsMenu">
                         <ul class="nav navbar-nav" id="navbar-menu-small">
-                            <li ng-show="!loggedIn && hasLogin">
+                            <li ng-show="!loggedIn && hasLogin" class="scriptonly">
                                 <a ng-click="showLogin()">
                                     <span class="glyphicon glyphicon-user" style="font-size:small"></span> [[[translate User]]]
                                 </a>
                             </li>
 
-                            <li ng-show="loggedIn">
+                            <li ng-show="loggedIn" class="scriptonly">
                                 <a href="{{profilePath}}" ng-click="navigateToView(profilePath)">
                                     <span class="glyphicon glyphicon-user" style="font-size:small"></span> <span>{{userName}}</span>
                                 </a>
                             </li>
 
-                            <li ng-show="loggedIn">
+                            <li ng-show="loggedIn" class="scriptonly">
                                 <a href="#" ng-click="doLogout()">[[[translate Logout]]]</a>
                             </li>
 
                             <li>
-                                <a href="{{rootPath}}" ng-click="navigateToView(rootPath)">
-                                    <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle"></span>
+                                <a href="/" ng-click="navigateToView(rootPath)">
+                                    <span class="glyphicon glyphicon-home"></span> <span ng-bind="rootTitle">[[[parameter SiteName]]]</span>
                                 </a>
                             </li>
-                            <li ng-repeat="item in navigationTree" style="{{item.style}}">
+                            <li ng-repeat="item in navigationTree" style="{{item.style}}" class="scriptonly">
                                 <a href="{{item.url}}" ng-click="navigateToView(item.url)" ng-bind="item.title"></a>
                             </li>
+
+                            [[[block TopMenu]]]
+                            [[[include TopMenuPlugins.html]]]
                         </ul>
                     </nav>
                 </div>
             </div>
         </header>
         
-        <div class="breadcrumb-host" ui-scrollfix ng-if="breadcrumbs.length > 0 || loadingNewPage" ng-cloak>
+        <div class="breadcrumb-host scriptonly" ui-scrollfix ng-if="breadcrumbs.length > 0 || loadingNewPage" ng-cloak>
             <div class="container">
                 <ul class="breadcrumb">
                     <li ng-repeat="item in breadcrumbs">
@@ -166,22 +172,23 @@
             </div>
         </div>
         
-        <div class="loadmessage container" ng-cloak>[[[translate PleaseWaitLoading]]]</div>
+        <div class="loadmessage container scriptonly" ng-cloak>[[[translate PleaseWaitLoading]]]</div>
 
         <div class="contents container" ng-cloak>
-            <div class="toolbar">
+            <div class="toolbar scriptonly">
                 <button ng-repeat="button in toolbarButtons" type="button" class="btn btn-default" ng-disabled="!isToolbarButtonEnabled(button.id)" ng-click="onToolbarButtonClick(button.id)" ng-bind="button.text"></button>
             </div>
-            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert(alert.id)"><div ng-bind="alert.message"></div></alert>
-            <div bind-compiled-html="{ name: 'bindBody', scope: getViewScope }">
+            <alert class="scriptonly" ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert(alert.id)"><div ng-bind="alert.message"></div></alert>
+            <div class="scriptonly" bind-compiled-html="{ name: 'bindBody', scope: getViewScope }">
                 [[[translate PleaseWaitLoading]]]
             </div>
+            [[[block NoScript]]]
         </div>
     </div>
 </div>
 
 <div class="footer">
     <div class="container">
-        <p>This site is built on <a href="http://www.lessmarkup.com">LessMarkup Engine</a></p>
+        <p>This site is built on <a href="http://www.lessmarkup.com" target="_new">LessMarkup Engine</a></p>
     </div>
 </div>

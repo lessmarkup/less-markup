@@ -179,7 +179,10 @@ namespace LessMarkup.Engine.Language
         {
             string translation;
 
-            id = moduleType + "." + id;
+            if (moduleType != null)
+            {
+                id = moduleType + "." + id;
+            }
 
             if (language != null)
             {

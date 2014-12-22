@@ -3,8 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 function HtmlPageController($scope) {
-    if ($scope.bindBody) {
-        $scope.bindBody($scope.viewData.body);
+    $scope.htmlBody = function(apply) {
+        apply($scope.viewData.body, $scope);
+    }
+
+    if ($scope.viewData.code) {
+        new Function("$scope", $scope.viewData.code)($scope);
     }
 }
 

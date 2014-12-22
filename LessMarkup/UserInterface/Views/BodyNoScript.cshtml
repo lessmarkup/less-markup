@@ -1,0 +1,13 @@
+﻿@using System.Web.Mvc.Html
+@model LessMarkup.UserInterface.Model.Structure.NodeEntryPointModel
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        @Html.Partial("~/Views/Styles.cshtml")
+        <title></title>
+    </head>
+    <body>
+        @Html.Raw(Model.Body)
+    </body>
+</html>

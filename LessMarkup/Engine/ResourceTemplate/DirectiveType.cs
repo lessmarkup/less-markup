@@ -10,5 +10,6 @@ namespace LessMarkup.Engine.ResourceTemplate
         Translate,
         IncludeIf,
         Parameter,
+        Block
     }
 }

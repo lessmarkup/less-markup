@@ -266,11 +266,6 @@ button:not(.btn)[disabled=disabled] {
     float: none;
 }
 
-.ngGrid > .ngViewport {
-    height: auto !important;
-    overflow-y: hidden;
-}
-
 @media (max-width: 767px) {
     .navbar-brand {
         padding-left: 15px;
