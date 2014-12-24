@@ -40,7 +40,7 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
 
         protected override ChildHandlerSettings GetChildHandler(string path)
         {
-            var split = path.Split(new[] { '/' });
+            var split = path.Split('/');
             if (split.Length < 2)
             {
                 return null;

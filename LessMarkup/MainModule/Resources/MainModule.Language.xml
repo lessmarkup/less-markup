@@ -265,6 +265,10 @@
     <Translation Id="Caption" Text="Caption"/>
     <Translation Id="EditPage" Text="Edit Page"/>
     <Translation Id="ControllerCode" Text="Controller Code"/>
+    <Translation Id="PasswordTooSimple" Text="Password does not meet minimal complexity criteria"/>
+    <Translation Id="InvalidPassword" Text="Invalid password"/>
+    <Translation Id="InvalidUserName" Text="Invalid User Name"/>
+    <Translation Id="NameOrEmailExists" Text="User with specified name or e-mail already exists"/>
     <!--
     <Translation Id="" Text=""/>
     -->

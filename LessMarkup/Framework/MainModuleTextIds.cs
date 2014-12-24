@@ -268,5 +268,9 @@ namespace LessMarkup.Framework
         MaximumImageHeight,
         Caption,
         EditPage,
+        PasswordTooSimple,
+        InvalidPassword,
+        InvalidUserName,
+        NameOrEmailExists,
     }
 }

@@ -17,8 +17,11 @@ namespace LessMarkup.Interfaces.Data
         T Find<T>(long id) where T : class, IDataObject;
         T FindOrDefault<T>(long id) where T : class, IDataObject;
         List<T> Execute<T>(string sql, params object[] args) where T : class;
+        void ExecuteNonQuery(string sql, params object[] args);
+        T ExecuteScalar<T>(string sql, params object[] args);
         List<T> ToList<T>(string selectText = null) where T : class;
         IReadOnlyCollection<long> ToIdList();
+        int Count();
         T First<T>(string selectText = null) where T : class;
         T FirstOrDefault<T>(string selectText = null) where T : class;
         IQueryBuilder New();

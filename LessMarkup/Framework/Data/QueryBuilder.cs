@@ -256,6 +256,18 @@ namespace LessMarkup.Framework.Data
                 string name;
                 int len = 1;
 
+                bool isTableName = pos + 1 < sql.Length && sql[pos + 1] == '-';
+                if (isTableName)
+                {
+                    var pos1 = pos+2;
+                    for(; pos1 < sql.Length && char.IsLetter(sql[pos1]); pos1++)
+                    { }
+                    var tableName = sql.Substring(pos + 2, pos1 - pos - 2);
+                    tableName = DomainModel.GetMetadata(tableName).Name;
+                    sql = sql.Remove(pos, pos1 - pos).Insert(pos, "[" + tableName + "]");
+                    continue;
+                }
+
                 if (pos + 1 < sql.Length && char.IsDigit(sql[pos + 1]))
                 {
                     var digitLen = 1;
@@ -351,6 +363,18 @@ namespace LessMarkup.Framework.Data
             return ExecuteWithLimit<T>(sql, null, args);
         }
 
+        public void ExecuteNonQuery(string sql, params object[] args)
+        {
+            GetCommand().CommandText = ProcessStringWithParameters(sql, args);
+            GetCommand().ExecuteNonQuery();
+        }
+
+        public T ExecuteScalar<T>(string sql, params object[] args)
+        {
+            GetCommand().CommandText = ProcessStringWithParameters(sql, args);
+            return (T) GetCommand().ExecuteScalar();
+        }
+
         private string GetSql()
         {
             var ret = "SELECT " + _select + " " + _commandText;
@@ -381,6 +405,13 @@ namespace LessMarkup.Framework.Data
             }
 
             return Execute<T>(GetSql());
+        }
+
+        public int Count()
+        {
+            _select = "count(*)";
+            GetCommand().CommandText = GetSql();
+            return (int) _command.ExecuteScalar();
         }
 
         public IReadOnlyCollection<long> ToIdList()
@@ -446,3 +477,4 @@ namespace LessMarkup.Framework.Data
         }
     }
 }
+    

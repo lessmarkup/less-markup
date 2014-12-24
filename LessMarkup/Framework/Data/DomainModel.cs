@@ -20,6 +20,7 @@ namespace LessMarkup.Framework.Data
         private TransactionScope _transactionScope;
         private readonly IEngineConfiguration _engineConfiguration;
         private static readonly Dictionary<Type, TableMetadata> _tableMetadatas = new Dictionary<Type, TableMetadata>();
+        private static readonly Dictionary<string, TableMetadata> _stringToMetadata = new Dictionary<string, TableMetadata>();
         private static readonly object _tableMetadataLock = new object();
         private static readonly Dictionary<Type, int> _collectionTypeToId = new Dictionary<Type, int>();
         private static readonly Dictionary<int, Type> _collectionIdToType = new Dictionary<int, Type>(); 
@@ -35,7 +36,9 @@ namespace LessMarkup.Framework.Data
             _collectionTypeToId[type] = _collectionIdCounter;
             _collectionIdToType[_collectionIdCounter] = type;
             _collectionIdCounter++;
-            _tableMetadatas[type] = new TableMetadata(type);
+            var metadata = new TableMetadata(type);
+            _tableMetadatas[type] = metadata;
+            _stringToMetadata[type.Name] = metadata;
         }
 
         public static int GetCollectionId<T>() where T : IDataObject
@@ -95,9 +98,25 @@ namespace LessMarkup.Framework.Data
             {
                 ret = new TableMetadata(typeof (T));
                 _tableMetadatas[typeof (T)] = ret;
+                _stringToMetadata[typeof (T).Name] = ret;
             }
 
             return ret;
+        }
+
+        internal static TableMetadata GetMetadata(string name)
+        {
+            TableMetadata ret;
+            if (_stringToMetadata.TryGetValue(name, out ret))
+            {
+                return ret;
+            }
+            return null;
+        }
+
+        public static string GetTableName<T>() where T : IDataObject
+        {
+            return GetMetadata<T>().Name;
         }
 
         public IQueryBuilder Query()

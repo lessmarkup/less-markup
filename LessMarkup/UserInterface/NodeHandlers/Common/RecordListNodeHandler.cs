@@ -571,7 +571,10 @@ namespace LessMarkup.UserInterface.NodeHandlers.Common
                     filterParams.Add(searchText);
                 }
 
-                queryBuilder = queryBuilder.Where("(" + filterText + ")", filterParams.ToArray());
+                if (filterText.Length > 0)
+                {
+                    queryBuilder = queryBuilder.Where("(" + filterText + ")", filterParams.ToArray());
+                }
             }
 
             object orderByObject;

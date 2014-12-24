@@ -18,6 +18,20 @@ namespace LessMarkup.Engine.Migrate
             _domainModelProvider = domainModelProvider;
         }
 
+        private static Migration CreateMigration(Type type)
+        {
+            var migration = (Migration)Interfaces.DependencyResolver.TryResolve(type);
+            if (migration == null)
+            {
+                migration = (Migration)Activator.CreateInstance(type);
+                if (migration == null)
+                {
+                    return null;
+                }
+            }
+            return migration;
+        }
+
         public void Execute()
         {
             var migrator = Interfaces.DependencyResolver.Resolve<Migrator>();
@@ -40,18 +54,9 @@ namespace LessMarkup.Engine.Migrate
                         continue;
                     }
 
-                    foreach (var type in assembly.GetTypes().Where(t => typeof (Migration).IsAssignableFrom(t)))
+                    foreach (var migration in assembly.GetTypes().Where(t => typeof (Migration).IsAssignableFrom(t)).Select(CreateMigration).Where(m => m != null).OrderBy(m => m.Id))
                     {
-                        var migration = (Migration) Interfaces.DependencyResolver.TryResolve(type);
-                        if (migration == null)
-                        {
-                            migration = (Migration) Activator.CreateInstance(type);
-                            if (migration == null)
-                            {
-                                continue;
-                            }
-                        }
-                        var uniqueId = migration.Id + "_" + type.Name;
+                        var uniqueId = migration.Id + "_" + migration.GetType().Name;
                         if (!existingMigrations.Contains(uniqueId))
                         {
                             migration.Migrate(migrator);

@@ -130,7 +130,7 @@ namespace LessMarkup.Engine.Security
                 {
                     if (!_engineConfiguration.SmtpConfigured)
                     {
-                        throw new Exception("SMTP is not configured");
+                        throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.SmtpNotConfigured));
                     }
 
                     user.Password = GeneratePassword();
@@ -148,7 +148,8 @@ namespace LessMarkup.Engine.Security
                 {
                     if (e.Number == 2627 || e.Number == 2601 || e.Number == 2512)
                     {
-                        throw new Exception("User with specified name or e-mail already exists");
+                        this.LogException(e);
+                        throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.NameOrEmailExists));
                     }
 
                     throw;
@@ -175,10 +176,14 @@ namespace LessMarkup.Engine.Security
                 }
                 else
                 {
+                    user.ValidateSecret = Guid.NewGuid().ToString().Replace("-", "");
+                    domainModel.Update(user);
+
                     if (!siteConfiguration.AdminApproveNewUsers)
                     {
                         user.IsApproved = true;
                     }
+
                     SendConfirmationLink(urlHelper, user);
                 }
 
@@ -454,7 +459,7 @@ namespace LessMarkup.Engine.Security
         {
             using (var domainModel = _domainModelProvider.CreateWithTransaction())
             {
-                var user = domainModel.Query().From<User>().Where("ValidateSecret = $ AND IsValidated = $", validateSecret, false).FirstOrDefault<User>();
+                var user = domainModel.Query().From<User>().Where("ValidateSecret = $ AND EmailConfirmed = $", validateSecret, false).FirstOrDefault<User>();
                 if (user == null)
                 {
                     userId = 0;
@@ -556,8 +561,7 @@ namespace LessMarkup.Engine.Security
                 EmailConfirmed = false,
                 LastLogin = DateTime.UtcNow,
                 LastBlock = null,
-                LastActivity = DateTime.UtcNow,
-                ValidateSecret = Guid.NewGuid().ToString()
+                LastActivity = DateTime.UtcNow
             };
 
             return user;
@@ -567,17 +571,17 @@ namespace LessMarkup.Engine.Security
         {
             if (!TextValidator.CheckUsername(username))
             {
-                throw new Exception("Invalid User Name");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.InvalidUserName));
             }
 
             if (!generatePassword && !TextValidator.CheckPassword(password))
             {
-                throw new Exception("Invalid Password");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.InvalidPassword));
             }
 
             if (!generatePassword && !TextValidator.CheckNewPassword(password))
             {
-                throw new Exception("Password does not meet minimal complexity criteria");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.PasswordTooSimple));
             }
 
             while (!string.IsNullOrEmpty(email) && (email[email.Length - 1] == '.' || Char.IsWhiteSpace(email[email.Length - 1])))
@@ -587,7 +591,7 @@ namespace LessMarkup.Engine.Security
 
             if (!TextValidator.CheckTextField(email) || !EmailCheck.IsValidEmail(email))
             {
-                throw new Exception("Invalid E-Mail");
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.InvalidEmail, email));
             }
         }
 
@@ -595,9 +599,11 @@ namespace LessMarkup.Engine.Security
         {
             var user = domainModel.Query().From<User>().Where("Email = $ AND IsRemoved = $", email, false).FirstOrDefault<User>("Id");
 
-            if (user == null)
+            if (user != null)
             {
-                throw new Exception("User with specified e-mail already exists");
+                this.LogDebug(string.Format("User with e-mail '{0}' already exists", email));
+
+                throw new Exception(LanguageHelper.GetText(Constants.ModuleType.MainModule, MainModuleTextIds.InvalidEmail, email));
             }
         }
 
@@ -623,6 +629,11 @@ namespace LessMarkup.Engine.Security
         private void SendConfirmationLink(UrlHelper urlHelper, User user)
         {
             var confirmationLink = urlHelper.Action("Validate", "Account", new {secret = user.ValidateSecret});
+
+            var uri = HttpContext.Current.Request.Url;
+
+            confirmationLink = string.Format("{0}://{1}:{2}{3}", uri.Scheme, uri.Host, uri.Port, confirmationLink);
+
             var confirmationModel = new UserConfirmationMailTemplateModel { Link = confirmationLink };
 
             _mailSender.SendMail(null, user.Id, null, Constants.MailTemplates.ValidateUser, confirmationModel);
