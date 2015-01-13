@@ -97,48 +97,6 @@ namespace LessMarkup.Framework.Data
             return this;
         }
 
-        private DbType GetDbType(Type parameterType)
-        {
-            if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof (Nullable<>))
-            {
-                parameterType = parameterType.GetGenericArguments()[0];
-            }
-
-            if (parameterType == typeof (string))
-            {
-                return DbType.String;
-            }
-            if (parameterType == typeof (int))
-            {
-                return DbType.Int32;
-            }
-            if (parameterType == typeof (long))
-            {
-                return DbType.Int64;
-            }
-            if (parameterType == typeof (DateTime))
-            {
-                return DbType.DateTime2;
-            }
-            if (parameterType == typeof (double))
-            {
-                return DbType.Double;
-            }
-            if (parameterType == typeof (bool))
-            {
-                return DbType.Boolean;
-            }
-            if (parameterType == typeof (byte[]))
-            {
-                return (DbType) SqlDbType.VarBinary;
-            }
-            if (parameterType.IsEnum)
-            {
-                return DbType.Int32;
-            }
-            throw new ArgumentOutOfRangeException("parameterType");
-        }
-
         public IQueryBuilder Where(string filter, params object[] args)
         {
             filter = ProcessStringWithParameters(filter, args);
@@ -153,6 +111,14 @@ namespace LessMarkup.Framework.Data
             }
 
             return this;
+        }
+
+        public void DeleteFrom<T>(string filter, params object[] args) where T : IDataObject
+        {
+            filter = ProcessStringWithParameters(filter, args);
+            var metadata = DomainModel.GetMetadata<T>();
+            GetCommand().CommandText = string.Format("DELETE FROM {0} WHERE {1}", metadata.Name, filter);
+            GetCommand().ExecuteNonQuery();
         }
 
         public IQueryBuilder WhereIds(IEnumerable<long> ids)
@@ -214,19 +180,7 @@ namespace LessMarkup.Framework.Data
 
         private IDbDataParameter CreateParameter(object value)
         {
-            var command = GetCommand();
-            var name = string.Format("@_p{0}", _parameterIndex++);
-            var parameter = command.CreateParameter();
-            parameter.DbType = value != null ? GetDbType(value.GetType()) : DbType.Int32;
-            if (parameter.DbType == DbType.String || parameter.DbType == (DbType)SqlDbType.VarBinary)
-            {
-                parameter.Size = -1;
-            }
-            parameter.Value = value ?? DBNull.Value;
-            parameter.ParameterName = name;
-            command.Parameters.Add(parameter);
-
-            return parameter;
+            return DomainModel.CreateInputParameter(GetCommand(), value, _parameterIndex++);
         }
 
         private string ProcessStringWithParameters(string sql, object[] args)
@@ -317,7 +271,7 @@ namespace LessMarkup.Framework.Data
                         {
                             continue;
                         }
-                        switch (GetDbType(property.Key.PropertyType))
+                        switch (DomainModel.GetDbType(property.Key.PropertyType))
                         {
                             case DbType.String:
                                 property.Key.SetValue(obj, reader.GetString(property.Value));

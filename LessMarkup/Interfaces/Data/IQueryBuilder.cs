@@ -25,5 +25,6 @@ namespace LessMarkup.Interfaces.Data
         T First<T>(string selectText = null) where T : class;
         T FirstOrDefault<T>(string selectText = null) where T : class;
         IQueryBuilder New();
+        void DeleteFrom<T>(string filter, params object[] args) where T : IDataObject;
     }
 }

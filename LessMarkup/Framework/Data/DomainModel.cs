@@ -142,6 +142,65 @@ namespace LessMarkup.Framework.Data
             _transactionScope.Complete();
         }
 
+        internal static DbType GetDbType(Type parameterType)
+        {
+            if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                parameterType = parameterType.GetGenericArguments()[0];
+            }
+
+            if (parameterType == typeof(string))
+            {
+                return DbType.String;
+            }
+            if (parameterType == typeof(int))
+            {
+                return DbType.Int32;
+            }
+            if (parameterType == typeof(long))
+            {
+                return DbType.Int64;
+            }
+            if (parameterType == typeof(DateTime))
+            {
+                return DbType.DateTime2;
+            }
+            if (parameterType == typeof(double))
+            {
+                return DbType.Double;
+            }
+            if (parameterType == typeof(bool))
+            {
+                return DbType.Boolean;
+            }
+            if (parameterType == typeof(byte[]))
+            {
+                return (DbType)SqlDbType.VarBinary;
+            }
+            if (parameterType.IsEnum)
+            {
+                return DbType.Int32;
+            }
+            throw new ArgumentOutOfRangeException("parameterType");
+        }
+
+        internal static IDbDataParameter CreateInputParameter(IDbCommand command, object value, int index)
+        {
+            var name = string.Format("@_p{0}", index);
+            var parameter = command.CreateParameter();
+            parameter.DbType = value != null ? GetDbType(value.GetType()) : DbType.Int32;
+            if (parameter.DbType == DbType.String || parameter.DbType == (DbType)SqlDbType.VarBinary)
+            {
+                parameter.Size = -1;
+            }
+            parameter.Value = value ?? DBNull.Value;
+            parameter.ParameterName = name;
+            command.Parameters.Add(parameter);
+
+            return parameter;
+        }
+
+
         public void Update<T>(T dataObject) where T : IDataObject
         {
             var metadata = GetMetadata<T>();
@@ -166,16 +225,9 @@ namespace LessMarkup.Framework.Data
                     }
                     first = false;
 
-                    var name = string.Format("@_p{0}", index++);
-
-                    text += string.Format("[{0}] = {1}", column.Key, name);
-
                     var value = column.Value.GetValue(dataObject);
-
-                    var parameter = command.CreateParameter();
-                    parameter.ParameterName = name;
-                    parameter.Value = value ?? DBNull.Value;
-                    command.Parameters.Add(parameter);
+                    var parameter = CreateInputParameter(command, value, index++);
+                    text += string.Format("[{0}] = {1}", column.Key, parameter.ParameterName);
                 }
 
                 text += string.Format(" WHERE [Id] = {0}", dataObject.Id);
